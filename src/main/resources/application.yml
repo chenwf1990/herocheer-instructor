@@ -1,0 +1,21 @@
+server:
+  port: 17070
+spring:
+  profiles:
+    active: dev
+mybatis:
+  mapperLocations: classpath*:mapper/**/*.xml
+swagger:
+  title: 社会指导员api文档
+  description: 社会指导员api文档
+  version: 1.0.0
+  termsOfServiceUrl: http://localhost:18081/
+  license:
+  licenseUrl:
+  basePackage: com.herocheer.instructor.controller
+  contact:
+    name: chenwf
+    url: http://localhost:18081/
+    email: 349830964@qq.com
+
+
