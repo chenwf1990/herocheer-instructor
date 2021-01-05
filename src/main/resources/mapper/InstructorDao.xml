@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.InstructorDao">
+    
+    <sql id="table_field">
+      id, name, sex, auditState, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnit, certificatePic, channel, openId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.Instructor">
+        insert into instructor (
+    <trim suffixOverrides=",">
+        <if test="name != null">
+            name,
+        </if>
+        <if test="sex != null">
+            sex,
+        </if>
+        <if test="auditState != null">
+            auditState,
+        </if>
+        <if test="auditIdea != null">
+            auditIdea,
+        </if>
+        <if test="cardNo != null">
+            cardNo,
+        </if>
+        <if test="phone != null">
+            phone,
+        </if>
+        <if test="workUnit != null">
+            workUnit,
+        </if>
+        <if test="areaCode != null">
+            areaCode,
+        </if>
+        <if test="areaName != null">
+            areaName,
+        </if>
+        <if test="guideProject != null">
+            guideProject,
+        </if>
+        <if test="guideStation != null">
+            guideStation,
+        </if>
+        <if test="certificateNo != null">
+            certificateNo,
+        </if>
+        <if test="certificateGrade != null">
+            certificateGrade,
+        </if>
+        <if test="openingDate != null">
+            openingDate,
+        </if>
+        <if test="auditUnit != null">
+            auditUnit,
+        </if>
+        <if test="certificatePic != null">
+            certificatePic,
+        </if>
+        <if test="channel != null">
+            channel,
+        </if>
+        <if test="openId != null">
+            openId,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="name != null">
+            #{name},
+        </if>
+        <if test="sex != null">
+            #{sex},
+        </if>
+        <if test="auditState != null">
+            #{auditState},
+        </if>
+        <if test="auditIdea != null">
+            #{auditIdea},
+        </if>
+        <if test="cardNo != null">
+            #{cardNo},
+        </if>
+        <if test="phone != null">
+            #{phone},
+        </if>
+        <if test="workUnit != null">
+            #{workUnit},
+        </if>
+        <if test="areaCode != null">
+            #{areaCode},
+        </if>
+        <if test="areaName != null">
+            #{areaName},
+        </if>
+        <if test="guideProject != null">
+            #{guideProject},
+        </if>
+        <if test="guideStation != null">
+            #{guideStation},
+        </if>
+        <if test="certificateNo != null">
+            #{certificateNo},
+        </if>
+        <if test="certificateGrade != null">
+            #{certificateGrade},
+        </if>
+        <if test="openingDate != null">
+            #{openingDate},
+        </if>
+        <if test="auditUnit != null">
+            #{auditUnit},
+        </if>
+        <if test="certificatePic != null">
+            #{certificatePic},
+        </if>
+        <if test="channel != null">
+            #{channel},
+        </if>
+        <if test="openId != null">
+            #{openId},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from instructor where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.Instructor">
+        update instructor
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="auditState != null">
+                auditState = #{auditState},
+            </if>
+            <if test="auditIdea != null">
+                auditIdea = #{auditIdea},
+            </if>
+            <if test="cardNo != null">
+                cardNo = #{cardNo},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="workUnit != null">
+                workUnit = #{workUnit},
+            </if>
+            <if test="areaCode != null">
+                areaCode = #{areaCode},
+            </if>
+            <if test="areaName != null">
+                areaName = #{areaName},
+            </if>
+            <if test="guideProject != null">
+                guideProject = #{guideProject},
+            </if>
+            <if test="guideStation != null">
+                guideStation = #{guideStation},
+            </if>
+            <if test="certificateNo != null">
+                certificateNo = #{certificateNo},
+            </if>
+            <if test="certificateGrade != null">
+                certificateGrade = #{certificateGrade},
+            </if>
+            <if test="openingDate != null">
+                openingDate = #{openingDate},
+            </if>
+            <if test="auditUnit != null">
+                auditUnit = #{auditUnit},
+            </if>
+            <if test="certificatePic != null">
+                certificatePic = #{certificatePic},
+            </if>
+            <if test="channel != null">
+                channel = #{channel},
+            </if>
+            <if test="openId != null">
+                openId = #{openId},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.Instructor">
+        select <include refid="table_field"/> from instructor where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.Instructor">
+        select <include refid="table_field"/> from instructor
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="auditState != null">
+                and auditState = #{auditState}
+            </if>
+            <if test="auditIdea != null">
+                and auditIdea = #{auditIdea}
+            </if>
+            <if test="cardNo != null">
+                and cardNo = #{cardNo}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="workUnit != null">
+                and workUnit = #{workUnit}
+            </if>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="guideProject != null">
+                and guideProject = #{guideProject}
+            </if>
+            <if test="guideStation != null">
+                and guideStation = #{guideStation}
+            </if>
+            <if test="certificateNo != null">
+                and certificateNo = #{certificateNo}
+            </if>
+            <if test="certificateGrade != null">
+                and certificateGrade = #{certificateGrade}
+            </if>
+            <if test="openingDate != null">
+                and openingDate = #{openingDate}
+            </if>
+            <if test="auditUnit != null">
+                and auditUnit = #{auditUnit}
+            </if>
+            <if test="certificatePic != null">
+                and certificatePic = #{certificatePic}
+            </if>
+            <if test="channel != null">
+                and channel = #{channel}
+            </if>
+            <if test="openId != null">
+                and openId = #{openId}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!--指导员列表查询-->
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.InstructorQueryVo" resultType="com.herocheer.instructor.domain.entity.Instructor">
+        select <include refid="table_field"/> from instructor
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="auditState != null">
+                and auditState = #{auditState}
+            </if>
+            <if test="phone != null">
+                and phone = like concat('%',#{phone},'%')
+            </if>
+            <if test="areaCode != null">
+                and areaCode like concat(#{areaCode},'%')
+            </if>
+            <if test="certificateGrade != null">
+                and certificateGrade = #{certificateGrade}
+            </if>
+            <if test="beginTime != null">
+                and createdTime >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and createdTime &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.NewsNoticeDao">
+    
+    <sql id="table_field">
+      id, type, pic, title, pubilcTime, auditState, content, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.NewsNotice">
+        insert into news_notice (
+    <trim suffixOverrides=",">
+        <if test="type != null">
+            type,
+        </if>
+        <if test="pic != null">
+            pic,
+        </if>
+        <if test="title != null">
+            title,
+        </if>
+        <if test="pubilcTime != null">
+            pubilcTime,
+        </if>
+        <if test="auditState != null">
+            auditState,
+        </if>
+        <if test="content != null">
+            content,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="type != null">
+            #{type},
+        </if>
+        <if test="pic != null">
+            #{pic},
+        </if>
+        <if test="title != null">
+            #{title},
+        </if>
+        <if test="pubilcTime != null">
+            #{pubilcTime},
+        </if>
+        <if test="auditState != null">
+            #{auditState},
+        </if>
+        <if test="content != null">
+            #{content},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from news_notice where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.NewsNotice">
+        update news_notice
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="pic != null">
+                pic = #{pic},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="pubilcTime != null">
+                pubilcTime = #{pubilcTime},
+            </if>
+            <if test="auditState != null">
+                auditState = #{auditState},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.NewsNotice">
+        select <include refid="table_field"/> from news_notice where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.NewsNotice">
+        select <include refid="table_field"/> from news_notice
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="pic != null">
+                and pic = #{pic}
+            </if>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="pubilcTime != null">
+                and pubilcTime = #{pubilcTime}
+            </if>
+            <if test="auditState != null">
+                and auditState = #{auditState}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+
+    <!--新闻活动查询列表-->
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.NewsQueryVo" resultType="com.herocheer.instructor.domain.entity.NewsNotice">
+        select <include refid="table_field"/> from news_notice
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="title != null">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="auditState != null">
+                <choose>
+                    <when test="auditState == 4">
+                        and auditState = 2
+                        and pubilcTime &lt;= UNIX_TIMESTAMP(NOW())*1000
+                    </when>
+                    <otherwise>
+                        and auditState = #{auditState}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="createdBy != null">
+                and createdBy like concat('%',#{createdBy},'%')
+            </if>
+            <if test="beginTime != null">
+                and createdTime >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and createdTime &lt;= #{endTime}
+            </if>
+
+        </where>
+    </select>
+</mapper>

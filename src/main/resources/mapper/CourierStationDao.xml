@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.CourierStationDao">
+    
+    <sql id="table_field">
+      id, areaCode, areaName, name, address, longitude, latitude, gradeName, scale, userId, userName, pics, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.CourierStation">
+        insert into courier_station (
+    <trim suffixOverrides=",">
+        <if test="areaCode != null">
+            areaCode,
+        </if>
+        <if test="areaName != null">
+            areaName,
+        </if>
+        <if test="name != null">
+            name,
+        </if>
+        <if test="address != null">
+            address,
+        </if>
+        <if test="longitude != null">
+            longitude,
+        </if>
+        <if test="latitude != null">
+            latitude,
+        </if>
+        <if test="gradeName != null">
+            gradeName,
+        </if>
+        <if test="scale != null">
+            scale,
+        </if>
+        <if test="userId != null">
+            userId,
+        </if>
+        <if test="userName != null">
+            userName,
+        </if>
+        <if test="pics != null">
+            pics,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="areaCode != null">
+            #{areaCode},
+        </if>
+        <if test="areaName != null">
+            #{areaName},
+        </if>
+        <if test="name != null">
+            #{name},
+        </if>
+        <if test="address != null">
+            #{address},
+        </if>
+        <if test="longitude != null">
+            #{longitude},
+        </if>
+        <if test="latitude != null">
+            #{latitude},
+        </if>
+        <if test="gradeName != null">
+            #{gradeName},
+        </if>
+        <if test="scale != null">
+            #{scale},
+        </if>
+        <if test="userId != null">
+            #{userId},
+        </if>
+        <if test="userName != null">
+            #{userName},
+        </if>
+        <if test="pics != null">
+            #{pics},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from courier_station where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.CourierStation">
+        update courier_station
+        <set>
+            <if test="areaCode != null">
+                areaCode = #{areaCode},
+            </if>
+            <if test="areaName != null">
+                areaName = #{areaName},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="gradeName != null">
+                gradeName = #{gradeName},
+            </if>
+            <if test="scale != null">
+                scale = #{scale},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="userName != null">
+                userName = #{userName},
+            </if>
+            <if test="pics != null">
+                pics = #{pics},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourierStation">
+        select <include refid="table_field"/> from courier_station where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.CourierStation">
+        select <include refid="table_field"/> from courier_station
+        <where>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="gradeName != null">
+                and gradeName = #{gradeName}
+            </if>
+            <if test="scale != null">
+                and scale = #{scale}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="userName != null">
+                and userName = #{userName}
+            </if>
+            <if test="pics != null">
+                and pics = #{pics}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>
