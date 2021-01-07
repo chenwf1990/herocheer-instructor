@@ -1,9 +1,12 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
-import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.NewsNotice;
+import com.herocheer.instructor.domain.entity.NewsNoticeLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+
+import java.util.List;
 
 /**
  * @author chenwf
@@ -20,4 +23,41 @@ public interface NewsNoticeService extends BaseService<NewsNotice,Long> {
      * @return
      */
     Page<NewsNotice> queryPageList(InstructorQueryVo instructorQueryVo);
+
+    /**
+     * @author chenwf
+     * @desc  更新新闻活动
+     * @date 2021-01-04 17:26:18
+     * @param newsNotice
+     * @return
+     */
+    long updateNewsNotice(NewsNotice newsNotice);
+
+    /**
+     * @author chenwf
+     * @desc  新闻活动审批
+     * @date 2021-01-04 17:26:18
+     * @param id
+     * @param auditState
+     * @return
+     */
+    long approval(Long id, int auditState);
+
+    /**
+     * @author chenwf
+     * @desc  添加新闻活动
+     * @date 2021-01-04 17:26:18
+     * @param newsNotice
+     * @return
+     */
+    long addNews(NewsNotice newsNotice);
+
+    /**
+     * @author chenwf
+     * @desc  新闻活动审批日志列表
+     * @date 2021-01-04 17:26:18
+     * @param newsId
+     * @return
+     */
+    List<NewsNoticeLog> getApprovalLog(Long newsId);
 }

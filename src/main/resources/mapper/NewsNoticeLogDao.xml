@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.NewsNoticeLogDao">
+    
+    <sql id="table_field">
+      id, newsNoticeId, auditState, auditIdea, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.NewsNoticeLog">
+        insert into news_notice_log (
+    <trim suffixOverrides=",">
+        <if test="newsNoticeId != null">
+            newsNoticeId,
+        </if>
+        <if test="auditState != null">
+            auditState,
+        </if>
+        <if test="auditIdea != null">
+            auditIdea,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="newsNoticeId != null">
+            #{newsNoticeId},
+        </if>
+        <if test="auditState != null">
+            #{auditState},
+        </if>
+        <if test="auditIdea != null">
+            #{auditIdea},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from news_notice_log where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.NewsNoticeLog">
+        update news_notice_log
+        <set>
+            <if test="newsNoticeId != null">
+                newsNoticeId = #{newsNoticeId},
+            </if>
+            <if test="auditState != null">
+                auditState = #{auditState},
+            </if>
+            <if test="auditIdea != null">
+                auditIdea = #{auditIdea},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.NewsNoticeLog">
+        select <include refid="table_field"/> from news_notice_log where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.NewsNoticeLog">
+        select <include refid="table_field"/> from news_notice_log
+        <where>
+            <if test="newsNoticeId != null">
+                and newsNoticeId = #{newsNoticeId}
+            </if>
+            <if test="auditState != null">
+                and auditState = #{auditState}
+            </if>
+            <if test="auditIdea != null">
+                and auditIdea = #{auditIdea}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

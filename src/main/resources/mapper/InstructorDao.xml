@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.InstructorDao">
     
     <sql id="table_field">
-      id, name, sex, auditState, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnit, certificatePic, channel, openId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, name, sex, auditState, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -52,8 +52,14 @@
         <if test="openingDate != null">
             openingDate,
         </if>
-        <if test="auditUnit != null">
-            auditUnit,
+        <if test="auditUnitType != null">
+            auditUnitType,
+        </if>
+        <if test="auditUnitName != null">
+            auditUnitName,
+        </if>
+        <if test="otherAuditUnitName != null">
+            otherAuditUnitName,
         </if>
         <if test="certificatePic != null">
             certificatePic,
@@ -113,8 +119,14 @@
         <if test="openingDate != null">
             #{openingDate},
         </if>
-        <if test="auditUnit != null">
-            #{auditUnit},
+        <if test="auditUnitType != null">
+            #{auditUnitType},
+        </if>
+        <if test="auditUnitName != null">
+            #{auditUnitName},
+        </if>
+        <if test="otherAuditUnitName != null">
+            #{otherAuditUnitName},
         </if>
         <if test="certificatePic != null">
             #{certificatePic},
@@ -184,8 +196,14 @@
             <if test="openingDate != null">
                 openingDate = #{openingDate},
             </if>
-            <if test="auditUnit != null">
-                auditUnit = #{auditUnit},
+            <if test="auditUnitType != null">
+                auditUnitType = #{auditUnitType},
+            </if>
+            <if test="auditUnitName != null">
+                auditUnitName = #{auditUnitName},
+            </if>
+            <if test="otherAuditUnitName != null">
+                otherAuditUnitName = #{otherAuditUnitName},
             </if>
             <if test="certificatePic != null">
                 certificatePic = #{certificatePic},
@@ -257,8 +275,14 @@
             <if test="openingDate != null">
                 and openingDate = #{openingDate}
             </if>
-            <if test="auditUnit != null">
-                and auditUnit = #{auditUnit}
+            <if test="auditUnitType != null">
+                and auditUnitType = #{auditUnitType}
+            </if>
+            <if test="auditUnitName != null">
+                and auditUnitName = #{auditUnitName}
+            </if>
+            <if test="otherAuditUnitName != null">
+                and otherAuditUnitName = #{otherAuditUnitName}
             </if>
             <if test="certificatePic != null">
                 and certificatePic = #{certificatePic}
@@ -275,7 +299,6 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
-
     <!--指导员列表查询-->
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.InstructorQueryVo" resultType="com.herocheer.instructor.domain.entity.Instructor">
         select <include refid="table_field"/> from instructor
@@ -302,5 +325,6 @@
                 and createdTime &lt;= #{endTime}
             </if>
         </where>
+        order by id desc;
     </select>
 </mapper>

@@ -50,4 +50,13 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * @param instructor
      */
     void addInstructor(Instructor instructor);
+
+    /**
+     * @author chenwf
+     * @desc  编剧指导员
+     * @date 2021-01-04 17:26:18
+     * @param instructor
+     * @return
+     */
+    long updateInstructor(Instructor instructor);
 }

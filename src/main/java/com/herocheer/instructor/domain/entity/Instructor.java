@@ -1,6 +1,7 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @company 厦门熙重电子科技有限公司
  */
 @Data
+@ApiModel("指导员")
 public class Instructor extends BaseEntity {
     @ApiModelProperty("姓名")   
     private String name;
@@ -40,8 +42,12 @@ public class Instructor extends BaseEntity {
     private String certificateGrade;
     @ApiModelProperty("发证日期")   
     private Long openingDate;
-    @ApiModelProperty("审批单位")   
-    private String auditUnit;
+    @ApiModelProperty("审批单位类型 0其他 1湖里区文旅局2思明区文旅局3集美区文旅局4海沧文旅局5翔安文旅局6同安文旅局")   
+    private Integer auditUnitType;
+    @ApiModelProperty("审批单位名称")   
+    private String auditUnitName;
+    @ApiModelProperty("其他审批单位名称")   
+    private String otherAuditUnitName;
     @ApiModelProperty("证书图片 （最多3张，多张逗号隔开）")   
     private String certificatePic;
     @ApiModelProperty("渠道0pc 1H5 2小程序 3ios 4Android")   

@@ -102,5 +102,25 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             instructor.setAuditState(InstructorAuditStateEnums.to_pass.getState());
         }
         this.dao.insert(instructor);
+        instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"新增");
+    }
+
+    /**
+     * @param instructor
+     * @return
+     * @author chenwf
+     * @desc 编剧指导员
+     * @date 2021-01-04 17:26:18
+     */
+    @Override
+    public long updateInstructor(Instructor instructor) {
+        Instructor model = this.dao.get(instructor.getId());
+        if(model.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
+            throw new CommonException("审核已通过");
+        }
+        instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+        long count = this.dao.update(instructor);
+        instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"修改");
+        return count;
     }
 }

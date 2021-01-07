@@ -16,7 +16,7 @@ public class InstructorQueryVo implements Serializable {
     @ApiModelProperty("审核状态 0待审核1审核通过2审核驳回")
     private int auditState;
     @ApiModelProperty("常驻区域")
-    private Long areaCode;
+    private String areaCode;
     @ApiModelProperty("姓名(支持前后模糊查询)")
     private String name;
     @ApiModelProperty("手机号码(支持前后模糊查询)")

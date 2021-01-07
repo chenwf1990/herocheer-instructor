@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.CourierStationDao">
     
     <sql id="table_field">
-      id, areaCode, areaName, name, address, longitude, latitude, gradeName, scale, userId, userName, pics, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, areaCode, areaName, name, address, longitude, latitude, gradeName, scale, userId, userName, pics, openBeginTime, openEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -42,6 +42,12 @@
         </if>
         <if test="pics != null">
             pics,
+        </if>
+        <if test="openBeginTime != null">
+            openBeginTime,
+        </if>
+        <if test="openEndTime != null">
+            openEndTime,
         </if>
         <if test="remarks != null">
             remarks,
@@ -82,6 +88,12 @@
         </if>
         <if test="pics != null">
             #{pics},
+        </if>
+        <if test="openBeginTime != null">
+            #{openBeginTime},
+        </if>
+        <if test="openEndTime != null">
+            #{openEndTime},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -132,6 +144,12 @@
             </if>
             <if test="pics != null">
                 pics = #{pics},
+            </if>
+            <if test="openBeginTime != null">
+                openBeginTime = #{openBeginTime},
+            </if>
+            <if test="openEndTime != null">
+                openEndTime = #{openEndTime},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -185,10 +203,39 @@
             <if test="pics != null">
                 and pics = #{pics}
             </if>
+            <if test="openBeginTime != null">
+                and openBeginTime = #{openBeginTime}
+            </if>
+            <if test="openEndTime != null">
+                and openEndTime = #{openEndTime}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
+    </select>
+
+    <!--驿站列表分页查询-->
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.CourierStationQueryVo" resultType="com.herocheer.instructor.domain.entity.CourierStation">
+        select <include refid="table_field"/> from courier_station
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="gradeName != null">
+                and gradeName = #{gradeName}
+            </if>
+            <if test="areaCode != null">
+                and areaCode like concat(#{areaCode},'%')
+            </if>
+            <if test="beginTime != null">
+                and createdTime >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and createdTime &lt;= #{endTime}
+            </if>
+        </where>
+        order by id desc;
     </select>
 </mapper>

@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.NewsNoticeDao">
     
     <sql id="table_field">
-      id, type, pic, title, pubilcTime, auditState, content, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, type, pic, title, auditState, auditIdea, content, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -19,11 +19,11 @@
         <if test="title != null">
             title,
         </if>
-        <if test="pubilcTime != null">
-            pubilcTime,
-        </if>
         <if test="auditState != null">
             auditState,
+        </if>
+        <if test="auditIdea != null">
+            auditIdea,
         </if>
         <if test="content != null">
             content,
@@ -44,11 +44,11 @@
         <if test="title != null">
             #{title},
         </if>
-        <if test="pubilcTime != null">
-            #{pubilcTime},
-        </if>
         <if test="auditState != null">
             #{auditState},
+        </if>
+        <if test="auditIdea != null">
+            #{auditIdea},
         </if>
         <if test="content != null">
             #{content},
@@ -79,11 +79,11 @@
             <if test="title != null">
                 title = #{title},
             </if>
-            <if test="pubilcTime != null">
-                pubilcTime = #{pubilcTime},
-            </if>
             <if test="auditState != null">
                 auditState = #{auditState},
+            </if>
+            <if test="auditIdea != null">
+                auditIdea = #{auditIdea},
             </if>
             <if test="content != null">
                 content = #{content},
@@ -116,11 +116,11 @@
             <if test="title != null">
                 and title = #{title}
             </if>
-            <if test="pubilcTime != null">
-                and pubilcTime = #{pubilcTime}
-            </if>
             <if test="auditState != null">
                 and auditState = #{auditState}
+            </if>
+            <if test="auditIdea != null">
+                and auditIdea = #{auditIdea}
             </if>
             <if test="content != null">
                 and content = #{content}
@@ -131,7 +131,6 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
-
 
     <!--新闻活动查询列表-->
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.NewsQueryVo" resultType="com.herocheer.instructor.domain.entity.NewsNotice">
@@ -163,7 +162,7 @@
             <if test="endTime != null">
                 and createdTime &lt;= #{endTime}
             </if>
-
         </where>
+        order by id desc;
     </select>
 </mapper>

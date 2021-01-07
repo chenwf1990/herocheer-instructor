@@ -14,13 +14,17 @@ import java.io.Serializable;
 @Data
 public class CourierStationQueryVo implements Serializable {
     @ApiModelProperty("常驻区域")
-    private Long areaCode;
-    @ApiModelProperty("证书等级")
-    private int grade;
-    @ApiModelProperty("指导项目(支持前后模糊查询)")
-    private String guideProject;
+    private String areaCode;
+    @ApiModelProperty("驿站等级")
+    private String gradeName;
+    @ApiModelProperty("驿站名称(支持前后模糊查询)")
+    private String name;
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;
     @ApiModelProperty("创建时间(结束时间)")
     private Long endTime;
+    @ApiModelProperty("页码")
+    private int pageNo;
+    @ApiModelProperty("页数")
+    private int pageSize;
 }

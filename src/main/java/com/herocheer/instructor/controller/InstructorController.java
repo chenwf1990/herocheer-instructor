@@ -1,20 +1,20 @@
 package com.herocheer.instructor.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.web.annotation.AllowAnonymous;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.apache.ibatis.annotations.Delete;
-import org.springframework.web.bind.annotation.*;
 import com.herocheer.web.base.BaseController;
-import io.swagger.annotations.Api;
+import io.swagger.annotations.*;
+import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -29,19 +29,23 @@ import java.util.List;
 public class InstructorController extends BaseController{
     @Resource
     private InstructorService instructorService;
+    @Resource
+    private RedisClient redisClient;
 
     @PostMapping("/queryPageList")
     @ApiOperation("指导员列表查询")
-    public ResponseResult queryPageList(@RequestBody InstructorQueryVo instructorQueryVo){
+    @AllowAnonymous
+    public ResponseResult<Page<Instructor>> queryPageList(@RequestBody InstructorQueryVo instructorQueryVo){
         Page<Instructor> page = instructorService.queryPageList(instructorQueryVo);
-        return ResponseResult.ok().setData(page);
+        return ResponseResult.ok(page);
     }
 
     @GetMapping("/get")
     @ApiOperation("根据id查询指导员")
-    public ResponseResult get(@ApiParam("指导员id") @RequestParam Long id){
+    @AllowAnonymous
+    public ResponseResult<Instructor> get(@ApiParam("指导员id") @RequestParam Long id){
 
-        return ResponseResult.ok().setData(instructorService.get(id));
+        return ResponseResult.ok(instructorService.get(id));
     }
 
     @PostMapping("/add")
@@ -54,7 +58,7 @@ public class InstructorController extends BaseController{
     @PostMapping("/update")
     @ApiOperation("编辑指导员")
     public ResponseResult update(@RequestBody Instructor instructor){
-        return ResponseResult.isSuccess(instructorService.update(instructor));
+        return ResponseResult.isSuccess(instructorService.updateInstructor(instructor));
     }
 
 
@@ -76,9 +80,26 @@ public class InstructorController extends BaseController{
 
     @GetMapping("/getApprovalLog")
     @ApiOperation("指导员审批日志列表")
-    public ResponseResult getApprovalLog(@ApiParam("指导员id") @RequestParam Long instructorId){
+    public ResponseResult<List<InstructorLog>> getApprovalLog(@ApiParam("指导员id") @RequestParam Long instructorId){
         List<InstructorLog> logs = instructorService.getApprovalLog(instructorId);
-        return ResponseResult.ok().setData(logs);
+        return ResponseResult.ok(logs);
+    }
+
+
+    @PostMapping("/loginTest")
+    @ApiOperation("模拟测试登录")
+    @AllowAnonymous
+    public ResponseResult loginTest(@ApiParam("key值") @RequestParam String token){
+        if(StringUtils.isEmpty(token)){
+            token = "chenweifeng";
+        }
+        JSONObject json = new JSONObject();
+        json.put("id",1);
+        json.put("userName","chenweifeng");
+        json.put("userType",1);
+        json.put("phone","13655080001");
+        redisClient.set(token,json.toJSONString());
+        return ResponseResult.ok().setMessage(token);
     }
 
 }

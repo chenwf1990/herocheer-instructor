@@ -34,6 +34,10 @@ public class CourierStation extends BaseEntity {
     private String userName;
     @ApiModelProperty("驿站照片 (最多3张，多个逗号隔开)")   
     private String pics;
+    @ApiModelProperty("驿站开放开始时间段（时分）")   
+    private String openBeginTime;
+    @ApiModelProperty("驿站开放结束时间段（时分）")   
+    private String openEndTime;
     @ApiModelProperty("备注")   
     private String remarks;
 

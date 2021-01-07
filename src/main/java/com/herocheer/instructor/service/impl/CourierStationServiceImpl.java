@@ -1,11 +1,15 @@
 package com.herocheer.instructor.service.impl;
 
+import com.herocheer.common.base.Page.Page;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.dao.CourierStationDao;
+import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
 import com.herocheer.instructor.service.CourierStationService;
 import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author chenwf
@@ -16,5 +20,31 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao, CourierStation,Long> implements CourierStationService {
-    
+
+    /**
+     * @param courierStation
+     * @return
+     * @author chenwf
+     * @desc 新增驿站
+     * @date 2021-01-07 17:26:18
+     */
+    @Override
+    public Long addCourierStation(CourierStation courierStation) {
+        return this.dao.insert(courierStation);
+    }
+
+    /**
+     * @param courierStationQueryVo
+     * @return
+     * @author chenwf
+     * @desc 驿站列表查询
+     * @date 2021-01-07 17:26:18
+     */
+    @Override
+    public Page<CourierStation> queryPageList(CourierStationQueryVo courierStationQueryVo) {
+        Page page = Page.startPage(courierStationQueryVo.getPageNo(),courierStationQueryVo.getPageSize());
+        List<CourierStation> courierStations = this.dao.queryPageList(courierStationQueryVo);
+        page.setDataList(courierStations);
+        return page;
+    }
 }
