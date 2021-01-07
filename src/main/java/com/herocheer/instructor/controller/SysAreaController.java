@@ -25,8 +25,8 @@ import java.util.List;
  * @company 厦门熙重电子科技有限公司
  */
 @RestController
-@RequestMapping("")
-@Api(tags = "")
+@RequestMapping("/area")
+@Api(tags = "区域管理")
 public class SysAreaController extends BaseController{
     @Resource
     private SysAreaService sysAreaService;
