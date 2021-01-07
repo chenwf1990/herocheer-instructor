@@ -15,6 +15,7 @@ import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -50,8 +51,8 @@ public class InstructorController extends BaseController{
 
     @PostMapping("/add")
     @ApiOperation("新增指导员")
-    public ResponseResult add(@RequestBody Instructor instructor){
-        instructorService.addInstructor(instructor);
+    public ResponseResult add(@RequestBody Instructor instructor, HttpServletRequest request){
+        instructorService.addInstructor(instructor,getCurUserId(request));
         return ResponseResult.ok();
     }
 
@@ -93,12 +94,13 @@ public class InstructorController extends BaseController{
         if(StringUtils.isEmpty(token)){
             token = "chenweifeng";
         }
-        JSONObject json = new JSONObject();
-        json.put("id",1);
-        json.put("userName","chenweifeng");
-        json.put("userType",1);
-        json.put("phone","13655080001");
-        redisClient.set(token,json.toJSONString());
+//        JSONObject json = new JSONObject();
+//        json.put("id",1);
+//        json.put("userName","chenweifeng");
+//        json.put("userType",1);
+//        json.put("phone","13655080001");
+//        redisClient.set(token,json.toJSONString());
+        instructorService.loginTest(token);
         return ResponseResult.ok().setMessage(token);
     }
 

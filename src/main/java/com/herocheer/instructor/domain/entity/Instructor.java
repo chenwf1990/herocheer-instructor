@@ -1,7 +1,6 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,7 +11,6 @@ import io.swagger.annotations.ApiModelProperty;
  * @company 厦门熙重电子科技有限公司
  */
 @Data
-@ApiModel("指导员")
 public class Instructor extends BaseEntity {
     @ApiModelProperty("姓名")   
     private String name;
@@ -54,6 +52,8 @@ public class Instructor extends BaseEntity {
     private Integer channel;
     @ApiModelProperty("微信openId")   
     private String openId;
+    @ApiModelProperty("用户id")   
+    private Long userId;
     @ApiModelProperty("备注")   
     private String remarks;
 

@@ -5,6 +5,7 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+import com.herocheer.instructor.domain.vo.NewsQueryVo;
 import com.herocheer.instructor.service.NewsNoticeService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -30,8 +31,8 @@ public class NewsNoticeController extends BaseController{
 
     @PostMapping("/queryPageList")
     @ApiOperation("指导员列表查询")
-    public ResponseResult<Page<NewsNotice>> queryPageList(@RequestBody InstructorQueryVo instructorQueryVo){
-        Page<NewsNotice> page = newsNoticeService.queryPageList(instructorQueryVo);
+    public ResponseResult<Page<NewsNotice>> queryPageList(@RequestBody NewsQueryVo newsQueryVo){
+        Page<NewsNotice> page = newsNoticeService.queryPageList(newsQueryVo);
         return ResponseResult.ok().setData(page);
     }
 

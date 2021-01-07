@@ -48,8 +48,9 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * @desc  添加指导员
      * @date 2021-01-04 17:26:18
      * @param instructor
+     * @param userId
      */
-    void addInstructor(Instructor instructor);
+    void addInstructor(Instructor instructor, Long userId);
 
     /**
      * @author chenwf
@@ -59,4 +60,6 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * @return
      */
     long updateInstructor(Instructor instructor);
+
+    void loginTest(String token);
 }

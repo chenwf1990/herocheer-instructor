@@ -236,6 +236,6 @@
                 and createdTime &lt;= #{endTime}
             </if>
         </where>
-        order by id desc;
+        order by id desc
     </select>
 </mapper>

@@ -4,7 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
-import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+import com.herocheer.instructor.domain.vo.NewsQueryVo;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ public interface NewsNoticeService extends BaseService<NewsNotice,Long> {
      * @author chenwf
      * @desc  新闻活动查询列表
      * @date 2021-01-04 17:26:18
-     * @param instructorQueryVo
+     * @param newsQueryVo
      * @return
      */
-    Page<NewsNotice> queryPageList(InstructorQueryVo instructorQueryVo);
+    Page<NewsNotice> queryPageList(NewsQueryVo newsQueryVo);
 
     /**
      * @author chenwf

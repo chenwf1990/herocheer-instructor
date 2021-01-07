@@ -1,5 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.InstructorDao;
@@ -31,6 +33,8 @@ import java.util.Map;
 public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instructor,Long> implements InstructorService {
     @Resource
     private InstructorLogService instructorLogService;
+    @Resource
+    private RedisClient redisClient;
 
     /**
      * @param instructorQueryVo
@@ -72,6 +76,9 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         this.dao.update(update);
         //增加审批日志
         instructorLogService.addLog(id,auditState,auditIdea,null);
+        if(auditState == InstructorAuditStateEnums.to_pass.getState()){
+            //TODO chenwf 更新用户类型
+        }
     }
 
     /**
@@ -90,16 +97,19 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
 
     /**
      * @param instructor
+     * @param userId
      * @author chenwf
      * @desc 添加指导员
      * @date 2021-01-04 17:26:18
      */
     @Override
-    public void addInstructor(Instructor instructor) {
+    public void addInstructor(Instructor instructor, Long userId) {
         int channel = HeaderParam.getInstance().getClient();
         instructor.setChannel(channel);
         if(ClientEnums.pc.getType() == channel){
             instructor.setAuditState(InstructorAuditStateEnums.to_pass.getState());
+        }else{
+            instructor.setUserId(userId);
         }
         this.dao.insert(instructor);
         instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"新增");
@@ -122,5 +132,15 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         long count = this.dao.update(instructor);
         instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"修改");
         return count;
+    }
+
+    @Override
+    public void loginTest(String token) {
+        JSONObject json = new JSONObject();
+        json.put("id",1);
+        json.put("userName","chenweifeng");
+        json.put("userType",1);
+        json.put("phone","13655080001");
+        redisClient.set(token,json.toJSONString());
     }
 }

@@ -5,7 +5,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.NewsNoticeDao;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
-import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+import com.herocheer.instructor.domain.vo.NewsQueryVo;
 import com.herocheer.instructor.enums.InstructorAuditStateEnums;
 import com.herocheer.instructor.enums.NewsAuditStateEnums;
 import com.herocheer.instructor.service.NewsNoticeLogService;
@@ -32,16 +32,16 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     private NewsNoticeLogService newsNoticeLogService;
 
     /**
-     * @param instructorQueryVo
+     * @param newsQueryVo
      * @return
      * @author chenwf
      * @desc 新闻活动查询列表
      * @date 2021-01-04 17:26:18
      */
     @Override
-    public Page<NewsNotice> queryPageList(InstructorQueryVo instructorQueryVo) {
-        Page page = Page.startPage(instructorQueryVo.getPageNo(),instructorQueryVo.getPageSize());
-        List<NewsNotice> newsNotices = this.dao.queryPageList(instructorQueryVo);
+    public Page<NewsNotice> queryPageList(NewsQueryVo newsQueryVo) {
+        Page page = Page.startPage(newsQueryVo.getPageNo(),newsQueryVo.getPageSize());
+        List<NewsNotice> newsNotices = this.dao.queryPageList(newsQueryVo);
         page.setDataList(newsNotices);
         return page;
     }

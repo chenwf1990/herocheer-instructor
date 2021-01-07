@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.InstructorDao">
     
     <sql id="table_field">
-      id, name, sex, auditState, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, name, sex, auditState, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -69,6 +69,9 @@
         </if>
         <if test="openId != null">
             openId,
+        </if>
+        <if test="userId != null">
+            userId,
         </if>
         <if test="remarks != null">
             remarks,
@@ -136,6 +139,9 @@
         </if>
         <if test="openId != null">
             #{openId},
+        </if>
+        <if test="userId != null">
+            #{userId},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -213,6 +219,9 @@
             </if>
             <if test="openId != null">
                 openId = #{openId},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -293,12 +302,16 @@
             <if test="openId != null">
                 and openId = #{openId}
             </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
     <!--指导员列表查询-->
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.InstructorQueryVo" resultType="com.herocheer.instructor.domain.entity.Instructor">
         select <include refid="table_field"/> from instructor
@@ -325,6 +338,6 @@
                 and createdTime &lt;= #{endTime}
             </if>
         </where>
-        order by id desc;
+        order by id desc
     </select>
 </mapper>

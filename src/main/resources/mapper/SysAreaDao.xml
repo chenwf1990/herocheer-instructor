@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.SysAreaDao">
+    
+    <sql id="table_field">
+      id,pid, areaName, areaCode, chinaCode, level, remark, createdId, createdBy, createdTime, updaterId, updaterBy, updaterTime
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.SysArea">
+        insert into sys_area (
+    <trim suffixOverrides=",">
+        <if test="pid != null">
+            pid,
+        </if>
+        <if test="areaName != null">
+            areaName,
+        </if>
+        <if test="areaCode != null">
+            areaCode,
+        </if>
+        <if test="chinaCode != null">
+            chinaCode,
+        </if>
+        <if test="level != null">
+            level,
+        </if>
+        <if test="remark != null">
+            remark,
+        </if>
+        <if test="updaterId != null">
+            updaterId,
+        </if>
+        <if test="updaterBy != null">
+            updaterBy,
+        </if>
+        <if test="updaterTime != null">
+            updaterTime,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="pid != null">
+            #{pid},
+        </if>
+        <if test="areaName != null">
+            #{areaName},
+        </if>
+        <if test="areaCode != null">
+            #{areaCode},
+        </if>
+        <if test="chinaCode != null">
+            #{chinaCode},
+        </if>
+        <if test="level != null">
+            #{level},
+        </if>
+        <if test="remark != null">
+            #{remark},
+        </if>
+        <if test="updaterId != null">
+            #{updaterId},
+        </if>
+        <if test="updaterBy != null">
+            #{updaterBy},
+        </if>
+        <if test="updaterTime != null">
+            #{updaterTime},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from sys_area where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.SysArea">
+        update sys_area
+        <set>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="areaName != null">
+                areaName = #{areaName},
+            </if>
+            <if test="areaCode != null">
+                areaCode = #{areaCode},
+            </if>
+            <if test="chinaCode != null">
+                chinaCode = #{chinaCode},
+            </if>
+            <if test="level != null">
+                level = #{level},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="updaterId != null">
+                updaterId = #{updaterId},
+            </if>
+            <if test="updaterBy != null">
+                updaterBy = #{updaterBy},
+            </if>
+            <if test="updaterTime != null">
+                updaterTime = #{updaterTime},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysArea">
+        select <include refid="table_field"/> from sys_area where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysArea">
+        select <include refid="table_field"/> from sys_area
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="chinaCode != null">
+                and chinaCode = #{chinaCode}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="updaterId != null">
+                and updaterId = #{updaterId}
+            </if>
+            <if test="updaterBy != null">
+                and updaterBy = #{updaterBy}
+            </if>
+            <if test="updaterTime != null">
+                and updaterTime = #{updaterTime}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.AreaQueryVo" resultType="com.herocheer.instructor.domain.entity.SysArea">
+        select <include refid="table_field"/> from sys_area
+        <where>
+            <if test="areaName != null">
+                and areaName like concat('%',#{areaName},'%')
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>
