@@ -19,7 +19,8 @@ public enum NewsAuditStateEnums {
     private String name;
 
     NewsAuditStateEnums(int state, String name) {
-
+        this.state = state;
+        this.name = name;
     }
 
 

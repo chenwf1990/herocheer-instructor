@@ -337,6 +337,12 @@
             <if test="endTime != null">
                 and createdTime &lt;= #{endTime}
             </if>
+            <if test="auditStates != null and auditStates.size > 0">
+                and auditState in
+                <foreach item="auditState" index="index" collection="auditStates" open="(" separator="," close=")">
+                    #{auditState}
+                </foreach>
+            </if>
         </where>
         order by id desc
     </select>

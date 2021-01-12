@@ -3,6 +3,7 @@ package com.herocheer.instructor.domain.entity;
 import com.herocheer.common.base.entity.BaseEntity;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author chenwf

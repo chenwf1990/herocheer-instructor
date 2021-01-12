@@ -22,4 +22,5 @@ public interface InstructorDao extends BaseDao<Instructor,Long>{
      * @date 2021-01-04 17:26:18
      */
     List<Instructor> queryPageList(InstructorQueryVo instructorQueryVo);
+
 }

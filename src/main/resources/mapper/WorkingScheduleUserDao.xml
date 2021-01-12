@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.WorkingScheduleUserDao">
+    
+    <sql id="table_field">
+      id, dutyNo, workingScheduleId, type, userId, userName, signInTime, signOutTime, serviceTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.WorkingScheduleUser">
+        insert into working_schedule_user (
+    <trim suffixOverrides=",">
+        <if test="dutyNo != null">
+            dutyNo,
+        </if>
+        <if test="workingScheduleId != null">
+            workingScheduleId,
+        </if>
+        <if test="type != null">
+            type,
+        </if>
+        <if test="userId != null">
+            userId,
+        </if>
+        <if test="userName != null">
+            userName,
+        </if>
+        <if test="signInTime != null">
+            signInTime,
+        </if>
+        <if test="signOutTime != null">
+            signOutTime,
+        </if>
+        <if test="serviceTime != null">
+            serviceTime,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="dutyNo != null">
+            #{dutyNo},
+        </if>
+        <if test="workingScheduleId != null">
+            #{workingScheduleId},
+        </if>
+        <if test="type != null">
+            #{type},
+        </if>
+        <if test="userId != null">
+            #{userId},
+        </if>
+        <if test="userName != null">
+            #{userName},
+        </if>
+        <if test="signInTime != null">
+            #{signInTime},
+        </if>
+        <if test="signOutTime != null">
+            #{signOutTime},
+        </if>
+        <if test="serviceTime != null">
+            #{serviceTime},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from working_schedule_user where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.WorkingScheduleUser">
+        update working_schedule_user
+        <set>
+            <if test="dutyNo != null">
+                dutyNo = #{dutyNo},
+            </if>
+            <if test="workingScheduleId != null">
+                workingScheduleId = #{workingScheduleId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="userName != null">
+                userName = #{userName},
+            </if>
+            <if test="signInTime != null">
+                signInTime = #{signInTime},
+            </if>
+            <if test="signOutTime != null">
+                signOutTime = #{signOutTime},
+            </if>
+            <if test="serviceTime != null">
+                serviceTime = #{serviceTime},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.WorkingScheduleUser">
+        select <include refid="table_field"/> from working_schedule_user where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingScheduleUser">
+        select <include refid="table_field"/> from working_schedule_user
+        <where>
+            <if test="dutyNo != null">
+                and dutyNo = #{dutyNo}
+            </if>
+            <if test="workingScheduleId != null">
+                and workingScheduleId = #{workingScheduleId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="userName != null">
+                and userName = #{userName}
+            </if>
+            <if test="signInTime != null">
+                and signInTime = #{signInTime}
+            </if>
+            <if test="signOutTime != null">
+                and signOutTime = #{signOutTime}
+            </if>
+            <if test="serviceTime != null">
+                and serviceTime = #{serviceTime}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <insert id="batchInsert" parameterType="list">
+        insert into working_schedule_user
+        (type,
+        workingScheduleId,
+        userId,
+        userName,
+        remarks,
+        createdId,
+        createdBy,
+        createdTime
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.type},
+            #{item.workingScheduleId},
+            #{item.userId},
+            #{item.userName},
+            #{item.remarks},
+            #{item.createdId},
+            #{item.createdBy},
+            #{item.createdTime}
+            )
+        </foreach >
+    </insert>
+
+    <delete id="deleteByMap" parameterType="map">
+        delete from working_schedule_user
+        <where>
+            and workingScheduleId = #{workingScheduleId}
+            <if test="typeList != null and typeList.size > 0">
+                and type in
+                <foreach item="type" index="index" collection="typeList" open="(" separator="," close=")">
+                    #{type}
+                </foreach>
+            </if>
+            <if test="notDelIdList != null and notDelIdList.size > 0">
+                and id not in
+                <foreach item="id" index="index" collection="notDelIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </delete>
+
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
+        SELECT
+        a.courierStationId,
+        a.courierStationName,
+        a.scheduleTime,
+        a.serviceBeginTime,
+        a.serviceEndTime,
+        b.workingScheduleId,
+        b.userName,
+        b.userId,
+        b.signInTime,
+        b.signOutTime,
+        b.serviceTime,
+        b.type,
+        b.id,
+        c.guideProject,
+        c.certificateNo
+        FROM working_schedule a
+        JOIN working_schedule_user b ON a.id = b.workingScheduleId
+        left join instructor c on c.userId = b.id
+        where b.type in (2,3)
+        <if test="courierStationId != null">
+            and a.courierStationId = #{courierStationId}
+        </if>
+        <if test="scheduleBeginTime != null">
+            and a.scheduleTime >= #{scheduleBeginTime} - TIME_TO_SEC(a.serviceBeginTime)
+        </if>
+        <if test="scheduleEndTime != null">
+            and a.scheduleTime &lt;= #{scheduleEndTime} - TIME_TO_SEC(a.serviceEndTime)
+        </if>
+        <if test="userName != null">
+            and b.userName like CONCAT('%',#{userName},'')
+        </if>
+    </select>
+</mapper>

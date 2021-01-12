@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.WorkingSignRecordDao">
+    
+    <sql id="table_field">
+      id, workingScheduleUserId, type, signTime, signPlace, longitude, latitude, pics, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.WorkingSignRecord">
+        insert into working_sign_record (
+    <trim suffixOverrides=",">
+        <if test="workingScheduleUserId != null">
+            workingScheduleUserId,
+        </if>
+        <if test="type != null">
+            type,
+        </if>
+        <if test="signTime != null">
+            signTime,
+        </if>
+        <if test="signPlace != null">
+            signPlace,
+        </if>
+        <if test="longitude != null">
+            longitude,
+        </if>
+        <if test="latitude != null">
+            latitude,
+        </if>
+        <if test="pics != null">
+            pics,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="workingScheduleUserId != null">
+            #{workingScheduleUserId},
+        </if>
+        <if test="type != null">
+            #{type},
+        </if>
+        <if test="signTime != null">
+            #{signTime},
+        </if>
+        <if test="signPlace != null">
+            #{signPlace},
+        </if>
+        <if test="longitude != null">
+            #{longitude},
+        </if>
+        <if test="latitude != null">
+            #{latitude},
+        </if>
+        <if test="pics != null">
+            #{pics},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from working_sign_record where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.WorkingSignRecord">
+        update working_sign_record
+        <set>
+            <if test="workingScheduleUserId != null">
+                workingScheduleUserId = #{workingScheduleUserId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="signTime != null">
+                signTime = #{signTime},
+            </if>
+            <if test="signPlace != null">
+                signPlace = #{signPlace},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="pics != null">
+                pics = #{pics},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.WorkingSignRecord">
+        select <include refid="table_field"/> from working_sign_record where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingSignRecord">
+        select <include refid="table_field"/> from working_sign_record
+        <where>
+            <if test="workingScheduleUserId != null">
+                and workingScheduleUserId = #{workingScheduleUserId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="signTime != null">
+                and signTime = #{signTime}
+            </if>
+            <if test="signPlace != null">
+                and signPlace = #{signPlace}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="pics != null">
+                and pics = #{pics}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

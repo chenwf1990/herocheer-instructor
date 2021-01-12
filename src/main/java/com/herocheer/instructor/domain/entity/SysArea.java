@@ -24,11 +24,5 @@ public class SysArea extends BaseEntity {
     private String level;
     @ApiModelProperty("备注")   
     private String remark;
-    @ApiModelProperty("更新者ID")   
-    private Long updaterId;
-    @ApiModelProperty("更新者")   
-    private String updaterBy;
-    @ApiModelProperty("更新时间")   
-    private Long updaterTime;
 
 }

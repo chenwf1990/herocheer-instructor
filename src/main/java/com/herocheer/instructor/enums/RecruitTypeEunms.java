@@ -15,7 +15,8 @@ public enum RecruitTypeEunms {
     private String name;
 
     RecruitTypeEunms(int type, String name) {
-
+        this.type = type;
+        this.name = name;
     }
 
     public int getType() {

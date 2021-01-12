@@ -22,7 +22,8 @@ public enum RecruitStateEnums {
     private String name;
 
     RecruitStateEnums(int state, String name) {
-
+        this.state = state;
+        this.name = name;
     }
 
 
