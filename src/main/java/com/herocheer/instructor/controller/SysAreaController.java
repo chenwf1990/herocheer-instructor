@@ -10,10 +10,7 @@ import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -25,13 +22,13 @@ import java.util.List;
  * @company 厦门熙重电子科技有限公司
  */
 @RestController
-@RequestMapping("")
-@Api(tags = "")
+@RequestMapping("/area")
+@Api(tags = "区域管理")
 public class SysAreaController extends BaseController{
     @Resource
     private SysAreaService sysAreaService;
 
-    @GetMapping("/queryPageList")
+    @PostMapping("/queryPageList")
     @ApiOperation("区域列表查询")
     @AllowAnonymous
     public ResponseResult<Page<SysArea>> queryPageList(@RequestBody AreaQueryVo areaQueryVo){

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.RecruitDetailDao">
+    
+    <sql id="table_field">
+      id, recruitId, startServiceTime, endServiceTime, recruitNumber, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.RecruitDetail">
+        insert into recruit_detail (
+    <trim suffixOverrides=",">
+        <if test="recruitId != null">
+            recruitId,
+        </if>
+        <if test="startServiceTime != null">
+            startServiceTime,
+        </if>
+        <if test="endServiceTime != null">
+            endServiceTime,
+        </if>
+        <if test="recruitNumber != null">
+            recruitNumber,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="recruitId != null">
+            #{recruitId},
+        </if>
+        <if test="startServiceTime != null">
+            #{startServiceTime},
+        </if>
+        <if test="endServiceTime != null">
+            #{endServiceTime},
+        </if>
+        <if test="recruitNumber != null">
+            #{recruitNumber},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from recruit_detail where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.RecruitDetail">
+        update recruit_detail
+        <set>
+            <if test="recruitId != null">
+                recruitId = #{recruitId},
+            </if>
+            <if test="startServiceTime != null">
+                startServiceTime = #{startServiceTime},
+            </if>
+            <if test="endServiceTime != null">
+                endServiceTime = #{endServiceTime},
+            </if>
+            <if test="recruitNumber != null">
+                recruitNumber = #{recruitNumber},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.RecruitDetail">
+        select <include refid="table_field"/> from recruit_detail where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.RecruitDetail">
+        select <include refid="table_field"/> from recruit_detail
+        <where>
+            <if test="recruitId != null">
+                and recruitId = #{recruitId}
+            </if>
+            <if test="startServiceTime != null">
+                and startServiceTime = #{startServiceTime}
+            </if>
+            <if test="endServiceTime != null">
+                and endServiceTime = #{endServiceTime}
+            </if>
+            <if test="recruitNumber != null">
+                and recruitNumber = #{recruitNumber}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

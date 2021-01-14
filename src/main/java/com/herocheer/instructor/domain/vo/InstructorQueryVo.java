@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -27,6 +28,8 @@ public class InstructorQueryVo implements Serializable {
     private Long beginTime;
     @ApiModelProperty("创建时间(结束时间)")
     private Long endTime;
+    @ApiModelProperty("审核状态集合0待审核1审核通过2审核驳回")
+    private List<Integer> auditStates;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")

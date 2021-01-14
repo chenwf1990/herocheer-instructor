@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.WorkingScheduleDao">
+    
+    <sql id="table_field">
+      id, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, stationUserId, stationUserName, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        insert into working_schedule (
+    <trim suffixOverrides=",">
+        <if test="courierStationId != null">
+            courierStationId,
+        </if>
+        <if test="courierStationName != null">
+            courierStationName,
+        </if>
+        <if test="scheduleTime != null">
+            scheduleTime,
+        </if>
+        <if test="serviceTimeId != null">
+            serviceTimeId,
+        </if>
+        <if test="serviceBeginTime != null">
+            serviceBeginTime,
+        </if>
+        <if test="serviceEndTime != null">
+            serviceEndTime,
+        </if>
+        <if test="stationUserId != null">
+            stationUserId,
+        </if>
+        <if test="stationUserName != null">
+            stationUserName,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="courierStationId != null">
+            #{courierStationId},
+        </if>
+        <if test="courierStationName != null">
+            #{courierStationName},
+        </if>
+        <if test="scheduleTime != null">
+            #{scheduleTime},
+        </if>
+        <if test="serviceTimeId != null">
+            #{serviceTimeId},
+        </if>
+        <if test="serviceBeginTime != null">
+            #{serviceBeginTime},
+        </if>
+        <if test="serviceEndTime != null">
+            #{serviceEndTime},
+        </if>
+        <if test="stationUserId != null">
+            #{stationUserId},
+        </if>
+        <if test="stationUserName != null">
+            #{stationUserName},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from working_schedule where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        update working_schedule
+        <set>
+            <if test="courierStationId != null">
+                courierStationId = #{courierStationId},
+            </if>
+            <if test="courierStationName != null">
+                courierStationName = #{courierStationName},
+            </if>
+            <if test="scheduleTime != null">
+                scheduleTime = #{scheduleTime},
+            </if>
+            <if test="serviceTimeId != null">
+                serviceTimeId = #{serviceTimeId},
+            </if>
+            <if test="serviceBeginTime != null">
+                serviceBeginTime = #{serviceBeginTime},
+            </if>
+            <if test="serviceEndTime != null">
+                serviceEndTime = #{serviceEndTime},
+            </if>
+            <if test="stationUserId != null">
+                stationUserId = #{stationUserId},
+            </if>
+            <if test="stationUserName != null">
+                stationUserName = #{stationUserName},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        select <include refid="table_field"/> from working_schedule where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        select <include refid="table_field"/> from working_schedule
+        <where>
+            <if test="courierStationId != null">
+                and courierStationId = #{courierStationId}
+            </if>
+            <if test="courierStationName != null">
+                and courierStationName = #{courierStationName}
+            </if>
+            <if test="scheduleTime != null">
+                and scheduleTime = #{scheduleTime}
+            </if>
+            <if test="serviceTimeId != null">
+                and serviceTimeId = #{serviceTimeId}
+            </if>
+            <if test="serviceBeginTime != null">
+                and serviceBeginTime = #{serviceBeginTime}
+            </if>
+            <if test="serviceEndTime != null">
+                and serviceEndTime = #{serviceEndTime}
+            </if>
+            <if test="stationUserId != null">
+                and stationUserId = #{stationUserId}
+            </if>
+            <if test="stationUserName != null">
+                and stationUserName = #{stationUserName}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!--排班列表分页查询-->
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo" resultType="com.herocheer.instructor.domain.vo.WorkingScheduleListVo">
+        select
+        a.id,
+        a.courierStationName,
+        a.scheduleTime,
+        a.serviceBeginTime,
+        a.serviceEndTime,
+        a.stationUserName,
+        a.createdBy,
+        a.createdTime,
+        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 2) as fixationUserName,
+        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 3) as subscribeUserName
+        from working_schedule a
+        <where>
+            <if test="courierStationId != null">
+                a.courierStationId = #{courierStationId}
+            </if>
+            <if test="scheduleBeginTime != null">
+                and a.scheduleTime >= #{scheduleBeginTime}
+            </if>
+            <if test="scheduleEndTime != null">
+                and a.scheduleTime &lt;= #{scheduleEndTime}
+            </if>
+            <if test="userName != null">
+                and EXISTS (select y.id from working_schedule_user y where a.id = y.workingScheduleId and y.userName like CONCAT('%',#{userName},''))
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <delete id="batchDelete" parameterType="list">
+        delete from working_schedule
+        where scheduleTime &gt; (UNIX_TIMESTAMP(NOW()) * 1000)
+        <if test="list != null and list.size() != 0">
+            and id in
+            <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="list == null or list.size() == 0">
+            and 1 = 2
+        </if>
+    </delete>
+</mapper>

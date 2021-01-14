@@ -16,7 +16,7 @@ public class AreaQueryVo implements Serializable {
     @ApiModelProperty("区域名称(支持模糊查询)")
     private String areaName;
     @ApiModelProperty("区域类型|级别(0：国家、1：省、2：市、3：区 4：街道 5：社区)")
-    private int level;
+    private Integer level;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")

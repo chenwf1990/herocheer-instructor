@@ -1,24 +1,27 @@
 package com.herocheer.instructor.enums;
 
 /**
- * @author chenwf
- * @desc 新闻活动审核状态枚举
- * @date 2021/1/5
+ * @author linjf
+ * @desc 招募信息状态枚举
+ * @date 2021/1/7
  * @company 厦门熙重电子科技有限公司
+ * 0.待审核1.撤回2.驳回3.招募待启动4.招募中5.招募结束
  */
-public enum NewsAuditStateEnums {
-    to_audit(0,"待审核"),
-    to_reject(1,"驳回"),
-    to_pass(2,"发布"),
-    to_backout(3,"撤销");
-    NewsAuditStateEnums(){
+public enum RecruitStateEnums {
+    PENDING(0,"待审核"),
+    WITHDRAW(1,"撤回"),
+    OVERRULE(2,"驳回"),
+    TO_RECRUITED(3,"招募待启动"),
+    RECRUITMENT(4,"招募中"),
+    END_RECRUITED(5,"招募结束");
+    RecruitStateEnums(){
 
     }
 
     private int state;
     private String name;
 
-    NewsAuditStateEnums(int state, String name) {
+    RecruitStateEnums(int state, String name) {
         this.state = state;
         this.name = name;
     }

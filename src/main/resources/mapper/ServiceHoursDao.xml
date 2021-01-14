@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.ServiceHoursDao">
+    
+    <sql id="table_field">
+      id, stationIds, stationNames, serviceTimes, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.ServiceHours">
+        insert into service_hours (
+    <trim suffixOverrides=",">
+        <if test="stationIds != null">
+            stationIds,
+        </if>
+        <if test="stationNames != null">
+            stationNames,
+        </if>
+        <if test="serviceTimes != null">
+            serviceTimes,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="stationIds != null">
+            #{stationIds},
+        </if>
+        <if test="stationNames != null">
+            #{stationNames},
+        </if>
+        <if test="serviceTimes != null">
+            #{serviceTimes},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from service_hours where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.ServiceHours">
+        update service_hours
+        <set>
+            <if test="stationIds != null">
+                stationIds = #{stationIds},
+            </if>
+            <if test="stationNames != null">
+                stationNames = #{stationNames},
+            </if>
+            <if test="serviceTimes != null">
+                serviceTimes = #{serviceTimes},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.ServiceHours">
+        select <include refid="table_field"/> from service_hours where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.ServiceHours">
+        select <include refid="table_field"/> from service_hours
+        <where>
+            <if test="stationIds != null">
+                and stationIds = #{stationIds}
+            </if>
+            <if test="stationNames != null">
+                and stationNames = #{stationNames}
+            </if>
+            <if test="serviceTimes != null">
+                and serviceTimes = #{serviceTimes}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="queryList" parameterType="com.herocheer.instructor.domain.vo.ServiceHoursQueryVo" resultType="com.herocheer.instructor.domain.entity.ServiceHours">
+        select <include refid="table_field"/> from service_hours
+        <where>
+            <if test="stationName!=null and stationName!=''">
+                AND stationNames like concat('%',#{stationName},'%')
+            </if>
+            <if test="stationId!=null">
+                AND FIND_IN_SET(#{stationId},stationIds)
+            </if>
+            <if test="beginTime != null">
+                AND createdTime >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                AND createdTime &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

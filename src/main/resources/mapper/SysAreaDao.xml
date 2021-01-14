@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.SysAreaDao">
     
     <sql id="table_field">
-      id,pid, areaName, areaCode, chinaCode, level, remark, createdId, createdBy, createdTime, updaterId, updaterBy, updaterTime
+      id,pid, areaName, areaCode, chinaCode, level, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -28,15 +28,6 @@
         <if test="remark != null">
             remark,
         </if>
-        <if test="updaterId != null">
-            updaterId,
-        </if>
-        <if test="updaterBy != null">
-            updaterBy,
-        </if>
-        <if test="updaterTime != null">
-            updaterTime,
-        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -58,15 +49,6 @@
         </if>
         <if test="remark != null">
             #{remark},
-        </if>
-        <if test="updaterId != null">
-            #{updaterId},
-        </if>
-        <if test="updaterBy != null">
-            #{updaterBy},
-        </if>
-        <if test="updaterTime != null">
-            #{updaterTime},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -99,15 +81,6 @@
             </if>
             <if test="remark != null">
                 remark = #{remark},
-            </if>
-            <if test="updaterId != null">
-                updaterId = #{updaterId},
-            </if>
-            <if test="updaterBy != null">
-                updaterBy = #{updaterBy},
-            </if>
-            <if test="updaterTime != null">
-                updaterTime = #{updaterTime},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -142,15 +115,6 @@
             </if>
             <if test="remark != null">
                 and remark = #{remark}
-            </if>
-            <if test="updaterId != null">
-                and updaterId = #{updaterId}
-            </if>
-            <if test="updaterBy != null">
-                and updaterBy = #{updaterBy}
-            </if>
-            <if test="updaterTime != null">
-                and updaterTime = #{updaterTime}
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>

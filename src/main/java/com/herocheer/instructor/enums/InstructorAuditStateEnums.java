@@ -21,7 +21,8 @@ public enum InstructorAuditStateEnums {
     private String name;
 
     InstructorAuditStateEnums(int state, String name) {
-
+        this.state = state;
+        this.name = name;
     }
 
 
