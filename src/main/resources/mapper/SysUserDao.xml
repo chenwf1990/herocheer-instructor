@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.SysUserDao">
+
+    <sql id="table_field">
+      id, deptId, account, password, userName, phone, email, userType, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.SysUser">
+        insert into sys_user (
+        <trim suffixOverrides=",">
+            <if test="deptId != null">
+                deptId,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="userName != null">
+                userName,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="userType != null">
+                userType,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="deptId != null">
+                #{deptId},
+            </if>
+            <if test="account != null">
+                #{account},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+            <if test="userType != null">
+                #{userType},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from sys_user where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="deptId != null">
+                deptId = #{deptId},
+            </if>
+            <if test="account != null">
+                account = #{account},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="userName != null">
+                userName = #{userName},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="userType != null">
+                userType = #{userType},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysUser">
+        select
+        <include refid="table_field"/>
+        from sys_user where status=1 and id = #{id}
+    </select>
+
+    <!--只返回一个用户信息-->
+    <select id="selectSysUserOne" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysUser">
+        select <include refid="table_field"/>
+        from sys_user a
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="account != null">
+                    and a.account = #{account}
+                </if>
+                <if test="userName != null">
+                    and a.userName = #{userName}
+                </if>
+                <if test="phone != null">
+                    and a.phone = #{phone}
+                </if>
+                <if test="email != null">
+                    and a.email = #{email}
+                </if>
+                 and a.`status`=1 limit 1
+            </trim>
+        </where>
+    </select>
+
+    <!--后台用户列表-->
+    <select id="selectSysUserByPage" parameterType="com.herocheer.instructor.domain.vo.SysUserVO" resultType="com.herocheer.instructor.domain.entity.SysUser">
+        select <include refid="table_field"/> from sys_user
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="userName != null">
+                    and userName like concat('%',#{userName},'%')
+                </if>
+                <if test="account != null">
+                    and account = #{account}
+                </if>
+                <if test="phone != null">
+                    and phone = #{phone}
+                </if>
+                <if test="email != null">
+                    and email = #{email}
+                </if>
+                <if test="beginTime != null">
+                    and createdTime >= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    and createdTime &lt;= #{endTime}
+                </if>
+                <if test="status != null">
+                    and `status` = #{status}
+                </if>
+            </trim>
+        </where>
+        order by id desc
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysUser">
+        select
+        <include refid="table_field"/>
+        from sys_user
+        <where>
+            <if test="deptId != null">
+                and deptId = #{deptId}
+            </if>
+            <if test="account != null">
+                and account = #{account}
+            </if>
+            <if test="password != null">
+                and password = #{password}
+            </if>
+            <if test="userName != null">
+                and userName = #{userName}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="email != null">
+                and email = #{email}
+            </if>
+            <if test="userType != null">
+                and userType = #{userType}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>
