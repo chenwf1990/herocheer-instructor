@@ -71,7 +71,6 @@ public class SysUserController extends BaseController {
         return ResponseResult.ok(jsonObject);
     }
 
-
     /**
      * 注册用户
      *
@@ -120,19 +119,19 @@ public class SysUserController extends BaseController {
     /**
      * 登录账户
      *
-     * @param username 用户名
+     * @param account 账号
      * @param password 密码
-     * @param verCode  版本的代码
+     * @param verCode  验证码
      * @return {@link ResponseResult}
      */
     @PostMapping("/account")
     @AllowAnonymous
     @ApiOperation("用户登入")
-    public ResponseResult loginAccount(@ApiParam("用户名") @RequestParam String username,
+    public ResponseResult loginAccount(@ApiParam("账号") @RequestParam String account,
                                 @ApiParam("密码") @RequestParam String password,
                                 @ApiParam("验证码") @RequestParam String verCode){
         // 登入流程
-        return ResponseResult.ok(sysUserService.login(username,password,verCode));
+        return ResponseResult.ok(sysUserService.login(account,password,verCode));
     }
 
     /**

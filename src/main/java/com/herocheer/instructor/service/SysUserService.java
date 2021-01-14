@@ -17,12 +17,12 @@ public interface SysUserService extends BaseService<SysUser, Long> {
     /**
      * 登录
      *
-     * @param username 用户名
+     * @param account 账号
      * @param password 密码
      * @param verCode  版本的代码
      * @return {@link String}
      */
-    String login(String username,String password,String verCode);
+    String login(String account,String password,String verCode);
 
     /**
      * token:用户相关信息放入redis
