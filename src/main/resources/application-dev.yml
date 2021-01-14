@@ -10,5 +10,5 @@ spring:
     host: localhost
     database: 4
     port: 6379
-    password: chenwf
+    password:
     timeout: 5000ms

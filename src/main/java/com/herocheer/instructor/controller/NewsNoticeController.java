@@ -30,7 +30,7 @@ public class NewsNoticeController extends BaseController{
     private NewsNoticeService newsNoticeService;
 
     @PostMapping("/queryPageList")
-    @ApiOperation("指导员列表查询")
+    @ApiOperation("新闻列表查询")
     public ResponseResult<Page<NewsNotice>> queryPageList(@RequestBody NewsQueryVo newsQueryVo){
         Page<NewsNotice> page = newsNoticeService.queryPageList(newsQueryVo);
         return ResponseResult.ok().setData(page);

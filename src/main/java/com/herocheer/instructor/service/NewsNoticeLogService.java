@@ -19,5 +19,5 @@ public interface NewsNoticeLogService extends BaseService<NewsNoticeLog,Long> {
      * @param auditIdea
      * @param remarks
      */
-    void addLog(Long id, int auditState, String auditIdea, String remarks);
+    void addLog(Long id, Integer auditState, String auditIdea, String remarks);
 }

@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 @Data
 public class NewsNoticeLog extends BaseEntity {
     @ApiModelProperty("新闻id")   
-    private Integer newsNoticeId;
+    private Long newsNoticeId;
     @ApiModelProperty("审核状态 0待审核1驳回2通过3撤回4已发布")   
     private Integer auditState;
     @ApiModelProperty("审核意见")   
