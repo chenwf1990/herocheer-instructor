@@ -1,14 +1,10 @@
 package com.herocheer.instructor.domain.vo;
 
-import com.herocheer.instructor.domain.entity.SysUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 /**
  * 后台用户VO
@@ -41,11 +37,11 @@ public class SysUserVO {
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status = true;
     @ApiModelProperty("更新者ID")
-    private Long updaterId;
+    private Long updateId;
     @ApiModelProperty("更新者")
-    private String updaterBy;
+    private String updateBy;
     @ApiModelProperty("更新时间")
-    private Long updaterTime;
+    private Long updateTime;
 
     @ApiModelProperty("角色id")
     private Long roleId;

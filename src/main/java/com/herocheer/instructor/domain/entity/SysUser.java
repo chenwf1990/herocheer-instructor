@@ -3,7 +3,6 @@ package com.herocheer.instructor.domain.entity;
 import com.herocheer.common.base.entity.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -39,11 +38,4 @@ public class SysUser extends BaseEntity {
     private String userType;
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status;
-    @ApiModelProperty("更新者ID")
-    private Long updaterId;
-    @ApiModelProperty("更新者")
-    private String updaterBy;
-    @ApiModelProperty("更新时间")
-    private Long updaterTime;
-
 }
