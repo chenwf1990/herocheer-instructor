@@ -80,6 +80,7 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
             throw new CommonException("该新闻已审批");
         }
         newsNotice.setAuditState(auditState);
+        newsNotice.setAuditTime(System.currentTimeMillis());
         long count = this.dao.update(newsNotice);
         newsNoticeLogService.addLog(id,auditState,newsNotice.getAuditIdea(),"审核");
         return count;

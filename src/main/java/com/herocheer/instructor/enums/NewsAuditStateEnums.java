@@ -8,8 +8,8 @@ package com.herocheer.instructor.enums;
  */
 public enum NewsAuditStateEnums {
     to_audit(0,"待审核"),
-    to_reject(1,"驳回"),
-    to_pass(2,"发布"),
+    to_pass(1,"发布"),
+    to_reject(2,"驳回"),
     to_backout(3,"撤销");
     NewsAuditStateEnums(){
 

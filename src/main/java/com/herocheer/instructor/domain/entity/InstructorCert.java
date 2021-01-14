@@ -6,12 +6,14 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author chenwf
- * @desc 指导员表
+ * @desc 指导员证书表
  * @date 2020/12/30
  * @company 厦门熙重电子科技有限公司
  */
 @Data
-public class Instructor extends BaseEntity {
+public class InstructorCert extends BaseEntity {
+    @ApiModelProperty("指导员id")   
+    private Long instructorId;
     @ApiModelProperty("姓名")   
     private String name;
     @ApiModelProperty("性别 0女1男2未知")   
@@ -42,7 +44,7 @@ public class Instructor extends BaseEntity {
     private String certificateGrade;
     @ApiModelProperty("发证日期")   
     private Long openingDate;
-    @ApiModelProperty("审批单位类型 0其他 1湖里区文旅局2思明区文旅局3集美区文旅局4海沧文旅局5翔安文旅局6同安文旅局 7厦门市体育局")
+    @ApiModelProperty("审批单位类型 0其他 1湖里区文旅局2思明区文旅局3集美区文旅局4海沧文旅局5翔安文旅局6同安文旅局")   
     private Integer auditUnitType;
     @ApiModelProperty("审批单位名称")   
     private String auditUnitName;

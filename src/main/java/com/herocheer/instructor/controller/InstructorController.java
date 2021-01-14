@@ -5,6 +5,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.domain.entity.Instructor;
+import com.herocheer.instructor.domain.entity.InstructorCert;
 import com.herocheer.instructor.domain.entity.InstructorLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorService;
@@ -84,6 +85,13 @@ public class InstructorController extends BaseController{
     @ApiOperation("指导员审批日志列表")
     public ResponseResult<List<InstructorLog>> getApprovalLog(@ApiParam("指导员id") @RequestParam Long instructorId){
         List<InstructorLog> logs = instructorService.getApprovalLog(instructorId);
+        return ResponseResult.ok(logs);
+    }
+
+    @GetMapping("/getInstructorCertList")
+    @ApiOperation("指导员证书列表")
+    public ResponseResult<List<InstructorCert>> getInstructorCertList(@ApiParam("指导员id") @RequestParam Long instructorId){
+        List<InstructorCert> logs = instructorService.getInstructorCertList(instructorId);
         return ResponseResult.ok(logs);
     }
 

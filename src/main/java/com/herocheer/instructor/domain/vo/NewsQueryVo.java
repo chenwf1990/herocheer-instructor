@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -17,8 +18,8 @@ public class NewsQueryVo implements Serializable {
     private String title;
     @ApiModelProperty("类型1新闻 2活动")
     private Integer type;
-    @ApiModelProperty("0待审核1驳回2通过3撤回4已发布")
-    private Integer auditState;
+    @ApiModelProperty("集合 0待审核1通过2驳回3撤回4已发布")
+    private List<Integer> auditStates;
     @ApiModelProperty("创建人(支持模糊查询)")
     private String createdBy;
     @ApiModelProperty("创建时间(开始时间)")
