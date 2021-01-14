@@ -1,5 +1,6 @@
 package com.herocheer.instructor.service;
 
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.common.base.service.BaseService;
 
@@ -26,7 +27,8 @@ public interface WorkingSignRecordService extends BaseService<WorkingSignRecord,
      * @desc  添加打卡信息
      * @date 2021-01-12 11:17:12
      * @param workingSignRecord
+     * @param userEntity
      * @return
      */
-    long addWorkingSignRecord(WorkingSignRecord workingSignRecord);
+    long addWorkingSignRecord(WorkingSignRecord workingSignRecord, UserEntity userEntity);
 }

@@ -2,22 +2,26 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
+import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
-import com.herocheer.instructor.domain.vo.WorkingSchedulsVo;
 import com.herocheer.instructor.domain.vo.WorkingVo;
+import com.herocheer.instructor.enums.ScheduleUserAuditStateEnums;
+import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
+import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,6 +66,9 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             //设置id
             workingScheduleUsers.forEach(w -> {
                 w.setWorkingScheduleId(workingVo.getId());
+                if(w.getType() == ScheduleUserTypeEnums.SUBSCRIBEDUTY.getType()){
+                    w.setAuditState(ScheduleUserAuditStateEnums.to_pass.getState());
+                }
             });
             //批量插入值班人员信息
             workingScheduleUserService.batchInsert(workingScheduleUsers);

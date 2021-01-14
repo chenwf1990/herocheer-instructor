@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.InstructorDao">
     
     <sql id="table_field">
-      id, name, sex, auditState, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -18,6 +18,9 @@
         </if>
         <if test="auditState != null">
             auditState,
+        </if>
+        <if test="auditTime != null">
+            auditTime,
         </if>
         <if test="auditIdea != null">
             auditIdea,
@@ -88,6 +91,9 @@
         </if>
         <if test="auditState != null">
             #{auditState},
+        </if>
+        <if test="auditTime != null">
+            #{auditTime},
         </if>
         <if test="auditIdea != null">
             #{auditIdea},
@@ -168,6 +174,9 @@
             </if>
             <if test="auditState != null">
                 auditState = #{auditState},
+            </if>
+            <if test="auditTime != null">
+                auditTime = #{auditTime},
             </if>
             <if test="auditIdea != null">
                 auditIdea = #{auditIdea},
@@ -250,6 +259,9 @@
             </if>
             <if test="auditState != null">
                 and auditState = #{auditState}
+            </if>
+            <if test="auditTime != null">
+                and auditTime = #{auditTime}
             </if>
             <if test="auditIdea != null">
                 and auditIdea = #{auditIdea}
@@ -337,7 +349,7 @@
             <if test="endTime != null">
                 and createdTime &lt;= #{endTime}
             </if>
-            <if test="auditStates != null and auditStates.size > 0">
+            <if test="auditStates != null">
                 and auditState in
                 <foreach item="auditState" index="index" collection="auditStates" open="(" separator="," close=")">
                     #{auditState}

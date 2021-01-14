@@ -13,6 +13,7 @@ swagger:
   license:
   licenseUrl:
   basePackage: com.herocheer.instructor.controller
+  enable: true #是否开始swagger
   contact:
     name: chenwf
     url: http://localhost:18081/

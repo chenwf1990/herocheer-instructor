@@ -2,6 +2,8 @@ package com.herocheer.instructor.domain.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,10 +14,11 @@ import java.util.List;
  * @date 2021/1/4
  * @company 厦门熙重电子科技有限公司
  */
+@NoArgsConstructor
 @Data
 public class InstructorQueryVo implements Serializable {
     @ApiModelProperty("审核状态 0待审核1审核通过2审核驳回")
-    private int auditState;
+    private Integer auditState;
     @ApiModelProperty("常驻区域")
     private String areaCode;
     @ApiModelProperty("姓名(支持前后模糊查询)")

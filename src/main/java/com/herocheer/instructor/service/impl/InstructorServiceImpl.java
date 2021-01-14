@@ -18,12 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author chenwf
@@ -76,6 +73,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         update.setId(id);
         update.setAuditState(auditState);
         update.setAuditIdea(auditIdea);
+        update.setAuditTime(System.currentTimeMillis());
         this.dao.update(update);
         //增加审批日志
         instructorLogService.addLog(id,auditState,auditIdea,null);
@@ -128,8 +126,6 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     @Override
     public long updateInstructor(Instructor instructor) {
         Instructor model = this.dao.get(instructor.getId());
-        System.out.println(InstructorAuditStateEnums.to_audit.getState());
-        System.out.println(InstructorAuditStateEnums.to_pass.getState());
         if(model.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
             throw new CommonException("审核已通过");
         }

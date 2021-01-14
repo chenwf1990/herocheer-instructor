@@ -28,6 +28,8 @@ public class WorkingScheduleUser extends BaseEntity {
     private Long signOutTime;
     @ApiModelProperty("服务时长 (单位：分)")   
     private Integer serviceTime;
+    @ApiModelProperty("审批状态 0待审批 1通过 2失败")   
+    private Integer auditState;
     @ApiModelProperty("备注")   
     private String remarks;
 

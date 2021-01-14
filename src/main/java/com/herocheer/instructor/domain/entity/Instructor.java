@@ -18,6 +18,8 @@ public class Instructor extends BaseEntity {
     private Integer sex;
     @ApiModelProperty("审核状态 0待审核1审核通过2审核驳回")   
     private Integer auditState;
+    @ApiModelProperty("审核时间")   
+    private Long auditTime;
     @ApiModelProperty("审核意见")   
     private String auditIdea;
     @ApiModelProperty("身份证号")   

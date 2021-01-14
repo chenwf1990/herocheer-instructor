@@ -16,6 +16,8 @@ public class WorkingSignRecord extends BaseEntity {
     private Long workingScheduleUserId;
     @ApiModelProperty("打卡类型 1签到2签退")   
     private Integer type;
+    @ApiModelProperty("是否补卡 0否 1是")   
+    private Object isReissueCard;
     @ApiModelProperty("打卡时间")   
     private Long signTime;
     @ApiModelProperty("打卡位置")   

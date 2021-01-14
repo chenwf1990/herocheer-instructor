@@ -1,6 +1,5 @@
 package com.herocheer.instructor.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
@@ -11,7 +10,9 @@ import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -73,7 +74,7 @@ public class InstructorController extends BaseController{
     @ApiOperation("指导员审批")
     public ResponseResult approval(@ApiParam("指导员id") @RequestParam Long id,
                                    @ApiParam("审核状态 0待审核1审核通过2审核驳回") @RequestParam int auditState,
-                                   @ApiParam("审核意见") @RequestParam String auditIdea){
+                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea){
         instructorService.approval(id,auditState,auditIdea);
         return ResponseResult.ok();
     }

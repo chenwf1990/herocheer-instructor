@@ -1,6 +1,7 @@
 package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.web.base.BaseController;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -37,8 +39,9 @@ public class WorkingSignRecordController extends BaseController{
 
     @GetMapping("/addWorkingSignRecord")
     @ApiOperation("打卡")
-    public ResponseResult addWorkingSignRecord(@RequestBody WorkingSignRecord workingSignRecord){
-        return ResponseResult.isSuccess(workingSignRecordService.addWorkingSignRecord(workingSignRecord));
+    public ResponseResult addWorkingSignRecord(@RequestBody WorkingSignRecord workingSignRecord, HttpServletRequest request){
+        UserEntity userEntity = getUser(request);
+        return ResponseResult.isSuccess(workingSignRecordService.addWorkingSignRecord(workingSignRecord,userEntity));
     }
 
 }

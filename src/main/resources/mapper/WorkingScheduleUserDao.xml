@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleUserDao">
     
     <sql id="table_field">
-      id, dutyNo, workingScheduleId, type, userId, userName, signInTime, signOutTime, serviceTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, dutyNo, workingScheduleId, type, userId, userName, signInTime, signOutTime, serviceTime, auditState, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -33,6 +33,9 @@
         </if>
         <if test="serviceTime != null">
             serviceTime,
+        </if>
+        <if test="auditState != null">
+            auditState,
         </if>
         <if test="remarks != null">
             remarks,
@@ -64,6 +67,9 @@
         </if>
         <if test="serviceTime != null">
             #{serviceTime},
+        </if>
+        <if test="auditState != null">
+            #{auditState},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -105,6 +111,9 @@
             </if>
             <if test="serviceTime != null">
                 serviceTime = #{serviceTime},
+            </if>
+            <if test="auditState != null">
+                auditState = #{auditState},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -148,6 +157,9 @@
             </if>
             <if test="serviceTime != null">
                 and serviceTime = #{serviceTime}
+            </if>
+            <if test="auditState != null">
+                and auditState = #{auditState}
             </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
