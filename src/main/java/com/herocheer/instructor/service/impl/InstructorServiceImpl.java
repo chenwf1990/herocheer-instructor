@@ -141,7 +141,12 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
      */
     @Override
     public long updateInstructor(Instructor instructor) {
-        instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+        Instructor model = this.dao.get(instructor.getId());
+        if(model.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
+            instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+        }else{
+            instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+        }
         long count = this.dao.update(instructor);
         addInstructorCert(instructor);
         instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"修改");
