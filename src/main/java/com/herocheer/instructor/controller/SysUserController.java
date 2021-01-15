@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * @author gaorh
@@ -80,14 +81,14 @@ public class SysUserController extends BaseController {
     @AllowAnonymous
     @PostMapping("/sysUser")
     @ApiOperation("用户注册")
-    public ResponseResult<SysUser> registerUser(@ApiParam("用户信息") @RequestBody SysUserVO sysUserVO){
+    public ResponseResult<SysUser> registerUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
         return ResponseResult.ok(sysUserService.addUser(sysUserVO));
     }
 
     @AllowAnonymous
     @PostMapping("/sysUser/page")
     @ApiOperation("用户列表")
-    public ResponseResult<Page<SysUser>> queryUsers(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){
+    public ResponseResult<Page<SysUser>> queryUsers(@Valid @RequestBody SysUserVO sysUserVO, HttpServletRequest request){
         Page<SysUser> page = sysUserService.findUserByPage(sysUserVO);
         return ResponseResult.ok(page);
     }
@@ -113,7 +114,7 @@ public class SysUserController extends BaseController {
     @AllowAnonymous
     @PutMapping("/sysUser")
     @ApiOperation("编辑用户信息")
-    public ResponseResult<SysUser> editUser(@ApiParam("用户信息") @RequestBody SysUserVO sysUserVO){
+    public ResponseResult<SysUser> editUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
         return ResponseResult.ok(sysUserService.modifyUser(sysUserVO));
     }
     /**

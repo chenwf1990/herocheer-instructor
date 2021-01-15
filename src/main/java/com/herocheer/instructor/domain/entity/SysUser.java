@@ -1,6 +1,7 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +16,7 @@ import lombok.experimental.SuperBuilder;
  * @date 2020/12/30
  * @company 厦门熙重电子科技有限公司
  */
+@ApiModel(description = "后台用户表")
 @SuperBuilder
 @Data
 @AllArgsConstructor

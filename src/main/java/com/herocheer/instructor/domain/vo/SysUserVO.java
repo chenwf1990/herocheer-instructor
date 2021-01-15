@@ -1,10 +1,14 @@
 package com.herocheer.instructor.domain.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 后台用户VO
@@ -12,7 +16,7 @@ import lombok.NoArgsConstructor;
  * @author gaorh
  * @create 2021-01-11
  */
-
+@ApiModel(description = "后台用户VO")
 @Builder
 @Data
 @AllArgsConstructor
@@ -22,20 +26,23 @@ public class SysUserVO {
     private Long id;
     @ApiModelProperty("机构ID")
     private Long deptId;
-    @ApiModelProperty("账号名称")
+    @ApiModelProperty("账号")
+    @NotBlank(message = "账号不能为空")
     private String account;
     @ApiModelProperty("密码")
     private String password;
     @ApiModelProperty("用户姓名")
+    @NotBlank(message = "用户姓名不能为空")
     private String userName;
-    @ApiModelProperty("手机号")
-    private String phone;
     @ApiModelProperty("邮箱")
+    @NotBlank(message = "邮箱不能为空")
+    @Email(message = "邮箱格式不正确")
     private String email;
+    @ApiModelProperty("手机号")
+    @NotBlank(message = "手机号不能为空")
+    private String phone;
     @ApiModelProperty("管理员（sysAdmin）、用户（sysUser）")
     private String userType;
-    @ApiModelProperty("0：关闭、1：启用")
-    private Boolean status = true;
     @ApiModelProperty("更新者ID")
     private Long updateId;
     @ApiModelProperty("更新者")
@@ -45,6 +52,9 @@ public class SysUserVO {
 
     @ApiModelProperty("角色id")
     private Long roleId;
+
+    @ApiModelProperty("0：关闭、1：启用")
+    private Boolean status = true;
 
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;

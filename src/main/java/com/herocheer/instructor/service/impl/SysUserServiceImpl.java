@@ -261,10 +261,14 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
         // 构建node列表
         List<TreeNode<String>> nodeList = CollUtil.newArrayList();
 
-        Map<String, Object> kkk = new HashMap();
-        kkk.put("test", "gaorh");
+        Map<String, Object> map = new HashMap();
+        map.put("hh", "u------------------------------------------------");
+        map.put("test", "k------------------------------------------------");
 
-        nodeList.add(new TreeNode<>("1", "0", "系统管理", 5).setExtra(kkk));
+//        nodeList.add(new TreeNode().setExtra(map));
+
+        nodeList.add(new TreeNode<>("0", "8888888888888888", "超级父类", 5));
+        nodeList.add(new TreeNode<>("1", "0", "系统管理", 5).setExtra(map));
         nodeList.add(new TreeNode<>("11", "1", "用户管理", 222222));
         nodeList.add(new TreeNode<>("111", "1", "用户添加", 0));
         nodeList.add(new TreeNode<>("2", "0", "店铺管理", 1));
@@ -272,8 +276,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
         nodeList.add(new TreeNode<>("221", "2", "商品管理2", 2));
 
         // 0表示最顶层的id是0
-        List<Tree<String>> treeList = TreeUtil.build(nodeList, "0");
-        System.out.println(treeList);
+        List<Tree<String>> treeList = TreeUtil.build(nodeList, "8888888888888888");
+        System.out.println(JSONObject.toJSONString(treeList));
 
     }
 

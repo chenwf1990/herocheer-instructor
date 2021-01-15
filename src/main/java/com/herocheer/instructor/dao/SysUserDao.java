@@ -22,7 +22,13 @@ public interface SysUserDao extends BaseDao<SysUser, Long> {
      * @param map
      * @return {@link SysUser}
      */
-    SysUser selectSysUserOne(Map map);
+    SysUser selectSysUserOne(Map<String, Object> map);
 
+    /**
+     * 分页查询系统用户
+     *
+     * @param sysUserVO 系统用户签证官
+     * @return {@link List<SysUser>}
+     */
     List<SysUser> selectSysUserByPage(SysUserVO sysUserVO);
 }
