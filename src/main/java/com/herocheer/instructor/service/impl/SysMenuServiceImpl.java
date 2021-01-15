@@ -149,7 +149,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      */
     @Override
     public void removeMenuById(Long id) {
-        // 物理删除
+        // 物理删除和级联删除
         this.delete(id);
     }
 
