@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,7 +70,7 @@ public class SysRoleController extends BaseController {
      * @param request 请求
      * @return {@link ResponseResult<SysRole>}
      */
-    @PostMapping("/{id:\\w+}")
+    @DeleteMapping("/{id:\\w+}")
     @ApiOperation("删除角色")
     @AllowAnonymous
     public ResponseResult dropRoleById(@ApiParam("角色ID") @PathVariable Long id, HttpServletRequest request){

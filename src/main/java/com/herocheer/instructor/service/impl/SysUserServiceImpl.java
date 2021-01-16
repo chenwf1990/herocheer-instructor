@@ -18,8 +18,8 @@ import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.service.SysUserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,7 +134,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
             throw new CommonException("账号已存在");
         }
         SysUser sysUser = SysUser.builder().build();
-        BeanUtils.copyProperties(sysUserVO,sysUser);
+        BeanCopier.create(sysUserVO.getClass(),sysUser.getClass(),false).copy(sysUserVO,sysUser,null);
 
         // 用户密码加密
         sysUser.setPassword(encoder.encode(sysUserVO.getPassword()));
@@ -175,7 +175,8 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
             throw new CommonException("账号已存在");
         }
         SysUser sysUser = SysUser.builder().build();
-        BeanUtils.copyProperties(sysUserVO,sysUser);
+        BeanCopier.create(sysUserVO.getClass(),sysUser.getClass(),false).copy(sysUserVO,sysUser,null);
+
         this.dao.update(sysUser);
         log.info("用户{}修改成功",sysUser.getUserName());
         return sysUser;
