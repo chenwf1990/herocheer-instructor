@@ -4,7 +4,7 @@ import cn.hutool.core.lang.tree.Tree;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysMenu;
-import com.herocheer.instructor.domain.entity.SysUser;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -129,8 +129,8 @@ public class SysMenuController extends BaseController {
     @ApiOperation("菜单权限树")
     @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> fetchMenuTreeToUser(HttpServletRequest request){
-        SysUser sysUser =  SysUser.builder().build();
-        List<Tree<Long>> treeList = sysMenuService.findMenuTreeToUser(sysUser);
+        User user =  User.builder().build();
+        List<Tree<Long>> treeList = sysMenuService.findMenuTreeToUser(user);
         return ResponseResult.ok(treeList);
     }
 

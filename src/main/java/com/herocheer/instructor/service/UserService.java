@@ -2,17 +2,16 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
-import com.herocheer.instructor.domain.entity.SysUser;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 
 /**
  * @author gaorh
- * @desc 后台用户表（管理员、用户）
- * (SysUser)表服务接口
- * @date 2021-01-07 17:49:06
+ * @desc 微信用户、后台用户、后台管理员(User)表服务接口
+ * @date 2021-01-18 15:45:22
  * @company 厦门熙重电子科技有限公司
  */
-public interface SysUserService extends BaseService<SysUser, Long> {
+public interface UserService extends BaseService<User, Long> {
 
     /**
      * 登录
@@ -35,24 +34,24 @@ public interface SysUserService extends BaseService<SysUser, Long> {
      * 添加用户
      *
      * @param sysUserVO 用户签证官
-     * @return {@link SysUser}
+     * @return {@link User}
      */
-    SysUser addUser(SysUserVO sysUserVO);
+    User addUser(SysUserVO sysUserVO);
 
     /**
      * 寻找用户信息列表
      *
      * @param sysUserVO 用户签证官
-     * @return {@link Page<SysUser>}
+     * @return {@link Page <User>}
      */
-    Page<SysUser> findUserByPage(SysUserVO sysUserVO);
+    Page<User> findUserByPage(SysUserVO sysUserVO);
     /**
      * 修改用户
      *
      * @param sysUserVO 用户签证官
-     * @return {@link SysUser}
+     * @return {@link User}
      */
-    SysUser modifyUser(SysUserVO sysUserVO);
+    User modifyUser(SysUserVO sysUserVO);
 
     /**
      * 修改密码

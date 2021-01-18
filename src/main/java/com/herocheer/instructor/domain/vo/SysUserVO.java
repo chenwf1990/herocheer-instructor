@@ -27,15 +27,13 @@ public class SysUserVO {
     @ApiModelProperty("机构ID")
     private Long deptId;
     @ApiModelProperty("账号")
-    @NotBlank(message = "账号不能为空")
     private String account;
     @ApiModelProperty("密码")
     private String password;
     @ApiModelProperty("用户姓名")
-    @NotBlank(message = "用户姓名不能为空")
+    @NotBlank(message = "用户姓不能为空")
     private String userName;
     @ApiModelProperty("邮箱")
-    @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱格式不正确")
     private String email;
     @ApiModelProperty("手机号")
@@ -49,18 +47,15 @@ public class SysUserVO {
     private String updateBy;
     @ApiModelProperty("更新时间")
     private Long updateTime;
-
     @ApiModelProperty("角色id")
-    private Long roleId;
+    private String roleId;
 
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status = true;
-
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;
     @ApiModelProperty("创建时间(结束时间)")
     private Long endTime;
-
     @ApiModelProperty("页码")
     private int pageNo = 1;
     @ApiModelProperty("页数")

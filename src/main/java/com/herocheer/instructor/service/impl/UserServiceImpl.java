@@ -1,10 +1,5 @@
 package com.herocheer.instructor.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Snowflake;
-import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.lang.tree.TreeNode;
-import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
@@ -12,10 +7,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.dao.SysUserDao;
-import com.herocheer.instructor.domain.entity.SysUser;
+import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.dao.UserDao;
+import com.herocheer.instructor.domain.entity.SysUserRole;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
-import com.herocheer.instructor.service.SysUserService;
+import com.herocheer.instructor.enums.UserType;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,16 +32,13 @@ import java.util.Map;
 
 /**
  * @author gaorh
- * @desc 后台用户表（管理员、用户）
- * (SysUser)表服务实现类
- * @date 2021-01-07 17:49:06
+ * @desc 微信用户、后台用户、后台管理员(User)表服务实现类
+ * @date 2021-01-18 15:45:22
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 @Slf4j
-public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Long> implements SysUserService {
-
+public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implements UserService {
     /**
      * 数据加密，在启动类中已经注入进IOC容器中
      */
@@ -55,10 +51,10 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
     /**
      * 检查账号
      *
-     * @param sysUser 系统用户
+     * @param user 系统用户
      * @param verCode 验证码
      */
-    private void checkAcount(SysUser sysUser,String password,String verCode) {
+    private void checkAcount(User user, String password, String verCode) {
         // 判断验证码
         String redisCode = "HEROCHEER-INSTRUCTOR-"+ verCode.trim();
         if (!redisClient.hasKey(redisCode)) {
@@ -66,12 +62,12 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
         }
 
         // 检查登入账号是否正确
-        if(ObjectUtils.isEmpty(sysUser)){
+        if(ObjectUtils.isEmpty(user)){
             throw new CommonException("账号不正确");
         }
 
         //  检查登入密码是否正确
-        if(!encoder.matches(password,sysUser.getPassword())){
+        if(!encoder.matches(password,user.getPassword())){
             throw new CommonException("密码不正确");
         }
     }
@@ -89,22 +85,22 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
 
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("account", account);
-        SysUser sysUser = this.dao.selectSysUserOne(objectMap);
+        User user = this.dao.selectSysUserOne(objectMap);
 
         // 登入验证账号（只支持账号）同时登入和密码
-        this.checkAcount(sysUser,password,verCode);
+        this.checkAcount(user,password,verCode);
 
         // 生成的是不带-的字符串，类似于：b17f24ff026d40949c85a24f4f375d42
         String simpleUUID = IdUtil.simpleUUID();
 
         // 敏感信息不放Redis
-        sysUser.setPassword(null);
+        user.setPassword(null);
 
         // token:userInfo用户信息
         // TODO tokne-userMenu:menuInfo菜单权限
         // TODO tokne-userArea:areaInfo数据权限 放入redis  可以异步处理
         // 存入redis并设置过期时间为30分钟
-        redisClient.set(simpleUUID, JSONObject.toJSONString(sysUser),1800);
+        redisClient.set(simpleUUID, JSONObject.toJSONString(user),1800);
         return simpleUUID;
     }
 
@@ -122,10 +118,11 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
      * 添加用户
      *
      * @param sysUserVO 用户签证官
-     * @return {@link SysUser}
+     * @return {@link User}
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public SysUser addUser(SysUserVO sysUserVO) {
+    public User addUser(SysUserVO sysUserVO) {
         // 判断账号是否存在
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("account", sysUserVO.getAccount());
@@ -133,28 +130,47 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
         if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
             throw new CommonException("账号已存在");
         }
-        SysUser sysUser = SysUser.builder().build();
-        BeanCopier.create(sysUserVO.getClass(),sysUser.getClass(),false).copy(sysUserVO,sysUser,null);
+        User user = User.builder().userType(UserType.sysUser.getCode()).build();
+        BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
         // 用户密码加密
-        sysUser.setPassword(encoder.encode(sysUserVO.getPassword()));
+        user.setPassword(encoder.encode(sysUserVO.getPassword()));
 
         // 插入用户信息
-        this.dao.insert(sysUser);
-        log.info("用户{}注册成功",sysUser.getUserName());
-        return sysUser;
+        this.insert(user);
+
+        // 批量插入中间表
+        this.batchSysUserRole(sysUserVO, user);
+
+        log.info("用户{}注册成功",user.getUserName());
+        return user;
+    }
+
+    private void batchSysUserRole(SysUserVO sysUserVO, User user) {
+        if(StringUtils.isNotBlank(sysUserVO.getRoleId())){
+            String[] arr = sysUserVO.getRoleId().split(",");
+            List<SysUserRole> list = new ArrayList<>();
+            SysUserRole sysUserRole = null;
+            for (int i = 0; i < arr.length; i++) {
+                sysUserRole = new SysUserRole();
+                sysUserRole.setUserId(user.getId());
+                sysUserRole.setRoleId(Long.parseLong(arr[i]));
+                list.add(sysUserRole);
+            }
+            this.dao.insertBatchSysUserRole(list);
+        }
     }
 
     /**
      * 寻找用户信息列表
      *
      * @param sysUserVO 用户签证官
-     * @return {@link Page <SysUser>}
+     * @return {@link Page <User>}
      */
     @Override
-    public Page<SysUser> findUserByPage(SysUserVO sysUserVO) {
+    public Page<User> findUserByPage(SysUserVO sysUserVO) {
         Page page = Page.startPage(sysUserVO.getPageNo(), sysUserVO.getPageSize());
-        List<SysUser> sysUserList = this.dao.selectSysUserByPage(sysUserVO);
+        List<User> sysUserList = this.dao.selectSysUserByPage(sysUserVO);
         page.setDataList(sysUserList);
         return page;
     }
@@ -163,23 +179,34 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
      * 修改用户
      *
      * @param sysUserVO 用户签证官
-     * @return {@link SysUser}
+     * @return {@link User}
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public SysUser modifyUser(SysUserVO sysUserVO) {
-        // 判断账号是否存在
-        Map<String, Object> objectMap = new HashMap();
-        objectMap.put("account", sysUserVO.getAccount());
+    public User modifyUser(SysUserVO sysUserVO) {
 
+        if(sysUserVO.getId() == null || StringUtils.isBlank(sysUserVO.getId().toString())){
+            throw new CommonException("编辑ID不能为空");
+        }
+        // 判断账号是否存在
+        /*Map<String, Object> objectMap = new HashMap();
+        objectMap.put("account", sysUserVO.getAccount());
         if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
             throw new CommonException("账号已存在");
-        }
-        SysUser sysUser = SysUser.builder().build();
-        BeanCopier.create(sysUserVO.getClass(),sysUser.getClass(),false).copy(sysUserVO,sysUser,null);
+        }*/
 
-        this.dao.update(sysUser);
-        log.info("用户{}修改成功",sysUser.getUserName());
-        return sysUser;
+        User user = User.builder().userType(UserType.sysUser.getCode()).build();
+        BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
+
+        Long l = this.dao.update(user);
+        log.info("用户{}修改成功",user.getUserName());
+
+        // TODO 删除中间表记录
+        if(l > 0L){
+            this.dao.deleteBatchSysUserRole(sysUserVO.getId());
+            this.batchSysUserRole(sysUserVO, user);
+        }
+        return user;
     }
 
     /**
@@ -191,18 +218,18 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
     @Override
     public void modifyPassword(Long userId,String oldPassword, String newPassword) {
         // 用户账号
-        SysUser sysUser = this.get(userId);
-        if(!encoder.matches(oldPassword,sysUser.getPassword())){
+        User user = this.get(userId);
+        if(!encoder.matches(oldPassword,user.getPassword())){
             throw new CommonException("原密码输入不正确");
         }
 
-        if(encoder.matches(newPassword,sysUser.getPassword())){
+        if(encoder.matches(newPassword,user.getPassword())){
             throw new CommonException("原密码和新密码一样");
         }
 
         // 修改密码 密码不放缓存
-        sysUser.setPassword(encoder.encode(newPassword));
-        this.update(sysUser);
+        user.setPassword(encoder.encode(newPassword));
+        this.update(user);
     }
 
     /**
@@ -236,50 +263,4 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUserDao, SysUser, Lon
                 .sign(Algorithm.HMAC256("com.herocheer.instructor")); // signature
         return token;
     }
-
-    public static void main(String[] args) throws Exception {
-        String kk = generateToken(3L);
-        System.out.println("JWT---------------------------------------------------");
-        System.out.println(kk);
-        //生成的是不带-的字符串，类似于：b17f24ff026d40949c85a24f4f375d42
-        String simpleUUID = IdUtil.simpleUUID();
-        System.out.println("UUID---------------------------------------------------");
-        System.out.println(simpleUUID);
-        System.out.println(IdUtil.fastUUID());
-        System.out.println(IdUtil.fastSimpleUUID());
-
-        //方法2：从Hutool-4.1.14开始提供
-        String id2 = IdUtil.objectId();
-        System.out.println("OBJ---------------------------------------------------");
-        System.out.println(id2);
-        //参数1为终端ID
-        //参数2为数据中心ID
-        Snowflake snowflake = IdUtil.getSnowflake(1, 1);
-        long id = snowflake.nextId();
-        System.out.println("Snowflake---------------------------------------------------");
-        System.out.println(id);
-
-        // 构建node列表
-        List<TreeNode<String>> nodeList = CollUtil.newArrayList();
-
-        Map<String, Object> map = new HashMap();
-        map.put("hh", "u------------------------------------------------");
-        map.put("test", "k------------------------------------------------");
-
-//        nodeList.add(new TreeNode().setExtra(map));
-
-        nodeList.add(new TreeNode<>("0", "8888888888888888", "超级父类", 5));
-        nodeList.add(new TreeNode<>("1", "0", "系统管理", 5).setExtra(map));
-        nodeList.add(new TreeNode<>("11", "1", "用户管理", 222222));
-        nodeList.add(new TreeNode<>("111", "1", "用户添加", 0));
-        nodeList.add(new TreeNode<>("2", "0", "店铺管理", 1));
-        nodeList.add(new TreeNode<>("21", "2", "商品管理", 44));
-        nodeList.add(new TreeNode<>("221", "2", "商品管理2", 2));
-
-        // 0表示最顶层的id是0
-        List<Tree<String>> treeList = TreeUtil.build(nodeList, "8888888888888888");
-        System.out.println(JSONObject.toJSONString(treeList));
-
-    }
-
 }

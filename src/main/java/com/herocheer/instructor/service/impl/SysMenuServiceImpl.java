@@ -9,7 +9,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysMenuDao;
 import com.herocheer.instructor.domain.entity.SysMenu;
-import com.herocheer.instructor.domain.entity.SysUser;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MetaVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.service.SysMenuService;
@@ -37,11 +37,11 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
     /**
      * 查找菜单权限树 (封装菜单权限树)(hutool-treeUtil)
      *
-     * @param sysUser 系统用户
+     * @param user 系统用户
      * @return {@link List < Tree <Long>>}
      */
     @Override
-    public List<Tree<Long>> findMenuTreeToUser(SysUser sysUser) {
+    public List<Tree<Long>> findMenuTreeToUser(User user) {
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
 

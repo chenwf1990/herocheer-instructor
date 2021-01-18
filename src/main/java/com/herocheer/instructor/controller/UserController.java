@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.instructor.domain.entity.SysUser;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
-import com.herocheer.instructor.service.SysUserService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import com.wf.captcha.SpecCaptcha;
@@ -31,19 +31,17 @@ import javax.validation.Valid;
 
 /**
  * @author gaorh
- * @desc 后台用户表（管理员、用户）
- * (SysUser)表控制层
- * @date 2021-01-07 17:49:06
+ * @desc 微信用户、后台用户、后台管理员(User)表控制层
+ * @date 2021-01-18 15:45:22
  * @company 厦门熙重电子科技有限公司
  */
 @Slf4j
 @RestController
 @RequestMapping
 @Api(tags = "后台用户")
-public class SysUserController extends BaseController {
-
+public class UserController extends BaseController {
     @Resource
-    private SysUserService sysUserService;
+    private UserService userService;
 
     @Autowired
     private RedisClient redisClient;
@@ -52,7 +50,7 @@ public class SysUserController extends BaseController {
      * 获取验证码
      *
      * @param request 请求
-     * @return {@link ResponseResult<JSONObject>}
+     * @return {@link ResponseResult < JSONObject >}
      */
     @AllowAnonymous
     @GetMapping("/captcha")
@@ -79,17 +77,24 @@ public class SysUserController extends BaseController {
      * @return {@link ResponseResult}
      */
     @AllowAnonymous
-    @PostMapping("/sysUser")
+    @PostMapping("/user")
     @ApiOperation("用户注册")
-    public ResponseResult<SysUser> registerUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
-        return ResponseResult.ok(sysUserService.addUser(sysUserVO));
+    public ResponseResult<User> registerUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
+        return ResponseResult.ok(userService.addUser(sysUserVO));
     }
 
+    /**
+     * 查询用户(分页)
+     *
+     * @param sysUserVO VO
+     * @param request   请求
+     * @return {@link ResponseResult<Page<User>>}
+     */
     @AllowAnonymous
-    @PostMapping("/sysUser/page")
+    @PostMapping("/user/page")
     @ApiOperation("用户列表")
-    public ResponseResult<Page<SysUser>> queryUsers(@Valid @RequestBody SysUserVO sysUserVO, HttpServletRequest request){
-        Page<SysUser> page = sysUserService.findUserByPage(sysUserVO);
+    public ResponseResult<Page<User>> queryUsers(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){
+        Page<User> page = userService.findUserByPage(sysUserVO);
         return ResponseResult.ok(page);
     }
 
@@ -100,10 +105,10 @@ public class SysUserController extends BaseController {
      * @return {@link ResponseResult}
      */
     @AllowAnonymous
-    @GetMapping("/sysUser/{id:\\w+}")
+    @GetMapping("/user/{id:\\w+}")
     @ApiOperation("获取个人用户信息")
-    public ResponseResult<SysUser> fetchUserById(@ApiParam("用户ID") @PathVariable Long id){
-        return ResponseResult.ok(sysUserService.get(id));
+    public ResponseResult<User> fetchUserById(@ApiParam("用户ID") @PathVariable Long id){
+        return ResponseResult.ok(userService.get(id));
     }
     /**
      * 编辑用户信息
@@ -112,10 +117,10 @@ public class SysUserController extends BaseController {
      * @return {@link ResponseResult}
      */
     @AllowAnonymous
-    @PutMapping("/sysUser")
+    @PutMapping("/user")
     @ApiOperation("编辑用户信息")
-    public ResponseResult<SysUser> editUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
-        return ResponseResult.ok(sysUserService.modifyUser(sysUserVO));
+    public ResponseResult<User> editUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
+        return ResponseResult.ok(userService.modifyUser(sysUserVO));
     }
     /**
      * 登录账户
@@ -129,10 +134,10 @@ public class SysUserController extends BaseController {
     @AllowAnonymous
     @ApiOperation("用户登入")
     public ResponseResult loginAccount(@ApiParam("账号") @RequestParam String account,
-                                @ApiParam("密码") @RequestParam String password,
-                                @ApiParam("验证码") @RequestParam String verCode){
+                                       @ApiParam("密码") @RequestParam String password,
+                                       @ApiParam("验证码") @RequestParam String verCode){
         // 登入流程
-        return ResponseResult.ok(sysUserService.login(account,password,verCode));
+        return ResponseResult.ok(userService.login(account,password,verCode));
     }
 
     /**
@@ -146,9 +151,9 @@ public class SysUserController extends BaseController {
     @AllowAnonymous
     @ApiOperation("密码修改")
     public ResponseResult changePassword(@ApiParam("旧密码") @RequestParam String oldPassword,
-                                       @ApiParam("新密码") @RequestParam String newPassword,HttpServletRequest request){
+                                         @ApiParam("新密码") @RequestParam String newPassword,HttpServletRequest request){
         // 修改密码
-        sysUserService.modifyPassword(this.getUser(request).getId(),oldPassword,newPassword);
+        userService.modifyPassword(this.getUser(request).getId(),oldPassword,newPassword);
         // sysUserService.modifyPassword(4L,oldPassword,newPassword);
         return ResponseResult.ok();
     }
@@ -159,7 +164,7 @@ public class SysUserController extends BaseController {
      * @param request 请求
      * @return {@link ResponseResult}
      */
-    @DeleteMapping("/sysUser")
+    @DeleteMapping("/user")
     @AllowAnonymous
     @ApiOperation("用户退出")
     public ResponseResult logout(HttpServletRequest request){
@@ -177,7 +182,7 @@ public class SysUserController extends BaseController {
      * @return {@link ResponseResult}
      */
     @AllowAnonymous
-    @PutMapping("/sysUser/status")
+    @PutMapping("/user/status")
     @ApiOperation("禁用")
     public ResponseResult forbidSysUser(HttpServletRequest request){
         // TODO 获取当前用户信息,更新状态

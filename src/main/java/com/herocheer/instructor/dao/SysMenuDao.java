@@ -1,7 +1,6 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.SysMenu;
-import com.herocheer.instructor.domain.entity.SysUser;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
