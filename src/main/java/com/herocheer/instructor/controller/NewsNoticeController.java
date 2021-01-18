@@ -30,7 +30,7 @@ public class NewsNoticeController extends BaseController{
     private NewsNoticeService newsNoticeService;
 
     @PostMapping("/queryPageList")
-    @ApiOperation("指导员列表查询")
+    @ApiOperation("新闻列表查询")
     public ResponseResult<Page<NewsNotice>> queryPageList(@RequestBody NewsQueryVo newsQueryVo){
         Page<NewsNotice> page = newsNoticeService.queryPageList(newsQueryVo);
         return ResponseResult.ok().setData(page);
@@ -66,7 +66,8 @@ public class NewsNoticeController extends BaseController{
     @GetMapping("/approval")
     @ApiOperation("新闻活动审批")
     public ResponseResult approval(@ApiParam("新闻活动id") @RequestParam Long id,
-                                   @ApiParam("审核状态 1驳回2通过3撤回") @RequestParam int auditState){
+                                   @ApiParam("审核状态 1通过2驳回3撤回") @RequestParam int auditState,
+                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea){
         newsNoticeService.approval(id,auditState);
         return ResponseResult.ok();
     }

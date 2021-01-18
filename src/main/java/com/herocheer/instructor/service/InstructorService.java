@@ -3,6 +3,7 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.InstructorCert;
 import com.herocheer.instructor.domain.entity.InstructorLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 
@@ -62,4 +63,13 @@ public interface InstructorService extends BaseService<Instructor,Long> {
     long updateInstructor(Instructor instructor);
 
     void loginTest(String token);
+
+    /**
+     * @author chenwf
+     * @desc  指导员证书修改列表
+     * @date 2021-01-14 17:26:18
+     * @param instructorId
+     * @return
+     */
+    List<InstructorCert> getInstructorCertList(Long instructorId);
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
-	<property name="APPLICATION_NAME" value="video-box"/>
+	<property name="APPLICATION_NAME" value="herocheer-instructor"/>
 	<property name="LOG_SAVE_PATH" value="logs"/>
 	<property name="CONSOLE_LOG_PATTERN"
 			  value="%d{yyyy-MM-dd HH:mm:ss.SSS} ${PID:-} [%thread] - %5p %logger{39}: %m%n"/>
@@ -59,12 +59,12 @@
 		<queueSize>10000</queueSize>
 		<appender-ref ref="logFileAppender"/>
 	</appender>
-	<logger name="com.alibaba.spring" level="info"/>
-	<logger name="org.springframework" level="info"/>
-	<logger name="org.apache" level="info"/>
-	<logger name="io.netty" level="info"/>
-	<logger name="org.hibernate" level="info"/>
-	<logger name="com.herocheer" level="info"/>
+	<logger name="com.alibaba.spring" level="debug"/>
+	<logger name="org.springframework" level="debug"/>
+	<logger name="org.apache" level="debug"/>
+	<logger name="io.netty" level="debug"/>
+	<logger name="org.hibernate" level="debug"/>
+	<logger name="com.herocheer" level="debug"/>
 	<!--全异步输出info级以上的日志信息-->
 
 	<root>

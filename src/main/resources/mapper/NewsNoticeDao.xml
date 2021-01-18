@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.NewsNoticeDao">
     
     <sql id="table_field">
-      id, type, pic, title, auditState, auditIdea, content, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, type, pic, title, auditState, auditTime, auditIdea, content, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -21,6 +21,9 @@
         </if>
         <if test="auditState != null">
             auditState,
+        </if>
+        <if test="auditTime != null">
+            auditTime,
         </if>
         <if test="auditIdea != null">
             auditIdea,
@@ -46,6 +49,9 @@
         </if>
         <if test="auditState != null">
             #{auditState},
+        </if>
+        <if test="auditTime != null">
+            #{auditTime},
         </if>
         <if test="auditIdea != null">
             #{auditIdea},
@@ -81,6 +87,9 @@
             </if>
             <if test="auditState != null">
                 auditState = #{auditState},
+            </if>
+            <if test="auditTime != null">
+                auditTime = #{auditTime},
             </if>
             <if test="auditIdea != null">
                 auditIdea = #{auditIdea},
@@ -119,6 +128,41 @@
             <if test="auditState != null">
                 and auditState = #{auditState}
             </if>
+            <if test="auditTime != null">
+                and auditTime = #{auditTime}
+            </if>
+            <if test="auditIdea != null">
+                and auditIdea = #{auditIdea}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Long">
+        select count(1) from news_notice
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="pic != null">
+                and pic = #{pic}
+            </if>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="auditState != null">
+                and auditState = #{auditState}
+            </if>
+            <if test="auditTime != null">
+                and auditTime = #{auditTime}
+            </if>
             <if test="auditIdea != null">
                 and auditIdea = #{auditIdea}
             </if>
@@ -142,17 +186,6 @@
             <if test="title != null">
                 and title like concat('%',#{title},'%')
             </if>
-            <if test="auditState != null">
-                <choose>
-                    <when test="auditState == 4">
-                        and auditState = 2
-                        and pubilcTime &lt;= UNIX_TIMESTAMP(NOW())*1000
-                    </when>
-                    <otherwise>
-                        and auditState = #{auditState}
-                    </otherwise>
-                </choose>
-            </if>
             <if test="createdBy != null">
                 and createdBy like concat('%',#{createdBy},'%')
             </if>
@@ -161,6 +194,12 @@
             </if>
             <if test="endTime != null">
                 and createdTime &lt;= #{endTime}
+            </if>
+            <if test="auditStates != null">
+                and auditState in
+                <foreach item="auditState" index="index" collection="auditStates" open="(" separator="," close=")">
+                    #{auditState}
+                </foreach>
             </if>
         </where>
         order by id desc

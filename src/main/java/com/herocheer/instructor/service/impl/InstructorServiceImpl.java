@@ -7,13 +7,16 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.InstructorDao;
 import com.herocheer.instructor.domain.HeaderParam;
 import com.herocheer.instructor.domain.entity.Instructor;
+import com.herocheer.instructor.domain.entity.InstructorCert;
 import com.herocheer.instructor.domain.entity.InstructorLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.enums.ClientEnums;
 import com.herocheer.instructor.enums.InstructorAuditStateEnums;
+import com.herocheer.instructor.service.InstructorCertService;
 import com.herocheer.instructor.service.InstructorLogService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,8 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     private InstructorLogService instructorLogService;
     @Resource
     private RedisClient redisClient;
+    @Resource
+    private InstructorCertService instructorCertService;
 
     /**
      * @param instructorQueryVo
@@ -69,12 +74,12 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         if(instructor.getAuditState() != InstructorAuditStateEnums.to_audit.getState()){
             throw new CommonException("非待审核中");
         }
-        Instructor update = new Instructor();
-        update.setId(id);
-        update.setAuditState(auditState);
-        update.setAuditIdea(auditIdea);
-        update.setAuditTime(System.currentTimeMillis());
-        this.dao.update(update);
+        instructor.setId(id);
+        instructor.setAuditState(auditState);
+        instructor.setAuditIdea(auditIdea);
+        instructor.setAuditTime(System.currentTimeMillis());
+        this.dao.update(instructor);
+        this.addInstructorCert(instructor);
         //增加审批日志
         instructorLogService.addLog(id,auditState,auditIdea,null);
         if(auditState == InstructorAuditStateEnums.to_pass.getState()){
@@ -114,6 +119,17 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         }
         this.dao.insert(instructor);
         instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"新增");
+        addInstructorCert(instructor); //添加证书日志
+    }
+
+    //添加证书日志
+    private void addInstructorCert(Instructor instructor) {
+        if(instructor.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
+            InstructorCert cert = new InstructorCert();
+            BeanUtils.copyProperties(instructor,cert);
+            cert.setInstructorId(instructor.getId());
+            this.instructorCertService.insert(cert);
+        }
     }
 
     /**
@@ -127,10 +143,12 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     public long updateInstructor(Instructor instructor) {
         Instructor model = this.dao.get(instructor.getId());
         if(model.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
-            throw new CommonException("审核已通过");
+            instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+        }else{
+            instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
         }
-        instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
         long count = this.dao.update(instructor);
+        addInstructorCert(instructor);
         instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"修改");
         return count;
     }
@@ -143,5 +161,19 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         json.put("userType",1);
         json.put("phone","13655080001");
         redisClient.set(token,json.toJSONString());
+    }
+
+    /**
+     * @param instructorId
+     * @return
+     * @author chenwf
+     * @desc 指导员证书修改列表
+     * @date 2021-01-14 17:26:18
+     */
+    @Override
+    public List<InstructorCert> getInstructorCertList(Long instructorId) {
+        Map<String,Object> param = new HashMap<>();
+        param.put("instructorId",instructorId);
+        return this.instructorCertService.findByLimit(param);
     }
 }

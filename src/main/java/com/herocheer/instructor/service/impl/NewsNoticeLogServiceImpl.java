@@ -26,9 +26,9 @@ public class NewsNoticeLogServiceImpl extends BaseServiceImpl<NewsNoticeLogDao, 
      * @date 2021-01-06 09:18:39
      */
     @Override
-    public void addLog(Long id, int auditState,String auditIdea, String remarks) {
+    public void addLog(Long id, Integer auditState,String auditIdea, String remarks) {
         NewsNoticeLog log = new NewsNoticeLog();
-        log.setId(id);
+        log.setNewsNoticeId(id);
         log.setAuditState(auditState);
         log.setAuditIdea(auditIdea);
         log.setRemarks(remarks);
