@@ -1,12 +1,12 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
-import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.dao.CourierStationDao;
+import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
 import com.herocheer.instructor.service.CourierStationService;
-import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao
      * @date 2021-01-07 17:26:18
      */
     @Override
-    public Long addCourierStation(CourierStation courierStation) {
+    public int addCourierStation(CourierStation courierStation) {
         return this.dao.insert(courierStation);
     }
 

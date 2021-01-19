@@ -1,6 +1,7 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.SysRole;
+import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
@@ -21,5 +22,12 @@ public interface SysRoleDao extends BaseDao<SysRole, Long> {
      * @return {@link List<SysRole>}
      */
     List<SysRole> selectRoleByPage(SysRoleVO sysRoleVO);
+
+    /**
+     * 批量插入角色菜单中间表
+     *
+     * @return int
+     */
+    int insertBatchSysRoleMenu(List<SysRoleMenu> SysRoleMenus);
 
 }

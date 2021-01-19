@@ -61,4 +61,12 @@ public interface UserService extends BaseService<User, Long> {
      * @param userId      用户id
      */
     void modifyPassword(Long userId,String oldPassword,String newPassword);
+
+    /**
+     * 根据openId获取微信用户信息
+     *
+     * @param id id
+     * @return {@link User}
+     */
+    User findUserByOpenId(Long id);
 }

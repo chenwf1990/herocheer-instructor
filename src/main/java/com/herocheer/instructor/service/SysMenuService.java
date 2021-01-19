@@ -4,7 +4,7 @@ import cn.hutool.core.lang.tree.Tree;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysMenu;
-import com.herocheer.instructor.domain.entity.SysUser;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 
 import java.util.List;
@@ -20,10 +20,10 @@ public interface SysMenuService extends BaseService<SysMenu, Long> {
     /**
      * 根据用户的菜单权限
      *
-     * @param sysUser 系统用户
+     * @param user 系统用户
      * @return {@link List<Tree<Long>>}
      */
-    List<Tree<Long>> findMenuTreeToUser(SysUser sysUser);
+    List<Tree<Long>> findMenuTreeToUser(User user);
 
     /**
      * 角色分配菜单权限

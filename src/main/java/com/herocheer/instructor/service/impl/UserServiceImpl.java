@@ -146,6 +146,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         return user;
     }
 
+    /**
+     * 批处理系统用户角色中间表
+     *
+     * @param sysUserVO 系统用户签证官
+     * @param user      用户
+     */
     private void batchSysUserRole(SysUserVO sysUserVO, User user) {
         if(StringUtils.isNotBlank(sysUserVO.getRoleId())){
             String[] arr = sysUserVO.getRoleId().split(",");
@@ -198,12 +204,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         User user = User.builder().userType(UserType.sysUser.getCode()).build();
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
-        Long l = this.dao.update(user);
+        int l = this.dao.update(user);
         log.info("用户{}修改成功",user.getUserName());
 
-        // TODO 删除中间表记录
-        if(l > 0L){
-            this.dao.deleteBatchSysUserRole(sysUserVO.getId());
+        // 删除中间表记录
+        if(l > 0){
+            this.dao.deleteSysUserRole(sysUserVO.getId());
             this.batchSysUserRole(sysUserVO, user);
         }
         return user;
@@ -230,6 +236,20 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 修改密码 密码不放缓存
         user.setPassword(encoder.encode(newPassword));
         this.update(user);
+    }
+
+    /**
+     * 根据openId获取微信用户信息
+     *
+     * @param id id
+     * @return {@link User}
+     */
+    @Override
+    public User findUserByOpenId(Long id) {
+        Map<String, Object> objectMap = new HashMap();
+        objectMap.put("openid", id);
+        User user = this.dao.selectSysUserOne(objectMap);
+        return user;
     }
 
     /**

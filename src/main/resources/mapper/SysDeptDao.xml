@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.SysDeptDao">
+
+    <sql id="table_field">
+      id, pid, deptName, level, sortNo, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.SysDept">
+        insert into sys_dept (
+        <trim suffixOverrides=",">
+            <if test="pid != null">
+                pid,
+            </if>
+            <if test="deptName != null">
+                deptName,
+            </if>
+            <if test="level != null">
+                level,
+            </if>
+            <if test="sortNo != null">
+                sortNo,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="pid != null">
+                #{pid},
+            </if>
+            <if test="deptName != null">
+                #{deptName},
+            </if>
+            <if test="level != null">
+                #{level},
+            </if>
+            <if test="sortNo != null">
+                #{sortNo},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from sys_dept where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.SysDept">
+        update sys_dept
+        <set>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="deptName != null">
+                deptName = #{deptName},
+            </if>
+            <if test="level != null">
+                level = #{level},
+            </if>
+            <if test="sortNo != null">
+                sortNo = #{sortNo},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysDept">
+        select
+        <include refid="table_field"/>
+        from sys_dept where id = #{id}
+    </select>
+
+    <!--机构列表-->
+    <select id="selectDeptByPage" parameterType="com.herocheer.instructor.domain.vo.SysDeptVO" resultType="com.herocheer.instructor.domain.entity.SysDept">
+        select
+        <include refid="table_field"/>
+        from sys_dept
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="deptName != null">
+                    and deptName = #{deptName}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                <if test="beginTime != null">
+                    and createdTime >= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    and createdTime &lt;= #{endTime}
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysDept">
+        select
+        <include refid="table_field"/>
+        from sys_dept
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="sortNo != null">
+                and sortNo = #{sortNo}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

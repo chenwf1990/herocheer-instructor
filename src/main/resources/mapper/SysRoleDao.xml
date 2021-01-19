@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.SysRoleDao">
+
+    <sql id="table_field">
+      id, roleName, code, description, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.SysRole">
+        insert into sys_role (
+        <trim suffixOverrides=",">
+            <if test="roleName != null">
+                roleName,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="roleName != null">
+                #{roleName},
+            </if>
+            <if test="code != null">
+                #{code},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from sys_role where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.SysRole">
+        update sys_role
+        <set>
+            <if test="roleName != null">
+                roleName = #{roleName},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysRole">
+        select
+        <include refid="table_field"/>
+        from sys_role where id = #{id}
+    </select>
+
+    <!--角色列表-->
+    <select id="selectRoleByPage" parameterType="com.herocheer.instructor.domain.vo.SysRoleVO" resultType="com.herocheer.instructor.domain.entity.SysRole">
+        select <include refid="table_field"/>
+        from sys_role
+        <trim prefixOverrides="AND | OR">
+            <where>
+                <if test="roleName != null">
+                    and roleName = #{roleName}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                <if test="beginTime != null">
+                    and createdTime >= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    and createdTime &lt;= #{endTime}
+                </if>
+            </where>
+        </trim>
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysRole">
+        select
+        <include refid="table_field"/>
+        from sys_role
+        <where>
+            <if test="roleName != null">
+                and roleName = #{roleName}
+            </if>
+            <if test="code != null">
+                and code = #{code}
+            </if>
+            <if test="description != null">
+                and description = #{description}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!-- 插入批量-->
+    <insert id="insertBatchSysRoleMenu" parameterType="list">
+        insert into sys_role_menu (roleId,menuId)
+        VALUES
+        <foreach collection="list" item="sysRoleMenu" separator=",">
+            (#{sysRoleMenu.roleId},#{sysRoleMenu.menuId})
+        </foreach>
+    </insert>
+</mapper>

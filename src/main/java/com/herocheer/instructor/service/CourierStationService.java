@@ -1,8 +1,8 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
-import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
 
 /**
@@ -19,7 +19,7 @@ public interface CourierStationService extends BaseService<CourierStation,Long> 
      * @param courierStation
      * @return
      */
-    Long addCourierStation(CourierStation courierStation);
+    int addCourierStation(CourierStation courierStation);
 
     /**
      * @author chenwf

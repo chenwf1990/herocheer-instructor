@@ -5,6 +5,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysRoleDao;
 import com.herocheer.instructor.domain.entity.SysRole;
+import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -13,6 +14,7 @@ import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +40,21 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
         BeanCopier.create(sysRoleVO.getClass(),sysRole.getClass(),false).copy(sysRoleVO,sysRole,null);
         // TODO 角色编码
         this.insert(sysRole);
+
         // TODO 是否需要直接和菜单建立关联还是独立功能单独授权
+        // 批量插入中间表
+        if(StringUtils.isNotBlank(sysRoleVO.getRoleId())){
+            String[] arr = sysRoleVO.getRoleId().split(",");
+            List<SysRoleMenu> list = new ArrayList<>();
+            SysRoleMenu sysRoleMenu = null;
+            for (int i = 0; i < arr.length; i++) {
+                sysRoleMenu = new SysRoleMenu();
+                sysRoleMenu.setMenuId(sysRole.getId());
+                sysRoleMenu.setRoleId(Long.parseLong(arr[i]));
+                list.add(sysRoleMenu);
+            }
+            this.dao.insertBatchSysRoleMenu(list);
+        }
         return sysRole;
     }
 

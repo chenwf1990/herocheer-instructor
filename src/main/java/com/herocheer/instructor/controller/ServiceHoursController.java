@@ -5,12 +5,18 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.ServiceHours;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.service.ServiceHoursService;
-import com.herocheer.web.annotation.AllowAnonymous;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -37,14 +43,14 @@ public class ServiceHoursController extends BaseController{
     @PostMapping("/add")
     @ApiOperation("新增驿站服务时段")
     public ResponseResult add(@RequestBody ServiceHours serviceHours){
-        Long count=serviceHoursService.insert(serviceHours);
+        int count=serviceHoursService.insert(serviceHours);
         return ResponseResult.isSuccess(count);
     }
 
     @PostMapping("/update")
     @ApiOperation("更新驿站服务时段")
     public ResponseResult update(@RequestBody ServiceHours serviceHours){
-        Long count=serviceHoursService.update(serviceHours);
+        int count=serviceHoursService.update(serviceHours);
         return ResponseResult.isSuccess(count);
     }
 

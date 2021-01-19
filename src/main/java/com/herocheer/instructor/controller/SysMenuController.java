@@ -92,7 +92,7 @@ public class SysMenuController extends BaseController {
     /**
      * 根据id编辑菜单
      *
-     * @param sysMenuVO 系统菜单签证官
+     * @param sysMenuVO VO
      * @param request   请求
      * @return {@link ResponseResult<SysMenu>}
      */

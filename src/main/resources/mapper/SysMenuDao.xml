@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.SysMenuDao">
+
+    <sql id="table_field">
+      id, pid, menuName, code, url, orderNo, icon, remark, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.SysMenu">
+        insert into sys_menu (
+        <trim suffixOverrides=",">
+            <if test="pid != null">
+                pid,
+            </if>
+            <if test="menuName != null">
+                menuName,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="orderNo != null">
+                orderNo,
+            </if>
+            <if test="icon != null">
+                icon,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="pid != null">
+                #{pid},
+            </if>
+            <if test="menuName != null">
+                #{menuName},
+            </if>
+            <if test="code != null">
+                #{code},
+            </if>
+            <if test="url != null">
+                #{url},
+            </if>
+            <if test="orderNo != null">
+                #{orderNo},
+            </if>
+            <if test="icon != null">
+                #{icon},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from sys_menu where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.SysMenu">
+        update sys_menu
+        <set>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="menuName != null">
+                menuName = #{menuName},
+            </if>
+            <if test="code != null">
+                code = #{code},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+            <if test="orderNo != null">
+                orderNo = #{orderNo},
+            </if>
+            <if test="icon != null">
+                icon = #{icon},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysMenu">
+        select
+        <include refid="table_field"/>
+        from sys_menu where `status`= 1 and id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysMenu">
+        select
+        <include refid="table_field"/>
+        from sys_menu
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="menuName != null">
+                and menuName = #{menuName}
+            </if>
+            <if test="code != null">
+                and code = #{code}
+            </if>
+            <if test="url != null">
+                and url = #{url}
+            </if>
+            <if test="orderNo != null">
+                and orderNo = #{orderNo}
+            </if>
+            <if test="icon != null">
+                and icon = #{icon}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+
+    <!--查找用户的菜单权限-->
+    <select id="selectMenuTreeToUser" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysMenu">
+        select <include refid="table_field"/>
+        from sys_menu
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="pid != null">
+                    and pid = #{pid}
+                </if>
+                <if test="menuName != null">
+                    and menuName = #{menuName}
+                </if>
+                <if test="code != null">
+                    and code = #{code}
+                </if>
+                <if test="url != null">
+                    and url = #{url}
+                </if>
+                <if test="orderNo != null">
+                    and orderNo = #{orderNo}
+                </if>
+                <if test="icon != null">
+                    and icon = #{icon}
+                </if>
+                <if test="remark != null">
+                    and remark = #{remark}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+            </trim>
+        </where>
+    </select>
+
+    <!--分配菜单权限给角色-->
+    <select id="selectMenuTreeToRole" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysMenu">
+        select <include refid="table_field"/>
+        from sys_menu
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="pid != null">
+                    and pid = #{pid}
+                </if>
+                <if test="menuName != null">
+                    and menuName = #{menuName}
+                </if>
+                <if test="code != null">
+                    and code = #{code}
+                </if>
+                <if test="url != null">
+                    and url = #{url}
+                </if>
+                <if test="orderNo != null">
+                    and orderNo = #{orderNo}
+                </if>
+                <if test="icon != null">
+                    and icon = #{icon}
+                </if>
+                <if test="remark != null">
+                    and remark = #{remark}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+            </trim>
+        </where>
+    </select>
+
+    <!--后台菜单列表-->
+    <select id="selectMenuByPage" parameterType="com.herocheer.instructor.domain.vo.SysMenuVO" resultType="com.herocheer.instructor.domain.entity.SysMenu">
+        select <include refid="table_field"/> from sys_menu
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="menuName != null">
+                    and menuName = #{menuName}
+                </if>
+                <if test="beginTime != null">
+                    and createdTime >= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    and createdTime &lt;= #{endTime}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+            </trim>
+        </where>
+        order by id desc
+    </select>
+</mapper>
