@@ -20,8 +20,8 @@ public class SysArea extends BaseEntity {
     private String areaCode;
     @ApiModelProperty("行政编码——350000000000：福建省")   
     private String chinaCode;
-    @ApiModelProperty("级别—— 0：国家、1：省、2：市、3：区 4：街道 5：社区")
-    private String level;
+    @ApiModelProperty("级别—— 0：国家、1：省、2：市、3：区 4：街道 5：社区")   
+    private Integer level;
     @ApiModelProperty("备注")   
     private String remark;
 

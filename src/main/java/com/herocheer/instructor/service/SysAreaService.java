@@ -5,6 +5,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,6 +24,15 @@ public interface SysAreaService extends BaseService<SysArea,Long> {
      * @return
      */
     List<Tree<Long>> getAllArea(int type);
+
+    /**
+     * @author chenwf
+     * @desc  获取所有区域，树形态
+     * @date 2021-01-07 09:50:58
+     * @param type 1无权限 2有数据权限
+     * @return
+     */
+    List<Tree<Long>> getAllArea(int type,Long parentId);
 
     /**
      * @author chenwf

@@ -6,7 +6,9 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.InstructorCert;
 import com.herocheer.instructor.domain.entity.InstructorLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -72,4 +74,14 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * @return
      */
     List<InstructorCert> getInstructorCertList(Long instructorId);
+
+    /**
+     * @author chenwf
+     * @desc  指导员导入
+     * @date 2021-01-14 17:26:18
+     * @param multipartFile
+     * @param request
+     * @return
+     */
+    void instructorImport(MultipartFile multipartFile, HttpServletRequest request);
 }

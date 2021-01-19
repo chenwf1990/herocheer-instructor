@@ -447,4 +447,14 @@
     <delete id="deleteSysUserRole" parameterType="long">
         delete from sys_user_role where userId = #{id}
     </delete>
+
+    <select id="findUserByUserNames" parameterType="java.util.List" resultType="com.herocheer.instructor.domain.entity.User">
+        select * from user
+        <where>
+            and userName in
+            <foreach item="userName" index="index" collection="list" open="(" separator="," close=")">
+                #{userName}
+            </foreach>
+        </where>
+    </select>
 </mapper>

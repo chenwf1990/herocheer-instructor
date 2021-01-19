@@ -6,7 +6,10 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingVo;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -56,4 +59,24 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @return
      */
     long batchDelete(String ids);
+
+    /**
+     * @author chenwf
+     * @desc  排班模板导出
+     * @date 2021-01-12 08:47:02
+     * @param courierStationId
+     * @param serviceTimeId
+     * @param response
+     */
+    void templateExport(Long courierStationId, Long serviceTimeId, HttpServletResponse response);
+
+    /**
+     * @author chenwf
+     * @desc  排班信息导入
+     * @date 2021-01-19 09:47:02
+     * @param courierStationId
+     * @param serviceTimeId
+     * @param multipartFile
+     */
+    void workingScheduleImport(Long courierStationId, Long serviceTimeId, MultipartFile multipartFile);
 }

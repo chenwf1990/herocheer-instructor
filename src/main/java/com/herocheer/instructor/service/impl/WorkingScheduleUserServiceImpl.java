@@ -60,4 +60,16 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     public long deleteByMap(Map<String, Object> params) {
         return this.dao.deleteByMap(params);
     }
+
+    /**
+     * @param params
+     * @return
+     * @author chenwf
+     * @desc 查找相同时间段的值班人员
+     * @date 2021-01-12 08:57:02
+     */
+    @Override
+    public List<String> findWorkingUser(Map<String, Object> params) {
+        return this.dao.findWorkingUser(params);
+    }
 }

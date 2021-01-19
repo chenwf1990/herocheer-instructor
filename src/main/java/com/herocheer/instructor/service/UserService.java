@@ -5,6 +5,8 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 
+import java.util.List;
+
 /**
  * @author gaorh
  * @desc 微信用户、后台用户、后台管理员(User)表服务接口
@@ -69,4 +71,22 @@ public interface UserService extends BaseService<User, Long> {
      * @return {@link User}
      */
     User findUserByOpenId(Long id);
+
+    /**
+     * 添加用户信息
+     * @param name
+     * @param cardNo
+     * @param sex
+     * @param phone
+     * @param userType
+     * @return
+     */
+    User addUser(String name, String cardNo, Integer sex, String phone, Integer userType);
+
+    /**
+     * 根据用户姓名查找用户信息
+     * @param userNames
+     * @return
+     */
+    List<User> findUserByUserNames(List<String> userNames);
 }

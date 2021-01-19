@@ -338,7 +338,7 @@
     </select>
     
     <!--查询条数-->
-    <select id="count" parameterType="map" resultType="java.lang.Long">
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
         select count(1) from instructor_cert
         <where>
             <if test="instructorId != null">

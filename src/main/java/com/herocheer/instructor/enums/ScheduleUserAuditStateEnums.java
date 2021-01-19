@@ -8,8 +8,8 @@ package com.herocheer.instructor.enums;
  */
 public enum ScheduleUserAuditStateEnums {
     to_audit(0,"待审核"),
-    to_reject(1,"通过"),
-    to_pass(2,"驳回");
+    to_pass(1,"通过"),
+    to_reject(2,"驳回");
 
 
     private int state;

@@ -283,4 +283,40 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
                 .sign(Algorithm.HMAC256("com.herocheer.instructor")); // signature
         return token;
     }
+
+
+    /**
+     * 添加用户信息
+     *
+     * @return
+     */
+    @Override
+    public User addUser(String name, String cardNo, Integer sex, String phone, Integer userType) {
+        // 判断身份证是否存在是否存在
+        Map<String, Object> params = new HashMap();
+        params.put("certificateNo", cardNo);
+        User user = this.dao.selectSysUserOne(params);
+        if(user != null){
+            return user;
+        }
+        user = new User();
+        user.setCertificateNo(cardNo);
+        user.setUserName(name);
+        user.setPhone(phone);
+        user.setUserType(userType);
+        user.setSex(sex);
+        this.dao.insert(user);
+        return user;
+    }
+
+    /**
+     * 根据用户姓名查找用户信息
+     *
+     * @param userNames
+     * @return
+     */
+    @Override
+    public List<User> findUserByUserNames(List<String> userNames) {
+        return this.dao.findUserByUserNames(userNames);
+    }
 }

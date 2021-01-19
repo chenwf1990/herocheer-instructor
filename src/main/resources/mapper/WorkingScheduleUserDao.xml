@@ -246,4 +246,16 @@
             and b.userName like CONCAT('%',#{userName},'')
         </if>
     </select>
+    <select id="findWorkingUser" parameterType="map" resultType="java.util.List">
+        select b.userName from working_schedule a
+        INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
+        and a.courierStationId = #{courierStationId}
+        and a.scheduleTime = #{scheduleTime}
+        and a.serviceBeginTime = #{serviceBeginTime}
+        and a.serviceEndTime = #{serviceEndTime}
+        and b.userId in
+        <foreach item="userId" index="index" collection="userIdList" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
 </mapper>

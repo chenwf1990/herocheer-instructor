@@ -50,7 +50,7 @@ public class Instructor extends BaseEntity {
     private String otherAuditUnitName;
     @ApiModelProperty("证书图片 （最多3张，多张逗号隔开）")   
     private String certificatePic;
-    @ApiModelProperty("渠道0pc 1H5 2小程序 3ios 4Android")   
+    @ApiModelProperty("渠道0pc 1H5 2小程序 3ios 4Android 5导入")
     private Integer channel;
     @ApiModelProperty("微信openId")   
     private String openId;

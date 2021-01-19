@@ -1,29 +1,29 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.InstructorDao;
 import com.herocheer.instructor.domain.HeaderParam;
-import com.herocheer.instructor.domain.entity.Instructor;
-import com.herocheer.instructor.domain.entity.InstructorCert;
-import com.herocheer.instructor.domain.entity.InstructorLog;
+import com.herocheer.instructor.domain.entity.*;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
-import com.herocheer.instructor.enums.ClientEnums;
-import com.herocheer.instructor.enums.InstructorAuditStateEnums;
-import com.herocheer.instructor.service.InstructorCertService;
-import com.herocheer.instructor.service.InstructorLogService;
-import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.enums.*;
+import com.herocheer.instructor.service.*;
+import com.herocheer.instructor.utils.ExcelUtils;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author chenwf
@@ -40,6 +40,10 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     private RedisClient redisClient;
     @Resource
     private InstructorCertService instructorCertService;
+    @Resource
+    private SysAreaService sysAreaService;
+    @Resource
+    private UserService userService;
 
     /**
      * @param instructorQueryVo
@@ -175,5 +179,108 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         Map<String,Object> param = new HashMap<>();
         param.put("instructorId",instructorId);
         return this.instructorCertService.findByLimit(param);
+    }
+
+    /**
+     * @param multipartFile
+     * @param request
+     * @return
+     * @author chenwf
+     * @desc 指导员导入
+     * @date 2021-01-14 17:26:18
+     */
+    @Override
+    public void instructorImport(MultipartFile multipartFile, HttpServletRequest request) {
+        try {
+            List<Instructor> instructors = new ArrayList<>();
+            ExcelReader reader = ExcelUtil.getReader(multipartFile.getInputStream());
+            //第一行是标题，第二行是标
+            List<List<Object>> read = reader.read(1,1000);
+            List<Object> title = read.get(0);
+            //获取所有地区数据
+            List<SysArea> areas = sysAreaService.findByLimit(new HashMap<>());
+            for (int i = 0; i < read.size(); i++) {
+                if(i == 0){//标题行
+                    continue;
+                }
+                List<Object> dataList = read.get(i);
+                for (int j = 0; j < dataList.size(); j++) {
+                    boolean required = ExcelUtils.isRequired(title.get(j), dataList.get(j));
+                    if(!required){
+                        throw new CommonException("第【"+(i+2)+"】行，第【"+(j+1)+"】列："+title.get(j)+"必填选项");
+                    }
+                }
+                String errMsg = "第【"+(i+2)+"】行，第【"+(i+1)+"】列：";
+                Instructor instructor = this.buildInstructor(dataList,errMsg,areas);
+                instructors.add(instructor);
+            }
+            if(!instructors.isEmpty()){
+                //批量插入指导员数据
+                this.dao.batchInsert(instructors);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Instructor buildInstructor(List<Object> dataList, String errMsg, List<SysArea> areas) {
+        Instructor instructor = new Instructor();
+        instructor.setChannel(ChannelEnums.imp.getType());
+        instructor.setAuditState(InstructorAuditStateEnums.to_pass.getState());
+        instructor.setName(dataList.get(0).toString());
+        instructor.setSex(SexEnums.getType(dataList.get(1).toString()));
+        //是否存在该指导员信息
+        instructor.setCardNo(dataList.get(2).toString());
+        Map<String,Object> params = new HashMap<>();
+        params.put("cardNo",instructor.getCardNo());
+        int count = this.dao.count(params);
+        if(count > 0){
+            throw new CommonException(errMsg+instructor.getCardNo()+"已存在该指导员数据");
+        }
+        instructor.setWorkUnit(dataList.get(3).toString());
+        instructor.setPhone(dataList.get(4).toString());
+        instructor.setCertificateNo(dataList.get(5).toString());
+        instructor.setCertificateGrade(dataList.get(6).toString());
+        instructor.setGuideProject(dataList.get(7).toString());
+        instructor.setGuideStation(dataList.get(8).toString());
+        instructor.setOpeningDate(((Date) dataList.get(9)).getTime());
+        instructor.setAuditUnitName(dataList.get(10).toString());
+        instructor.setAuditUnitType(AuditUnitEnums.getType(instructor.getAuditUnitName()));
+        instructor.setOtherAuditUnitName(dataList.get(11).toString());
+        //12,13,14 常驻区（区）,常驻区（街道）,常驻区（社区）
+        String areaCode = "";
+        String areaName = "";
+        if(dataList.get(12) != null){
+            areaName = dataList.get(12).toString();
+            SysArea sysArea = getAreaCode(areas,dataList.get(12),errMsg,null);
+            areaCode = sysArea == null ? areaCode : sysArea.getAreaCode();
+            sysArea = getAreaCode(areas,dataList.get(13),errMsg,sysArea);
+            areaCode = sysArea == null ? areaCode : sysArea.getAreaCode();
+            areaName = sysArea == null ? areaName : areaName + "/" +sysArea.getAreaName();
+            sysArea = getAreaCode(areas,dataList.get(14),errMsg,sysArea);
+            areaCode = sysArea == null ? areaCode : sysArea.getAreaCode();
+            areaName = sysArea == null ? areaName : areaName + "/" +sysArea.getAreaName();
+        }
+        instructor.setAreaCode(areaCode);
+        instructor.setAreaName(areaName);
+        instructor.setCertificatePic(dataList.get(15).toString());
+
+        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(), instructor.getPhone(), 2);
+        instructor.setUserId(user.getId());
+        return instructor;
+    }
+
+    private SysArea getAreaCode(List<SysArea> areas, Object areaName, String errMsg, SysArea sysArea) {
+        if(areaName != null){
+            List<SysArea> list = areas.stream().filter(s -> s.getAreaName().equals(areaName)).collect(Collectors.toList());
+            if(sysArea != null){
+                list = list.stream().filter(s -> s.getPid().equals(sysArea.getId())).collect(Collectors.toList());
+            }
+            if(list.isEmpty()){
+                throw new CommonException(errMsg+"地区输入错误");
+            }
+            return list.get(0);
+        }
+        return sysArea;
     }
 }

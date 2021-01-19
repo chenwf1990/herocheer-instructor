@@ -60,7 +60,7 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
         Map<String,Object> params = new HashMap<>();
         params.put("type",workingSignRecord.getType());
         params.put("createdId",userEntity.getId());
-        long count = this.dao.count(params);
+        int count = this.dao.count(params);
         if(count > 0){
             throw new CommonException("请勿重复打卡");
         }

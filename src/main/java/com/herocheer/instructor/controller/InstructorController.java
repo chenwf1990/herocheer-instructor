@@ -15,9 +15,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -111,6 +113,14 @@ public class InstructorController extends BaseController{
 //        redisClient.set(token,json.toJSONString());
         instructorService.loginTest(token);
         return ResponseResult.ok().setMessage(token);
+    }
+
+
+    @GetMapping("/instructorImport")
+    @ApiOperation("指导员导入")
+    public ResponseResult<List<InstructorCert>> instructorImport(MultipartFile multipartFile,HttpServletRequest request){
+        instructorService.instructorImport(multipartFile,request);
+        return ResponseResult.ok();
     }
 
 }

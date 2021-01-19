@@ -3,18 +3,22 @@ package com.herocheer.instructor.enums;
 /**
  * @author chenwf
  * @desc
- * @date 2021/1/13
+ * @date 2021/1/5
  * @company 厦门熙重电子科技有限公司
  */
-public enum ScheduleUserTypeEnums {
-    STATION_DUTY(1,"站长"),
-    FIXATION_DUTY(2,"固定值班"),
-    SUBSCRIBE_DUTY(2,"预约值班");
+public enum ChannelEnums {
+    pc(0,"pc端"),
+    h5(1,"H5"),
+    xcx(2,"小程序"),
+    ios(3,"ios"),
+    android(4,"安卓"),
+    imp(5,"导入");
+
 
     private int type;
     private String name;
 
-    ScheduleUserTypeEnums(int type, String name) {
+    ChannelEnums(int type, String name) {
         this.type = type;
         this.name = name;
     }
@@ -23,8 +27,8 @@ public enum ScheduleUserTypeEnums {
         return type;
     }
 
-    public void setType(int state) {
-        this.type = state;
+    public void setType(int type) {
+        this.type = type;
     }
 
     public String getName() {

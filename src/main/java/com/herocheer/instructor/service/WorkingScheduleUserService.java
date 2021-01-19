@@ -40,4 +40,13 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return
      */
     Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo);
+
+    /**
+     * @author chenwf
+     * @desc  查找相同时间段的值班人员
+     * @date 2021-01-12 08:57:02
+     * @param params
+     * @return
+     */
+    List<String> findWorkingUser(Map<String, Object> params);
 }

@@ -55,13 +55,7 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
      */
     @Override
     public List<Tree<Long>> getAllArea(int type) {
-        List<SysArea> sysAreas = this.dao.findByLimit(new HashMap<>());
-        if(type == 2){
-            sysAreas = filterDataPermission(sysAreas);
-        }
-        //组装成树结构
-        List<Tree<Long>> treeNodes = getTreeNode(sysAreas);
-        return treeNodes;
+        return getAllArea(type,0L);
     }
 
     private List<SysArea> filterDataPermission(List<SysArea> sysAreas) {
@@ -70,10 +64,9 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
     }
 
     //组装成树结构
-    private List<Tree<Long>> getTreeNode(List<SysArea> sysAreas) {
+    private List<Tree<Long>> getTreeNode(List<SysArea> sysAreas, long parentId) {
         List<TreeNode<Long>> nodeList = sysAreas.stream().map(area -> {
             Map<String,Object> extra=new HashMap<>();
-            extra.put("id",area.getId());
             extra.put("level",area.getLevel());
             extra.put("pid",area.getPid());
             extra.put("chinaCode",area.getChinaCode());
@@ -82,8 +75,26 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
                     .setExtra(extra);
             return treeNode;
         }).collect(Collectors.toList());
-        List<Tree<Long>> trees = TreeUtil.build(nodeList,0L);
+        List<Tree<Long>> trees = TreeUtil.build(nodeList,parentId);
         return trees;
     }
 
+    /**
+     * @param type     1无权限 2有数据权限
+     * @param parentId
+     * @return
+     * @author chenwf
+     * @desc 获取所有区域，树形态
+     * @date 2021-01-07 09:50:58
+     */
+    @Override
+    public List<Tree<Long>> getAllArea(int type, Long parentId) {
+        List<SysArea> sysAreas = this.dao.findByLimit(new HashMap<>());
+        if(type == 2){
+            sysAreas = filterDataPermission(sysAreas);
+        }
+        //组装成树结构
+        List<Tree<Long>> treeNodes = getTreeNode(sysAreas,parentId);
+        return treeNodes;
+    }
 }
