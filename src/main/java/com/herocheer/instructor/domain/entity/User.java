@@ -43,7 +43,7 @@ public class User extends BaseEntity {
     @ApiModelProperty("邮箱")
     private String email;
     @ApiModelProperty("手机号码")
-    private String phoneNo;
+    private String phone;
     @ApiModelProperty("用户来源：1-从i厦门绑定的用户；2-后台系统录入的")
     private String source;
     @ApiModelProperty("证件号码")

@@ -110,6 +110,19 @@ public class UserController extends BaseController {
     public ResponseResult<User> fetchUserById(@ApiParam("用户ID") @PathVariable Long id){
         return ResponseResult.ok(userService.get(id));
     }
+
+    /**
+     * 通过openId获取微信用户
+     *
+     * @param id id
+     * @return {@link ResponseResult<User>}
+     */
+    @AllowAnonymous
+    @GetMapping("/weChatUser/{id:\\w+}")
+    @ApiOperation("获取个人用户信息")
+    public ResponseResult<User> fetchUserByOpenId(@ApiParam("用户ID") @PathVariable Long id){
+        return ResponseResult.ok(userService.findUserByOpenId(id));
+    }
     /**
      * 编辑用户信息
      *

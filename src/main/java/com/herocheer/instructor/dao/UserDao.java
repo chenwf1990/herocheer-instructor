@@ -39,5 +39,11 @@ public interface UserDao extends BaseDao<User, Long> {
      */
     int insertBatchSysUserRole(List<SysUserRole> sysUserRoles);
 
-    int deleteBatchSysUserRole(Long userId);
+    /**
+     * 删除系统用户角色
+     *
+     * @param userId 用户id
+     * @return int
+     */
+    int deleteSysUserRole(Long userId);
 }

@@ -29,16 +29,17 @@ public class SysRoleVO {
     private String code;
     @ApiModelProperty("描述")
     private String description;
+    @ApiModelProperty("描述")
+    private String roleId;
+
     @ApiModelProperty("更新者ID")
     private Long updateId;
     @ApiModelProperty("更新者")
     private String updateBy;
     @ApiModelProperty("更新时间")
     private Long updateTime;
-
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status = true;
-
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;
     @ApiModelProperty("创建时间(结束时间)")

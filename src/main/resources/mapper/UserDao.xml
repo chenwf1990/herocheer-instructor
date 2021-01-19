@@ -403,6 +403,9 @@
                 <if test="email != null">
                     and a.email = #{email}
                 </if>
+                <if test="openid != null">
+                    and a.openid = #{openid}
+                </if>
                 and a.`status`=1 limit 1
             </trim>
         </where>
@@ -437,11 +440,11 @@
                 </if>
             </trim>
         </where>
-        order by id desc
+        order by createdTime desc
     </select>
 
     <!-- 插入批量-->
-    <delete id="deleteBatchSysUserRole" parameterType="long">
+    <delete id="deleteSysUserRole" parameterType="long">
         delete from sys_user_role where userId = #{id}
     </delete>
 </mapper>
