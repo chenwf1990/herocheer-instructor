@@ -1,26 +1,20 @@
 package com.herocheer.instructor.enums;
 
-import org.apache.ibatis.annotations.ConstructorArgs;
-
 /**
- * @author chenwf
- * @desc 指导员审核状态枚举
- * @date 2021/1/5
- * @company 厦门熙重电子科技有限公司
+ * 活动审核状态
  */
-public enum InstructorAuditStateEnums {
-    to_audit(0,"待审核"),
-    to_pass(1,"审核通过"),
-    to_reject(2,"审核驳回"),
-    to_backout(3,"撤销");
-    InstructorAuditStateEnums(){
+public enum ActivityApprovalStateEnums {
+    PENDING(0,"待审核"),
+    PASSED(1,"通过"),
+    OVERRULE(2,"驳回");
+    ActivityApprovalStateEnums(){
 
     }
 
     private int state;
     private String name;
 
-    InstructorAuditStateEnums(int state, String name) {
+    ActivityApprovalStateEnums(int state, String name) {
         this.state = state;
         this.name = name;
     }

@@ -46,4 +46,12 @@ public interface UserDao extends BaseDao<User, Long> {
      * @return int
      */
     int deleteSysUserRole(Long userId);
+
+    /**
+     * 根据用户姓名查找用户信息
+     *
+     * @param userNames
+     * @return int
+     */
+    List<User> findUserByUserNames(List<String> userNames);
 }

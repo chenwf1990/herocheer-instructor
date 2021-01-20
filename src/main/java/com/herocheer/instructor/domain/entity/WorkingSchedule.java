@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 排班表
- * @date 2020/12/30
+ * @date 2021-01-19 17:54:06
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -24,10 +24,6 @@ public class WorkingSchedule extends BaseEntity {
     private String serviceBeginTime;
     @ApiModelProperty("服务结束时段 (时分)")   
     private String serviceEndTime;
-    @ApiModelProperty("值班站长id")   
-    private Long stationUserId;
-    @ApiModelProperty("值班站长名称")   
-    private String stationUserName;
     @ApiModelProperty("备注")   
     private String remarks;
 

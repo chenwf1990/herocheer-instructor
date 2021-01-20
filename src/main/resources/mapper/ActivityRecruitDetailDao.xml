@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.ActivityRecruitDetailDao">
+    
+    <sql id="table_field">
+      id, recruitId, serviceStartTime, serviceEndTime, recruitNumber, hadRecruitNumber, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.ActivityRecruitDetail">
+        insert into activity_recruit_detail (
+    <trim suffixOverrides=",">
+        <if test="recruitId != null">
+            recruitId,
+        </if>
+        <if test="serviceStartTime != null">
+            serviceStartTime,
+        </if>
+        <if test="serviceEndTime != null">
+            serviceEndTime,
+        </if>
+        <if test="recruitNumber != null">
+            recruitNumber,
+        </if>
+        <if test="hadRecruitNumber != null">
+            hadRecruitNumber,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="recruitId != null">
+            #{recruitId},
+        </if>
+        <if test="serviceStartTime != null">
+            #{serviceStartTime},
+        </if>
+        <if test="serviceEndTime != null">
+            #{serviceEndTime},
+        </if>
+        <if test="recruitNumber != null">
+            #{recruitNumber},
+        </if>
+        <if test="hadRecruitNumber != null">
+            #{hadRecruitNumber},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from activity_recruit_detail where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.ActivityRecruitDetail">
+        update activity_recruit_detail
+        <set>
+            <if test="recruitId != null">
+                recruitId = #{recruitId},
+            </if>
+            <if test="serviceStartTime != null">
+                serviceStartTime = #{serviceStartTime},
+            </if>
+            <if test="serviceEndTime != null">
+                serviceEndTime = #{serviceEndTime},
+            </if>
+            <if test="recruitNumber != null">
+                recruitNumber = #{recruitNumber},
+            </if>
+            <if test="hadRecruitNumber != null">
+                hadRecruitNumber = #{hadRecruitNumber},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.ActivityRecruitDetail">
+        select <include refid="table_field"/> from activity_recruit_detail where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.ActivityRecruitDetail">
+        select <include refid="table_field"/> from activity_recruit_detail
+        <where>
+            <if test="recruitId != null">
+                and recruitId = #{recruitId}
+            </if>
+            <if test="serviceStartTime != null">
+                and serviceStartTime = #{serviceStartTime}
+            </if>
+            <if test="serviceEndTime != null">
+                and serviceEndTime = #{serviceEndTime}
+            </if>
+            <if test="recruitNumber != null">
+                and recruitNumber = #{recruitNumber}
+            </if>
+            <if test="hadRecruitNumber != null">
+                and hadRecruitNumber = #{hadRecruitNumber}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="deleteDetailByRecruitId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        delete from activity_recruit_detail where recruitId=#{recruitId}
+    </select>
+</mapper>

@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.ActivityRecruitInfoDao">
+    
+    <sql id="table_field">
+      id, recruitType, title, content, image, address, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
+      (CASE
+		 WHEN recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000 AND `status`=3 THEN 4
+		 WHEN recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000 AND `status`=3 THEN 5
+		 ELSE `status` END
+	  ) AS 'status', approvalStatus, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
+        insert into activity_recruit_info (
+    <trim suffixOverrides=",">
+        <if test="recruitType != null">
+            recruitType,
+        </if>
+        <if test="title != null">
+            title,
+        </if>
+        <if test="content != null">
+            content,
+        </if>
+        <if test="image != null">
+            image,
+        </if>
+        <if test="address != null">
+            address,
+        </if>
+        <if test="matchApproverId != null">
+            matchApproverId,
+        </if>
+        <if test="matchApprover != null">
+            matchApprover,
+        </if>
+        <if test="courierStationId != null">
+            courierStationId,
+        </if>
+        <if test="courierStation != null">
+            courierStation,
+        </if>
+        <if test="serviceStartDate != null">
+            serviceStartDate,
+        </if>
+        <if test="serviceEndDate != null">
+            serviceEndDate,
+        </if>
+        <if test="serviceHours != null">
+            serviceHours,
+        </if>
+        <if test="recruitNumber != null">
+            recruitNumber,
+        </if>
+        <if test="status != null">
+            status,
+        </if>
+        <if test="approvalStatus != null">
+            approvalStatus,
+        </if>
+        <if test="recruitStartDate != null">
+            recruitStartDate,
+        </if>
+        <if test="recruitEndDate != null">
+            recruitEndDate,
+        </if>
+        <if test="approvalComments != null">
+            approvalComments,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="recruitType != null">
+            #{recruitType},
+        </if>
+        <if test="title != null">
+            #{title},
+        </if>
+        <if test="content != null">
+            #{content},
+        </if>
+        <if test="image != null">
+            #{image},
+        </if>
+        <if test="address != null">
+            #{address},
+        </if>
+        <if test="matchApproverId != null">
+            #{matchApproverId},
+        </if>
+        <if test="matchApprover != null">
+            #{matchApprover},
+        </if>
+        <if test="courierStationId != null">
+            #{courierStationId},
+        </if>
+        <if test="courierStation != null">
+            #{courierStation},
+        </if>
+        <if test="serviceStartDate != null">
+            #{serviceStartDate},
+        </if>
+        <if test="serviceEndDate != null">
+            #{serviceEndDate},
+        </if>
+        <if test="serviceHours != null">
+            #{serviceHours},
+        </if>
+        <if test="recruitNumber != null">
+            #{recruitNumber},
+        </if>
+        <if test="status != null">
+            #{status},
+        </if>
+        <if test="approvalStatus != null">
+            #{approvalStatus},
+        </if>
+        <if test="recruitStartDate != null">
+            #{recruitStartDate},
+        </if>
+        <if test="recruitEndDate != null">
+            #{recruitEndDate},
+        </if>
+        <if test="approvalComments != null">
+            #{approvalComments},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from activity_recruit_info where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
+        update activity_recruit_info
+        <set>
+            <if test="recruitType != null">
+                recruitType = #{recruitType},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="matchApproverId != null">
+                matchApproverId = #{matchApproverId},
+            </if>
+            <if test="matchApprover != null">
+                matchApprover = #{matchApprover},
+            </if>
+            <if test="courierStationId != null">
+                courierStationId = #{courierStationId},
+            </if>
+            <if test="courierStation != null">
+                courierStation = #{courierStation},
+            </if>
+            <if test="serviceStartDate != null">
+                serviceStartDate = #{serviceStartDate},
+            </if>
+            <if test="serviceEndDate != null">
+                serviceEndDate = #{serviceEndDate},
+            </if>
+            <if test="serviceHours != null">
+                serviceHours = #{serviceHours},
+            </if>
+            <if test="recruitNumber != null">
+                recruitNumber = #{recruitNumber},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="approvalStatus != null">
+                approvalStatus = #{approvalStatus},
+            </if>
+            <if test="recruitStartDate != null">
+                recruitStartDate = #{recruitStartDate},
+            </if>
+            <if test="recruitEndDate != null">
+                recruitEndDate = #{recruitEndDate},
+            </if>
+            <if test="approvalComments != null">
+                approvalComments = #{approvalComments},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
+        select <include refid="table_field"/> from activity_recruit_info where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
+        select <include refid="table_field"/> from activity_recruit_info
+        <where>
+            <if test="recruitType != null">
+                and recruitType = #{recruitType}
+            </if>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="image != null">
+                and image = #{image}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="matchApproverId != null">
+                and matchApproverId = #{matchApproverId}
+            </if>
+            <if test="matchApprover != null">
+                and matchApprover = #{matchApprover}
+            </if>
+            <if test="courierStationId != null">
+                and courierStationId = #{courierStationId}
+            </if>
+            <if test="courierStation != null">
+                and courierStation = #{courierStation}
+            </if>
+            <if test="serviceStartDate != null">
+                and serviceStartDate = #{serviceStartDate}
+            </if>
+            <if test="serviceEndDate != null">
+                and serviceEndDate = #{serviceEndDate}
+            </if>
+            <if test="serviceHours != null">
+                and serviceHours = #{serviceHours}
+            </if>
+            <if test="recruitNumber != null">
+                and recruitNumber = #{recruitNumber}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="approvalStatus != null">
+                and approvalStatus = #{approvalStatus}
+            </if>
+            <if test="recruitStartDate != null">
+                and recruitStartDate = #{recruitStartDate}
+            </if>
+            <if test="recruitEndDate != null">
+                and recruitEndDate = #{recruitEndDate}
+            </if>
+            <if test="approvalComments != null">
+                and approvalComments = #{approvalComments}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+
+    <select id="findList" parameterType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo"
+            resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
+            select <include refid="table_field"/> from activity_recruit_info
+            <where>
+                <if test="title!=null and title!=''">
+                    and title ilke concat('%',#{title},'%')
+                </if>
+                <if test="recruitType!=null">
+                    and recruitType=#{recruitType}
+                </if>
+                <if test="createdBy!=null">
+                    and createdBy like concat('%',#{createdBy},'%')
+                </if>
+                <if test="recruitStartDate!=null">
+                    and recruitStartDate <![CDATA[ >= ]]> #{recruitStartDate}
+                </if>
+                <if test="recruitEndDate!=null">
+                    and recruitEndDate <![CDATA[ <= ]]> #{recruitEndDate}
+                </if>
+                <if test="beginTime!=null">
+                    and createdTime <![CDATA[ >= ]]> #{beginTime}
+                </if>
+                <if test="endTime!=null">
+                    and createdTime <![CDATA[ <= ]]> #{endTime}
+                </if>
+                <if test="status!=null and status!=4 and status!=5">
+                    and status=#{status}
+                </if>
+                <if test="status!=null and status==4">
+                    and status=3 and recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000
+                </if>
+                <if test="status!=null and status==5">
+                    and status=3 and recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000
+                </if>
+            </where>
+    </select>
+
+    <select id="getActivityRecruitInfo" parameterType="java.lang.Long"
+            resultType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo">
+        select <include refid="table_field"/> from activity_recruit_info where id=#{id}
+    </select>
+</mapper>

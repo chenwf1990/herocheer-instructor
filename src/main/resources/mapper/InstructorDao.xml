@@ -322,6 +322,84 @@
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from instructor
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="auditState != null">
+                and auditState = #{auditState}
+            </if>
+            <if test="auditTime != null">
+                and auditTime = #{auditTime}
+            </if>
+            <if test="auditIdea != null">
+                and auditIdea = #{auditIdea}
+            </if>
+            <if test="cardNo != null">
+                and cardNo = #{cardNo}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="workUnit != null">
+                and workUnit = #{workUnit}
+            </if>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="guideProject != null">
+                and guideProject = #{guideProject}
+            </if>
+            <if test="guideStation != null">
+                and guideStation = #{guideStation}
+            </if>
+            <if test="certificateNo != null">
+                and certificateNo = #{certificateNo}
+            </if>
+            <if test="certificateGrade != null">
+                and certificateGrade = #{certificateGrade}
+            </if>
+            <if test="openingDate != null">
+                and openingDate = #{openingDate}
+            </if>
+            <if test="auditUnitType != null">
+                and auditUnitType = #{auditUnitType}
+            </if>
+            <if test="auditUnitName != null">
+                and auditUnitName = #{auditUnitName}
+            </if>
+            <if test="otherAuditUnitName != null">
+                and otherAuditUnitName = #{otherAuditUnitName}
+            </if>
+            <if test="certificatePic != null">
+                and certificatePic = #{certificatePic}
+            </if>
+            <if test="channel != null">
+                and channel = #{channel}
+            </if>
+            <if test="openId != null">
+                and openId = #{openId}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
     </select>
 
     <!--指导员列表查询-->
@@ -358,4 +436,65 @@
         </where>
         order by id desc
     </select>
+
+
+    <insert id ="batchInsert" parameterType="java.util.List" >
+        insert into instructor(
+        name,
+        sex,
+        auditState,
+        auditTime,
+        auditIdea,
+        cardNo,
+        phone,
+        workUnit,
+        areaCode,
+        areaName,
+        guideProject,
+        guideStation,
+        certificateNo,
+        certificateGrade,
+        openingDate,
+        auditUnitType,
+        auditUnitName,
+        otherAuditUnitName,
+        certificatePic,
+        channel,
+        openId,
+        userId,
+        createdId,
+        createdBy,
+        createdTime
+        ) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.name},
+            #{item.sex},
+            #{item.auditState},
+            #{item.auditTime},
+            #{item.auditIdea},
+            #{item.cardNo},
+            #{item.phone},
+            #{item.workUnit},
+            #{item.areaCode},
+            #{item.areaName},
+            #{item.guideProject},
+            #{item.guideStation},
+            #{item.certificateNo},
+            #{item.certificateGrade},
+            #{item.openingDate},
+            #{item.auditUnitType},
+            #{item.auditUnitName},
+            #{item.otherAuditUnitName},
+            #{item.certificatePic},
+            #{item.channel},
+            #{item.openId},
+            #{item.userId},
+            #{item.createdId},
+            #{item.createdBy},
+            #{item.createdTime}
+            )
+        </foreach >
+
+    </insert >
 </mapper>

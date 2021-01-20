@@ -3,6 +3,7 @@ package com.herocheer.instructor.dao;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

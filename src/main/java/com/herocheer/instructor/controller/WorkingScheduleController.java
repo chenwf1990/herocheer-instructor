@@ -3,7 +3,6 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
@@ -11,12 +10,13 @@ import com.herocheer.instructor.domain.vo.WorkingVo;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -77,4 +77,36 @@ public class WorkingScheduleController extends BaseController{
         return ResponseResult.ok();
     }
 
+    @GetMapping("/templateExport")
+    @ApiOperation("模板导出")
+    public ResponseResult templateExport(@ApiParam("驿站id") @RequestParam Long courierStationId,
+                                         @ApiParam("服务时段id") @RequestParam Long serviceTimeId,
+                                         HttpServletResponse response){
+        workingScheduleService.templateExport(courierStationId,serviceTimeId,response);
+        return ResponseResult.ok();
+    }
+
+
+    @PostMapping("/workingScheduleImport")
+    @ApiOperation("排班导入")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "form", name = "file", value = "文件对象", required = true, dataType = "__file"),
+            @ApiImplicitParam(name = "courierStationId", value = "驿站id",dataType = "long",paramType = "query"),
+            @ApiImplicitParam(name = "serviceTimeId", value = "服务时段id",dataType = "long",paramType = "query"),
+    })
+    public ResponseResult workingScheduleImport(@RequestParam("file") MultipartFile multipartFile,HttpServletRequest request){
+        String courierStationId = request.getParameter("courierStationId");
+        String serviceTimeId = request.getParameter("serviceTimeId");
+        workingScheduleService.workingScheduleImport(Long.valueOf(courierStationId),Long.valueOf(serviceTimeId),multipartFile);
+        return ResponseResult.ok();
+    }
+
+    @PostMapping("/getUserWorkingList")
+    @ApiOperation("获取当前用户月份排班信息")
+    public ResponseResult<WorkingScheduleListVo> getUserWorkingList(@ApiParam("当前月份(yyyy-MM)") @RequestParam(required = false) String monthData,
+                                                                    HttpServletRequest request){
+        Long userId = getCurUserId(request);
+        WorkingScheduleListVo workingScheduleListVo = workingScheduleService.getUserWorkingList(monthData,userId);
+        return ResponseResult.ok(workingScheduleListVo);
+    }
 }

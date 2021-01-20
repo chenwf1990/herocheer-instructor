@@ -39,4 +39,11 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return
      */
     List<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo);
+
+    /**
+     * 查找相同时间段的值班人员
+     * @param params
+     * @return
+     */
+    List<String> findWorkingUser(Map<String, Object> params);
 }

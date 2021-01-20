@@ -2,23 +2,18 @@ package com.herocheer.instructor.enums;
 
 /**
  * @author chenwf
- * @desc 新闻活动审核状态枚举
+ * @desc 补卡类型枚举
  * @date 2021/1/5
  * @company 厦门熙重电子科技有限公司
  */
-public enum NewsAuditStateEnums {
-    to_audit(0,"待审核"),
-    to_pass(1,"发布"),
-    to_reject(2,"驳回"),
-    to_backout(3,"撤销");
-    NewsAuditStateEnums(){
-
-    }
+public enum ReissueCardEnums {
+    YES(0,"正常打卡"),
+    NO(1,"异常打卡");
 
     private int state;
     private String name;
 
-    NewsAuditStateEnums(int state, String name) {
+    ReissueCardEnums(int state, String name) {
         this.state = state;
         this.name = name;
     }

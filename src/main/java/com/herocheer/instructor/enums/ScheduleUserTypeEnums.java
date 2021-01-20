@@ -9,7 +9,7 @@ package com.herocheer.instructor.enums;
 public enum ScheduleUserTypeEnums {
     STATION_DUTY(1,"站长"),
     FIXATION_DUTY(2,"固定值班"),
-    SUBSCRIBEDUTY(2,"预约值班");
+    SUBSCRIBE_DUTY(2,"预约值班");
 
     private int type;
     private String name;

@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 值班签到记录
- * @date 2020/12/30
+ * @date 2021-01-19 17:57:22
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -17,7 +17,9 @@ public class WorkingSignRecord extends BaseEntity {
     @ApiModelProperty("打卡类型 1签到2签退")   
     private Integer type;
     @ApiModelProperty("是否补卡 0否 1是")   
-    private Object isReissueCard;
+    private Integer isReissueCard;
+    @ApiModelProperty("打卡状态 0正常 1异常")   
+    private Integer signStatus;
     @ApiModelProperty("打卡时间")   
     private Long signTime;
     @ApiModelProperty("打卡位置")   
