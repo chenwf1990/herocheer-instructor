@@ -34,7 +34,7 @@ import java.util.List;
  * @company 厦门熙重电子科技有限公司
  */
 @RestController
-@RequestMapping("menus")
+@RequestMapping("/menus")
 @Api(tags = "系统菜单")
 @Slf4j
 public class SysMenuController extends BaseController {
@@ -129,6 +129,7 @@ public class SysMenuController extends BaseController {
     @ApiOperation("菜单权限树")
     @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> fetchMenuTreeToUser(HttpServletRequest request){
+        // 当前用户信息
         User user =  User.builder().build();
         List<Tree<Long>> treeList = sysMenuService.findMenuTreeToUser(user);
         return ResponseResult.ok(treeList);

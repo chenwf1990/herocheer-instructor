@@ -1,9 +1,13 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
+
+import java.util.List;
 
 /**
  * @author gaorh
@@ -63,10 +67,42 @@ public interface UserService extends BaseService<User, Long> {
     void modifyPassword(Long userId,String oldPassword,String newPassword);
 
     /**
+     * 重置密码
+     *
+     * @param userId 用户id
+     */
+    ResponseResult resetPassword(Long userId);
+
+    /**
      * 根据openId获取微信用户信息
      *
      * @param id id
      * @return {@link User}
      */
     User findUserByOpenId(Long id);
+
+
+    /**
+     * 根据电话获取微信用户信息
+     *
+     * @param phone 电话
+     * @return {@link User}
+     */
+    User findUserByPhone(String phone);
+
+    /**
+     * 添加微信用户
+     *
+     * @param weChatUserVO VO
+     * @return {@link User}
+     */
+    User addWeChatUser(WeChatUserVO weChatUserVO);
+
+    /**
+     * 查询用户信息
+     *
+     * @return {@link List<User>}
+     */
+    List<User> findUser();
+
 }

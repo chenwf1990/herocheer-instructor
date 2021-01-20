@@ -11,6 +11,7 @@ import com.herocheer.instructor.dao.SysMenuDao;
 import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MetaVO;
+import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -52,7 +53,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             hashMap.put("path",sysMenu.getUrl());
             hashMap.put("component","layout/publics");
             hashMap.put("meta", MetaVO.builder().hidden(sysMenu.getStatus()).icon(sysMenu.getIcon()).title(sysMenu.getMenuName()).build());
-            TreeNode<Long> treeNode = new TreeNode<Long>(Long.parseLong(sysMenu.getCode()), sysMenu.getPid(), sysMenu.getMenuName(), 5).setExtra(hashMap);
+            TreeNode<Long> treeNode = new TreeNode<Long>(sysMenu.getId(), sysMenu.getPid(), sysMenu.getMenuName(), 5).setExtra(hashMap);
             nodeList.add(treeNode);
         }
         // 最外面一层
@@ -67,7 +68,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
     }
 
     /**
-     * 菜单树
+     *  菜单树
      *
      * @return {@link List<Tree<Long>>}
      */
@@ -76,26 +77,16 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
 
-        List<SysMenu> sysMenus = this.dao.selectMenuTreeToRole(new HashMap<>());
+        List<OptionTreeVO> optionTreeList = this.dao.selectMenuTreeToUser(new HashMap<>());
         Map<String, Object> hashMap = null;
-        for (SysMenu sysMenu:sysMenus){
+        for (OptionTreeVO optionTree:optionTreeList){
             hashMap = new HashMap();
-            hashMap.put("path",sysMenu.getUrl());
-            hashMap.put("component","layout/publics");
-            hashMap.put("meta", MetaVO.builder().hidden(sysMenu.getStatus()).icon(sysMenu.getIcon()).title(sysMenu.getMenuName()).build());
-            TreeNode<Long> treeNode = new TreeNode<Long>(Long.parseLong(sysMenu.getCode()), sysMenu.getPid(), sysMenu.getMenuName(), 5).setExtra(hashMap);
+            hashMap.put("label",optionTree.getName());
+            TreeNode<Long> treeNode = new TreeNode<Long>(optionTree.getId(), optionTree.getPid(), optionTree.getName(), 5).setExtra(hashMap);
             nodeList.add(treeNode);
         }
-        // 最外面一层
-        Map<String, Object> rootMap = new HashMap();
-        rootMap.put("path","/");
-        rootMap.put("component","layout/index");
-        rootMap.put("redirect","/sportPolitical/sportPoliticalManage");
-        nodeList.add(new TreeNode<Long>(0L, -1L, "社会体育指导员平台", 5).setExtra(rootMap));
-
-        // TODO 每个菜单页的操作权限怎么封装
         // 0表示最顶层的id是0
-        List<Tree<Long>> treeList = TreeUtil.build(nodeList, -1L);
+        List<Tree<Long>> treeList = TreeUtil.build(nodeList, 0L);
         return treeList;
     }
 
@@ -149,7 +140,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      */
     @Override
     public void removeMenuById(Long id) {
-        // 物理删除和级联删除
+        // 物理删除
         this.delete(id);
     }
 

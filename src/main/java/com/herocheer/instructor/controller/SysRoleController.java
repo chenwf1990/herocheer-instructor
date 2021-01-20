@@ -3,6 +3,7 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysRole;
+import com.herocheer.instructor.domain.vo.RoleMenuVO;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -54,14 +55,18 @@ public class SysRoleController extends BaseController {
     }
 
 
-
-    // TODO 分配菜单权限功能
-
-    @PostMapping("/{id:\\w+}")
+    /**
+     * 给角色分配权限
+     *
+     * @param request    请求
+     * @param roleMenuVO VO
+     * @return {@link ResponseResult<SysRole>}
+     */
+    @PostMapping("/menu")
     @ApiOperation("分配菜单权限")
     @AllowAnonymous
-    public ResponseResult<SysRole> createRole(@ApiParam("角色ID") @PathVariable Long id, HttpServletRequest request){
-
+    public ResponseResult<SysRole> settingMenuToRole(@ApiParam("角色ID") @RequestBody RoleMenuVO roleMenuVO, HttpServletRequest request){
+        sysRoleService.settingMenuToRole(roleMenuVO.getMenuId(),roleMenuVO.getRoleId());
         return ResponseResult.ok();
     }
     /**

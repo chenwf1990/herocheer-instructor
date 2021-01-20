@@ -10,12 +10,15 @@ import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -28,34 +31,53 @@ import java.util.List;
 @Slf4j
 public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Long> implements SysRoleService {
 
+    @Autowired
+    private SysRoleService sysRoleService;
     /**
      * 添加角色
      *
      * @param sysRoleVO VO
      * @return {@link SysRole}
      */
+    @Transactional
     @Override
     public SysRole addRole(SysRoleVO sysRoleVO) {
+        // TODO 角色编码如何处理
+        Map<String, Object> map = new HashMap();
+        map.put("roleName",sysRoleVO.getRoleName());
+        if(this.dao.selectSysRoleOne(map) == 1){
+            throw new CommonException("角色名已存在");
+        }
+
         SysRole sysRole = SysRole.builder().build();
         BeanCopier.create(sysRoleVO.getClass(),sysRole.getClass(),false).copy(sysRoleVO,sysRole,null);
-        // TODO 角色编码
         this.insert(sysRole);
 
-        // TODO 是否需要直接和菜单建立关联还是独立功能单独授权
         // 批量插入中间表
-        if(StringUtils.isNotBlank(sysRoleVO.getRoleId())){
-            String[] arr = sysRoleVO.getRoleId().split(",");
+        sysRoleService.settingMenuToRole(sysRoleVO.getMenuId(), sysRole.getId());
+        return sysRole;
+    }
+
+    /**
+     * 设置角色菜单关联表
+     *
+     * @param menuIds 菜单id
+     * @param roleId  角色id
+     */
+    @Override
+    public void settingMenuToRole(String menuIds, Long roleId) {
+        if(StringUtils.isNotBlank(menuIds)){
+            String[] arr = menuIds.split(",");
             List<SysRoleMenu> list = new ArrayList<>();
             SysRoleMenu sysRoleMenu = null;
             for (int i = 0; i < arr.length; i++) {
                 sysRoleMenu = new SysRoleMenu();
-                sysRoleMenu.setMenuId(sysRole.getId());
+                sysRoleMenu.setMenuId(roleId);
                 sysRoleMenu.setRoleId(Long.parseLong(arr[i]));
                 list.add(sysRoleMenu);
             }
             this.dao.insertBatchSysRoleMenu(list);
         }
-        return sysRole;
     }
 
     /**
@@ -65,7 +87,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Override
     public void removeRoleById(Long id) {
-        // 物理删除和级联删除
+        // 物理删除
         this.delete(id);
     }
 

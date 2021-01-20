@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.UserDao">
 
     <sql id="table_field">
-      id, imgUrl, nickName, userName, account, password, sex, userType, age, email, phoneNo, source, certificateNo, channel, birthday, address, postcode, openid, unionID, insuranceStatus, commitmentStatus, ixmUserId, ixmUserName, ixmRealNameLevel, ixmUserRealName, ixmLoginStatus, ixmToken, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, imgUrl, nickName, userName, account, password, sex, userType, age, email, phone, source, certificateNo, channel, birthday, address, postcode, openid, unionID, insuranceStatus, commitmentStatus, ixmUserId, ixmUserName, ixmRealNameLevel, ixmUserRealName, ixmLoginStatus, ixmToken, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
 
     <!--单表新增-->
@@ -38,8 +38,8 @@
             <if test="email != null">
                 email,
             </if>
-            <if test="phoneNo != null">
-                phoneNo,
+            <if test="phone != null">
+                phone,
             </if>
             <if test="source != null">
                 source,
@@ -123,8 +123,8 @@
             <if test="email != null">
                 #{email},
             </if>
-            <if test="phoneNo != null">
-                #{phoneNo},
+            <if test="phone != null">
+                #{phone},
             </if>
             <if test="source != null">
                 #{source},
@@ -218,8 +218,8 @@
             <if test="email != null">
                 email = #{email},
             </if>
-            <if test="phoneNo != null">
-                phoneNo = #{phoneNo},
+            <if test="phone != null">
+                phone = #{phone},
             </if>
             <if test="source != null">
                 source = #{source},
@@ -318,8 +318,8 @@
             <if test="email != null">
                 and email = #{email}
             </if>
-            <if test="phoneNo != null">
-                and phoneNo = #{phoneNo}
+            <if test="phone != null">
+                and phone = #{phone}
             </if>
             <if test="source != null">
                 and source = #{source}
@@ -418,7 +418,7 @@
         <where>
             <trim prefixOverrides="AND | OR">
                 <if test="userName != null">
-                    and userName like concat('%',#{userName},'%')
+                    and userName like concat(#{userName},'%')
                 </if>
                 <if test="account != null">
                     and account = #{account}

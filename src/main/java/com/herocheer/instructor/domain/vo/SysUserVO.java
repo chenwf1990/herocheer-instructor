@@ -31,7 +31,7 @@ public class SysUserVO {
     @ApiModelProperty("密码")
     private String password;
     @ApiModelProperty("用户姓名")
-    @NotBlank(message = "用户姓不能为空")
+    @NotBlank(message = "用户名不能为空")
     private String userName;
     @ApiModelProperty("邮箱")
     @Email(message = "邮箱格式不正确")

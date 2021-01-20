@@ -62,4 +62,12 @@ public interface SysRoleService extends BaseService<SysRole, Long> {
      */
     List<SysRole>  findRole();
 
+    /**
+     * 设置角色菜单关联表
+     *
+     * @param menuIds 菜单id
+     * @param roleId  角色id
+     */
+    void settingMenuToRole(String menuIds, Long roleId);
+
 }

@@ -29,9 +29,8 @@ public class SysRoleVO {
     private String code;
     @ApiModelProperty("描述")
     private String description;
-    @ApiModelProperty("描述")
-    private String roleId;
-
+    @ApiModelProperty("菜单ID")
+    private String menuId ;
     @ApiModelProperty("更新者ID")
     private Long updateId;
     @ApiModelProperty("更新者")

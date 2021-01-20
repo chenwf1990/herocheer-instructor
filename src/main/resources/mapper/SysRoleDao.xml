@@ -129,4 +129,27 @@
             (#{sysRoleMenu.roleId},#{sysRoleMenu.menuId})
         </foreach>
     </insert>
+
+    <!--只返回一个角色信息-->
+    <select id="selectSysRoleOne" parameterType="map" resultType="int">
+        select count(1) from sys_role
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="roleName != null">
+                    and roleName = #{roleName}
+                </if>
+                <if test="code != null">
+                    and code = #{code}
+                </if>
+                <if test="description != null">
+                    and description = #{description}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                limit 1
+            </trim>
+        </where>
+    </select>
+
 </mapper>

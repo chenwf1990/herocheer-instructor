@@ -51,7 +51,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptDao, SysDept, Lon
      */
     @Override
     public void removeDeptById(Long id) {
-        // 物理删除和级联删除
+        // 物理删除
         this.delete(id);
     }
 

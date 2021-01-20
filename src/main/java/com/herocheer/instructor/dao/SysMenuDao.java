@@ -1,6 +1,7 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.SysMenu;
+import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
@@ -21,7 +22,7 @@ public interface SysMenuDao extends BaseDao<SysMenu, Long> {
      * @param map 地图
      * @return {@link List<SysMenu>}
      */
-    List<SysMenu> selectMenuTreeToUser(Map<String, Object> map);
+    List<OptionTreeVO> selectMenuTreeToUser(Map<String, Object> map);
 
     /**
      * 用户选择菜单树
@@ -32,10 +33,11 @@ public interface SysMenuDao extends BaseDao<SysMenu, Long> {
     List<SysMenu> selectMenuTreeToRole(Map<String, Object> map);
 
     /**
+     * 选择菜单的页面
      * 分页查询菜单
      *
      * @param sysMenuVO 系统菜单签证官
-     * @return {@link List<SysUser>}
+     * @return {@link List<SysMenu>}
      */
     List<SysMenu> selectMenuByPage(SysMenuVO sysMenuVO);
 }

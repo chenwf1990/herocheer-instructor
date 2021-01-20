@@ -6,6 +6,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author gaorh
@@ -119,9 +121,28 @@ public class UserController extends BaseController {
      */
     @AllowAnonymous
     @GetMapping("/weChatUser/{id:\\w+}")
-    @ApiOperation("获取个人用户信息")
+    @ApiOperation("获取微信用户信息")
     public ResponseResult<User> fetchUserByOpenId(@ApiParam("用户ID") @PathVariable Long id){
         return ResponseResult.ok(userService.findUserByOpenId(id));
+    }
+
+    @AllowAnonymous
+    @GetMapping("/weChatUser/{phone:\\w+}")
+    @ApiOperation("获取微信用户信息")
+    public ResponseResult<User> fetchUserByPhone(@ApiParam("电话号码") @PathVariable String phone){
+        return ResponseResult.ok(userService.findUserByPhone(phone));
+    }
+    /**
+     * 创建我们聊天的用户
+     *
+     * @param weChatUserVO 我们聊天用户签证官
+     * @return {@link ResponseResult<User>}
+     */
+    @AllowAnonymous
+    @PostMapping("/weChatUser")
+    @ApiOperation("新增微信用户")
+    public ResponseResult<User> createWeChatUser(@ApiParam("微信用户") @RequestBody WeChatUserVO weChatUserVO){
+        return ResponseResult.ok(userService.addWeChatUser(weChatUserVO));
     }
     /**
      * 编辑用户信息
@@ -166,10 +187,28 @@ public class UserController extends BaseController {
     public ResponseResult changePassword(@ApiParam("旧密码") @RequestParam String oldPassword,
                                          @ApiParam("新密码") @RequestParam String newPassword,HttpServletRequest request){
         // 修改密码
+        // TODO 获取用户信息
         userService.modifyPassword(this.getUser(request).getId(),oldPassword,newPassword);
         // sysUserService.modifyPassword(4L,oldPassword,newPassword);
         return ResponseResult.ok();
     }
+
+    /**
+     * 重置密码
+     *
+     * @param id          id
+     * @param request     请求
+     * @return {@link ResponseResult}
+     */
+    @PutMapping("/password/{id:\\w+}")
+    @AllowAnonymous
+    @ApiOperation("密码重置")
+    public ResponseResult resetPassword(@ApiParam("用户ID") @PathVariable Long id, HttpServletRequest request){
+        // 重置密码为：123456
+//        return userService.resetPassword(id);
+        return userService.resetPassword(11L);
+    }
+
 
     /**
      * 退出
@@ -221,4 +260,18 @@ public class UserController extends BaseController {
         }
         return ResponseResult.ok();
     }
+
+    /**
+     * 获取用户信息
+     *
+     * @param request 请求
+     * @return {@link ResponseResult<List<User>>}
+     */
+    @GetMapping("/user/name")
+    @ApiOperation("用户名称")
+    @AllowAnonymous
+    public ResponseResult<List<User>> fetchUser(HttpServletRequest request){
+        return ResponseResult.ok( userService.findUser());
+    }
+
 }

@@ -6,12 +6,14 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.UserType;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -239,6 +241,23 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     }
 
     /**
+     * 重置密码
+     *
+     * @param userId 用户id
+     */
+    @Override
+    public ResponseResult resetPassword(Long userId) {
+        User user = this.get(userId);
+        if(!ObjectUtils.isEmpty(user)){
+            user.setPassword(encoder.encode("123456"));
+            // 重置密码为：123456
+            this.update(user);
+            return ResponseResult.ok();
+        }
+        return ResponseResult.fail();
+    }
+
+    /**
      * 根据openId获取微信用户信息
      *
      * @param id id
@@ -250,6 +269,46 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         objectMap.put("openid", id);
         User user = this.dao.selectSysUserOne(objectMap);
         return user;
+    }
+
+    /**
+     * 根据电话获取微信用户信息
+     *
+     * @param phone
+     * @return {@link User}
+     */
+    @Override
+    public User findUserByPhone(String phone) {
+        Map<String, Object> objectMap = new HashMap();
+        objectMap.put("phone", phone);
+        User user = this.dao.selectSysUserOne(objectMap);
+        return user;
+    }
+
+    /**
+     * 添加微信用户
+     *
+     * @param weChatUserVO VO
+     * @return {@link User}
+     */
+    @Override
+    public User addWeChatUser(WeChatUserVO weChatUserVO) {
+        User user = User.builder().userType(UserType.weChatUser.getCode()).build();
+        BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
+        user.setUserName(weChatUserVO.getName());
+        user.setPhone(weChatUserVO.getPhoneNo());
+        this.insert(user);
+        return user;
+    }
+
+    /**
+     * 查询用户信息
+     *
+     * @return {@link List<User>}
+     */
+    @Override
+    public List<User> findUser() {
+        return this.dao.selectSysUserByPage(new SysUserVO());
     }
 
     /**

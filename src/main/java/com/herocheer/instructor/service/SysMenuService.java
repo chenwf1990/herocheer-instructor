@@ -26,7 +26,7 @@ public interface SysMenuService extends BaseService<SysMenu, Long> {
     List<Tree<Long>> findMenuTreeToUser(User user);
 
     /**
-     * 角色分配菜单权限
+     * 菜单树
      *
      * @return {@link List<Tree<Long>>}
      */

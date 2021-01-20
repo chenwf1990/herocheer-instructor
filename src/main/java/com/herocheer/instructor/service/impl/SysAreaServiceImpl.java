@@ -73,11 +73,10 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
     private List<Tree<Long>> getTreeNode(List<SysArea> sysAreas) {
         List<TreeNode<Long>> nodeList = sysAreas.stream().map(area -> {
             Map<String,Object> extra=new HashMap<>();
-            extra.put("id",area.getId());
             extra.put("level",area.getLevel());
-            extra.put("pid",area.getPid());
             extra.put("chinaCode",area.getChinaCode());
             extra.put("areaCode",area.getAreaCode());
+            extra.put("label",area.getAreaName());
             TreeNode<Long> treeNode = new TreeNode<Long>(area.getId(),area.getPid(),area.getAreaName(),0)
                     .setExtra(extra);
             return treeNode;

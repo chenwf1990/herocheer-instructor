@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -30,4 +31,11 @@ public interface SysRoleDao extends BaseDao<SysRole, Long> {
      */
     int insertBatchSysRoleMenu(List<SysRoleMenu> SysRoleMenus);
 
+    /**
+     * 判断角色名是否存在
+     *
+     * @param map 地图
+     * @return {@link SysRole}
+     */
+    int selectSysRoleOne(Map<String, Object> map);
 }
