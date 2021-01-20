@@ -4,10 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
-import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
-import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
-import com.herocheer.instructor.domain.vo.WorkingUserInfoVo;
-import com.herocheer.instructor.domain.vo.WorkingVo;
+import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
@@ -109,5 +106,14 @@ public class WorkingScheduleController extends BaseController{
         Long userId = getCurUserId(request);
         List<WorkingUserInfoVo> workingUserInfoVos = workingScheduleService.getUserWorkingList(monthData,userId);
         return ResponseResult.ok(workingUserInfoVos);
+    }
+
+    @PostMapping("/getTaskInfo")
+    @ApiOperation("获取值班任务信息(值班打卡)")
+    public ResponseResult<WorkingUserVo> getTaskInfo(@ApiParam("值班人员id") @RequestParam() Long workingScheduleUserId,
+                                                     HttpServletRequest request){
+        Long userId = getCurUserId(request);
+        WorkingUserVo workingUserVo = workingScheduleService.getTaskInfo(workingScheduleUserId,userId);
+        return ResponseResult.ok(workingUserVo);
     }
 }

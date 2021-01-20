@@ -8,7 +8,7 @@ package com.herocheer.instructor.enums;
  */
 public enum ReissueCardEnums {
     YES(0,"正常打卡"),
-    NO(1,"异常打卡");
+    NO(1,"补卡");
 
     private int state;
     private String name;

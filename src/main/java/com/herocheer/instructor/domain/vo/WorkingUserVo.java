@@ -1,7 +1,10 @@
 package com.herocheer.instructor.domain.vo;
 
+import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author chenwf
@@ -13,6 +16,8 @@ import lombok.Data;
 public class WorkingUserVo {
     @ApiModelProperty("值班任务id")
     private Long id;
+    @ApiModelProperty("值班人员id")
+    private Long workingScheduleUserId;
     @ApiModelProperty("值班日期")
     private Long scheduleTime;
     @ApiModelProperty("值班日期文本")
@@ -39,4 +44,6 @@ public class WorkingUserVo {
     private Integer serviceTime;
     @ApiModelProperty("签到状态 0.正常签到 1.异常签到 2.待完成")
     private Integer signStatus;
+    @ApiModelProperty("签到记录")
+    private List<WorkingSignRecord> signRecords;
 }

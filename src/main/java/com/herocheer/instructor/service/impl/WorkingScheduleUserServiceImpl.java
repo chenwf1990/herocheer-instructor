@@ -1,15 +1,21 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
-import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.dao.WorkingScheduleUserDao;
+import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
+import com.herocheer.instructor.domain.vo.WorkingUserVo;
+import com.herocheer.instructor.enums.SignType;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
-import org.springframework.stereotype.Service;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +28,8 @@ import java.util.Map;
 @Service
 @Transactional
 public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingScheduleUserDao, WorkingScheduleUser,Long> implements WorkingScheduleUserService {
-
+    @Resource
+    private WorkingScheduleDao workingScheduleDao;
 
     /**
      * @param workingScheduleUserQueryVo
@@ -71,5 +78,53 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     @Override
     public List<String> findWorkingUser(Map<String, Object> params) {
         return this.dao.findWorkingUser(params);
+    }
+
+    /**
+     * @param workingScheduleUserId
+     * @param userId
+     * @param replaceCardTime
+     * @return
+     * @author chenwf
+     * @desc 更新打卡时间
+     * @date 2021-01-20 20:57:02
+     */
+    @Override
+    public int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime,Integer type) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("workingScheduleUserId",workingScheduleUserId);
+        params.put("userId",userId);
+        List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
+        WorkingUserVo workingUserVo = workingUserVos.get(0);
+        if(type == SignType.SIGN_IN.getType()){//签到补卡
+            //未签到或者签到时间 > 补卡时间，可更新
+            if(workingUserVo.getSignInTime() == null || replaceCardTime < workingUserVo.getSignInTime()){
+                WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
+                scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
+                scheduleUser.setSignInTime(replaceCardTime);
+                this.dao.update(scheduleUser);
+            }
+        }else{//签退补卡
+            if(workingUserVo.getSignOutTime() == null || replaceCardTime > workingUserVo.getSignOutTime()){
+                WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
+                scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
+                scheduleUser.setSignOutTime(replaceCardTime);
+                this.dao.update(scheduleUser);
+            }
+        }
+        return 1;
+    }
+
+    /**
+     * 根据打卡时间获取打卡类型
+     * @param signTime
+     * @param serviceBeginTime
+     * @return
+     */
+    public int getPunchCardType(Long signTime, Long serviceBeginTime) {
+        if(signTime < serviceBeginTime + DateUtil.ONE_HOURS) {//签到补卡
+            return SignType.SIGN_IN.getType();
+        }
+        return SignType.SIGN_OUT.getType();
     }
 }
