@@ -75,7 +75,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         if(instructor == null){
             throw new CommonException("指导员不存在");
         }
-        if(instructor.getAuditState() != InstructorAuditStateEnums.to_audit.getState()){
+        if(instructor.getAuditState() != AuditStateEnums.to_audit.getState()){
             throw new CommonException("非待审核中");
         }
         instructor.setId(id);
@@ -86,7 +86,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         this.addInstructorCert(instructor);
         //增加审批日志
         instructorLogService.addLog(id,auditState,auditIdea,null);
-        if(auditState == InstructorAuditStateEnums.to_pass.getState()){
+        if(auditState == AuditStateEnums.to_pass.getState()){
             //TODO chenwf 更新用户类型
         }
     }
@@ -117,7 +117,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         int channel = HeaderParam.getInstance().getClient();
         instructor.setChannel(channel);
         if(ClientEnums.pc.getType() == channel){
-            instructor.setAuditState(InstructorAuditStateEnums.to_pass.getState());
+            instructor.setAuditState(AuditStateEnums.to_pass.getState());
         }else{
             instructor.setUserId(userId);
         }
@@ -128,7 +128,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
 
     //添加证书日志
     private void addInstructorCert(Instructor instructor) {
-        if(instructor.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
+        if(instructor.getAuditState() == AuditStateEnums.to_pass.getState()){
             InstructorCert cert = new InstructorCert();
             BeanUtils.copyProperties(instructor,cert);
             cert.setInstructorId(instructor.getId());
@@ -146,10 +146,10 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     @Override
     public long updateInstructor(Instructor instructor) {
         Instructor model = this.dao.get(instructor.getId());
-        if(model.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
-            instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+        if(model.getAuditState() == AuditStateEnums.to_pass.getState()){
+            instructor.setAuditState(AuditStateEnums.to_audit.getState());
         }else{
-            instructor.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+            instructor.setAuditState(AuditStateEnums.to_audit.getState());
         }
         long count = this.dao.update(instructor);
         addInstructorCert(instructor);
@@ -226,7 +226,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     private Instructor buildInstructor(List<Object> dataList, String errMsg, List<SysArea> areas) {
         Instructor instructor = new Instructor();
         instructor.setChannel(ChannelEnums.imp.getType());
-        instructor.setAuditState(InstructorAuditStateEnums.to_pass.getState());
+        instructor.setAuditState(AuditStateEnums.to_pass.getState());
         instructor.setName(dataList.get(0).toString());
         instructor.setSex(SexEnums.getType(dataList.get(1).toString()));
         //是否存在该指导员信息

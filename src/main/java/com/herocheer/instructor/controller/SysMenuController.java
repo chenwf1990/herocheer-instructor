@@ -34,7 +34,7 @@ import java.util.List;
  * @company 厦门熙重电子科技有限公司
  */
 @RestController
-@RequestMapping("menus")
+@RequestMapping("/menus")
 @Api(tags = "系统菜单")
 @Slf4j
 public class SysMenuController extends BaseController {

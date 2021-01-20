@@ -1,11 +1,8 @@
 package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.net.Ipv4Util;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
@@ -19,13 +16,11 @@ import com.herocheer.instructor.domain.entity.*;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingVo;
-import com.herocheer.instructor.enums.ScheduleUserAuditStateEnums;
+import com.herocheer.instructor.enums.AuditStatusEnums;
 import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
 import com.herocheer.instructor.service.*;
 import com.herocheer.instructor.utils.ExcelUtils;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
-import org.apache.poi.ss.usermodel.DataValidation;
-import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -33,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -91,7 +84,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUsers.forEach(w -> {
                 w.setWorkingScheduleId(workingVo.getId());
                 if(w.getType() == ScheduleUserTypeEnums.SUBSCRIBE_DUTY.getType()){
-                    w.setAuditState(ScheduleUserAuditStateEnums.to_pass.getState());
+                    w.setStatus(AuditStatusEnums.to_audit.getState());
                 }
             });
             //批量插入值班人员信息
@@ -359,7 +352,20 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         scheduleUser.setType(type);
         scheduleUser.setUserId(user.getId());
         scheduleUser.setUserName(user.getUserName());
-        scheduleUser.setAuditState(ScheduleUserAuditStateEnums.to_pass.getState());
+        scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
         return scheduleUser;
+    }
+
+    /**
+     * @param monthData
+     * @param userId
+     * @return
+     * @author chenwf
+     * @desc 获取当前用户月份排班信息
+     * @date 2021-01-19 09:47:02
+     */
+    @Override
+    public WorkingScheduleListVo getUserWorkingList(String monthData, Long userId) {
+        return null;
     }
 }
