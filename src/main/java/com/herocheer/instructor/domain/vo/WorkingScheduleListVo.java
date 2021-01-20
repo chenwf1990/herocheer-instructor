@@ -14,6 +14,8 @@ import lombok.Data;
 @ApiModel("排班列表返回实体信息")
 @Data
 public class WorkingScheduleListVo extends WorkingSchedule {
+    @ApiModelProperty("站长值班人员")
+    private String stationUserName;
     @ApiModelProperty("固定值班人员")
     private String fixationUserName;
     @ApiModelProperty("预约值班人员")

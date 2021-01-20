@@ -2,14 +2,15 @@ package com.herocheer.instructor.enums;
 
 /**
  * @author linjf
- * @desc 招募信息状态枚举
+ * @desc 签到状态枚举
  * @date 2021/1/7
  * @company 厦门熙重电子科技有限公司
- * 0.待审核1.撤回2.驳回3.招募待启动4.招募中5.招募结束
+ * 0.正常签到 1.异常签到 2.待完成
  */
 public enum SignStatusEnums {
     SIGN_NORMAL(0,"正常"),
-    SIGN_ABNORMAL(1,"异常");
+    SIGN_ABNORMAL(1,"异常"),
+    SIGN_UN_FINISH(2,"待完成");
 
     private int status;
     private String name;
