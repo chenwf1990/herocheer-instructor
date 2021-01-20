@@ -23,6 +23,7 @@ import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -304,11 +305,22 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     /**
      * 查询用户信息
      *
-     * @return {@link List<User>}
+     * @return {@link List<SysUserVO>}
      */
     @Override
-    public List<User> findUser() {
-        return this.dao.selectSysUserByPage(new SysUserVO());
+    public List<SysUserVO> findUser() {
+        List<User> userList = this.dao.selectSysUserByPage(new SysUserVO());
+        List<SysUserVO> SysUserList = new ArrayList<>();
+        SysUserVO sysUserVO = null;
+        if(!CollectionUtils.isEmpty(userList)){
+            for(User user:userList){
+                sysUserVO = SysUserVO.builder().build();
+                BeanCopier.create(user.getClass(),sysUserVO.getClass(),false).copy(user,sysUserVO,null);
+                sysUserVO.setPassword(null);
+                SysUserList.add(sysUserVO);
+            }
+        }
+        return SysUserList;
     }
 
     /**

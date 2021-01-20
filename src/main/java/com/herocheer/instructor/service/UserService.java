@@ -101,9 +101,9 @@ public interface UserService extends BaseService<User, Long> {
     /**
      * 查询用户信息
      *
-     * @return {@link List<User>}
+     * @return {@link List<SysUserVO>}
      */
-    List<User> findUser();
+    List<SysUserVO> findUser();
 
 
     /**

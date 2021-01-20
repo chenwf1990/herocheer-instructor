@@ -265,12 +265,12 @@ public class UserController extends BaseController {
      * 获取用户信息
      *
      * @param request 请求
-     * @return {@link ResponseResult<List<User>>}
+     * @return {@link ResponseResult<List<SysUserVO>>}
      */
     @GetMapping("/user/name")
     @ApiOperation("用户名称")
     @AllowAnonymous
-    public ResponseResult<List<User>> fetchUser(HttpServletRequest request){
+    public ResponseResult<List<SysUserVO>> fetchUser(HttpServletRequest request){
         return ResponseResult.ok( userService.findUser());
     }
 
