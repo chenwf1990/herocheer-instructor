@@ -116,7 +116,7 @@ public class InstructorController extends BaseController{
     }
 
 
-    @GetMapping("/instructorImport")
+    @PostMapping("/instructorImport")
     @ApiOperation("指导员导入")
     public ResponseResult<List<InstructorCert>> instructorImport(MultipartFile multipartFile,HttpServletRequest request){
         instructorService.instructorImport(multipartFile,request);

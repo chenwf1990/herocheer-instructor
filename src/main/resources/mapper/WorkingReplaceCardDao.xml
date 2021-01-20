@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.WorkingReplaceCardDao">
+    
+    <sql id="table_field">
+      id, workingScheduleUserId, replaceCardTime, replaceCardReason, approvalStatus, approvalComments, approvalId, approvalBy, approvalTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.WorkingReplaceCard">
+        insert into working_replace_card (
+    <trim suffixOverrides=",">
+        <if test="workingScheduleUserId != null">
+            workingScheduleUserId,
+        </if>
+        <if test="replaceCardTime != null">
+            replaceCardTime,
+        </if>
+        <if test="replaceCardReason != null">
+            replaceCardReason,
+        </if>
+        <if test="approvalStatus != null">
+            approvalStatus,
+        </if>
+        <if test="approvalComments != null">
+            approvalComments,
+        </if>
+        <if test="approvalId != null">
+            approvalId,
+        </if>
+        <if test="approvalBy != null">
+            approvalBy,
+        </if>
+        <if test="approvalTime != null">
+            approvalTime,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="workingScheduleUserId != null">
+            #{workingScheduleUserId},
+        </if>
+        <if test="replaceCardTime != null">
+            #{replaceCardTime},
+        </if>
+        <if test="replaceCardReason != null">
+            #{replaceCardReason},
+        </if>
+        <if test="approvalStatus != null">
+            #{approvalStatus},
+        </if>
+        <if test="approvalComments != null">
+            #{approvalComments},
+        </if>
+        <if test="approvalId != null">
+            #{approvalId},
+        </if>
+        <if test="approvalBy != null">
+            #{approvalBy},
+        </if>
+        <if test="approvalTime != null">
+            #{approvalTime},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from working_replace_card where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.WorkingReplaceCard">
+        update working_replace_card
+        <set>
+            <if test="workingScheduleUserId != null">
+                workingScheduleUserId = #{workingScheduleUserId},
+            </if>
+            <if test="replaceCardTime != null">
+                replaceCardTime = #{replaceCardTime},
+            </if>
+            <if test="replaceCardReason != null">
+                replaceCardReason = #{replaceCardReason},
+            </if>
+            <if test="approvalStatus != null">
+                approvalStatus = #{approvalStatus},
+            </if>
+            <if test="approvalComments != null">
+                approvalComments = #{approvalComments},
+            </if>
+            <if test="approvalId != null">
+                approvalId = #{approvalId},
+            </if>
+            <if test="approvalBy != null">
+                approvalBy = #{approvalBy},
+            </if>
+            <if test="approvalTime != null">
+                approvalTime = #{approvalTime},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.WorkingReplaceCard">
+        select <include refid="table_field"/> from working_replace_card where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingReplaceCard">
+        select <include refid="table_field"/> from working_replace_card
+        <where>
+            <if test="workingScheduleUserId != null">
+                and workingScheduleUserId = #{workingScheduleUserId}
+            </if>
+            <if test="replaceCardTime != null">
+                and replaceCardTime = #{replaceCardTime}
+            </if>
+            <if test="replaceCardReason != null">
+                and replaceCardReason = #{replaceCardReason}
+            </if>
+            <if test="approvalStatus != null">
+                and approvalStatus = #{approvalStatus}
+            </if>
+            <if test="approvalComments != null">
+                and approvalComments = #{approvalComments}
+            </if>
+            <if test="approvalId != null">
+                and approvalId = #{approvalId}
+            </if>
+            <if test="approvalBy != null">
+                and approvalBy = #{approvalBy}
+            </if>
+            <if test="approvalTime != null">
+                and approvalTime = #{approvalTime}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from working_replace_card
+        <where>
+            <if test="workingScheduleUserId != null">
+                and workingScheduleUserId = #{workingScheduleUserId}
+            </if>
+            <if test="replaceCardTime != null">
+                and replaceCardTime = #{replaceCardTime}
+            </if>
+            <if test="replaceCardReason != null">
+                and replaceCardReason = #{replaceCardReason}
+            </if>
+            <if test="approvalStatus != null">
+                and approvalStatus = #{approvalStatus}
+            </if>
+            <if test="approvalComments != null">
+                and approvalComments = #{approvalComments}
+            </if>
+            <if test="approvalId != null">
+                and approvalId = #{approvalId}
+            </if>
+            <if test="approvalBy != null">
+                and approvalBy = #{approvalBy}
+            </if>
+            <if test="approvalTime != null">
+                and approvalTime = #{approvalTime}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

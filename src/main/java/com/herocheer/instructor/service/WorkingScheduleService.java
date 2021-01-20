@@ -5,6 +5,7 @@ import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
+import com.herocheer.instructor.domain.vo.WorkingUserInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,5 +89,5 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @param userId
      * @return
      */
-    WorkingScheduleListVo getUserWorkingList(String monthData, Long userId);
+    List<WorkingUserInfoVo> getUserWorkingList(String monthData, Long userId);
 }

@@ -8,7 +8,20 @@ import com.herocheer.common.utils.StringUtils;
  * @author: Linjf
  * @create date: 2021-01-18 15:18
  **/
-public class DateUtil {
+public class DateUtil extends cn.hutool.core.date.DateUtil {
+    public static final String YYYY_MM = "yyyy-MM";
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
+    public static final String YYYY_MM_DD_HH = "yyyy-MM-dd HH";
+    public static final String YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm";
+    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+    public static final String YYYY = "yyyy";
+    public static final String YYYYMM = "yyyyMM";
+    public static final String YYYYMMDD = "yyyyMMdd";
+    public static final String YYYYMMDDHH = "yyyyMMddHH";
+    public static final String YYYYMMDDHHMM = "yyyyMMddHHmm";
+    public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
+    public static final Long ONE_HOURS = 1 * 60 * 60 * 1000L;
+    public static final Long TWO_HOURS = 2 * 60 * 60 * 1000L;
     /**
      * 把毫秒转成时分秒
      * @param seconds

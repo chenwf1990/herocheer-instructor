@@ -1,7 +1,6 @@
 package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -13,12 +12,12 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.domain.entity.*;
-import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
-import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
-import com.herocheer.instructor.domain.vo.WorkingVo;
+import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.enums.AuditStatusEnums;
 import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
+import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.service.*;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.instructor.utils.ExcelUtils;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.apache.poi.ss.util.CellRangeAddressList;
@@ -53,6 +52,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     private ServiceHoursService serviceHoursService;
     @Resource
     private UserService userService;
+    @Resource
+    private CommonService commonService;
 
     /**
      * @param workingScheduleQueryVo
@@ -70,14 +71,19 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     /**
-     * @param workingSchedulsVo
+     * @param workingScheduls
      * @author chenwf
      * @desc 添加排班信息
      * @date 2021-01-11 14:30:02
      */
     @Override
-    public void addWorkingScheduls(List<WorkingVo> workingSchedulsVo) {
-        for (WorkingVo workingVo : workingSchedulsVo) {
+    public void addWorkingScheduls(List<WorkingVo> workingScheduls) {
+        if(workingScheduls.isEmpty()){
+            return;
+        }
+        //判断是否存在同个时段相同人员
+        isSameUser(workingScheduls);
+        for (WorkingVo workingVo : workingScheduls) {
             this.dao.insert(workingVo);
             List<WorkingScheduleUser> workingScheduleUsers = workingVo.getWorkingScheduleUsers();
             //设置id
@@ -88,8 +94,36 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 }
             });
             //批量插入值班人员信息
+            isSameTimeWorkingUser(workingVo,workingScheduleUsers);
             workingScheduleUserService.batchInsert(workingScheduleUsers);
         }
+    }
+    //判断前端传送的值班人员是否存在相同时间段的值班人员
+    private Boolean isSameUser(List<WorkingVo> workingScheduls) {
+        List<String> userList = new ArrayList<>();
+        workingScheduls.forEach(v ->{
+            String append = DateUtil.format(DateUtil.date(v.getScheduleTime()),DateUtil.YYYY_MM_DD) + "|" + v.getServiceBeginTime() + "~" + v.getServiceEndTime() + "|";
+            v.getWorkingScheduleUsers().forEach(u ->{
+                String user = append + u.getUserName() + "|" + u.getId();
+                userList.add(user);
+            });
+        });
+        isExistDuplicatedData(userList);
+        return true;
+    }
+
+    //判断同一时间段(排班日期 | 时段 | 排班人员)是否存在相同
+    private boolean isExistDuplicatedData(List<String> userList) {
+        List<String> sameList = userList.stream().collect(Collectors.toMap(e -> e, e -> 1, Integer::sum)) // 获得元素出现频率的 Map，键为元素，值为元素出现的次数
+                .entrySet()
+                .stream()                              // 所有 entry 对应的 Stream
+                .filter(e -> e.getValue() > 1)         // 过滤出元素出现次数大于 1 (重复元素）的 entry
+                .map(Map.Entry::getKey)                // 获得 entry 的键（重复元素）对应的 Stream
+                .collect(Collectors.toList());// 转化为 List
+        if(!sameList.isEmpty()){//存在直接抛出异常
+            throw new CommonException(sameList.stream().collect(Collectors.joining("\n")) + "\n存在重复班次");
+        }
+        return true;
     }
 
     /**
@@ -121,6 +155,9 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         if(workingVo.getScheduleTime() < System.currentTimeMillis()){
             throw new CommonException("值班日期中不能修改");
         }
+        List<WorkingVo> workingVos = new ArrayList<>();
+        workingVos.add(workingVo);
+        isSameUser(workingVos);
         WorkingSchedule schedule = new WorkingSchedule();
         BeanUtils.copyProperties(workingVo,schedule);
         this.dao.update(schedule);
@@ -135,13 +172,24 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("typeList", Arrays.asList(1,2));
         params.put("notDelIdList", scheduleUserIdList);
         workingScheduleUserService.deleteByMap(params);
-        //更新或修改值班人员信息
-        for (WorkingScheduleUser workingScheduleUser : workingScheduleUsers) {
-            if(workingScheduleUser.getId() == null){
-                workingScheduleUserService.insert(workingScheduleUser);
-            }else {
-                workingScheduleUserService.update(workingScheduleUser);
+        //过滤存在id的值班人员，更新没意义
+        isSameTimeWorkingUser(workingVo,workingScheduleUsers);
+        workingScheduleUsers.forEach(u ->{
+            if(u.getId() == null){
+                workingScheduleUserService.insert(u);
+            }else{
+                workingScheduleUserService.update(u);
             }
+        });
+    }
+
+    //判断传送的值班人员是否存在相同时间段的值班人员（数据库查询）
+    private void isSameTimeWorkingUser(WorkingSchedule workingVo, List<WorkingScheduleUser> workingScheduleUsers) {
+        //判断值班人员是否存在同个时间段的值班
+        List<Long> userIdList = workingScheduleUsers.stream().map(s -> s.getUserId()).collect(Collectors.toList());
+        List<String> userNameList = findWorkingUser(userIdList,workingVo);
+        if(!userNameList.isEmpty()){
+            throw new CommonException(userNameList.stream().collect(Collectors.joining(",")) +"已参加该时段值班");
         }
     }
 
@@ -267,15 +315,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 }
             }
             //判断同一时间段(排班日期 | 时段 | 排班人员)是否存在相同
-            List<String> sameList = list.stream().collect(Collectors.toMap(e -> e, e -> 1, Integer::sum)) // 获得元素出现频率的 Map，键为元素，值为元素出现的次数
-                    .entrySet()
-                    .stream()                              // 所有 entry 对应的 Stream
-                    .filter(e -> e.getValue() > 1)         // 过滤出元素出现次数大于 1 (重复元素）的 entry
-                    .map(Map.Entry::getKey)                // 获得 entry 的键（重复元素）对应的 Stream
-                    .collect(Collectors.toList());// 转化为 List
-            if(!sameList.isEmpty()){//存在直接抛出异常
-                throw new CommonException(sameList.stream().collect(Collectors.joining("\n")) + "\n存在重复班次");
-            }
+            isExistDuplicatedData(list);
             userNames = userNames.replace("，",",").replace(" ","");//把所有的中文逗号替换成英文逗号
             List<String> userNameList = Arrays.stream(userNames.split(",")).collect(Collectors.toList());
             List<User> users = userService.findUserByUserNames(userNameList);
@@ -296,7 +336,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         WorkingSchedule workingSchedule = new WorkingSchedule();
         workingSchedule.setCourierStationId(courierStation.getId());
         workingSchedule.setCourierStationName(courierStation.getName());
-        workingSchedule.setScheduleTime(DateUtil.parse(dataList.get(1).toString(), "yyyy-MM-dd").getTime());
+        workingSchedule.setScheduleTime(DateUtil.parse(dataList.get(1).toString(), DateUtil.YYYY_MM_DD).getTime());
         workingSchedule.setServiceTimeId(serviceHours.getId());
         String[] times = dataList.get(2).toString().split("~");
         if(!serviceHours.getServiceTimes().contains(times[0]) || !serviceHours.getServiceTimes().contains(times[1])){
@@ -317,15 +357,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUserList.add(scheduleUser);
         }
         //查找是否存在相同值班时段的值班人员
-        List<Long> userIdList = workingScheduleUserList.stream().map(s -> s.getUserId()).collect(Collectors.toList());
-        List<String> userNameList = findWorkingUser(userIdList,workingSchedule);
-        if(!userNameList.isEmpty()){
-            throw new CommonException(
-                    "第【"+(i+2)+"】行：" +
-                    userNameList.stream().collect(Collectors.joining(",")) +
-                    "已参加该时段值班"
-            );
-        }
+        isSameTimeWorkingUser(workingSchedule,workingScheduleUserList);
         //批量插入值班人员
         workingScheduleUserService.batchInsert(workingScheduleUserList);
     }
@@ -365,7 +397,46 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-19 09:47:02
      */
     @Override
-    public WorkingScheduleListVo getUserWorkingList(String monthData, Long userId) {
-        return null;
+    public List<WorkingUserInfoVo> getUserWorkingList(String monthData, Long userId) {
+        List<WorkingUserInfoVo> workingUserInfoVos = new ArrayList<>();
+        if(StringUtils.isEmpty(monthData)){
+            monthData = DateUtil.format(new Date(),DateUtil.YYYY_MM);
+        }
+        Date scheduleDate = DateUtil.parse(monthData,DateUtil.YYYY_MM);
+        //查找当月的值班任务
+        Map<String,Object> params = new HashMap<>();
+        params.put("scheduleBeginTime",DateUtil.beginOfMonth(scheduleDate).getTime());
+        params.put("scheduleEndTime",DateUtil.endOfMonth(scheduleDate).getTime());
+        params.put("userId",userId);
+        List<WorkingUserVo> workingUserVos = this.dao.getUserWorkingList(params);
+        if(!workingUserVos.isEmpty()) {
+            Map<String, List<WorkingUserVo>> map = workingUserVos.stream().collect(Collectors.groupingBy(s -> s.getScheduleTimeText()));
+            for (Map.Entry<String, List<WorkingUserVo>> entry : map.entrySet()) {
+                WorkingUserInfoVo vo = new WorkingUserInfoVo();
+                vo.setScheduleTimeText(entry.getKey());
+                vo.setWorkingUserVos(entry.getValue());
+                for (WorkingUserVo workingUserVo : vo.getWorkingUserVos()) {
+                    Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
+                    Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
+                    //获取打卡状态
+                    int signStatus = commonService.getPunchCardStatus(serviceBeginTime,serviceEndTime,workingUserVo.getSignInTime(),workingUserVo.getSignOutTime());
+                    workingUserVo.setSignStatus(signStatus);
+                }
+                //查看是否存在异常打卡
+                long abnormalCount = vo.getWorkingUserVos().stream().filter(s -> s.getSignStatus() == SignStatusEnums.SIGN_ABNORMAL.getStatus()).count();
+                if(abnormalCount > 0){//存在异常打卡
+                    vo.setStatus(SignStatusEnums.SIGN_ABNORMAL.getStatus());
+                }else{
+                    long unFinishCount = vo.getWorkingUserVos().stream().filter(s -> s.getSignStatus() == SignStatusEnums.SIGN_UN_FINISH.getStatus()).count();
+                    if(unFinishCount > 0) {//存在待完成打卡
+                        vo.setStatus(SignStatusEnums.SIGN_UN_FINISH.getStatus());
+                    }else{//及不存在异常也不存在待完成打卡就是已完成
+                        vo.setStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
+                    }
+                }
+                workingUserInfoVos.add(vo);
+            }
+        }
+        return workingUserInfoVos;
     }
 }

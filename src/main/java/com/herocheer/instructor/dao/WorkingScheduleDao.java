@@ -3,9 +3,11 @@ package com.herocheer.instructor.dao;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
+import com.herocheer.instructor.domain.vo.WorkingUserVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -31,4 +33,13 @@ public interface WorkingScheduleDao extends BaseDao<WorkingSchedule,Long>{
      * @date 2021-01-12 08:47:02
      */
     long batchDelete(List<Long> idList);
+
+    /**
+     * @author chenwf
+     * @desc 获取当前用户月份排班信息
+     * @date 2021-01-12 08:47:02
+     * @param params
+     * @return
+     */
+    List<WorkingUserVo> getUserWorkingList(Map<String, Object> params);
 }

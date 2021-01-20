@@ -6,6 +6,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
+import com.herocheer.instructor.domain.vo.WorkingUserInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingVo;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -103,10 +104,10 @@ public class WorkingScheduleController extends BaseController{
 
     @PostMapping("/getUserWorkingList")
     @ApiOperation("获取当前用户月份排班信息")
-    public ResponseResult<WorkingScheduleListVo> getUserWorkingList(@ApiParam("当前月份(yyyy-MM)") @RequestParam(required = false) String monthData,
-                                                                    HttpServletRequest request){
+    public ResponseResult<List<WorkingUserInfoVo>> getUserWorkingList(@ApiParam("当前月份(yyyy-MM)") @RequestParam(required = false) String monthData,
+                                                                      HttpServletRequest request){
         Long userId = getCurUserId(request);
-        WorkingScheduleListVo workingScheduleListVo = workingScheduleService.getUserWorkingList(monthData,userId);
-        return ResponseResult.ok(workingScheduleListVo);
+        List<WorkingUserInfoVo> workingUserInfoVos = workingScheduleService.getUserWorkingList(monthData,userId);
+        return ResponseResult.ok(workingUserInfoVos);
     }
 }
