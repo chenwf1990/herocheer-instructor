@@ -79,4 +79,14 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @param multipartFile
      */
     void workingScheduleImport(Long courierStationId, Long serviceTimeId, MultipartFile multipartFile);
+
+    /**
+     * @author chenwf
+     * @desc  获取当前用户月份排班信息
+     * @date 2021-01-19 09:47:02
+     * @param monthData
+     * @param userId
+     * @return
+     */
+    WorkingScheduleListVo getUserWorkingList(String monthData, Long userId);
 }

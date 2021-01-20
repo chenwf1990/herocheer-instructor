@@ -3,15 +3,15 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleUserDao">
     
     <sql id="table_field">
-      id, dutyNo, workingScheduleId, type, userId, userName, signInTime, signOutTime, serviceTime, auditState, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, taskNo, workingScheduleId, type, userId, userName, signInTime, signOutTime, serviceTime, approvalType, reserveStatus, signStatus, status, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.WorkingScheduleUser">
         insert into working_schedule_user (
     <trim suffixOverrides=",">
-        <if test="dutyNo != null">
-            dutyNo,
+        <if test="taskNo != null">
+            taskNo,
         </if>
         <if test="workingScheduleId != null">
             workingScheduleId,
@@ -34,8 +34,17 @@
         <if test="serviceTime != null">
             serviceTime,
         </if>
-        <if test="auditState != null">
-            auditState,
+        <if test="approvalType != null">
+            approvalType,
+        </if>
+        <if test="reserveStatus != null">
+            reserveStatus,
+        </if>
+        <if test="signStatus != null">
+            signStatus,
+        </if>
+        <if test="status != null">
+            status,
         </if>
         <if test="remarks != null">
             remarks,
@@ -44,8 +53,8 @@
     </trim>
     ) VALUES (
     <trim suffixOverrides=",">
-        <if test="dutyNo != null">
-            #{dutyNo},
+        <if test="taskNo != null">
+            #{taskNo},
         </if>
         <if test="workingScheduleId != null">
             #{workingScheduleId},
@@ -68,8 +77,17 @@
         <if test="serviceTime != null">
             #{serviceTime},
         </if>
-        <if test="auditState != null">
-            #{auditState},
+        <if test="approvalType != null">
+            #{approvalType},
+        </if>
+        <if test="reserveStatus != null">
+            #{reserveStatus},
+        </if>
+        <if test="signStatus != null">
+            #{signStatus},
+        </if>
+        <if test="status != null">
+            #{status},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -88,8 +106,8 @@
     <update id="update" parameterType="com.herocheer.instructor.domain.entity.WorkingScheduleUser">
         update working_schedule_user
         <set>
-            <if test="dutyNo != null">
-                dutyNo = #{dutyNo},
+            <if test="taskNo != null">
+                taskNo = #{taskNo},
             </if>
             <if test="workingScheduleId != null">
                 workingScheduleId = #{workingScheduleId},
@@ -112,8 +130,17 @@
             <if test="serviceTime != null">
                 serviceTime = #{serviceTime},
             </if>
-            <if test="auditState != null">
-                auditState = #{auditState},
+            <if test="approvalType != null">
+                approvalType = #{approvalType},
+            </if>
+            <if test="reserveStatus != null">
+                reserveStatus = #{reserveStatus},
+            </if>
+            <if test="signStatus != null">
+                signStatus = #{signStatus},
+            </if>
+            <if test="status != null">
+                status = #{status},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -134,8 +161,8 @@
     <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingScheduleUser">
         select <include refid="table_field"/> from working_schedule_user
         <where>
-            <if test="dutyNo != null">
-                and dutyNo = #{dutyNo}
+            <if test="taskNo != null">
+                and taskNo = #{taskNo}
             </if>
             <if test="workingScheduleId != null">
                 and workingScheduleId = #{workingScheduleId}
@@ -158,8 +185,65 @@
             <if test="serviceTime != null">
                 and serviceTime = #{serviceTime}
             </if>
-            <if test="auditState != null">
-                and auditState = #{auditState}
+            <if test="approvalType != null">
+                and approvalType = #{approvalType}
+            </if>
+            <if test="reserveStatus != null">
+                and reserveStatus = #{reserveStatus}
+            </if>
+            <if test="signStatus != null">
+                and signStatus = #{signStatus}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from working_schedule_user
+        <where>
+            <if test="taskNo != null">
+                and taskNo = #{taskNo}
+            </if>
+            <if test="workingScheduleId != null">
+                and workingScheduleId = #{workingScheduleId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="userName != null">
+                and userName = #{userName}
+            </if>
+            <if test="signInTime != null">
+                and signInTime = #{signInTime}
+            </if>
+            <if test="signOutTime != null">
+                and signOutTime = #{signOutTime}
+            </if>
+            <if test="serviceTime != null">
+                and serviceTime = #{serviceTime}
+            </if>
+            <if test="approvalType != null">
+                and approvalType = #{approvalType}
+            </if>
+            <if test="reserveStatus != null">
+                and reserveStatus = #{reserveStatus}
+            </if>
+            <if test="signStatus != null">
+                and signStatus = #{signStatus}
+            </if>
+            <if test="status != null">
+                and status = #{status}
             </if>
             <if test="remarks != null">
                 and remarks = #{remarks}

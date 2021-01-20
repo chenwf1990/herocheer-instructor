@@ -6,8 +6,7 @@ import com.herocheer.instructor.dao.NewsNoticeDao;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
 import com.herocheer.instructor.domain.vo.NewsQueryVo;
-import com.herocheer.instructor.enums.InstructorAuditStateEnums;
-import com.herocheer.instructor.enums.NewsAuditStateEnums;
+import com.herocheer.instructor.enums.AuditStateEnums;
 import com.herocheer.instructor.service.NewsNoticeLogService;
 import com.herocheer.instructor.service.NewsNoticeService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -56,11 +55,11 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     @Override
     public long updateNewsNotice(NewsNotice newsNotice) {
         NewsNotice model = this.dao.get(newsNotice.getId());
-        if(model.getAuditState() == InstructorAuditStateEnums.to_pass.getState()){
+        if(model.getAuditState() == AuditStateEnums.to_pass.getState()){
             throw new CommonException("审核通过不能修改");
         }
         //修改成功设置为待审核
-        newsNotice.setAuditState(InstructorAuditStateEnums.to_audit.getState());
+        newsNotice.setAuditState(AuditStateEnums.to_audit.getState());
         newsNoticeLogService.addLog(newsNotice.getId(),newsNotice.getAuditState(),newsNotice.getAuditIdea(),"修改");
         return this.dao.update(newsNotice);
     }
@@ -76,7 +75,7 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     @Override
     public long approval(Long id, int auditState) {
         NewsNotice newsNotice = this.dao.get(id);
-        if(newsNotice.getAuditState() == NewsAuditStateEnums.to_pass.getState()){
+        if(newsNotice.getAuditState() == AuditStateEnums.to_pass.getState()){
             throw new CommonException("该新闻已审批");
         }
         newsNotice.setAuditState(auditState);

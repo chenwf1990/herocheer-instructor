@@ -3,10 +3,7 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.common.utils.StringUtils;
-import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
-import com.herocheer.instructor.domain.vo.ScheduleImportVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingVo;
@@ -102,5 +99,14 @@ public class WorkingScheduleController extends BaseController{
         String serviceTimeId = request.getParameter("serviceTimeId");
         workingScheduleService.workingScheduleImport(Long.valueOf(courierStationId),Long.valueOf(serviceTimeId),multipartFile);
         return ResponseResult.ok();
+    }
+
+    @PostMapping("/getUserWorkingList")
+    @ApiOperation("获取当前用户月份排班信息")
+    public ResponseResult<WorkingScheduleListVo> getUserWorkingList(@ApiParam("当前月份(yyyy-MM)") @RequestParam(required = false) String monthData,
+                                                                    HttpServletRequest request){
+        Long userId = getCurUserId(request);
+        WorkingScheduleListVo workingScheduleListVo = workingScheduleService.getUserWorkingList(monthData,userId);
+        return ResponseResult.ok(workingScheduleListVo);
     }
 }
