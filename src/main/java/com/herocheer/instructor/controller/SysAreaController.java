@@ -10,7 +10,11 @@ import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -49,7 +53,10 @@ public class SysAreaController extends BaseController{
     @ApiOperation("获取区域树(权限过滤)")
     @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> getAllAreaByRole(){
-
         return ResponseResult.ok(sysAreaService.getAllArea(2));
     }
+
+    // TODO 根据pid筛选
+
+
 }

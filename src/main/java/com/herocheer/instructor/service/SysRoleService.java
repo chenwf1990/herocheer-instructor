@@ -70,4 +70,12 @@ public interface SysRoleService extends BaseService<SysRole, Long> {
      */
     void settingMenuToRole(String menuIds, Long roleId);
 
+    /**
+     * 设置角色菜单关联表
+     *
+     * @param areaIds 区域id
+     * @param roleId  角色id
+     */
+    void settingAreaToRole(String areaIds, Long roleId);
+
 }

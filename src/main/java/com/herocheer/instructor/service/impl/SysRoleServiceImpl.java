@@ -5,6 +5,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysRoleDao;
 import com.herocheer.instructor.domain.entity.SysRole;
+import com.herocheer.instructor.domain.entity.SysRoleArea;
 import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.instructor.service.SysRoleService;
@@ -72,12 +73,35 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
             SysRoleMenu sysRoleMenu = null;
             for (int i = 0; i < arr.length; i++) {
                 sysRoleMenu = new SysRoleMenu();
-                sysRoleMenu.setMenuId(roleId);
-                sysRoleMenu.setRoleId(Long.parseLong(arr[i]));
+                sysRoleMenu.setRoleId(roleId);
+                sysRoleMenu.setMenuId(Long.parseLong(arr[i]));
                 list.add(sysRoleMenu);
             }
             this.dao.insertBatchSysRoleMenu(list);
         }
+    }
+
+    /**
+     * 设置角色区域关联表
+     *
+     * @param areaIds 区域id
+     * @param roleId  角色id
+     */
+    @Override
+    public void settingAreaToRole(String areaIds, Long roleId) {
+        if(StringUtils.isNotBlank(areaIds)){
+            String[] arr = areaIds.split(",");
+            List<SysRoleArea> list = new ArrayList<>();
+            SysRoleArea sysRoleArea = null;
+            for (int i = 0; i < arr.length; i++) {
+                sysRoleArea = SysRoleArea.builder().build();
+                sysRoleArea.setRoleId(roleId);
+                sysRoleArea.setAreaId(Long.parseLong(arr[i]));
+                list.add(sysRoleArea);
+            }
+            this.dao.insertBatchSysRoleArea(list);
+        }
+
     }
 
     /**

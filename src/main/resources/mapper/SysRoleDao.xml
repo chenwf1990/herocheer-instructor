@@ -121,12 +121,21 @@
         </where>
     </select>
 
-    <!-- 插入批量-->
+    <!-- 插入批量SysRoleMenu-->
     <insert id="insertBatchSysRoleMenu" parameterType="list">
         insert into sys_role_menu (roleId,menuId)
         VALUES
         <foreach collection="list" item="sysRoleMenu" separator=",">
             (#{sysRoleMenu.roleId},#{sysRoleMenu.menuId})
+        </foreach>
+    </insert>
+
+    <!-- 插入批量SysRoleArea-->
+    <insert id="insertBatchSysRoleArea" parameterType="list">
+        insert into sys_role_area (roleId,areaId)
+        VALUES
+        <foreach collection="list" item="sysRoleArea" separator=",">
+            (#{sysRoleArea.roleId},#{sysRoleArea.areaId})
         </foreach>
     </insert>
 

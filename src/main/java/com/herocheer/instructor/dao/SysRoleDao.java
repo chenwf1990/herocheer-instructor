@@ -1,6 +1,7 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.SysRole;
+import com.herocheer.instructor.domain.entity.SysRoleArea;
 import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
@@ -30,6 +31,14 @@ public interface SysRoleDao extends BaseDao<SysRole, Long> {
      * @return int
      */
     int insertBatchSysRoleMenu(List<SysRoleMenu> SysRoleMenus);
+
+    /**
+     * 批量插入角色区域中间表
+     *
+     * @param SysRoleAres 系统角色阿瑞斯
+     * @return int
+     */
+    int insertBatchSysRoleArea(List<SysRoleArea> SysRoleAres);
 
     /**
      * 判断角色名是否存在

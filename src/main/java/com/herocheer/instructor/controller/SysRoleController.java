@@ -3,6 +3,7 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysRole;
+import com.herocheer.instructor.domain.vo.RoleAreaVO;
 import com.herocheer.instructor.domain.vo.RoleMenuVO;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.instructor.service.SysRoleService;
@@ -56,7 +57,7 @@ public class SysRoleController extends BaseController {
 
 
     /**
-     * 给角色分配权限
+     * 给角色分配菜单权限
      *
      * @param request    请求
      * @param roleMenuVO VO
@@ -67,6 +68,21 @@ public class SysRoleController extends BaseController {
     @AllowAnonymous
     public ResponseResult<SysRole> settingMenuToRole(@ApiParam("角色ID") @RequestBody RoleMenuVO roleMenuVO, HttpServletRequest request){
         sysRoleService.settingMenuToRole(roleMenuVO.getMenuId(),roleMenuVO.getRoleId());
+        return ResponseResult.ok();
+    }
+
+    /**
+     * 给角色分配区域权限
+     *
+     * @param roleAreaVO 作用区域签证官
+     * @param request    请求
+     * @return {@link ResponseResult<SysRole>}
+     */
+    @PostMapping("/area")
+    @ApiOperation("分配数据权限")
+    @AllowAnonymous
+    public ResponseResult<SysRole> settingAreaToRole(@ApiParam("角色ID") @RequestBody RoleAreaVO roleAreaVO, HttpServletRequest request){
+        sysRoleService.settingAreaToRole(roleAreaVO.getAreaId(),roleAreaVO.getRoleId());
         return ResponseResult.ok();
     }
     /**
