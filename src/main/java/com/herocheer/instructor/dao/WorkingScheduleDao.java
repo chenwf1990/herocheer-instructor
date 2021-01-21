@@ -32,7 +32,7 @@ public interface WorkingScheduleDao extends BaseDao<WorkingSchedule,Long>{
      * @desc 批量删除排班信息
      * @date 2021-01-12 08:47:02
      */
-    long batchDelete(List<Long> idList);
+    int batchDelete(List<Long> idList);
 
     /**
      * @author chenwf

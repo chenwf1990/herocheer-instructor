@@ -65,7 +65,11 @@ public class WorkingScheduleController extends BaseController{
     @DeleteMapping("/batchDelete")
     @ApiOperation("批量删除排班信息")
     public ResponseResult batchDelete(@ApiParam("排班id，多个逗号隔开") @RequestParam String ids){
-        return ResponseResult.isSuccess(workingScheduleService.batchDelete(ids));
+        int count = workingScheduleService.batchDelete(ids);
+        if(count == 0){
+            throw new CommonException("值班日期中不能删除");
+        }
+        return ResponseResult.ok();
     }
 
     @PostMapping("/updateWorkingScheduls")

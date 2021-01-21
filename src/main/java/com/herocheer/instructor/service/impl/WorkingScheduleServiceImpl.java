@@ -166,6 +166,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         BeanUtils.copyProperties(workingVo,schedule);
         this.dao.update(schedule);
         List<WorkingScheduleUser> workingScheduleUsers = workingVo.getWorkingScheduleUsers();
+        isSameTimeWorkingUser(workingVo,workingScheduleUsers);
         //删除被修改的人员，微信预约人员不能删除
         List<Long> scheduleUserIdList = workingScheduleUsers.stream().
                 filter(y -> y.getId() != null).
@@ -176,9 +177,9 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("typeList", Arrays.asList(1,2));
         params.put("notDelIdList", scheduleUserIdList);
         workingScheduleUserService.deleteByMap(params);
-        //过滤存在id的值班人员，更新没意义
-        isSameTimeWorkingUser(workingVo,workingScheduleUsers);
+
         workingScheduleUsers.forEach(u ->{
+            u.setWorkingScheduleId(workingVo.getId());
             if(u.getId() == null){
                 workingScheduleUserService.insert(u);
             }else{
@@ -190,7 +191,10 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     //判断传送的值班人员是否存在相同时间段的值班人员（数据库查询）
     private void isSameTimeWorkingUser(WorkingSchedule workingVo, List<WorkingScheduleUser> workingScheduleUsers) {
         //判断值班人员是否存在同个时间段的值班
-        List<Long> userIdList = workingScheduleUsers.stream().map(s -> s.getUserId()).collect(Collectors.toList());
+        List<Long> userIdList = workingScheduleUsers.stream().filter(y ->y.getId() == null).map(s -> s.getUserId()).collect(Collectors.toList());
+        if(userIdList.isEmpty()){
+            return;
+        }
         List<String> userNameList = findWorkingUser(userIdList,workingVo);
         if(!userNameList.isEmpty()){
             throw new CommonException(userNameList.stream().collect(Collectors.joining(",")) +"已参加该时段值班");
@@ -205,7 +209,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-12 08:47:02
      */
     @Override
-    public long batchDelete(String ids) {
+    public int batchDelete(String ids) {
         List<Long> idList = Stream.of(ids.split(",")).map(s -> Long.parseLong(s)).collect(Collectors.toList());
         return this.dao.batchDelete(idList);
     }
@@ -312,7 +316,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 //以逗号隔开拼接固定人员和值班人员
                 userNames += data.get(3).toString() + "," + data.get(4).toString() + ",";
                 //排班日期 | 时段 | 排班人员  进行拼接
-                String append = data.get(1).toString().trim() + "|" + data.get(2).toString().trim() + "|";
+                String append = courierStation.getName() + "|" + data.get(1).toString().trim() + "|" + data.get(2).toString().trim() + "|";
                 list.add(append + data.get(3).toString().trim());
                 for (String userName : data.get(4).toString().replace("，", ",").replace(" ", "").split(",")) {
                     list.add(append + userName.trim());
