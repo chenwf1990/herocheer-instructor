@@ -283,4 +283,22 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         }
         return sysArea;
     }
+
+    /**
+     * @param userId
+     * @return
+     * @author chenwf
+     * @desc 根据用户id查找指导员信息
+     * @date 2021-01-21 09:26:18
+     */
+    @Override
+    public Instructor findInstructorByUserId(Long userId) {
+        Map<String,Object> param = new HashMap<>();
+        param.put("userId",userId);
+        List<Instructor> instructors = this.dao.findByLimit(param);
+        if(!instructors.isEmpty()){
+            instructors.get(0);
+        }
+        return null;
+    }
 }

@@ -4,6 +4,8 @@ import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingReplaceCard;
 import com.herocheer.common.base.service.BaseService;
 
+import java.util.List;
+
 /**
  * @author chenwf
  * @desc  值班补卡(WorkingReplaceCard)表服务接口
@@ -31,4 +33,13 @@ public interface WorkingReplaceCardService extends BaseService<WorkingReplaceCar
      * @return
      */
     int approval(Long id, int approvalStatus, String approvalComments, UserEntity userEntity);
+
+    /**
+     * @author chenwf
+     * @desc  获取补卡列表
+     * @date 2021-01-21 08:43:45
+     * @param workingScheduleUserId
+     * @return
+     */
+    List<WorkingReplaceCard> getReplaceCardList(Long workingScheduleUserId);
 }
