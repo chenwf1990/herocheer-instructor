@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingReplaceCardDao">
     
     <sql id="table_field">
-      id, workingScheduleUserId, replaceCardTime, replaceCardReason, approvalStatus, approvalComments, approvalId, approvalBy, approvalTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, workingScheduleUserId, type, replaceCardTime, replaceCardReason, approvalStatus, approvalComments, approvalId, approvalBy, approvalTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -12,6 +12,9 @@
     <trim suffixOverrides=",">
         <if test="workingScheduleUserId != null">
             workingScheduleUserId,
+        </if>
+        <if test="type != null">
+            type,
         </if>
         <if test="replaceCardTime != null">
             replaceCardTime,
@@ -43,6 +46,9 @@
     <trim suffixOverrides=",">
         <if test="workingScheduleUserId != null">
             #{workingScheduleUserId},
+        </if>
+        <if test="type != null">
+            #{type},
         </if>
         <if test="replaceCardTime != null">
             #{replaceCardTime},
@@ -84,6 +90,9 @@
         <set>
             <if test="workingScheduleUserId != null">
                 workingScheduleUserId = #{workingScheduleUserId},
+            </if>
+            <if test="type != null">
+                type = #{type},
             </if>
             <if test="replaceCardTime != null">
                 replaceCardTime = #{replaceCardTime},
@@ -128,6 +137,9 @@
             <if test="workingScheduleUserId != null">
                 and workingScheduleUserId = #{workingScheduleUserId}
             </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
             <if test="replaceCardTime != null">
                 and replaceCardTime = #{replaceCardTime}
             </if>
@@ -171,6 +183,9 @@
             <if test="workingScheduleUserId != null">
                 and workingScheduleUserId = #{workingScheduleUserId}
             </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
             <if test="replaceCardTime != null">
                 and replaceCardTime = #{replaceCardTime}
             </if>
@@ -197,5 +212,15 @@
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
+    </select>
+
+    <select id="findReplaceCardCount" parameterType="map" resultType="int">
+        select count(1) from working_replace_card a
+        where a.workingScheduleUserId = #{workingScheduleUserId}
+        and a.type = #{type}
+        and a.approvalStatus in
+        <foreach item="approvalStatus" index="index" collection="approvalStatusList" open="(" separator="," close=")">
+            #{approvalStatus}
+        </foreach>
     </select>
 </mapper>

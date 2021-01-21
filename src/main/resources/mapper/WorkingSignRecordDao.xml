@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingSignRecordDao">
     
     <sql id="table_field">
-      id, workingScheduleUserId, type, isReissueCard, signStatus, signTime, signPlace, longitude, latitude, pics, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, workingScheduleUserId, replaceCardId, type, isReissueCard, signStatus, signTime, signPlace, longitude, latitude, pics, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -12,6 +12,9 @@
     <trim suffixOverrides=",">
         <if test="workingScheduleUserId != null">
             workingScheduleUserId,
+        </if>
+        <if test="replaceCardId != null">
+            replaceCardId,
         </if>
         <if test="type != null">
             type,
@@ -46,6 +49,9 @@
     <trim suffixOverrides=",">
         <if test="workingScheduleUserId != null">
             #{workingScheduleUserId},
+        </if>
+        <if test="replaceCardId != null">
+            #{replaceCardId},
         </if>
         <if test="type != null">
             #{type},
@@ -90,6 +96,9 @@
         <set>
             <if test="workingScheduleUserId != null">
                 workingScheduleUserId = #{workingScheduleUserId},
+            </if>
+            <if test="replaceCardId != null">
+                replaceCardId = #{replaceCardId},
             </if>
             <if test="type != null">
                 type = #{type},
@@ -137,6 +146,9 @@
             <if test="workingScheduleUserId != null">
                 and workingScheduleUserId = #{workingScheduleUserId}
             </if>
+            <if test="replaceCardId != null">
+                and replaceCardId = #{replaceCardId}
+            </if>
             <if test="type != null">
                 and type = #{type}
             </if>
@@ -166,7 +178,14 @@
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
-        order by id DESC
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
     </select>
     
     <!--查询条数-->
@@ -175,6 +194,9 @@
         <where>
             <if test="workingScheduleUserId != null">
                 and workingScheduleUserId = #{workingScheduleUserId}
+            </if>
+            <if test="replaceCardId != null">
+                and replaceCardId = #{replaceCardId}
             </if>
             <if test="type != null">
                 and type = #{type}

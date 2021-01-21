@@ -49,4 +49,25 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return
      */
     List<String> findWorkingUser(Map<String, Object> params);
+
+    /**
+     * @author chenwf
+     * @desc  更新打卡时间
+     * @date 2021-01-20 20:57:02
+     * @param workingScheduleUserId
+     * @param userId
+     * @param replaceCardTime
+     * @return
+     */
+    int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime,Integer type);
+
+    /**
+     * @author chenwf
+     * @desc  根据打卡时间获取打卡类型
+     * @date 2021-01-20 20:57:02
+     * @param signTime
+     * @param serviceBeginTime
+     * @return
+     */
+    int getPunchCardType(Long signTime, Long serviceBeginTime);
 }

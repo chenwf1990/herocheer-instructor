@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleDao">
     
     <sql id="table_field">
-      id, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, stationUserId, stationUserName, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -27,12 +27,6 @@
         </if>
         <if test="serviceEndTime != null">
             serviceEndTime,
-        </if>
-        <if test="stationUserId != null">
-            stationUserId,
-        </if>
-        <if test="stationUserName != null">
-            stationUserName,
         </if>
         <if test="remarks != null">
             remarks,
@@ -58,12 +52,6 @@
         </if>
         <if test="serviceEndTime != null">
             #{serviceEndTime},
-        </if>
-        <if test="stationUserId != null">
-            #{stationUserId},
-        </if>
-        <if test="stationUserName != null">
-            #{stationUserName},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -99,12 +87,6 @@
             </if>
             <if test="serviceEndTime != null">
                 serviceEndTime = #{serviceEndTime},
-            </if>
-            <if test="stationUserId != null">
-                stationUserId = #{stationUserId},
-            </if>
-            <if test="stationUserName != null">
-                stationUserName = #{stationUserName},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -143,11 +125,42 @@
             <if test="serviceEndTime != null">
                 and serviceEndTime = #{serviceEndTime}
             </if>
-            <if test="stationUserId != null">
-                and stationUserId = #{stationUserId}
+            <if test="remarks != null">
+                and remarks = #{remarks}
             </if>
-            <if test="stationUserName != null">
-                and stationUserName = #{stationUserName}
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from working_schedule
+        <where>
+            <if test="courierStationId != null">
+                and courierStationId = #{courierStationId}
+            </if>
+            <if test="courierStationName != null">
+                and courierStationName = #{courierStationName}
+            </if>
+            <if test="scheduleTime != null">
+                and scheduleTime = #{scheduleTime}
+            </if>
+            <if test="serviceTimeId != null">
+                and serviceTimeId = #{serviceTimeId}
+            </if>
+            <if test="serviceBeginTime != null">
+                and serviceBeginTime = #{serviceBeginTime}
+            </if>
+            <if test="serviceEndTime != null">
+                and serviceEndTime = #{serviceEndTime}
             </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
@@ -215,12 +228,18 @@
         b.courierStationId,
         c.signInTime,
         c.signOutTime,
-        c.serviceTime
+        c.serviceTime,
+        c.id as workingScheduleUserId
         from courier_station a
         INNER JOIN working_schedule b on a.id = b.courierStationId
         INNER JOIN working_schedule_user c on c.workingScheduleId = b.id
         where c.reserveStatus = 0
-        and b.scheduleTime between #{scheduleBeginTime} and #{scheduleEndTime}
+        <if test="scheduleBeginTime != null and scheduleEndTime != null">
+            and b.scheduleTime between #{scheduleBeginTime} and #{scheduleEndTime}
+        </if>
+        <if test="workingScheduleUserId != null">
+            and c.id = #{workingScheduleUserId}
+        </if>
         and c.userId = #{userId}
         ORDER BY b.scheduleTime,b.serviceBeginTime
     </select>

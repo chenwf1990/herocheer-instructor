@@ -54,6 +54,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     private UserService userService;
     @Resource
     private CommonService commonService;
+    @Resource
+    private WorkingSignRecordService workingSignRecordService;
 
     /**
      * @param workingScheduleQueryVo
@@ -438,5 +440,31 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             }
         }
         return workingUserInfoVos;
+    }
+
+    /**
+     * @param workingScheduleUserId
+     * @param userId
+     * @return
+     * @author chenwf
+     * @desc 获取值班任务信息(值班打卡)
+     * @date 2021-01-19 09:47:02
+     */
+    @Override
+    public WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("workingScheduleUserId",workingScheduleUserId);
+        params.put("userId",userId);
+        List<WorkingUserVo> workingUserVos = this.dao.getUserWorkingList(params);
+        if(!workingUserVos.isEmpty()){
+            WorkingUserVo v = workingUserVos.get(0);
+            Map<String,Object> signMap = new HashMap<>();
+            signMap.put("workingScheduleUserId",workingScheduleUserId);
+            signMap.put("orderBy","signTime");
+            List<WorkingSignRecord> signRecords = workingSignRecordService.findByLimit(signMap);
+            v.setSignRecords(signRecords);
+            return v;
+        }
+        return null;
     }
 }

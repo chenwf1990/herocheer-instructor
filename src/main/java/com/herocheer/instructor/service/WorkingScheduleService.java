@@ -3,13 +3,9 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.common.base.service.BaseService;
-import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
-import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
-import com.herocheer.instructor.domain.vo.WorkingUserInfoVo;
-import com.herocheer.instructor.domain.vo.WorkingVo;
+import com.herocheer.instructor.domain.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -90,4 +86,14 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @return
      */
     List<WorkingUserInfoVo> getUserWorkingList(String monthData, Long userId);
+
+    /**
+     * @author chenwf
+     * @desc  获取值班任务信息(值班打卡)
+     * @date 2021-01-19 09:47:02
+     * @param workingScheduleUserId
+     * @param userId
+     * @return
+     */
+    WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId);
 }
