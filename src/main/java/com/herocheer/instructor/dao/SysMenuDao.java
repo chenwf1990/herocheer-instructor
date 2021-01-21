@@ -25,7 +25,7 @@ public interface SysMenuDao extends BaseDao<SysMenu, Long> {
     List<OptionTreeVO> selectMenuTreeToUser(Map<String, Object> map);
 
     /**
-     * 用户选择菜单树
+     * 根据用户角色获取权限
      *
      * @param map 地图
      * @return {@link List<SysMenu>}
@@ -40,4 +40,13 @@ public interface SysMenuDao extends BaseDao<SysMenu, Long> {
      * @return {@link List<SysMenu>}
      */
     List<SysMenu> selectMenuByPage(SysMenuVO sysMenuVO);
+
+    /**
+     * 选中的菜单节点
+     *
+     * @param id id
+     * @return {@link List<String>}
+     */
+    List<String> selectedMenuNode(Long id);
+
 }

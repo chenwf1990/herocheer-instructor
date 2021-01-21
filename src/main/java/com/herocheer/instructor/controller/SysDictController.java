@@ -118,6 +118,6 @@ public class SysDictController extends BaseController {
     @ApiOperation("字典名称")
     @AllowAnonymous
     public ResponseResult<List<SysDict>> fetchDict(@ApiParam("字典PID") @PathVariable Long pid, HttpServletRequest request){
-        return ResponseResult.ok( sysDictService.findDict());
+        return ResponseResult.ok( sysDictService.findDict(pid));
     }
 }

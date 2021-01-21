@@ -156,37 +156,24 @@
         select id,pid,operationName as `name` from sys_operation
     </select>
 
-    <!--分配菜单权限给角色-->
+    <!--根据用户角色获取权限-->
     <select id="selectMenuTreeToRole" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysMenu">
-        select <include refid="table_field"/>
-        from sys_menu
+        select distinct e.*  from `user` a
+        inner join sys_user_role b on a.id = b.userId
+        inner join sys_role c on b.roleId = c.id
+        inner join sys_role_menu d on c.id = d.roleId
+        inner join sys_menu e on e.id =  d.menuId
         <where>
             <trim prefixOverrides="AND | OR">
-                <if test="pid != null">
-                    and pid = #{pid}
+                <if test="userId != null">
+                    and a.id = #{userId}
                 </if>
-                <if test="menuName != null">
-                    and menuName = #{menuName}
-                </if>
-                <if test="code != null">
-                    and code = #{code}
-                </if>
-                <if test="url != null">
-                    and url = #{url}
-                </if>
-                <if test="orderNo != null">
-                    and orderNo = #{orderNo}
-                </if>
-                <if test="icon != null">
-                    and icon = #{icon}
-                </if>
-                <if test="remark != null">
-                    and remark = #{remark}
+                <if test="roleArray != null">
+                    and d.roleId in <foreach collection="roleArray" item="item" index="index" open="(" close=")" separator=","> '${item}' </foreach>
                 </if>
                 <if test="status != null">
-                    and status = #{status}
+                    and a.status = #{status}
                 </if>
-                <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
             </trim>
         </where>
     </select>
@@ -211,5 +198,17 @@
             </trim>
         </where>
         order by id desc
+    </select>
+
+    <!--选中的菜单节点-->
+    <select id="selectedMenuNode" parameterType="Long" resultType="String">
+        SELECT menuId FROM sys_role_menu
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="roleId != null">
+                    and roleId = #{roleId}
+                </if>
+            </trim>
+        </where>
     </select>
 </mapper>

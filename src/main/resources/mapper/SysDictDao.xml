@@ -123,4 +123,27 @@
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
+    <!--后台列表-->
+    <select id="selectDictByPage" parameterType="com.herocheer.instructor.domain.vo.SysDictVO" resultType="com.herocheer.instructor.domain.entity.SysDict">
+        select
+        <include refid="table_field"/>
+        from sys_dict
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="dictName != null">
+                    and dictName = #{dictName}
+                </if>
+                <if test="pid != null">
+                    and pid = #{pid}
+                </if>
+                <if test="remark != null">
+                    and remark = #{remark}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+            </trim>
+        </where>
+    </select>
 </mapper>

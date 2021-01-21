@@ -132,6 +132,7 @@ public class SysMenuController extends BaseController {
     public ResponseResult<List<Tree<Long>>> fetchMenuTreeToUser(HttpServletRequest request){
         // 当前用户信息
         User user =  User.builder().build();
+
         List<Tree<Long>> treeList = sysMenuService.findMenuTreeToUser(user);
         return ResponseResult.ok(treeList);
     }
@@ -140,12 +141,13 @@ public class SysMenuController extends BaseController {
      * 角色分配菜单权限
      *
      * @param request 请求
-     * @return {@link ResponseResult}
+     * @param id      id
+     * @return {@link ResponseResult<OptionTreeVO>}
      */
-    @GetMapping("/tree/role")
+    @GetMapping("/tree/role/{id:\\w+}")
     @ApiOperation("菜单树")
     @AllowAnonymous
-    public ResponseResult<OptionTreeVO> fetchMenuTreeToRole(HttpServletRequest request){
-        return ResponseResult.ok(sysMenuService.findMenuTreeToRole());
+    public ResponseResult<OptionTreeVO> fetchMenuTreeToRole(@ApiParam("角色ID") @PathVariable Long id, HttpServletRequest request){
+        return ResponseResult.ok(sysMenuService.findMenuTreeToRole(id));
     }
 }

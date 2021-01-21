@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,10 +44,19 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      */
     @Override
     public List<Tree<Long>> findMenuTreeToUser(User user) {
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("status", true);
+        paramMap.put("userId", 8L);
+//        paramMap.put("userId", user.getId());
+        Long [] roleArray01 = {2L,5L};
+//        Long [] roleArray =
+        paramMap.put("roleArray", roleArray01);
+
+        List<SysMenu> sysMenus = this.dao.selectMenuTreeToRole(paramMap);
+
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
-
-        List<SysMenu> sysMenus = this.dao.selectMenuTreeToRole(new HashMap<>());
         Map<String, Object> hashMap = null;
         for (SysMenu sysMenu:sysMenus){
             hashMap = new HashMap();
@@ -73,7 +83,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      * @return {@link List<Tree<Long>>}
      */
     @Override
-    public OptionTreeVO findMenuTreeToRole() {
+    public OptionTreeVO findMenuTreeToRole(Long id) {
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
 
@@ -90,8 +100,15 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
 
         OptionTreeVO optionTree = OptionTreeVO.builder().build();
         optionTree.setTreeList(treeList);
-        // TODO 选中节点
-        optionTree.setSelectedNode("1,2,3,4");
+        //  选中节点
+        List<String> roleMenus = this.dao.selectedMenuNode(id);
+        if (CollectionUtils.isEmpty(roleMenus)) {
+            optionTree.setSelectedNode(null);
+        } else {
+            String str = String.join(",", roleMenus);
+            optionTree.setSelectedNode(str);
+        }
+
         return optionTree;
     }
 

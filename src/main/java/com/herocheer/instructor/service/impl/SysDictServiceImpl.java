@@ -97,7 +97,7 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
      * @return {@link List <SysDict>}
      */
     @Override
-    public List<SysDict> findDict() {
-        return this.dao.selectDictByPage(new SysDictVO());
+    public List<SysDict> findDict(Long pid) {
+        return this.dao.selectDictByPage( SysDictVO.builder().pid(pid).build());
     }
 }
