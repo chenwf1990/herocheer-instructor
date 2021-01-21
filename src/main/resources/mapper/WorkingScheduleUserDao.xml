@@ -296,6 +296,23 @@
         </where>
     </delete>
 
+    <delete id="deleteByWorkingScheduleIds" parameterType="java.util.List">
+        delete from working_schedule_user
+        <where>
+            <choose>
+                <when test="list != null and list.size > 0">
+                    and workingScheduleId in
+                    <foreach item="workingScheduleId" index="index" collection="list" open="(" separator="," close=")">
+                        #{workingScheduleId}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and 1 = 2
+                </otherwise>
+            </choose>
+        </where>
+    </delete>
+
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
         SELECT
         a.courierStationId,
@@ -330,7 +347,7 @@
             and b.userName like CONCAT('%',#{userName},'')
         </if>
     </select>
-    <select id="findWorkingUser" parameterType="map" resultType="java.util.List">
+    <select id="findWorkingUser" parameterType="map" resultType="string">
         select b.userName from working_schedule a
         INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
         and a.courierStationId = #{courierStationId}

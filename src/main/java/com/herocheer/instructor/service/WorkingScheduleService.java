@@ -55,7 +55,7 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @param ids
      * @return
      */
-    long batchDelete(String ids);
+    int batchDelete(String ids);
 
     /**
      * @author chenwf

@@ -14,6 +14,7 @@ import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.domain.entity.*;
 import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.enums.AuditStatusEnums;
+import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.service.*;
@@ -86,6 +87,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         //判断是否存在同个时段相同人员
         isSameUser(workingScheduls);
         for (WorkingVo workingVo : workingScheduls) {
+            workingVo.setActivityType(RecruitTypeEunms.STATION_RECRUIT.getType());
             this.dao.insert(workingVo);
             List<WorkingScheduleUser> workingScheduleUsers = workingVo.getWorkingScheduleUsers();
             //设置id
@@ -166,6 +168,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         BeanUtils.copyProperties(workingVo,schedule);
         this.dao.update(schedule);
         List<WorkingScheduleUser> workingScheduleUsers = workingVo.getWorkingScheduleUsers();
+        isSameTimeWorkingUser(workingVo,workingScheduleUsers);
         //删除被修改的人员，微信预约人员不能删除
         List<Long> scheduleUserIdList = workingScheduleUsers.stream().
                 filter(y -> y.getId() != null).
@@ -176,9 +179,9 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("typeList", Arrays.asList(1,2));
         params.put("notDelIdList", scheduleUserIdList);
         workingScheduleUserService.deleteByMap(params);
-        //过滤存在id的值班人员，更新没意义
-        isSameTimeWorkingUser(workingVo,workingScheduleUsers);
+
         workingScheduleUsers.forEach(u ->{
+            u.setWorkingScheduleId(workingVo.getId());
             if(u.getId() == null){
                 workingScheduleUserService.insert(u);
             }else{
@@ -190,7 +193,10 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     //判断传送的值班人员是否存在相同时间段的值班人员（数据库查询）
     private void isSameTimeWorkingUser(WorkingSchedule workingVo, List<WorkingScheduleUser> workingScheduleUsers) {
         //判断值班人员是否存在同个时间段的值班
-        List<Long> userIdList = workingScheduleUsers.stream().map(s -> s.getUserId()).collect(Collectors.toList());
+        List<Long> userIdList = workingScheduleUsers.stream().filter(y ->y.getId() == null).map(s -> s.getUserId()).collect(Collectors.toList());
+        if(userIdList.isEmpty()){
+            return;
+        }
         List<String> userNameList = findWorkingUser(userIdList,workingVo);
         if(!userNameList.isEmpty()){
             throw new CommonException(userNameList.stream().collect(Collectors.joining(",")) +"已参加该时段值班");
@@ -205,9 +211,21 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-12 08:47:02
      */
     @Override
-    public long batchDelete(String ids) {
+    public int batchDelete(String ids) {
         List<Long> idList = Stream.of(ids.split(",")).map(s -> Long.parseLong(s)).collect(Collectors.toList());
-        return this.dao.batchDelete(idList);
+        if(idList.isEmpty()){
+            throw new CommonException("请选择要删除的排班信息");
+        }
+        List<WorkingSchedule> workingSchedules = this.dao.getByIds(idList);
+        for (WorkingSchedule schedule : workingSchedules) {
+            if(schedule.getScheduleTime() < System.currentTimeMillis()){
+                throw new CommonException("值班日期中不能删除:"+DateUtil.format(new Date(schedule.getScheduleTime()),DateUtil.YYYY_MM_DD));
+            }
+        }
+        int count = this.dao.batchDelete(idList);
+        //批量删除scheduleUser数据
+        workingScheduleUserService.deleteByWorkingScheduleIds(idList);
+        return count;
     }
 
     /**
@@ -338,6 +356,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     //组装、保存值班记录
     private void buildSaveWorkingSchedule(CourierStation courierStation, ServiceHours serviceHours, List<Object> dataList, Map<String, List<User>> userMap, int i) {
         WorkingSchedule workingSchedule = new WorkingSchedule();
+        workingSchedule.setActivityType(RecruitTypeEunms.STATION_RECRUIT.getType());
         workingSchedule.setCourierStationId(courierStation.getId());
         workingSchedule.setCourierStationName(courierStation.getName());
         workingSchedule.setScheduleTime(DateUtil.parse(dataList.get(1).toString(), DateUtil.YYYY_MM_DD).getTime());

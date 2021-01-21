@@ -131,4 +131,16 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         }
         return SignType.SIGN_OUT.getType();
     }
+
+    /**
+     * @param idList
+     * @return
+     * @author chenwf
+     * @desc 根据值班任务id删除值班人员
+     * @date 2021-01-20 20:57:02
+     */
+    @Override
+    public int deleteByWorkingScheduleIds(List<Long> idList) {
+        return this.dao.deleteByWorkingScheduleIds(idList);
+    }
 }

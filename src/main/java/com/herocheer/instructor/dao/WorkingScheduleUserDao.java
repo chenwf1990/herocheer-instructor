@@ -46,4 +46,13 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return
      */
     List<String> findWorkingUser(Map<String, Object> params);
+
+    /**
+     * @param idList
+     * @return
+     * @author chenwf
+     * @desc 根据值班任务id删除值班人员
+     * @date 2021-01-21 11:57:02
+     */
+    int deleteByWorkingScheduleIds(List<Long> idList);
 }

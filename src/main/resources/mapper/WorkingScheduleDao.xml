@@ -3,13 +3,22 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleDao">
     
     <sql id="table_field">
-      id, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, activityId, activityDetailId, activityType, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.WorkingSchedule">
         insert into working_schedule (
     <trim suffixOverrides=",">
+        <if test="activityId != null">
+            activityId,
+        </if>
+        <if test="activityDetailId != null">
+            activityDetailId,
+        </if>
+        <if test="activityType != null">
+            activityType,
+        </if>
         <if test="courierStationId != null">
             courierStationId,
         </if>
@@ -35,6 +44,15 @@
     </trim>
     ) VALUES (
     <trim suffixOverrides=",">
+        <if test="activityId != null">
+            #{activityId},
+        </if>
+        <if test="activityDetailId != null">
+            #{activityDetailId},
+        </if>
+        <if test="activityType != null">
+            #{activityType},
+        </if>
         <if test="courierStationId != null">
             #{courierStationId},
         </if>
@@ -70,6 +88,15 @@
     <update id="update" parameterType="com.herocheer.instructor.domain.entity.WorkingSchedule">
         update working_schedule
         <set>
+            <if test="activityId != null">
+                activityId = #{activityId},
+            </if>
+            <if test="activityDetailId != null">
+                activityDetailId = #{activityDetailId},
+            </if>
+            <if test="activityType != null">
+                activityType = #{activityType},
+            </if>
             <if test="courierStationId != null">
                 courierStationId = #{courierStationId},
             </if>
@@ -107,6 +134,15 @@
     <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
         select <include refid="table_field"/> from working_schedule
         <where>
+            <if test="activityId != null">
+                and activityId = #{activityId}
+            </if>
+            <if test="activityDetailId != null">
+                and activityDetailId = #{activityDetailId}
+            </if>
+            <if test="activityType != null">
+                and activityType = #{activityType}
+            </if>
             <if test="courierStationId != null">
                 and courierStationId = #{courierStationId}
             </if>
@@ -144,6 +180,15 @@
     <select id="count" parameterType="map" resultType="java.lang.Integer">
         select count(1) from working_schedule
         <where>
+            <if test="activityId != null">
+                and activityId = #{activityId}
+            </if>
+            <if test="activityDetailId != null">
+                and activityDetailId = #{activityDetailId}
+            </if>
+            <if test="activityType != null">
+                and activityType = #{activityType}
+            </if>
             <if test="courierStationId != null">
                 and courierStationId = #{courierStationId}
             </if>
@@ -242,5 +287,22 @@
         </if>
         and c.userId = #{userId}
         ORDER BY b.scheduleTime,b.serviceBeginTime
+    </select>
+
+    <select id="getByIds" parameterType="java.util.List" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        select * from working_schedule
+        <where>
+            <choose>
+                <when test="list != null and list.size() > 0">
+                    and id in
+                    <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and id = -1
+                </otherwise>
+            </choose>
+        </where>
     </select>
 </mapper>

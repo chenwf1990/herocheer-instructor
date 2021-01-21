@@ -70,4 +70,13 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return
      */
     int getPunchCardType(Long signTime, Long serviceBeginTime);
+
+    /**
+     * @author chenwf
+     * @desc  根据值班任务id删除值班人员
+     * @date 2021-01-20 20:57:02
+     * @param idList
+     * @return
+     */
+    int deleteByWorkingScheduleIds(List<Long> idList);
 }
