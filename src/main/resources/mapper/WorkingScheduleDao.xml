@@ -288,4 +288,21 @@
         and c.userId = #{userId}
         ORDER BY b.scheduleTime,b.serviceBeginTime
     </select>
+
+    <select id="getByIds" parameterType="java.util.List" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        select * from working_schedule
+        <where>
+            <choose>
+                <when test="list != null and list.size() > 0">
+                    and id in
+                    <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and id = -1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
 </mapper>

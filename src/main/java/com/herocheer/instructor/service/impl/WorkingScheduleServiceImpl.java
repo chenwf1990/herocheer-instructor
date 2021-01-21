@@ -14,6 +14,7 @@ import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.domain.entity.*;
 import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.enums.AuditStatusEnums;
+import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.service.*;
@@ -86,6 +87,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         //判断是否存在同个时段相同人员
         isSameUser(workingScheduls);
         for (WorkingVo workingVo : workingScheduls) {
+            workingVo.setActivityType(RecruitTypeEunms.STATION_RECRUIT.getType());
             this.dao.insert(workingVo);
             List<WorkingScheduleUser> workingScheduleUsers = workingVo.getWorkingScheduleUsers();
             //设置id
@@ -211,7 +213,19 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     @Override
     public int batchDelete(String ids) {
         List<Long> idList = Stream.of(ids.split(",")).map(s -> Long.parseLong(s)).collect(Collectors.toList());
-        return this.dao.batchDelete(idList);
+        if(idList.isEmpty()){
+            throw new CommonException("请选择要删除的排班信息");
+        }
+        List<WorkingSchedule> workingSchedules = this.dao.getByIds(idList);
+        for (WorkingSchedule schedule : workingSchedules) {
+            if(schedule.getScheduleTime() < System.currentTimeMillis()){
+                throw new CommonException("值班日期中不能删除:"+DateUtil.format(new Date(schedule.getScheduleTime()),DateUtil.YYYY_MM_DD));
+            }
+        }
+        int count = this.dao.batchDelete(idList);
+        //批量删除scheduleUser数据
+        workingScheduleUserService.deleteByWorkingScheduleIds(idList);
+        return count;
     }
 
     /**
@@ -316,7 +330,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 //以逗号隔开拼接固定人员和值班人员
                 userNames += data.get(3).toString() + "," + data.get(4).toString() + ",";
                 //排班日期 | 时段 | 排班人员  进行拼接
-                String append = courierStation.getName() + "|" + data.get(1).toString().trim() + "|" + data.get(2).toString().trim() + "|";
+                String append = data.get(1).toString().trim() + "|" + data.get(2).toString().trim() + "|";
                 list.add(append + data.get(3).toString().trim());
                 for (String userName : data.get(4).toString().replace("，", ",").replace(" ", "").split(",")) {
                     list.add(append + userName.trim());
@@ -342,6 +356,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     //组装、保存值班记录
     private void buildSaveWorkingSchedule(CourierStation courierStation, ServiceHours serviceHours, List<Object> dataList, Map<String, List<User>> userMap, int i) {
         WorkingSchedule workingSchedule = new WorkingSchedule();
+        workingSchedule.setActivityType(RecruitTypeEunms.STATION_RECRUIT.getType());
         workingSchedule.setCourierStationId(courierStation.getId());
         workingSchedule.setCourierStationName(courierStation.getName());
         workingSchedule.setScheduleTime(DateUtil.parse(dataList.get(1).toString(), DateUtil.YYYY_MM_DD).getTime());

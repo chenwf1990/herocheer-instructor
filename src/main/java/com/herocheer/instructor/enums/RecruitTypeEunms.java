@@ -8,9 +8,7 @@ package com.herocheer.instructor.enums;
 public enum RecruitTypeEunms {
     STATION_RECRUIT(1,"驿站招募"),
     MATCH_RECRUIT(2,"赛事招募");
-    RecruitTypeEunms(){
 
-    }
     private int type;
     private String name;
 

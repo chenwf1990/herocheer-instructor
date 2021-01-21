@@ -42,4 +42,13 @@ public interface WorkingScheduleDao extends BaseDao<WorkingSchedule,Long>{
      * @return
      */
     List<WorkingUserVo> getUserWorkingList(Map<String, Object> params);
+
+    /**
+     * @author chenwf
+     * @desc 根据之间id集合获取信息
+     * @date 2021-01-21 11:47:02
+     * @param idList
+     * @return
+     */
+    List<WorkingSchedule> getByIds(List<Long> idList);
 }

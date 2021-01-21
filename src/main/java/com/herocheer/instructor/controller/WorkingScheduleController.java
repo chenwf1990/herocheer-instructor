@@ -55,11 +55,8 @@ public class WorkingScheduleController extends BaseController{
     @DeleteMapping("/delete")
     @ApiOperation("删除排班信息")
     public ResponseResult delete(@RequestParam Long id){
-        WorkingSchedule schedule = workingScheduleService.get(id);
-        if(schedule.getScheduleTime() < System.currentTimeMillis()){
-            throw new CommonException("值班日期中不能删除");
-        }
-        return ResponseResult.ok(workingScheduleService.delete(id));
+
+        return ResponseResult.isSuccess(workingScheduleService.batchDelete(id.toString()));
     }
 
     @DeleteMapping("/batchDelete")

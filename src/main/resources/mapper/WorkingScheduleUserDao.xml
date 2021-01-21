@@ -296,6 +296,23 @@
         </where>
     </delete>
 
+    <delete id="deleteByWorkingScheduleIds" parameterType="java.util.List">
+        delete from working_schedule_user
+        <where>
+            <choose>
+                <when test="list != null and list.size > 0">
+                    and workingScheduleId in
+                    <foreach item="workingScheduleId" index="index" collection="list" open="(" separator="," close=")">
+                        #{workingScheduleId}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and 1 = 2
+                </otherwise>
+            </choose>
+        </where>
+    </delete>
+
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
         SELECT
         a.courierStationId,
