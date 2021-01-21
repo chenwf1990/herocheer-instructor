@@ -7,7 +7,11 @@ import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
+import com.herocheer.instructor.enums.AuditStatusEnums;
+import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.enums.SignType;
+import com.herocheer.instructor.service.CommonService;
+import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +35,10 @@ import java.util.Map;
 public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingScheduleUserDao, WorkingScheduleUser,Long> implements WorkingScheduleUserService {
     @Resource
     private WorkingScheduleDao workingScheduleDao;
+    @Resource
+    private WorkingScheduleService workingScheduleService;
+    @Resource
+    private CommonService commonService;
 
     /**
      * @param workingScheduleUserQueryVo
@@ -42,6 +51,31 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     public Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo) {
         Page page = Page.startPage(workingScheduleUserQueryVo.getPageNo(),workingScheduleUserQueryVo.getPageSize());
         List<WorkingSchedulsUserVo> dataList = this.dao.queryPageList(workingScheduleUserQueryVo);
+        if(!dataList.isEmpty()){
+            dataList.forEach(w ->{
+                long scheduleBeginTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceBeginTime());
+                if(System.currentTimeMillis() <= scheduleBeginTime){//服务开始时间大于当前时间不去设置状态
+                    w.setSignStatus(-1);//前端打卡状态放空
+                    w.setServiceTime(-1);//前端服务时长放空
+                    w.setStatus(-1);//前端审核状态放空
+                }else {
+                    if (w.getStatus() == AuditStatusEnums.to_pass.getState()) {
+                        w.setSignStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
+                    } else {
+                        Long serviceBeginTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceBeginTime());
+                        Long serviceEndTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceEndTime());
+                        int signStatus = commonService.getPunchCardStatus(serviceBeginTime, serviceEndTime, w.getSignInTime(), w.getSignOutTime());
+                        w.setSignStatus(signStatus);
+                        if (signStatus != SignStatusEnums.SIGN_ABNORMAL.getStatus()) {
+                            w.setSignStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
+                        }
+                    }
+                    if(DateUtil.beginOfDay(new Date()).getTime() <= scheduleBeginTime){
+                        w.setStatus(-1);//当天之前的都不做审核，前端审核状态放空
+                    }
+                }
+            });
+        }
         page.setDataList(dataList);
         return page;
     }
@@ -105,6 +139,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                 scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignInTime(replaceCardTime);
                 scheduleUser.setServiceTime((int) (serviceEndTime - replaceCardTime));
+                scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
                 this.dao.update(scheduleUser);
             }
         }else{//签退补卡
@@ -113,6 +148,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                 scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignOutTime(replaceCardTime);
                 scheduleUser.setServiceTime((int) (replaceCardTime - serviceBeginTime));
+                scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
                 this.dao.update(scheduleUser);
             }
         }

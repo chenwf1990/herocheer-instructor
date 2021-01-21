@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleUserDao">
     
     <sql id="table_field">
-      id, taskNo, workingScheduleId, type, userId, userName, signInTime, signOutTime, serviceTime, approvalType, reserveStatus, signStatus, status, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, taskNo, workingScheduleId, type, userId, userName, certificateGrade, guideProject, signInTime, signOutTime, serviceTime, actualServiceTime, exceedServiceTime, approvalType, reserveStatus, status, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -25,6 +25,12 @@
         <if test="userName != null">
             userName,
         </if>
+        <if test="certificateGrade != null">
+            certificateGrade,
+        </if>
+        <if test="guideProject != null">
+            guideProject,
+        </if>
         <if test="signInTime != null">
             signInTime,
         </if>
@@ -34,14 +40,17 @@
         <if test="serviceTime != null">
             serviceTime,
         </if>
+        <if test="actualServiceTime != null">
+            actualServiceTime,
+        </if>
+        <if test="exceedServiceTime != null">
+            exceedServiceTime,
+        </if>
         <if test="approvalType != null">
             approvalType,
         </if>
         <if test="reserveStatus != null">
             reserveStatus,
-        </if>
-        <if test="signStatus != null">
-            signStatus,
         </if>
         <if test="status != null">
             status,
@@ -68,6 +77,12 @@
         <if test="userName != null">
             #{userName},
         </if>
+        <if test="certificateGrade != null">
+            #{certificateGrade},
+        </if>
+        <if test="guideProject != null">
+            #{guideProject},
+        </if>
         <if test="signInTime != null">
             #{signInTime},
         </if>
@@ -77,14 +92,17 @@
         <if test="serviceTime != null">
             #{serviceTime},
         </if>
+        <if test="actualServiceTime != null">
+            #{actualServiceTime},
+        </if>
+        <if test="exceedServiceTime != null">
+            #{exceedServiceTime},
+        </if>
         <if test="approvalType != null">
             #{approvalType},
         </if>
         <if test="reserveStatus != null">
             #{reserveStatus},
-        </if>
-        <if test="signStatus != null">
-            #{signStatus},
         </if>
         <if test="status != null">
             #{status},
@@ -121,6 +139,12 @@
             <if test="userName != null">
                 userName = #{userName},
             </if>
+            <if test="certificateGrade != null">
+                certificateGrade = #{certificateGrade},
+            </if>
+            <if test="guideProject != null">
+                guideProject = #{guideProject},
+            </if>
             <if test="signInTime != null">
                 signInTime = #{signInTime},
             </if>
@@ -130,14 +154,17 @@
             <if test="serviceTime != null">
                 serviceTime = #{serviceTime},
             </if>
+            <if test="actualServiceTime != null">
+                actualServiceTime = #{actualServiceTime},
+            </if>
+            <if test="exceedServiceTime != null">
+                exceedServiceTime = #{exceedServiceTime},
+            </if>
             <if test="approvalType != null">
                 approvalType = #{approvalType},
             </if>
             <if test="reserveStatus != null">
                 reserveStatus = #{reserveStatus},
-            </if>
-            <if test="signStatus != null">
-                signStatus = #{signStatus},
             </if>
             <if test="status != null">
                 status = #{status},
@@ -176,6 +203,12 @@
             <if test="userName != null">
                 and userName = #{userName}
             </if>
+            <if test="certificateGrade != null">
+                and certificateGrade = #{certificateGrade}
+            </if>
+            <if test="guideProject != null">
+                and guideProject = #{guideProject}
+            </if>
             <if test="signInTime != null">
                 and signInTime = #{signInTime}
             </if>
@@ -185,14 +218,17 @@
             <if test="serviceTime != null">
                 and serviceTime = #{serviceTime}
             </if>
+            <if test="actualServiceTime != null">
+                and actualServiceTime = #{actualServiceTime}
+            </if>
+            <if test="exceedServiceTime != null">
+                and exceedServiceTime = #{exceedServiceTime}
+            </if>
             <if test="approvalType != null">
                 and approvalType = #{approvalType}
             </if>
             <if test="reserveStatus != null">
                 and reserveStatus = #{reserveStatus}
-            </if>
-            <if test="signStatus != null">
-                and signStatus = #{signStatus}
             </if>
             <if test="status != null">
                 and status = #{status}
@@ -202,7 +238,14 @@
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
-        order by id DESC
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
     </select>
     
     <!--查询条数-->
@@ -224,6 +267,12 @@
             <if test="userName != null">
                 and userName = #{userName}
             </if>
+            <if test="certificateGrade != null">
+                and certificateGrade = #{certificateGrade}
+            </if>
+            <if test="guideProject != null">
+                and guideProject = #{guideProject}
+            </if>
             <if test="signInTime != null">
                 and signInTime = #{signInTime}
             </if>
@@ -233,14 +282,17 @@
             <if test="serviceTime != null">
                 and serviceTime = #{serviceTime}
             </if>
+            <if test="actualServiceTime != null">
+                and actualServiceTime = #{actualServiceTime}
+            </if>
+            <if test="exceedServiceTime != null">
+                and exceedServiceTime = #{exceedServiceTime}
+            </if>
             <if test="approvalType != null">
                 and approvalType = #{approvalType}
             </if>
             <if test="reserveStatus != null">
                 and reserveStatus = #{reserveStatus}
-            </if>
-            <if test="signStatus != null">
-                and signStatus = #{signStatus}
             </if>
             <if test="status != null">
                 and status = #{status}
@@ -252,12 +304,25 @@
         </where>
     </select>
 
-    <insert id="batchInsert" parameterType="list">
-        insert into working_schedule_user
-        (type,
+
+    <insert id ="batchInsert" parameterType="java.util.List" >
+        insert into herocheer_instructor.working_schedule_user
+        (
+        taskNo,
         workingScheduleId,
+        type,
         userId,
         userName,
+        certificateGrade,
+        guideProject,
+        signInTime,
+        signOutTime,
+        serviceTime,
+        actualServiceTime,
+        exceedServiceTime,
+        approvalType,
+        reserveStatus,
+        status,
         remarks,
         createdId,
         createdBy,
@@ -265,17 +330,28 @@
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
-            #{item.type},
+            #{item.taskNo},
             #{item.workingScheduleId},
+            #{item.type},
             #{item.userId},
             #{item.userName},
+            #{item.certificateGrade},
+            #{item.guideProject},
+            #{item.signInTime},
+            #{item.signOutTime},
+            #{item.serviceTime},
+            #{item.actualServiceTime},
+            #{item.exceedServiceTime},
+            #{item.approvalType},
+            #{item.reserveStatus},
+            #{item.status},
             #{item.remarks},
             #{item.createdId},
             #{item.createdBy},
             #{item.createdTime}
-            )
+          )
         </foreach >
-    </insert>
+    </insert >
 
     <delete id="deleteByMap" parameterType="map">
         delete from working_schedule_user
@@ -328,6 +404,7 @@
         b.serviceTime,
         b.type,
         b.id,
+        b.status,
         c.guideProject,
         c.certificateNo
         FROM working_schedule a
@@ -347,16 +424,23 @@
             and b.userName like CONCAT('%',#{userName},'')
         </if>
     </select>
+
     <select id="findWorkingUser" parameterType="map" resultType="string">
         select b.userName from working_schedule a
         INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
-        and a.courierStationId = #{courierStationId}
         and a.scheduleTime = #{scheduleTime}
-        and a.serviceBeginTime = #{serviceBeginTime}
-        and a.serviceEndTime = #{serviceEndTime}
-        and b.userId in
-        <foreach item="userId" index="index" collection="userIdList" open="(" separator="," close=")">
-            #{userId}
-        </foreach>
+        and (a.serviceBeginTime between #{serviceBeginTime} and #{serviceEndTime}
+               or
+              a.serviceEndTime between #{serviceBeginTime} and #{serviceEndTime}
+          )
+        <if test="userId != null">
+            and b.userId = #{userId}
+        </if>
+        <if test="userIdList != null and userIdList.size > 0">
+            and b.userId in
+            <foreach item="userId" index="index" collection="userIdList" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+        </if>
     </select>
 </mapper>

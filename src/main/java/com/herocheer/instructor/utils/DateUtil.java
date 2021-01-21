@@ -61,14 +61,4 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
         Long unixTime=Long.valueOf((hour*3600+min*60)*1000);
         return unixTime;
     }
-
-    /**
-     * 时间(HH:ss)转成分钟
-     * @param time
-     * @return
-     */
-    public static int timeToMinute(String time){
-        int second = timeToSecond(time);
-        return second / 60;
-    }
 }

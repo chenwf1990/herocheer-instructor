@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleDao">
     
     <sql id="table_field">
-      id, activityId, activityDetailId, activityType, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, activityId, activityTitle, activityDetailId, activityType, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -12,6 +12,9 @@
     <trim suffixOverrides=",">
         <if test="activityId != null">
             activityId,
+        </if>
+        <if test="activityTitle != null">
+            activityTitle,
         </if>
         <if test="activityDetailId != null">
             activityDetailId,
@@ -46,6 +49,9 @@
     <trim suffixOverrides=",">
         <if test="activityId != null">
             #{activityId},
+        </if>
+        <if test="activityTitle != null">
+            #{activityTitle},
         </if>
         <if test="activityDetailId != null">
             #{activityDetailId},
@@ -90,6 +96,9 @@
         <set>
             <if test="activityId != null">
                 activityId = #{activityId},
+            </if>
+            <if test="activityTitle != null">
+                activityTitle = #{activityTitle},
             </if>
             <if test="activityDetailId != null">
                 activityDetailId = #{activityDetailId},
@@ -137,6 +146,9 @@
             <if test="activityId != null">
                 and activityId = #{activityId}
             </if>
+            <if test="activityTitle != null">
+                and activityTitle = #{activityTitle}
+            </if>
             <if test="activityDetailId != null">
                 and activityDetailId = #{activityDetailId}
             </if>
@@ -182,6 +194,9 @@
         <where>
             <if test="activityId != null">
                 and activityId = #{activityId}
+            </if>
+            <if test="activityTitle != null">
+                and activityTitle = #{activityTitle}
             </if>
             <if test="activityDetailId != null">
                 and activityDetailId = #{activityDetailId}

@@ -31,4 +31,6 @@ public class WorkingSchedulsUserVo extends WorkingScheduleUser{
     private String guideProject;
     @ApiModelProperty("证书等级")
     private String certificateGrade;
+    @ApiModelProperty("打卡状态-0正常 1异常")
+    private Integer signStatus;
 }

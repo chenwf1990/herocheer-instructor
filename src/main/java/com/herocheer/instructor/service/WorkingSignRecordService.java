@@ -3,6 +3,7 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.vo.WorkingUserVo;
 
 import java.util.List;
 
@@ -31,4 +32,11 @@ public interface WorkingSignRecordService extends BaseService<WorkingSignRecord,
      * @return
      */
     long addWorkingSignRecord(WorkingSignRecord workingSignRecord, UserEntity userEntity);
+
+    /**
+     * 获取签到状态 只返回 正常和异常
+     * @param workingUserVo
+     * @return
+     */
+    int getSignStatus(WorkingUserVo workingUserVo);
 }

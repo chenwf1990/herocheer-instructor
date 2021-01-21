@@ -3,7 +3,6 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -78,6 +77,7 @@ public class WorkingScheduleController extends BaseController{
 
     @GetMapping("/templateExport")
     @ApiOperation("模板导出")
+    @AllowAnonymous
     public ResponseResult templateExport(@ApiParam("驿站id") @RequestParam Long courierStationId,
                                          @ApiParam("服务时段id") @RequestParam Long serviceTimeId,
                                          HttpServletResponse response){

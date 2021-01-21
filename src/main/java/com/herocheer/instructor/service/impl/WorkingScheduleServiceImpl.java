@@ -92,12 +92,13 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             List<WorkingScheduleUser> workingScheduleUsers = workingVo.getWorkingScheduleUsers();
             //设置id
             workingScheduleUsers.forEach(w -> {
-                w.setWorkingScheduleId(workingVo.getId());
                 if(w.getType() == ScheduleUserTypeEnums.SUBSCRIBE_DUTY.getType()){
                     w.setStatus(AuditStatusEnums.to_audit.getState());
-                    //排班初始化写入服务时长
-                    w.setServiceTime(DateUtil.timeToMinute(workingVo.getServiceEndTime()) - DateUtil.timeToMinute(workingVo.getServiceEndTime()));
                 }
+                w.setStatus(AuditStatusEnums.to_audit.getState());//初始化待审核
+                w.setWorkingScheduleId(workingVo.getId());
+                //排班初始化写入服务时长
+                w.setServiceTime(DateUtil.timeToSecond(workingVo.getServiceEndTime()) - DateUtil.timeToSecond(workingVo.getServiceBeginTime()));
             });
             //批量插入值班人员信息
             isSameTimeWorkingUser(workingVo,workingScheduleUsers);
@@ -408,7 +409,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         scheduleUser.setUserId(user.getId());
         scheduleUser.setUserName(user.getUserName());
         scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
-        scheduleUser.setServiceTime(DateUtil.timeToMinute(workingSchedule.getServiceEndTime()) - DateUtil.timeToMinute(workingSchedule.getServiceBeginTime()));
+        scheduleUser.setServiceTime(DateUtil.timeToSecond(workingSchedule.getServiceEndTime()) - DateUtil.timeToSecond(workingSchedule.getServiceBeginTime()));
         return scheduleUser;
     }
 
