@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 
@@ -103,7 +104,7 @@ public interface UserService extends BaseService<User, Long> {
      *
      * @return {@link List<SysUserVO>}
      */
-    List<SysUserVO> findUser();
+    List<MemberVO> findUser();
 
 
     /**

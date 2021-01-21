@@ -5,6 +5,7 @@ import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.service.UserService;
@@ -270,7 +271,7 @@ public class UserController extends BaseController {
     @GetMapping("/user/name")
     @ApiOperation("用户名称")
     @AllowAnonymous
-    public ResponseResult<List<SysUserVO>> fetchUser(HttpServletRequest request){
+    public ResponseResult<List<MemberVO>> fetchUser(HttpServletRequest request){
         return ResponseResult.ok( userService.findUser());
     }
 

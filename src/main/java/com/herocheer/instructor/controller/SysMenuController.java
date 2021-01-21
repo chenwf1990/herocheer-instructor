@@ -5,6 +5,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -144,8 +145,7 @@ public class SysMenuController extends BaseController {
     @GetMapping("/tree/role")
     @ApiOperation("菜单树")
     @AllowAnonymous
-    public ResponseResult<List<Tree<Long>>> fetchMenuTreeToRole(HttpServletRequest request){
-        List<Tree<Long>> treeList = sysMenuService.findMenuTreeToRole();
-        return ResponseResult.ok(treeList);
+    public ResponseResult<OptionTreeVO> fetchMenuTreeToRole(HttpServletRequest request){
+        return ResponseResult.ok(sysMenuService.findMenuTreeToRole());
     }
 }

@@ -1,11 +1,18 @@
 package com.herocheer.instructor.service.impl;
 
+import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.exception.CommonException;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysDictDao;
 import com.herocheer.instructor.domain.entity.SysDict;
+import com.herocheer.instructor.domain.vo.SysDictVO;
 import com.herocheer.instructor.service.SysDictService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author gaorh
@@ -17,4 +24,80 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Long> implements SysDictService {
 
+    /**
+     * 添加字典
+     *
+     * @param sysDictVO VO
+     * @return {@link SysDict}
+     */
+    @Override
+    public SysDict addDict(SysDictVO sysDictVO) {
+        SysDict sysDict = SysDict.builder().build();
+        BeanCopier.create(sysDictVO.getClass(),sysDict.getClass(),false).copy(sysDictVO,sysDict,null);
+        this.insert(sysDict);
+        return sysDict;
+    }
+
+    /**
+     * 通过id删除dict
+     *
+     * @param id id
+     */
+    @Override
+    public void removeDictById(Long id) {
+        this.delete(id);
+    }
+
+    /**
+     * 通过id查询dict
+     *
+     * @param id id
+     * @return {@link SysDict}
+     */
+    @Override
+    public SysDict findDictById(Long id) {
+        return this.get(id);
+    }
+
+    /**
+     * 修改字典
+     *
+     * @param sysDictVO sys dict签证官
+     * @return {@link SysDict}
+     */
+    @Override
+    public SysDict modifyDict(SysDictVO sysDictVO) {
+        if(sysDictVO.getId() == null || StringUtils.isBlank(sysDictVO.getId().toString())){
+            throw new CommonException("编辑ID不能为空");
+        }
+        SysDict sysDict =  SysDict.builder().build();
+        BeanCopier.create(sysDictVO.getClass(),sysDict.getClass(),false).copy(sysDictVO,sysDict,null);
+
+        this.update(sysDict);
+        return sysDict;
+    }
+
+    /**
+     * 分页查询字典列表
+     *
+     * @param sysDictVO sys dict签证官
+     * @return {@link Page <SysDict>}
+     */
+    @Override
+    public Page<SysDict> findDictByPage(SysDictVO sysDictVO) {
+        Page page = Page.startPage(sysDictVO.getPageNo(), sysDictVO.getPageSize());
+        List<SysDict> sysDicts = this.dao.selectDictByPage(sysDictVO);
+        page.setDataList(sysDicts);
+        return page;
+    }
+
+    /**
+     * 查询字典名
+     *
+     * @return {@link List <SysDict>}
+     */
+    @Override
+    public List<SysDict> findDict() {
+        return this.dao.selectDictByPage(new SysDictVO());
+    }
 }

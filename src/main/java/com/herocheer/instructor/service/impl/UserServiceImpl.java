@@ -12,6 +12,7 @@ import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.UserType;
@@ -308,20 +309,19 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @return {@link List<SysUserVO>}
      */
     @Override
-    public List<SysUserVO> findUser() {
+    public List<MemberVO> findUser() {
         List<User> userList = this.dao.selectSysUserByPage(new SysUserVO());
-        List<SysUserVO> SysUserList = new ArrayList<>();
-        SysUserVO sysUserVO = null;
+        List<MemberVO> memberList = new ArrayList<>();
+        MemberVO memberVO = null;
         if(!CollectionUtils.isEmpty(userList)){
             for(User user:userList){
-                sysUserVO = SysUserVO.builder().build();
-                BeanCopier.create(user.getClass(),sysUserVO.getClass(),false).copy(user,sysUserVO,null);
-                sysUserVO.setPassword(null);
-                sysUserVO.setUserId(user.getId());
-                SysUserList.add(sysUserVO);
+                memberVO = MemberVO.builder().build();
+                BeanCopier.create(user.getClass(),memberVO.getClass(),false).copy(user,memberVO,null);
+                memberVO.setUserId(user.getId());
+                memberList.add(memberVO);
             }
         }
-        return SysUserList;
+        return memberList;
     }
 
     /**

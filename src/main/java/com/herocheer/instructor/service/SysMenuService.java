@@ -5,6 +5,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public interface SysMenuService extends BaseService<SysMenu, Long> {
      *
      * @return {@link List<Tree<Long>>}
      */
-    List<Tree<Long>> findMenuTreeToRole();
+    OptionTreeVO findMenuTreeToRole();
 
     /**
      * 添加菜单

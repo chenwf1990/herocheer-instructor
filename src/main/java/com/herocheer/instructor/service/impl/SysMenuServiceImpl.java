@@ -73,7 +73,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      * @return {@link List<Tree<Long>>}
      */
     @Override
-    public List<Tree<Long>> findMenuTreeToRole() {
+    public OptionTreeVO findMenuTreeToRole() {
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
 
@@ -87,7 +87,12 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         }
         // 0表示最顶层的id是0
         List<Tree<Long>> treeList = TreeUtil.build(nodeList, 0L);
-        return treeList;
+
+        OptionTreeVO optionTree = OptionTreeVO.builder().build();
+        optionTree.setTreeList(treeList);
+        // TODO 选中节点
+        optionTree.setSelectedNode("1,2,3,4");
+        return optionTree;
     }
 
     /**
