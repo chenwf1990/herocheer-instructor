@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -25,6 +26,13 @@ import javax.servlet.http.HttpServletRequest;
 public class WorkingReplaceCardController extends BaseController{
     @Resource
     private WorkingReplaceCardService workingReplaceCardService;
+
+    @GetMapping("/getReplaceCardList")
+    @ApiOperation("获取补卡列表")
+    public ResponseResult<List<WorkingReplaceCard>> getReplaceCardList(@ApiParam("值班人员id") Long workingScheduleUserId){
+        List<WorkingReplaceCard> workingReplaceCards = workingReplaceCardService.getReplaceCardList(workingScheduleUserId);
+        return ResponseResult.ok(workingReplaceCards);
+    }
 
     @GetMapping("/get")
     @ApiOperation("根据id获取补卡信息")

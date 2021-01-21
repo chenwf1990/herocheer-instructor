@@ -84,4 +84,13 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * @return
      */
     void instructorImport(MultipartFile multipartFile, HttpServletRequest request);
+
+    /**
+     * @author chenwf
+     * @desc  根据用户id查找指导员信息
+     * @date 2021-01-21 09:26:18
+     * @param userId
+     * @return
+     */
+    Instructor findInstructorByUserId(Long userId);
 }

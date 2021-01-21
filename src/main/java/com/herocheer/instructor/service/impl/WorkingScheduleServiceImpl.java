@@ -93,6 +93,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 w.setWorkingScheduleId(workingVo.getId());
                 if(w.getType() == ScheduleUserTypeEnums.SUBSCRIBE_DUTY.getType()){
                     w.setStatus(AuditStatusEnums.to_audit.getState());
+                    //排班初始化写入服务时长
+                    w.setServiceTime(DateUtil.timeToMinute(workingVo.getServiceEndTime()) - DateUtil.timeToMinute(workingVo.getServiceEndTime()));
                 }
             });
             //批量插入值班人员信息
@@ -387,6 +389,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         scheduleUser.setUserId(user.getId());
         scheduleUser.setUserName(user.getUserName());
         scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
+        scheduleUser.setServiceTime(DateUtil.timeToMinute(workingSchedule.getServiceEndTime()) - DateUtil.timeToMinute(workingSchedule.getServiceBeginTime()));
         return scheduleUser;
     }
 

@@ -96,12 +96,15 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         params.put("userId",userId);
         List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
         WorkingUserVo workingUserVo = workingUserVos.get(0);
+        Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
+        Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
         if(type == SignType.SIGN_IN.getType()){//签到补卡
             //未签到或者签到时间 > 补卡时间，可更新
             if(workingUserVo.getSignInTime() == null || replaceCardTime < workingUserVo.getSignInTime()){
                 WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
                 scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignInTime(replaceCardTime);
+                scheduleUser.setServiceTime((int) (serviceEndTime - replaceCardTime));
                 this.dao.update(scheduleUser);
             }
         }else{//签退补卡
@@ -109,6 +112,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                 WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
                 scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignOutTime(replaceCardTime);
+                scheduleUser.setServiceTime((int) (replaceCardTime - serviceBeginTime));
                 this.dao.update(scheduleUser);
             }
         }

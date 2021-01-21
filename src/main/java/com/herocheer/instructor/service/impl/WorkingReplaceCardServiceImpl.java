@@ -2,20 +2,19 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.dao.WorkingReplaceCardDao;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.domain.entity.WorkingReplaceCard;
-import com.herocheer.instructor.dao.WorkingReplaceCardDao;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
-import com.herocheer.instructor.enums.ApprovalTypeEnums;
 import com.herocheer.instructor.enums.AuditStateEnums;
 import com.herocheer.instructor.enums.ReissueCardEnums;
 import com.herocheer.instructor.service.WorkingReplaceCardService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
-import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -39,6 +38,23 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
     private WorkingScheduleUserService workingScheduleUserService;
     @Resource
     private WorkingScheduleDao workingScheduleDao;
+
+    /**
+     * @param workingScheduleUserId
+     * @return
+     * @author chenwf
+     * @desc 获取补卡列表
+     * @date 2021-01-21 08:43:45
+     */
+    @Override
+    public List<WorkingReplaceCard> getReplaceCardList(Long workingScheduleUserId) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("workingScheduleUserId",workingScheduleUserId);
+        params.put("orderBy","id");
+        List<WorkingReplaceCard> workingReplaceCards = this.dao.findByLimit(params);
+        return workingReplaceCards;
+    }
+
     /**
      * @param workingReplaceCard
      * @param userEntity
