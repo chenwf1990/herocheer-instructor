@@ -24,6 +24,8 @@ import javax.validation.constraints.NotBlank;
 public class SysUserVO {
 
     private Long id;
+    @ApiModelProperty("用户ID")
+    private Long userId;
     @ApiModelProperty("机构ID")
     private Long deptId;
     @ApiModelProperty("账号")

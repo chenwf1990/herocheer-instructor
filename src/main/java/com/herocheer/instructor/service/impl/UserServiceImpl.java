@@ -317,6 +317,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
                 sysUserVO = SysUserVO.builder().build();
                 BeanCopier.create(user.getClass(),sysUserVO.getClass(),false).copy(user,sysUserVO,null);
                 sysUserVO.setPassword(null);
+                sysUserVO.setUserId(user.getId());
                 SysUserList.add(sysUserVO);
             }
         }
