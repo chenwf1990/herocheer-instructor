@@ -1,5 +1,6 @@
 package com.herocheer.instructor.domain.vo;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -34,11 +35,14 @@ public class ActivityRecruitInfoQueryVo implements Serializable {
     @ApiModelProperty("创建时间(结束时间)")
     private Long endTime;
 
-    @ApiModelProperty("状态 (1.撤回2.驳回3.待审核4.招募待启动5.招募中6.招募结束)")
+    @ApiModelProperty("状态 (0.待审核1.撤回2.驳回3.招募待启动4.招募中5.招募结束)")
     private Integer status;
 
-    @ApiModelProperty("类型(1.未发布 2.已发布)")
+    @ApiModelProperty("类型(0.全部1.我发布的2.我审批的)")
     private Integer type;
+
+    @ApiModelProperty("创建人-后台参数")
+    private Long userId;
 
     @ApiModelProperty("页码")
     private int pageNo;

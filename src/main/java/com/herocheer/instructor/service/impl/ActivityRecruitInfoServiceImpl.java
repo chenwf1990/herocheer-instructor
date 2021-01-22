@@ -9,6 +9,7 @@ import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.dao.ActivityRecruitInfoDao;
+import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
@@ -17,12 +18,14 @@ import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.service.ActivityRecruitApprovalService;
 import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
+import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.utils.DateUtil;
 import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +46,13 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Resource
     private ActivityRecruitApprovalService activityRecruitApprovalService;
 
+    @Resource
+    private WorkingScheduleUserService workingScheduleUserService;
+
     @Override
-    public Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo) {
+    public Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo,Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
+        queryVo.setUserId(userId);
         List<ActivityRecruitInfo> instructors = dao.findList(queryVo);
         page.setDataList(instructors);
         return page;
@@ -163,8 +170,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             detail.setRecruitNumber(activityRecruitInfo.getRecruitNumber());
             for(Long i=activityRecruitInfo.getServiceStartDate();i<activityRecruitInfo.getServiceEndDate();i=i+24*60*60*1000){
                 for(Map<String,String> map:list){
-                    detail.setServiceStartTime(i+DateUtil.timeToUnix(map.get("startTime")));
-                    detail.setServiceEndTime(i+DateUtil.timeToUnix(map.get("endTime")));
+                    detail.setServiceDate(i);
+                    detail.setServiceStartTime(map.get("startTime"));
+                    detail.setServiceEndTime(map.get("endTime"));
                     activityRecruitDetailService.insert(detail);
                     detail.setId(null);
                 }
@@ -178,5 +186,34 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         Map<String,Object> map=new HashMap<>();
         map.put("recruitId",recruitId);
         return activityRecruitApprovalService.findByLimit(map);
+    }
+
+    @Override
+    public List<ActivityRecruitDetailVo> getRecruitHours(Long recruitId, Long dateTime, Long userId) {
+        if(dateTime==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "查询日期不能为空!");
+        }
+        List<ActivityRecruitDetailVo> details=activityRecruitDetailService.getRecruitHours(recruitId,dateTime,dateTime+24*60*60*1000-1);
+        List<ActivityRecruitDetailVo> recruitDetails=new ArrayList<>();
+        for (ActivityRecruitDetailVo detail:details){
+            if (detail.getRecruitNumber()<=detail.getHadRecruitNumber()){
+                detail.setStatus(1);
+            }else{
+                Map<String,Object> map=new HashMap<>();
+                map.put("userId",userId);
+                map.put("scheduleTime",detail.getServiceDate());
+                map.put("serviceBeginTime",detail.getServiceStartTime());
+                map.put("serviceEndTime",detail.getServiceEndTime());
+                List<String> userNames=workingScheduleUserService.findWorkingUser(map);
+                if(userNames!=null && userNames.size()>0){
+                    detail.setStatus(1);
+                }
+            }
+            if(detail.getStatus()!=1){
+                detail.setStatus(0);
+            }
+            recruitDetails.add(detail);
+        }
+        return recruitDetails;
     }
 }

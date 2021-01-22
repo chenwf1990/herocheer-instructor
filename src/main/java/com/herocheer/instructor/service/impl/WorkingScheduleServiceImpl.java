@@ -8,6 +8,8 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
+import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
@@ -54,6 +56,12 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     private CommonService commonService;
     @Resource
     private WorkingSignRecordService workingSignRecordService;
+    @Resource
+    private InstructorService instructorService;
+    @Resource
+    private ActivityRecruitInfoService activityRecruitInfoService;
+    @Resource
+    private ActivityRecruitDetailService activityRecruitDetailService;
 
     /**
      * @param workingScheduleQueryVo
@@ -189,28 +197,15 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("typeList", Arrays.asList(1,2));
         params.put("notDelIdList", scheduleUserIdList);
         workingScheduleUserService.deleteByMap(params);
-        //找着用户指导项目数据
-        Map<Long, List<UserGuideProjectVo>> userMap = new HashMap<>();
-        List<Long> userIdList = workingScheduleUsers.stream().
-                filter(y -> y.getId() == null).
-                map(y -> y.getId()).
-                collect(Collectors.toList());
-        if(userIdList.isEmpty()){
-            List<UserGuideProjectVo> users = userService.findUserProjectByUserIds(userIdList);
-            //查找到的用户信息按用户名称进行聚合，后续根据用户名key查找用户信息velue
-            userMap = users.stream().collect(Collectors.groupingBy(UserGuideProjectVo::getId));
-        }
-        for (WorkingScheduleUser scheduleUser : workingScheduleUsers) {
-            scheduleUser.setWorkingScheduleId(workingVo.getId());
-            if(scheduleUser.getId() == null){
-                UserGuideProjectVo user = userMap.get(scheduleUser.getUserId()).get(0);
-                scheduleUser.setGuideProject(StringUtils.isEmpty(user.getInstructorGuideProject()) ? user.getGuideProject() : user.getInstructorGuideProject());
-                scheduleUser.setCertificateGrade(user.getCertificateGrade());
-                workingScheduleUserService.insert(scheduleUser);
+
+        workingScheduleUsers.forEach(u ->{
+            u.setWorkingScheduleId(workingVo.getId());
+            if(u.getId() == null){
+                workingScheduleUserService.insert(u);
             }else{
-                workingScheduleUserService.update(scheduleUser);
+                workingScheduleUserService.update(u);
             }
-        }
+        });
     }
 
     //判断传送的值班人员是否存在相同时间段的值班人员（数据库查询）
@@ -363,9 +358,9 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             isExistDuplicatedData(list);
             userNames = userNames.replace("，",",").replace(" ","");//把所有的中文逗号替换成英文逗号
             List<String> userNameList = Arrays.stream(userNames.split(",")).collect(Collectors.toList());
-            List<UserGuideProjectVo> users = userService.findUserProjectByUserNames(userNameList);
+            List<User> users = userService.findUserByUserNames(userNameList);
             //查找到的用户信息按用户名称进行聚合，后续根据用户名key查找用户信息velue
-            Map<String, List<UserGuideProjectVo>> userMap = users.stream().collect(Collectors.groupingBy(UserGuideProjectVo::getUserName));
+            Map<String, List<User>> userMap = users.stream().collect(Collectors.groupingBy(User::getUserName));
             for (int i = 1; i < read.size(); i++) {//0是标题，数据行从1开始
                 List<Object> dataList = read.get(i);
                 buildSaveWorkingSchedule(courierStation,serviceHours,dataList,userMap,i);
@@ -377,7 +372,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     //组装、保存值班记录
-    private void buildSaveWorkingSchedule(CourierStation courierStation, ServiceHours serviceHours, List<Object> dataList, Map<String, List<UserGuideProjectVo>> userMap, int i) {
+    private void buildSaveWorkingSchedule(CourierStation courierStation, ServiceHours serviceHours, List<Object> dataList, Map<String, List<User>> userMap, int i) {
         WorkingSchedule workingSchedule = new WorkingSchedule();
         workingSchedule.setActivityType(RecruitTypeEunms.STATION_RECRUIT.getType());
         workingSchedule.setCourierStationId(courierStation.getId());
@@ -420,27 +415,23 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     //组装值班人信息
-    private WorkingScheduleUser buildWorkingScheduleUser(Map<String, List<UserGuideProjectVo>> userMap, WorkingSchedule workingSchedule, String userName, int type) {
+    private WorkingScheduleUser buildWorkingScheduleUser(Map<String, List<User>> userMap, WorkingSchedule workingSchedule, String userName, int type) {
         if(!userMap.containsKey(userName)){
             throw new CommonException("不存在该用户" + userName);
         }
-        UserGuideProjectVo user = userMap.get(userName).get(0);
+        User user = userMap.get(userName).get(0);
         WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
         scheduleUser.setWorkingScheduleId(workingSchedule.getId());
         scheduleUser.setType(type);
         scheduleUser.setUserId(user.getId());
         scheduleUser.setUserName(user.getUserName());
         scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
-        scheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
         scheduleUser.setServiceTime(DateUtil.timeToSecond(workingSchedule.getServiceEndTime()) - DateUtil.timeToSecond(workingSchedule.getServiceBeginTime()));
-        scheduleUser.setGuideProject(StringUtils.isEmpty(user.getInstructorGuideProject()) ? user.getGuideProject() : user.getInstructorGuideProject());
-        scheduleUser.setCertificateGrade(user.getCertificateGrade());
         return scheduleUser;
     }
 
     /**
      * @param monthData
-     * @param activityType
      * @param userId
      * @return
      * @author chenwf
@@ -460,7 +451,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("scheduleEndTime",DateUtil.endOfMonth(scheduleDate).getTime());
         params.put("userId",userId);
         params.put("activityType",activityType);
-        List<WorkingUserVo> workingUserVos = this.dao.getTaskInfoList(params);
+        List<WorkingUserVo> workingUserVos = this.dao.getUserWorkingList(params);
         if(!workingUserVos.isEmpty()) {
             Map<String, List<WorkingUserVo>> map = workingUserVos.stream().collect(Collectors.groupingBy(s -> s.getScheduleTimeText()));
             for (Map.Entry<String, List<WorkingUserVo>> entry : map.entrySet()) {
@@ -518,5 +509,103 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             return v;
         }
         return null;
+    }
+
+    @Override
+    public Integer reservation(ActivityReservationVo reservationVo, UserEntity userEntity) {
+        if (reservationVo.getReservationDate()==null||reservationVo.getRecruitDetailIds()==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,参数有误!");
+        }
+        if(userEntity.getUserType()!= UserType.instructor.getCode()){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,未绑定指导员信息!");
+        }
+        Instructor instructor=instructorService.findInstructorByUserId(userEntity.getId());
+        if(instructor==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取指导员信息失败!");
+        }
+        String[] recruitDetailIds=reservationVo.getRecruitDetailIds().split(",");
+        //活动招募详情
+        ActivityRecruitInfo activityRecruitInfo;
+        //活动招募时段明细
+        ActivityRecruitDetail activityRecruitDetail;
+        List<WorkingSchedule> workingSchedules;
+        //可以一次预约多个时段(时段id用','分割)
+        int count=0;
+        for(String detailId:recruitDetailIds){
+            //获取预约信息详情
+            activityRecruitDetail=activityRecruitDetailService.get(Long.valueOf(detailId));
+            if(activityRecruitDetail!=null){
+                if(activityRecruitDetail.getHadRecruitNumber()>=activityRecruitDetail.getRecruitNumber()){
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约人数已满!");
+                }
+                if(activityRecruitDetail.getServiceDate()!=reservationVo.getReservationDate()){
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约日期和预约时段不匹配!");
+                }
+                Map<String,Object> map=new HashMap<>();
+                map.put("userId",userEntity.getId());
+                map.put("scheduleTime",reservationVo.getReservationDate());
+                map.put("serviceBeginTime",activityRecruitDetail.getServiceStartTime());
+                map.put("serviceEndTime",activityRecruitDetail.getServiceEndTime());
+                //查询当前是否存在时间重合的预约记录
+                List<String> userNames=workingScheduleUserService.findWorkingUser(map);
+                if (userNames!=null||userNames.size()>0){
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,您预约活动和已预约活动时间存在重复!");
+                }
+            }else {
+                throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,招募信息无效!");
+            }
+            activityRecruitInfo=activityRecruitInfoService.get(activityRecruitDetail.getRecruitId());
+            if(activityRecruitInfo!=null){
+                if(activityRecruitInfo.getRecruitStartDate()>new Date().getTime()){
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募未开始!");
+                }
+                if(activityRecruitInfo.getServiceEndDate()<new Date().getTime()){
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募已结束!");
+                }
+            }else {
+                throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,获取招募信息失败!");
+            }
+            Map<String,Object> workingMap=new HashMap<>();
+            workingMap.put("activityId",activityRecruitInfo.getId());
+            workingMap.put("activityDetailId",activityRecruitDetail.getId());
+            workingSchedules=dao.findByLimit(workingMap);
+            Long workingScheduleId;
+            if(workingSchedules==null){
+                //保存排班信息
+                WorkingSchedule workingSchedule=new WorkingSchedule();
+                workingSchedule.setActivityId(activityRecruitInfo.getId());
+                workingSchedule.setActivityTitle(activityRecruitInfo.getTitle());
+                workingSchedule.setActivityDetailId(activityRecruitDetail.getId());
+                workingSchedule.setActivityType(activityRecruitInfo.getRecruitType());
+                if(activityRecruitInfo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
+                    workingSchedule.setCourierStationId(activityRecruitInfo.getCourierStationId());
+                    workingSchedule.setCourierStationName(activityRecruitInfo.getCourierStation());
+                }
+                workingSchedule.setScheduleTime(activityRecruitDetail.getServiceDate());
+                workingSchedule.setServiceBeginTime(activityRecruitDetail.getServiceStartTime());
+                workingSchedule.setServiceEndTime(activityRecruitDetail.getServiceEndTime());
+                workingSchedule.setRemarks("活动预约记录");
+                dao.insert(workingSchedule);
+                workingScheduleId=workingSchedule.getId();
+            }else {
+                workingScheduleId=workingSchedules.get(0).getId();
+            }
+            WorkingScheduleUser workingScheduleUser=new WorkingScheduleUser();
+            workingScheduleUser.setTaskNo(DateUtil.getNewTime());
+            workingScheduleUser.setWorkingScheduleId(workingScheduleId);
+            workingScheduleUser.setType(ScheduleUserTypeEnums.SUBSCRIBE_DUTY.getType());
+            workingScheduleUser.setUserId(userEntity.getId());
+            workingScheduleUser.setUserName(userEntity.getUserName());
+            workingScheduleUser.setCertificateGrade(instructor.getCertificateGrade());
+            workingScheduleUser.setGuideProject(instructor.getGuideProject());
+            workingScheduleUser.setServiceTime(DateUtil.timeToSecond(activityRecruitDetail.getServiceEndTime())-
+                    DateUtil.timeToSecond(activityRecruitDetail.getServiceStartTime()));
+            workingScheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            count=count+workingScheduleUserService.insert(workingScheduleUser);
+        }
+        if (count!=recruitDetailIds.length){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,请稍后重试!");
+        }
+        return count;
     }
 }

@@ -5,8 +5,10 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
+import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.entity.Instructor;
+import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
@@ -38,8 +40,8 @@ public class ActivityRecruitInfoController extends BaseController{
     @PostMapping("/queryPage")
     @ApiOperation("招募信息查询")
     @AllowAnonymous
-    public ResponseResult<Page<ActivityRecruitInfo>> queryPageList(@RequestBody ActivityRecruitInfoQueryVo queryVo){
-        Page<ActivityRecruitInfo> page = activityRecruitInfoService.queryPage(queryVo);
+    public ResponseResult<Page<ActivityRecruitInfo>> queryPageList(@RequestBody ActivityRecruitInfoQueryVo queryVo,HttpServletRequest request){
+        Page<ActivityRecruitInfo> page = activityRecruitInfoService.queryPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
 
@@ -87,6 +89,13 @@ public class ActivityRecruitInfoController extends BaseController{
     @ApiOperation("根据id查询审批记录")
     public ResponseResult<List<ActivityRecruitApproval>> approvalRecord(@ApiParam("招募信息id") @RequestParam Long id){
         return ResponseResult.ok(activityRecruitInfoService.approvalRecord(id));
+    }
+
+    @GetMapping("/hours")
+    @ApiOperation("查询活动的招募时段")
+    public ResponseResult<List<ActivityRecruitDetailVo>> recruitHours(@ApiParam("招募信息id") @RequestParam Long recruitId,
+                                                                      @ApiParam("日期-时间戳")@RequestParam Long dateTime, HttpServletRequest request){
+        return ResponseResult.ok(activityRecruitInfoService.getRecruitHours(recruitId,dateTime,getCurUserId(request)));
     }
 
 }

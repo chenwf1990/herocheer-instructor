@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.vo.*;
@@ -98,4 +99,14 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @return
      */
     WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId, int activityType);
+
+    /**
+     * @author linjf
+     * 活动预约
+     * date 2021-1-21 15:21:07
+     * @param reservationVo
+     * @param userEntity
+     * @return
+     */
+    Integer reservation(ActivityReservationVo reservationVo, UserEntity userEntity);
 }

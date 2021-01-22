@@ -119,4 +119,11 @@ public class WorkingScheduleController extends BaseController{
         WorkingUserVo workingUserVo = workingScheduleService.getTaskInfo(workingScheduleUserId,userId,activityType);
         return ResponseResult.ok(workingUserVo);
     }
+
+    @PostMapping("/reservation")
+    @ApiOperation("活动预约")
+    public ResponseResult reservation(@RequestBody ActivityReservationVo reservationVo, HttpServletRequest request){
+        Integer count=workingScheduleService.reservation(reservationVo,getUser(request));
+        return ResponseResult.isSuccess(count);
+    }
 }

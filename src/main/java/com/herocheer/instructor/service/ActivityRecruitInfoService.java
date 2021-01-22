@@ -2,8 +2,10 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
+import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 
@@ -22,7 +24,7 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
      * @param queryVo
      * @return
      */
-    Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo);
+    Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo,Long userId);
 
     /**
      * 根据id查询招募信息详情
@@ -60,7 +62,7 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
     Integer deleteDetail(Long id);
 
     /**
-     * 招募信息审批
+     * 招募信息审批`
      * @param activityRecruitApproval
      * @return
      */
@@ -72,4 +74,12 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
      * @return
      */
     List<ActivityRecruitApproval> approvalRecord(Long recruitId);
+
+    /**
+     * 查询驿站的招募时间段
+     * @param recruitId 招募活动Id
+     * @param dateTime  查询日期-时间戳
+     * @return
+     */
+    List<ActivityRecruitDetailVo> getRecruitHours(Long recruitId, Long dateTime, Long userId);
 }
