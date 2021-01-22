@@ -25,7 +25,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class SysDict extends BaseEntity {
     @ApiModelProperty("父ID")
-    private Long pid;
+    private String pid;
     @ApiModelProperty("字典名称")
     private String dictName;
     @ApiModelProperty("字典编码使用汉字拼音，如：订单状态——DTZT")

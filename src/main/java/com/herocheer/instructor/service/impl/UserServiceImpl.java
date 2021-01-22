@@ -2,8 +2,6 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
@@ -28,8 +26,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -299,6 +295,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
         user.setUserName(weChatUserVO.getName());
         user.setPhone(weChatUserVO.getPhoneNo());
+
+        // 判断账号是否存在
+        Map<String, Object> objectMap = new HashMap();
+        objectMap.put("openid", weChatUserVO.getOpenid());
+
+        if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
+            throw new CommonException("用户已存在");
+        }
         this.insert(user);
         return user;
     }
@@ -323,39 +327,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         }
         return memberList;
     }
-
-    /**
-     * 生成令牌
-     * JWT生成Token
-     * JWT构成: header, payload, signature
-     * @param user_id 登录成功后用户user_id, 参数user_id不可传空
-     * @return {@link String}
-     * @throws Exception 异常
-     */
-    private static String generateToken(Long user_id) throws Exception {
-        Date iatDate = new Date();
-        // expire time
-        Calendar nowTime = Calendar.getInstance();
-        //  token 过期时间: 10天
-        nowTime.add(Calendar.DATE, 10);
-        Date expiresDate = nowTime.getTime();
-
-        // header Map
-        Map<String, Object> map = new HashMap<>();
-        map.put("alg", "HS256");
-        map.put("typ", "JWT");
-
-        // build token
-        // param backups {iss:Service, aud:APP}
-        String token = JWT.create().withHeader(map) // header
-                .withClaim("iss", "Service") // payload
-                .withClaim("aud", "APP").withClaim("user_id", null == user_id ? null : user_id.toString())
-                .withIssuedAt(iatDate) // sign time
-                .withExpiresAt(expiresDate) // expire time
-                .sign(Algorithm.HMAC256("com.herocheer.instructor")); // signature
-        return token;
-    }
-
 
     /**
      * 添加用户信息

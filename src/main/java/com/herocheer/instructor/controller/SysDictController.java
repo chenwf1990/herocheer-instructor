@@ -33,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/dict")
-@Api(tags = "系统字典表")
+@Api(tags = "系统字典")
 @Slf4j
 public class SysDictController extends BaseController {
     @Resource
@@ -112,12 +112,13 @@ public class SysDictController extends BaseController {
      * 根据字典类型查询字典（pid）
      *
      * @param request 请求
-     * @return {@link ResponseResult<SysDict>}
+     * @param type    类型
+     * @return {@link ResponseResult<List<SysDict>>}
      */
-    @GetMapping("/name/{pid:\\w+}")
+    @GetMapping("/name/{type:\\w+}")
     @ApiOperation("字典名称")
     @AllowAnonymous
-    public ResponseResult<List<SysDict>> fetchDict(@ApiParam("字典PID") @PathVariable Long pid, HttpServletRequest request){
-        return ResponseResult.ok( sysDictService.findDict(pid));
+    public ResponseResult<List<SysDict>> fetchDict(@ApiParam("字典PID") @PathVariable String type, HttpServletRequest request){
+        return ResponseResult.ok( sysDictService.findDict(type));
     }
 }

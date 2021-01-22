@@ -41,7 +41,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping
-@Api(tags = "后台用户")
+@Api(tags = "系统用户")
 public class UserController extends BaseController {
     @Resource
     private UserService userService;
@@ -117,22 +117,29 @@ public class UserController extends BaseController {
     /**
      * 通过openId获取微信用户
      *
-     * @param id id
+     * @param openId 开放id
      * @return {@link ResponseResult<User>}
      */
     @AllowAnonymous
-    @GetMapping("/weChatUser/{id:\\w+}")
-    @ApiOperation("获取微信用户信息")
-    public ResponseResult<User> fetchUserByOpenId(@ApiParam("用户ID") @PathVariable Long id){
-        return ResponseResult.ok(userService.findUserByOpenId(id));
+    @GetMapping("/weChatUser/{openId:\\w+}")
+    @ApiOperation("获取微信用户信息(openid)")
+    public ResponseResult<User> fetchUserByOpenId(@ApiParam("用户ID") @PathVariable Long openId){
+        return ResponseResult.ok(userService.findUserByOpenId(openId));
     }
 
+    /**
+     * 通过电话获取用户
+     *
+     * @param phone 电话
+     * @return {@link ResponseResult<User>}
+     */
     @AllowAnonymous
     @GetMapping("/weChatUser/{phone:\\w+}")
-    @ApiOperation("获取微信用户信息")
+    @ApiOperation("获取微信用户信息(phone)")
     public ResponseResult<User> fetchUserByPhone(@ApiParam("电话号码") @PathVariable String phone){
         return ResponseResult.ok(userService.findUserByPhone(phone));
     }
+
     /**
      * 创建我们聊天的用户
      *

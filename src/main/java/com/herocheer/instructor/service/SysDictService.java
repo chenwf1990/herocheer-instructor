@@ -57,9 +57,9 @@ public interface SysDictService extends BaseService<SysDict, Long> {
     /**
      * 查询字典名
      *
-     * @param pid pid
+     * @param type 类型
      * @return {@link List<SysDict>}
      */
-    List<SysDict> findDict(Long pid);
+    List<SysDict> findDict(String type);
 
 }
