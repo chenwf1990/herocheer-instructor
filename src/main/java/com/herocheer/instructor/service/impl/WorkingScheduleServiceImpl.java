@@ -109,6 +109,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 if(scheduleUser.getType() == ScheduleUserTypeEnums.SUBSCRIBE_DUTY.getType()){
                     scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
                 }
+                scheduleUser.setTaskNo(DateUtil.getNewTime());
                 scheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
                 scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());//初始化待审核
                 scheduleUser.setWorkingScheduleId(workingVo.getId());
@@ -197,15 +198,29 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("typeList", Arrays.asList(1,2));
         params.put("notDelIdList", scheduleUserIdList);
         workingScheduleUserService.deleteByMap(params);
-
-        workingScheduleUsers.forEach(u ->{
-            u.setWorkingScheduleId(workingVo.getId());
-            if(u.getId() == null){
-                workingScheduleUserService.insert(u);
+        //找着用户指导项目数据
+        Map<Long, List<UserGuideProjectVo>> userMap = new HashMap<>();
+        List<Long> userIdList = workingScheduleUsers.stream().
+                filter(y -> y.getId() == null).
+                map(y -> y.getId()).
+                collect(Collectors.toList());
+        if(userIdList.isEmpty()){
+            List<UserGuideProjectVo> users = userService.findUserProjectByUserIds(userIdList);
+            //查找到的用户信息按用户名称进行聚合，后续根据用户名key查找用户信息velue
+            userMap = users.stream().collect(Collectors.groupingBy(UserGuideProjectVo::getId));
+        }
+        for (WorkingScheduleUser scheduleUser : workingScheduleUsers) {
+            scheduleUser.setWorkingScheduleId(workingVo.getId());
+            if(scheduleUser.getId() == null){
+                UserGuideProjectVo user = userMap.get(scheduleUser.getUserId()).get(0);
+                scheduleUser.setGuideProject(StringUtils.isEmpty(user.getInstructorGuideProject()) ? user.getGuideProject() : user.getInstructorGuideProject());
+                scheduleUser.setCertificateGrade(user.getCertificateGrade());
+                scheduleUser.setTaskNo(DateUtil.getNewTime());
+                workingScheduleUserService.insert(scheduleUser);
             }else{
-                workingScheduleUserService.update(u);
+                workingScheduleUserService.update(scheduleUser);
             }
-        });
+        }
     }
 
     //判断传送的值班人员是否存在相同时间段的值班人员（数据库查询）
@@ -358,9 +373,9 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             isExistDuplicatedData(list);
             userNames = userNames.replace("，",",").replace(" ","");//把所有的中文逗号替换成英文逗号
             List<String> userNameList = Arrays.stream(userNames.split(",")).collect(Collectors.toList());
-            List<User> users = userService.findUserByUserNames(userNameList);
+            List<UserGuideProjectVo> users = userService.findUserProjectByUserNames(userNameList);
             //查找到的用户信息按用户名称进行聚合，后续根据用户名key查找用户信息velue
-            Map<String, List<User>> userMap = users.stream().collect(Collectors.groupingBy(User::getUserName));
+            Map<String, List<UserGuideProjectVo>> userMap = users.stream().collect(Collectors.groupingBy(UserGuideProjectVo::getUserName));
             for (int i = 1; i < read.size(); i++) {//0是标题，数据行从1开始
                 List<Object> dataList = read.get(i);
                 buildSaveWorkingSchedule(courierStation,serviceHours,dataList,userMap,i);
@@ -372,7 +387,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     //组装、保存值班记录
-    private void buildSaveWorkingSchedule(CourierStation courierStation, ServiceHours serviceHours, List<Object> dataList, Map<String, List<User>> userMap, int i) {
+    private void buildSaveWorkingSchedule(CourierStation courierStation, ServiceHours serviceHours, List<Object> dataList, Map<String, List<UserGuideProjectVo>> userMap, int i) {
         WorkingSchedule workingSchedule = new WorkingSchedule();
         workingSchedule.setActivityType(RecruitTypeEunms.STATION_RECRUIT.getType());
         workingSchedule.setCourierStationId(courierStation.getId());
@@ -415,18 +430,22 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     //组装值班人信息
-    private WorkingScheduleUser buildWorkingScheduleUser(Map<String, List<User>> userMap, WorkingSchedule workingSchedule, String userName, int type) {
+    private WorkingScheduleUser buildWorkingScheduleUser(Map<String, List<UserGuideProjectVo>> userMap, WorkingSchedule workingSchedule, String userName, int type) {
         if(!userMap.containsKey(userName)){
             throw new CommonException("不存在该用户" + userName);
         }
-        User user = userMap.get(userName).get(0);
+        UserGuideProjectVo user = userMap.get(userName).get(0);
         WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
         scheduleUser.setWorkingScheduleId(workingSchedule.getId());
         scheduleUser.setType(type);
         scheduleUser.setUserId(user.getId());
         scheduleUser.setUserName(user.getUserName());
         scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
+        scheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
         scheduleUser.setServiceTime(DateUtil.timeToSecond(workingSchedule.getServiceEndTime()) - DateUtil.timeToSecond(workingSchedule.getServiceBeginTime()));
+        scheduleUser.setGuideProject(StringUtils.isEmpty(user.getInstructorGuideProject()) ? user.getGuideProject() : user.getInstructorGuideProject());
+        scheduleUser.setCertificateGrade(user.getCertificateGrade());
+        scheduleUser.setTaskNo(DateUtil.getNewTime());
         return scheduleUser;
     }
 

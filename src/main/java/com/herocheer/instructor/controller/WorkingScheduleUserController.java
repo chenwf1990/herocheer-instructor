@@ -31,8 +31,9 @@ public class WorkingScheduleUserController extends BaseController{
 
     @PostMapping("/queryPageList")
     @ApiOperation("值班人员列表查询")
-    public ResponseResult<Page<WorkingSchedulsUserVo>> queryPageList(@RequestBody WorkingScheduleUserQueryVo workingScheduleUserQueryVo){
-        Page<WorkingSchedulsUserVo> page = workingScheduleUserService.queryPageList(workingScheduleUserQueryVo);
+    public ResponseResult<Page<WorkingSchedulsUserVo>> queryPageList(@RequestBody WorkingScheduleUserQueryVo workingScheduleUserQueryVo,
+                                                                     HttpServletRequest request){
+        Page<WorkingSchedulsUserVo> page = workingScheduleUserService.queryPageList(workingScheduleUserQueryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
 

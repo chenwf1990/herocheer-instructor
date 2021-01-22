@@ -32,4 +32,6 @@ public class WorkingSchedulsUserVo extends WorkingScheduleUser{
     private Integer signStatus;
     @ApiModelProperty("超出服务时长(单位:分)")
     private Integer exceedServiceTime;
+    @ApiModelProperty("负责人，审批人id")
+    private Long approveId;
 }
