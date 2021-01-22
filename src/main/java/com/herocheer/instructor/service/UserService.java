@@ -6,6 +6,7 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 
 import java.util.List;
@@ -124,4 +125,18 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     List<User> findUserByUserNames(List<String> userNames);
+
+    /**
+     * 根据用户姓名查找用户信息（指导项目）
+     * @param userNames
+     * @return
+     */
+    List<UserGuideProjectVo> findUserProjectByUserNames(List<String> userNames);
+
+    /**
+     * 根据用户id查找用户信息（指导项目）
+     * @param userIdList
+     * @return
+     */
+    List<UserGuideProjectVo> findUserProjectByUserIds(List<Long> userIdList);
 }

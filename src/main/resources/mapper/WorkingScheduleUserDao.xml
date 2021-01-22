@@ -404,6 +404,8 @@
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
         SELECT
         a.activityType,
+        a.activityId,
+        a.activityTitle,
         a.courierStationId,
         a.courierStationName,
         a.scheduleTime,
@@ -418,11 +420,10 @@
         b.type,
         b.id,
         b.status,
-        c.guideProject,
-        c.certificateNo
+        b.guideProject,
+        b.certificateGrade
         FROM working_schedule a
         JOIN working_schedule_user b ON a.id = b.workingScheduleId
-        left join instructor c on c.userId = b.id
         where a.activityType = #{activityType}
         <if test="courierStationId != null">
             and a.courierStationId = #{courierStationId}

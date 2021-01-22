@@ -202,7 +202,8 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      */
     @Override
     public int approval(Long workingScheduleUserId, int approvalType, String approvalIdea, UserEntity user, int actualServiceTime) {
-        WorkingUserVo workingUserVo = isHasApprovalAuth(workingScheduleUserId, user.getId());//判断是否审批负责人
+        //判断是否审批负责人
+        WorkingUserVo workingUserVo = isHasApprovalAuth(workingScheduleUserId, user.getId());
         WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
         int beginMinute = DateUtil.timeToSecond(workingUserVo.getServiceBeginTime());
         int endMinute = DateUtil.timeToSecond(workingUserVo.getServiceEndTime());
