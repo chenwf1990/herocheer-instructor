@@ -10,9 +10,7 @@ public enum ApprovalTypeEnums {
     SIGN_TIME(1,"按打卡时间统计"),
     SERVICE_TIME(2,"按服务时间统计"),
     ACTUAL_SITUATION(3,"按实际情况填写");
-    ApprovalTypeEnums(){
 
-    }
     private int type;
     private String name;
 

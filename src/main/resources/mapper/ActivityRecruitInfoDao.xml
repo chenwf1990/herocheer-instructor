@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ActivityRecruitInfoDao">
-    
     <sql id="table_field">
-      id, recruitType, title, content, image, address, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
-      (CASE
-		 WHEN recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000 AND `status`=3 THEN 4
-		 WHEN recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000 AND `status`=3 THEN 5
-		 ELSE `status` END
-	  ) AS 'status', approvalStatus, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
+       CASE
+		WHEN `status` = 3 AND recruitStartDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 4
+		WHEN `status` = 3 AND recruitEndDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 5
+		ELSE `status`
+	   END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -29,6 +28,12 @@
         </if>
         <if test="address != null">
             address,
+        </if>
+        <if test="longitude != null">
+            longitude,
+        </if>
+        <if test="latitude != null">
+            latitude,
         </if>
         <if test="matchApproverId != null">
             matchApproverId,
@@ -60,6 +65,12 @@
         <if test="approvalStatus != null">
             approvalStatus,
         </if>
+        <if test="showBanner != null">
+            showBanner,
+        </if>
+        <if test="placedTop != null">
+            placedTop,
+        </if>
         <if test="recruitStartDate != null">
             recruitStartDate,
         </if>
@@ -87,6 +98,12 @@
         </if>
         <if test="address != null">
             #{address},
+        </if>
+        <if test="longitude != null">
+            #{longitude},
+        </if>
+        <if test="latitude != null">
+            #{latitude},
         </if>
         <if test="matchApproverId != null">
             #{matchApproverId},
@@ -117,6 +134,12 @@
         </if>
         <if test="approvalStatus != null">
             #{approvalStatus},
+        </if>
+        <if test="showBanner != null">
+            #{showBanner},
+        </if>
+        <if test="placedTop != null">
+            #{placedTop},
         </if>
         <if test="recruitStartDate != null">
             #{recruitStartDate},
@@ -156,6 +179,12 @@
             <if test="address != null">
                 address = #{address},
             </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
             <if test="matchApproverId != null">
                 matchApproverId = #{matchApproverId},
             </if>
@@ -185,6 +214,12 @@
             </if>
             <if test="approvalStatus != null">
                 approvalStatus = #{approvalStatus},
+            </if>
+            <if test="showBanner != null">
+                showBanner = #{showBanner},
+            </if>
+            <if test="placedTop != null">
+                placedTop = #{placedTop},
             </if>
             <if test="recruitStartDate != null">
                 recruitStartDate = #{recruitStartDate},
@@ -226,6 +261,12 @@
             <if test="address != null">
                 and address = #{address}
             </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
             <if test="matchApproverId != null">
                 and matchApproverId = #{matchApproverId}
             </if>
@@ -256,6 +297,87 @@
             <if test="approvalStatus != null">
                 and approvalStatus = #{approvalStatus}
             </if>
+            <if test="showBanner != null">
+                and showBanner = #{showBanner}
+            </if>
+            <if test="placedTop != null">
+                and placedTop = #{placedTop}
+            </if>
+            <if test="recruitStartDate != null">
+                and recruitStartDate = #{recruitStartDate}
+            </if>
+            <if test="recruitEndDate != null">
+                and recruitEndDate = #{recruitEndDate}
+            </if>
+            <if test="approvalComments != null">
+                and approvalComments = #{approvalComments}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from activity_recruit_info
+        <where>
+            <if test="recruitType != null">
+                and recruitType = #{recruitType}
+            </if>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="image != null">
+                and image = #{image}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="matchApproverId != null">
+                and matchApproverId = #{matchApproverId}
+            </if>
+            <if test="matchApprover != null">
+                and matchApprover = #{matchApprover}
+            </if>
+            <if test="courierStationId != null">
+                and courierStationId = #{courierStationId}
+            </if>
+            <if test="courierStation != null">
+                and courierStation = #{courierStation}
+            </if>
+            <if test="serviceStartDate != null">
+                and serviceStartDate = #{serviceStartDate}
+            </if>
+            <if test="serviceEndDate != null">
+                and serviceEndDate = #{serviceEndDate}
+            </if>
+            <if test="serviceHours != null">
+                and serviceHours = #{serviceHours}
+            </if>
+            <if test="recruitNumber != null">
+                and recruitNumber = #{recruitNumber}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="approvalStatus != null">
+                and approvalStatus = #{approvalStatus}
+            </if>
+            <if test="showBanner != null">
+                and showBanner = #{showBanner}
+            </if>
+            <if test="placedTop != null">
+                and placedTop = #{placedTop}
+            </if>
             <if test="recruitStartDate != null">
                 and recruitStartDate = #{recruitStartDate}
             </if>
@@ -268,43 +390,48 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
-
-
     <select id="findList" parameterType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo"
             resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
-            select <include refid="table_field"/> from activity_recruit_info
-            <where>
-                <if test="title!=null and title!=''">
-                    and title ilke concat('%',#{title},'%')
-                </if>
-                <if test="recruitType!=null">
-                    and recruitType=#{recruitType}
-                </if>
-                <if test="createdBy!=null">
-                    and createdBy like concat('%',#{createdBy},'%')
-                </if>
-                <if test="recruitStartDate!=null">
-                    and recruitStartDate <![CDATA[ >= ]]> #{recruitStartDate}
-                </if>
-                <if test="recruitEndDate!=null">
-                    and recruitEndDate <![CDATA[ <= ]]> #{recruitEndDate}
-                </if>
-                <if test="beginTime!=null">
-                    and createdTime <![CDATA[ >= ]]> #{beginTime}
-                </if>
-                <if test="endTime!=null">
-                    and createdTime <![CDATA[ <= ]]> #{endTime}
-                </if>
-                <if test="status!=null and status!=4 and status!=5">
-                    and status=#{status}
-                </if>
-                <if test="status!=null and status==4">
-                    and status=3 and recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000
-                </if>
-                <if test="status!=null and status==5">
-                    and status=3 and recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000
-                </if>
-            </where>
+        select <include refid="table_field"/> from activity_recruit_info
+        <where>
+            <if test="title!=null and title!=''">
+                and title ilke concat('%',#{title},'%')
+            </if>
+            <if test="recruitType!=null">
+                and recruitType=#{recruitType}
+            </if>
+            <if test="createdBy!=null">
+                and createdBy like concat('%',#{createdBy},'%')
+            </if>
+            <if test="recruitStartDate!=null">
+                and recruitStartDate <![CDATA[ >= ]]> #{recruitStartDate}
+            </if>
+            <if test="recruitEndDate!=null">
+                and recruitEndDate <![CDATA[ <= ]]> #{recruitEndDate}
+            </if>
+            <if test="beginTime!=null">
+                and createdTime <![CDATA[ >= ]]> #{beginTime}
+            </if>
+            <if test="endTime!=null">
+                and createdTime <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="status!=null and status!=4 and status!=5">
+                and status=#{status}
+            </if>
+            <if test="status!=null and status==4">
+                and status=3 and recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000
+            </if>
+            <if test="status!=null and status==5">
+                and status=3 and recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000
+            </if>
+            <if test="userId!=null and type==1">
+                and createdId=#{userId}
+            </if>
+            <if test="userId!=null and type==2">
+                and (matchApproverId=#{userId} and courierStationId in (SELECT id from courier_station where userId=#{userId}))
+            </if>
+        </where>
+        order by createdTime DESC
     </select>
 
     <select id="getActivityRecruitInfo" parameterType="java.lang.Long"

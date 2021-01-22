@@ -1,14 +1,13 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author chenwf
  * @desc 值班签到记录
- * @date 2021-01-20 20:33:13
+ * @date 2021-01-22 14:19:23
  * @company 厦门熙重电子科技有限公司
  */
 @Data

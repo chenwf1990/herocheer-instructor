@@ -1,13 +1,20 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.dao.WorkingScheduleUserDao;
+import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
+import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
-import com.herocheer.instructor.enums.SignType;
+import com.herocheer.instructor.enums.*;
+import com.herocheer.instructor.service.ActivityRecruitInfoService;
+import com.herocheer.instructor.service.CommonService;
+import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -15,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +38,12 @@ import java.util.Map;
 public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingScheduleUserDao, WorkingScheduleUser,Long> implements WorkingScheduleUserService {
     @Resource
     private WorkingScheduleDao workingScheduleDao;
+    @Resource
+    private ActivityRecruitInfoService activityRecruitInfoService;
+    @Resource
+    private CommonService commonService;
+    @Resource
+    private CourierStationService courierStationService;
 
     /**
      * @param workingScheduleUserQueryVo
@@ -42,6 +56,36 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     public Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo) {
         Page page = Page.startPage(workingScheduleUserQueryVo.getPageNo(),workingScheduleUserQueryVo.getPageSize());
         List<WorkingSchedulsUserVo> dataList = this.dao.queryPageList(workingScheduleUserQueryVo);
+        if(!dataList.isEmpty()){
+            dataList.forEach(w ->{
+                long scheduleBeginTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceBeginTime());
+                if(w.getSignInTime() == null && System.currentTimeMillis() <= scheduleBeginTime){//服务开始时间大于当前时间不去设置状态
+                    w.setSignStatus(-1);//前端打卡状态放空
+                    w.setServiceTime(-1);//前端服务时长放空
+                    w.setStatus(-1);//前端审核状态放空
+                }else {
+                    Long serviceBeginTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceBeginTime());
+                    Long serviceEndTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceEndTime());
+                    if (w.getStatus() == AuditStatusEnums.to_pass.getState()) {
+                        w.setSignStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
+                    } else {
+                        int signStatus = commonService.getPunchCardStatus(serviceBeginTime, serviceEndTime, w.getSignInTime(), w.getSignOutTime());
+                        w.setSignStatus(signStatus);
+                        if (signStatus != SignStatusEnums.SIGN_ABNORMAL.getStatus()) {
+                            w.setSignStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
+                        }
+                    }
+                    if(DateUtil.beginOfDay(new Date()).getTime() <= scheduleBeginTime){
+                        w.setStatus(-1);//当天之前的都不做审核，前端审核状态放空
+                    }
+                    //计算超出时长
+                    long time = serviceEndTime - serviceBeginTime;
+                    long signInTime = w.getSignInTime() == null ? serviceBeginTime : w.getSignInTime();
+                    long signOutTime = w.getSignOutTime() == null ? serviceEndTime : w.getSignOutTime();
+                    w.setExceedServiceTime((int) ((signOutTime - signInTime - time) / 60 /1000));
+                }
+            });
+        }
         page.setDataList(dataList);
         return page;
     }
@@ -93,7 +137,6 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     public int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime,Integer type) {
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingScheduleUserId);
-        params.put("userId",userId);
         List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
         WorkingUserVo workingUserVo = workingUserVos.get(0);
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
@@ -105,6 +148,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                 scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignInTime(replaceCardTime);
                 scheduleUser.setServiceTime((int) (serviceEndTime - replaceCardTime));
+                scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
                 this.dao.update(scheduleUser);
             }
         }else{//签退补卡
@@ -113,6 +157,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                 scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignOutTime(replaceCardTime);
                 scheduleUser.setServiceTime((int) (replaceCardTime - serviceBeginTime));
+                scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
                 this.dao.update(scheduleUser);
             }
         }
@@ -142,5 +187,65 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     @Override
     public int deleteByWorkingScheduleIds(List<Long> idList) {
         return this.dao.deleteByWorkingScheduleIds(idList);
+    }
+
+    /**
+     * @param workingScheduleUserId
+     * @param approvalType
+     * @param approvalIdea
+     * @param user
+     * @param actualServiceTime
+     * @return
+     * @author chenwf
+     * @desc 值班审核
+     * @date 2021-01-22 09:57:02
+     */
+    @Override
+    public int approval(Long workingScheduleUserId, int approvalType, String approvalIdea, UserEntity user, int actualServiceTime) {
+        //判断是否审批负责人
+        WorkingUserVo workingUserVo = isHasApprovalAuth(workingScheduleUserId, user.getId());
+        WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
+        int beginMinute = DateUtil.timeToSecond(workingUserVo.getServiceBeginTime());
+        int endMinute = DateUtil.timeToSecond(workingUserVo.getServiceEndTime());
+        if(approvalType == ApprovalTypeEnums.SIGN_TIME.getType()) {
+            if(workingUserVo.getSignInTime() != null && workingUserVo.getSignOutTime() != null){
+                actualServiceTime = (int) ((workingUserVo.getSignOutTime() - workingUserVo.getSignInTime()) / 60 /1000);
+            }else{
+                approvalType = ApprovalTypeEnums.SERVICE_TIME.getType();
+                actualServiceTime = endMinute - beginMinute;
+            }
+        }else if(approvalType == ApprovalTypeEnums.SERVICE_TIME.getType()) {
+            actualServiceTime = endMinute - beginMinute;
+        }
+        scheduleUser.setId(workingScheduleUserId);
+        scheduleUser.setApprovalType(approvalType);
+        scheduleUser.setApprovalIdea(approvalIdea);
+        scheduleUser.setApprovalId(user.getId());
+        scheduleUser.setApprovalTime(System.currentTimeMillis());
+        scheduleUser.setActualServiceTime(actualServiceTime);
+        return this.dao.update(scheduleUser);
+    }
+
+    //判断是否审批负责人
+    private WorkingUserVo isHasApprovalAuth(Long workingScheduleUserId, Long userId) {
+        //查找当前的负责人
+        Map<String,Object> params = new HashMap<>();
+        params.put("workingScheduleUserId",workingScheduleUserId);
+        List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
+        WorkingUserVo workingUserVo = workingUserVos.get(0);
+        if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
+            //查询驿站
+            CourierStation courierStation = courierStationService.get(workingUserVo.getCourierStationId());
+            if(courierStation.getUserId() != userId) {
+                throw new CommonException("不是驿站负责人，不能审批");
+            }
+        }if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
+            //查询活动
+            ActivityRecruitInfo activityRecruitInfo = activityRecruitInfoService.get(workingUserVo.getActivityId());
+            if(activityRecruitInfo.getMatchApproverId() != userId){
+                throw new CommonException("不是赛事负责人，不能审批");
+            }
+        }
+        return workingUserVo;
     }
 }

@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.vo.*;
@@ -82,10 +83,11 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @desc  获取当前用户月份排班信息
      * @date 2021-01-19 09:47:02
      * @param monthData
+     * @param activityType
      * @param userId
      * @return
      */
-    List<WorkingUserInfoVo> getUserWorkingList(String monthData, Long userId);
+    List<WorkingUserInfoVo> getTaskInfoList(String monthData, int activityType, Long userId);
 
     /**
      * @author chenwf
@@ -93,7 +95,18 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @date 2021-01-19 09:47:02
      * @param workingScheduleUserId
      * @param userId
+     * @param activityType
      * @return
      */
-    WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId);
+    WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId, int activityType);
+
+    /**
+     * @author linjf
+     * 活动预约
+     * date 2021-1-21 15:21:07
+     * @param reservationVo
+     * @param userEntity
+     * @return
+     */
+    Integer reservation(ActivityReservationVo reservationVo, UserEntity userEntity);
 }

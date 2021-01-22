@@ -46,4 +46,10 @@ public class WorkingUserVo {
     private Integer signStatus;
     @ApiModelProperty("签到记录")
     private List<WorkingSignRecord> signRecords;
+    @ApiModelProperty("招募活动类型 1驿站 2赛事")
+    private Integer activityType;
+    @ApiModelProperty("活动id")
+    private Long activityId;
+    @ApiModelProperty("活动标题")
+    private String activityTitle;
 }

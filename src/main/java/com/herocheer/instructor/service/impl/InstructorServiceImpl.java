@@ -158,12 +158,17 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     }
 
     @Override
-    public void loginTest(String token) {
+    public void loginTest(String token, Long userId) {
         JSONObject json = new JSONObject();
-        json.put("id",1);
-        json.put("userName","chenweifeng");
-        json.put("userType",1);
-        json.put("phone","13655080001");
+        if(userId != null){
+            User user = userService.get(userId);
+            json = JSONObject.parseObject(JSONObject.toJSONString(user));
+        }else{
+            json.put("id",1);
+            json.put("userName","chenweifeng");
+            json.put("userType",1);
+            json.put("phone","13655080001");
+        }
         redisClient.set(token,json.toJSONString());
     }
 

@@ -2,6 +2,9 @@ package com.herocheer.instructor.utils;
 
 import com.herocheer.common.utils.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @program: herocheer-instructor
  * @description:
@@ -28,6 +31,9 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
      * @return
      */
     public static String secToTime(Long seconds) {
+        if(seconds<0){
+            return "0小时";
+        }
         seconds=seconds/1000;
         Long hour = seconds / 3600;
         Long minute = (seconds - hour * 3600) / 60;
@@ -63,12 +69,27 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
     }
 
     /**
-     * 时间(HH:ss)转成分钟
-     * @param time
+     * 判断时间搓是否再时间段内
+     * @param beginTime
+     * @param endTime
      * @return
      */
-    public static int timeToMinute(String time){
-        int second = timeToSecond(time);
-        return second / 60;
+    public static boolean betweenTime(Long beginTime,Long endTime){
+        return betweenTime(beginTime,endTime,System.currentTimeMillis());
+    }
+
+    public static boolean betweenTime(Long beginTime,Long endTime,Long curTime){
+        if(curTime >= beginTime && curTime <= endTime){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 获取当前时间
+     * @return
+     */
+    public static String getNewTime(){
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
     }
 }

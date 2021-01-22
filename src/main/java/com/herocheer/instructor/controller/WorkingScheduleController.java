@@ -3,7 +3,6 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -78,6 +77,7 @@ public class WorkingScheduleController extends BaseController{
 
     @GetMapping("/templateExport")
     @ApiOperation("模板导出")
+    @AllowAnonymous
     public ResponseResult templateExport(@ApiParam("驿站id") @RequestParam Long courierStationId,
                                          @ApiParam("服务时段id") @RequestParam Long serviceTimeId,
                                          HttpServletResponse response){
@@ -100,21 +100,30 @@ public class WorkingScheduleController extends BaseController{
         return ResponseResult.ok();
     }
 
-    @PostMapping("/getUserWorkingList")
-    @ApiOperation("获取当前用户月份排班信息")
-    public ResponseResult<List<WorkingUserInfoVo>> getUserWorkingList(@ApiParam("当前月份(yyyy-MM)") @RequestParam(required = false) String monthData,
+    @PostMapping("/getTaskInfoList")
+    @ApiOperation("获取任务信息(日历)")
+    public ResponseResult<List<WorkingUserInfoVo>> getTaskInfoList(@ApiParam("当前月份(yyyy-MM)") @RequestParam(required = false) String monthData,
+                                                                      @ApiParam("招募活动类型 1驿站 2赛事") @RequestParam int activityType,
                                                                       HttpServletRequest request){
         Long userId = getCurUserId(request);
-        List<WorkingUserInfoVo> workingUserInfoVos = workingScheduleService.getUserWorkingList(monthData,userId);
+        List<WorkingUserInfoVo> workingUserInfoVos = workingScheduleService.getTaskInfoList(monthData,activityType,userId);
         return ResponseResult.ok(workingUserInfoVos);
     }
 
     @PostMapping("/getTaskInfo")
     @ApiOperation("获取值班任务信息(值班打卡)")
     public ResponseResult<WorkingUserVo> getTaskInfo(@ApiParam("值班人员id") @RequestParam() Long workingScheduleUserId,
+                                                     @ApiParam("招募活动类型 1驿站 2赛事") @RequestParam int activityType,
                                                      HttpServletRequest request){
         Long userId = getCurUserId(request);
-        WorkingUserVo workingUserVo = workingScheduleService.getTaskInfo(workingScheduleUserId,userId);
+        WorkingUserVo workingUserVo = workingScheduleService.getTaskInfo(workingScheduleUserId,userId,activityType);
         return ResponseResult.ok(workingUserVo);
+    }
+
+    @PostMapping("/reservation")
+    @ApiOperation("活动预约")
+    public ResponseResult reservation(@RequestBody ActivityReservationVo reservationVo, HttpServletRequest request){
+        Integer count=workingScheduleService.reservation(reservationVo,getUser(request));
+        return ResponseResult.isSuccess(count);
     }
 }

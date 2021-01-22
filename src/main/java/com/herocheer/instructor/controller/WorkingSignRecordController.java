@@ -8,10 +8,7 @@ import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,12 +29,12 @@ public class WorkingSignRecordController extends BaseController{
 
     @GetMapping("/getPunchCardList")
     @ApiOperation("获取打卡信息列表")
-    public ResponseResult<List<WorkingSignRecord>> getPunchCardList(@ApiParam("值班人员id") Long workingScheduleUserId){
+    public ResponseResult<List<WorkingSignRecord>> getPunchCardList(@ApiParam("值班人员id") @RequestParam Long workingScheduleUserId){
         List<WorkingSignRecord> workingSignRecords = workingSignRecordService.getPunchCardList(workingScheduleUserId);
         return ResponseResult.ok(workingSignRecords);
     }
 
-    @GetMapping("/addWorkingSignRecord")
+    @PostMapping("/addWorkingSignRecord")
     @ApiOperation("打卡")
     public ResponseResult addWorkingSignRecord(@RequestBody WorkingSignRecord workingSignRecord, HttpServletRequest request){
         UserEntity userEntity = getUser(request);

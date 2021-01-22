@@ -36,7 +36,7 @@ public interface WorkingScheduleDao extends BaseDao<WorkingSchedule,Long>{
 
     /**
      * @author chenwf
-     * @desc 获取当前用户月份排班信息
+     * @desc 获取值班人员值班信息
      * @date 2021-01-12 08:47:02
      * @param params
      * @return
@@ -51,4 +51,11 @@ public interface WorkingScheduleDao extends BaseDao<WorkingSchedule,Long>{
      * @return
      */
     List<WorkingSchedule> getByIds(List<Long> idList);
+
+    /**
+     * 获取任务信息
+     * @param params
+     * @return
+     */
+    List<WorkingUserVo> getTaskInfoList(Map<String, Object> params);
 }

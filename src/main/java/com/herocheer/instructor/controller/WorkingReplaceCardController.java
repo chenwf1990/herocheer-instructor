@@ -29,7 +29,7 @@ public class WorkingReplaceCardController extends BaseController{
 
     @GetMapping("/getReplaceCardList")
     @ApiOperation("获取补卡列表")
-    public ResponseResult<List<WorkingReplaceCard>> getReplaceCardList(@ApiParam("值班人员id") Long workingScheduleUserId){
+    public ResponseResult<List<WorkingReplaceCard>> getReplaceCardList(@ApiParam("值班人员id")@RequestParam Long workingScheduleUserId){
         List<WorkingReplaceCard> workingReplaceCards = workingReplaceCardService.getReplaceCardList(workingScheduleUserId);
         return ResponseResult.ok(workingReplaceCards);
     }

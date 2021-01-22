@@ -64,7 +64,7 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      */
     long updateInstructor(Instructor instructor);
 
-    void loginTest(String token);
+    void loginTest(String token, Long userId);
 
     /**
      * @author chenwf

@@ -3,6 +3,7 @@ package com.herocheer.instructor.dao;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
 import java.util.List;
@@ -54,4 +55,18 @@ public interface UserDao extends BaseDao<User, Long> {
      * @return int
      */
     List<User> findUserByUserNames(List<String> userNames);
+
+    /**
+     * 根据用户姓名查找用户信息（指导项目）
+     * @param userNames
+     * @return
+     */
+    List<UserGuideProjectVo> findUserProjectByUserNames(List<String> userNames);
+
+    /**
+     * 根据用户Id查找用户信息（指导项目）
+     * @param userIds
+     * @return
+     */
+    List<UserGuideProjectVo> findUserProjectByUserIds(List<Long> userIds);
 }

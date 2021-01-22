@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 值班补卡
- * @date 2021-01-20 21:01:36
+ * @date 2021-01-21 21:32:05
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -30,6 +30,8 @@ public class WorkingReplaceCard extends BaseEntity {
     private String approvalBy;
     @ApiModelProperty("审批时间")   
     private Long approvalTime;
+    @ApiModelProperty("图片地址")   
+    private String pics;
     @ApiModelProperty("审批人")   
     private String remarks;
 

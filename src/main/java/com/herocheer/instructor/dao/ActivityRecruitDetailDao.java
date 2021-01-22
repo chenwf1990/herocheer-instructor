@@ -1,8 +1,11 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
+import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author makejava
@@ -11,5 +14,17 @@ import org.apache.ibatis.annotations.Param;
  * @company 厦门熙重电子科技有限公司
  */
 public interface ActivityRecruitDetailDao extends BaseDao<ActivityRecruitDetail,Long>{
-    Long deleteDetailByRecruitId(@Param("recruitId") Long recruitId);
+    /**
+     * 根据招募信息id删除招募详情
+     * @param recruitId
+     */
+    void deleteDetailByRecruitId(@Param("recruitId") Long recruitId);
+
+    /**
+     *
+     * @return
+     */
+    List<ActivityRecruitDetailVo> getRecruitHours(@Param("recruitId")Long recruitId,
+                                                  @Param("serviceStartTime") Long serviceStartTime,
+                                                  @Param("serviceEndTime") Long serviceEndTime);
 }

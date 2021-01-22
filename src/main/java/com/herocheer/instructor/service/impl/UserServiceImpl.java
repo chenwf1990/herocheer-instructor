@@ -12,6 +12,7 @@ import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.UserType;
 import com.herocheer.instructor.service.UserService;
@@ -361,5 +362,27 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public List<User> findUserByUserNames(List<String> userNames) {
         return this.dao.findUserByUserNames(userNames);
+    }
+
+    /**
+     * 根据用户姓名查找用户信息（指导项目）
+     *
+     * @param userNames
+     * @return
+     */
+    @Override
+    public List<UserGuideProjectVo> findUserProjectByUserNames(List<String> userNames) {
+        return this.dao.findUserProjectByUserNames(userNames);
+    }
+
+    /**
+     * 根据用户姓名查找用户信息（指导项目）
+     *
+     * @param userIds
+     * @return
+     */
+    @Override
+    public List<UserGuideProjectVo> findUserProjectByUserIds(List<Long> userIds) {
+        return this.dao.findUserProjectByUserIds(userIds);
     }
 }
