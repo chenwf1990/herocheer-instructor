@@ -33,16 +33,16 @@ public class CommonServiceImpl implements CommonService {
             if(signInTime <= serviceBeginTime || signOutTime <= serviceEndTime + DateUtil.TWO_HOURS){
                 signStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
             }
-        }else if (signInTime == null || signOutTime == null){
-            if(curTime <= serviceBeginTime){
-                signStatus = SignStatusEnums.SIGN_UN_FINISH.getStatus();
-            }
         }else if (signInTime != null && signOutTime == null){
             if(curTime <= serviceBeginTime + DateUtil.ONE_HOURS){//签到时间
                 if(signInTime <= serviceBeginTime){
                     signStatus = SignStatusEnums.SIGN_UN_FINISH.getStatus();
                 }
             }else if(curTime >= serviceBeginTime + DateUtil.ONE_HOURS && curTime <= serviceEndTime + DateUtil.TWO_HOURS){
+                signStatus = SignStatusEnums.SIGN_UN_FINISH.getStatus();
+            }
+        }else if (signInTime == null || signOutTime == null) {
+            if (curTime <= serviceBeginTime) {
                 signStatus = SignStatusEnums.SIGN_UN_FINISH.getStatus();
             }
         }

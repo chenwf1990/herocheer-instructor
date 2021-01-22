@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 排班表人员表
- * @date 2021-01-21 17:18:20
+ * @date 2021-01-22 09:55:05
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -34,10 +34,14 @@ public class WorkingScheduleUser extends BaseEntity {
     private Integer serviceTime;
     @ApiModelProperty("实得时长(单位:分)")   
     private Integer actualServiceTime;
-    @ApiModelProperty("超出服务时长(单位:分)")   
-    private Integer exceedServiceTime;
+    @ApiModelProperty("审批人")
+    private Long approvalId;
     @ApiModelProperty("审批类型 1按照人员签到签退时间进行统计 2按照活动设定时间进行统计 3按实际情况填写时长")   
     private Integer approvalType;
+    @ApiModelProperty("审批意见")   
+    private String approvalIdea;
+    @ApiModelProperty("审批时间")   
+    private Long approvalTime;
     @ApiModelProperty("预约状态 0预约 1撤销")   
     private Integer reserveStatus;
     @ApiModelProperty("是否需要审核 0不需要审核 1待审核 2已审核")   

@@ -1,12 +1,9 @@
 package com.herocheer.instructor.domain.vo;
 
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author chenwf
@@ -33,4 +30,6 @@ public class WorkingSchedulsUserVo extends WorkingScheduleUser{
     private String certificateGrade;
     @ApiModelProperty("打卡状态-0正常 1异常")
     private Integer signStatus;
+    @ApiModelProperty("超出服务时长(单位:分)")
+    private Integer exceedServiceTime;
 }

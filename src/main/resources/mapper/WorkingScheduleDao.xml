@@ -274,9 +274,8 @@
         </if>
     </delete>
 
-    <select id="getUserWorkingList" parameterType="map" resultType="com.herocheer.instructor.domain.vo.WorkingUserVo">
+    <select id="getTaskInfoList" parameterType="map" resultType="com.herocheer.instructor.domain.vo.WorkingUserVo">
         select
-        a.`name` as courierStationName,
         a.address,
         a.longitude,
         a.latitude,
@@ -286,22 +285,58 @@
         b.serviceBeginTime,
         b.serviceEndTime,
         b.courierStationId,
+        b.activityType,
+        b.activityId,
+        b.activityTitle,
         c.signInTime,
         c.signOutTime,
         c.serviceTime,
         c.id as workingScheduleUserId
-        from courier_station a
-        INNER JOIN working_schedule b on a.id = b.courierStationId
+        from working_schedule b
         INNER JOIN working_schedule_user c on c.workingScheduleId = b.id
+        <if test="activityType == 1">
+            INNER JOIN courier_station a on b.courierStationId = a.id
+        </if>
+        <if test="activityType == 2">
+            INNER JOIN activity_recruit_info a on b.activityId = a.id
+        </if>
         where c.reserveStatus = 0
+        and b.activityType = #{activityType}
+        and c.id = #{workingScheduleUserId}
         <if test="scheduleBeginTime != null and scheduleEndTime != null">
             and b.scheduleTime between #{scheduleBeginTime} and #{scheduleEndTime}
         </if>
-        <if test="workingScheduleUserId != null">
-            and c.id = #{workingScheduleUserId}
+        <if test="userId != null">
+            and c.userId = #{userId}
         </if>
-        and c.userId = #{userId}
         ORDER BY b.scheduleTime,b.serviceBeginTime
+    </select>
+
+    <select id="getUserWorkingList" parameterType="map" resultType="com.herocheer.instructor.domain.vo.WorkingUserVo">
+        select
+        b.id,
+        b.scheduleTime,
+        FROM_UNIXTIME(b.scheduleTime/1000,'%Y-%m-%d') as scheduleTimeText,
+        b.serviceBeginTime,
+        b.serviceEndTime,
+        b.courierStationId,
+        b.activityType,
+        b.activityId,
+        b.activityTitle,
+        c.signInTime,
+        c.signOutTime,
+        c.serviceTime,
+        c.id as workingScheduleUserId
+        from working_schedule b
+        INNER JOIN working_schedule_user c on c.workingScheduleId = b.id
+        where c.reserveStatus = 0
+        and c.id = #{workingScheduleUserId}  #必填字段
+        <if test="scheduleBeginTime != null and scheduleEndTime != null">
+            and b.scheduleTime between #{scheduleBeginTime} and #{scheduleEndTime}
+        </if>
+        <if test="userId != null">
+            and c.userId = #{userId}
+        </if>
     </select>
 
     <select id="getByIds" parameterType="java.util.List" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">

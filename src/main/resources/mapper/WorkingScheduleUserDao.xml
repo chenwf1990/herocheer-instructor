@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleUserDao">
     
     <sql id="table_field">
-      id, taskNo, workingScheduleId, type, userId, userName, certificateGrade, guideProject, signInTime, signOutTime, serviceTime, actualServiceTime, exceedServiceTime, approvalType, reserveStatus, status, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, taskNo, workingScheduleId, type, userId, userName, certificateGrade, guideProject, signInTime, signOutTime, serviceTime, actualServiceTime, approvalType, approvalIdea, approvalTime, reserveStatus, status, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -43,11 +43,14 @@
         <if test="actualServiceTime != null">
             actualServiceTime,
         </if>
-        <if test="exceedServiceTime != null">
-            exceedServiceTime,
-        </if>
         <if test="approvalType != null">
             approvalType,
+        </if>
+        <if test="approvalIdea != null">
+            approvalIdea,
+        </if>
+        <if test="approvalTime != null">
+            approvalTime,
         </if>
         <if test="reserveStatus != null">
             reserveStatus,
@@ -95,11 +98,14 @@
         <if test="actualServiceTime != null">
             #{actualServiceTime},
         </if>
-        <if test="exceedServiceTime != null">
-            #{exceedServiceTime},
-        </if>
         <if test="approvalType != null">
             #{approvalType},
+        </if>
+        <if test="approvalIdea != null">
+            #{approvalIdea},
+        </if>
+        <if test="approvalTime != null">
+            #{approvalTime},
         </if>
         <if test="reserveStatus != null">
             #{reserveStatus},
@@ -157,11 +163,14 @@
             <if test="actualServiceTime != null">
                 actualServiceTime = #{actualServiceTime},
             </if>
-            <if test="exceedServiceTime != null">
-                exceedServiceTime = #{exceedServiceTime},
-            </if>
             <if test="approvalType != null">
                 approvalType = #{approvalType},
+            </if>
+            <if test="approvalIdea != null">
+                approvalIdea = #{approvalIdea},
+            </if>
+            <if test="approvalTime != null">
+                approvalTime = #{approvalTime},
             </if>
             <if test="reserveStatus != null">
                 reserveStatus = #{reserveStatus},
@@ -221,11 +230,14 @@
             <if test="actualServiceTime != null">
                 and actualServiceTime = #{actualServiceTime}
             </if>
-            <if test="exceedServiceTime != null">
-                and exceedServiceTime = #{exceedServiceTime}
-            </if>
             <if test="approvalType != null">
                 and approvalType = #{approvalType}
+            </if>
+            <if test="approvalIdea != null">
+                and approvalIdea = #{approvalIdea}
+            </if>
+            <if test="approvalTime != null">
+                and approvalTime = #{approvalTime}
             </if>
             <if test="reserveStatus != null">
                 and reserveStatus = #{reserveStatus}
@@ -285,11 +297,14 @@
             <if test="actualServiceTime != null">
                 and actualServiceTime = #{actualServiceTime}
             </if>
-            <if test="exceedServiceTime != null">
-                and exceedServiceTime = #{exceedServiceTime}
-            </if>
             <if test="approvalType != null">
                 and approvalType = #{approvalType}
+            </if>
+            <if test="approvalIdea != null">
+                and approvalIdea = #{approvalIdea}
+            </if>
+            <if test="approvalTime != null">
+                and approvalTime = #{approvalTime}
             </if>
             <if test="reserveStatus != null">
                 and reserveStatus = #{reserveStatus}
@@ -303,7 +318,6 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
-
 
     <insert id ="batchInsert" parameterType="java.util.List" >
         insert into herocheer_instructor.working_schedule_user
@@ -319,7 +333,6 @@
         signOutTime,
         serviceTime,
         actualServiceTime,
-        exceedServiceTime,
         approvalType,
         reserveStatus,
         status,
@@ -341,7 +354,6 @@
             #{item.signOutTime},
             #{item.serviceTime},
             #{item.actualServiceTime},
-            #{item.exceedServiceTime},
             #{item.approvalType},
             #{item.reserveStatus},
             #{item.status},
@@ -349,7 +361,7 @@
             #{item.createdId},
             #{item.createdBy},
             #{item.createdTime}
-          )
+            )
         </foreach >
     </insert >
 
@@ -391,6 +403,7 @@
 
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
         SELECT
+        a.activityType,
         a.courierStationId,
         a.courierStationName,
         a.scheduleTime,
@@ -410,7 +423,7 @@
         FROM working_schedule a
         JOIN working_schedule_user b ON a.id = b.workingScheduleId
         left join instructor c on c.userId = b.id
-        where b.type in (2,3)
+        where a.activityType = #{activityType}
         <if test="courierStationId != null">
             and a.courierStationId = #{courierStationId}
         </if>
@@ -428,11 +441,12 @@
     <select id="findWorkingUser" parameterType="map" resultType="string">
         select b.userName from working_schedule a
         INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
+        and b.reserveStatus = 0
         and a.scheduleTime = #{scheduleTime}
         and (a.serviceBeginTime between #{serviceBeginTime} and #{serviceEndTime}
-               or
-              a.serviceEndTime between #{serviceBeginTime} and #{serviceEndTime}
-          )
+        or
+        a.serviceEndTime between #{serviceBeginTime} and #{serviceEndTime}
+        )
         <if test="userId != null">
             and b.userId = #{userId}
         </if>

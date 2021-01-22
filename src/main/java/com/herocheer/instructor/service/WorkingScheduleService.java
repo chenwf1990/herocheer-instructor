@@ -82,10 +82,11 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @desc  获取当前用户月份排班信息
      * @date 2021-01-19 09:47:02
      * @param monthData
+     * @param activityType
      * @param userId
      * @return
      */
-    List<WorkingUserInfoVo> getUserWorkingList(String monthData, Long userId);
+    List<WorkingUserInfoVo> getTaskInfoList(String monthData, int activityType, Long userId);
 
     /**
      * @author chenwf
@@ -93,7 +94,8 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @date 2021-01-19 09:47:02
      * @param workingScheduleUserId
      * @param userId
+     * @param activityType
      * @return
      */
-    WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId);
+    WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId, int activityType);
 }

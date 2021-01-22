@@ -61,4 +61,21 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
         Long unixTime=Long.valueOf((hour*3600+min*60)*1000);
         return unixTime;
     }
+
+    /**
+     * 判断时间搓是否再时间段内
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    public static boolean betweenTime(Long beginTime,Long endTime){
+        return betweenTime(beginTime,endTime,System.currentTimeMillis());
+    }
+
+    public static boolean betweenTime(Long beginTime,Long endTime,Long curTime){
+        if(curTime >= beginTime && curTime <= endTime){
+            return true;
+        }
+        return false;
+    }
 }

@@ -101,7 +101,8 @@ public class InstructorController extends BaseController{
     @PostMapping("/loginTest")
     @ApiOperation("模拟测试登录")
     @AllowAnonymous
-    public ResponseResult loginTest(@ApiParam("key值") @RequestParam String token){
+    public ResponseResult loginTest(@ApiParam("key值") @RequestParam String token,
+                                    @ApiParam("用户id") @RequestParam(required = false) Long userId){
         if(StringUtils.isEmpty(token)){
             token = "chenweifeng";
         }
@@ -111,7 +112,7 @@ public class InstructorController extends BaseController{
 //        json.put("userType",1);
 //        json.put("phone","13655080001");
 //        redisClient.set(token,json.toJSONString());
-        instructorService.loginTest(token);
+        instructorService.loginTest(token,userId);
         return ResponseResult.ok().setMessage(token);
     }
 

@@ -13,10 +13,7 @@ import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.domain.entity.*;
 import com.herocheer.instructor.domain.vo.*;
-import com.herocheer.instructor.enums.AuditStatusEnums;
-import com.herocheer.instructor.enums.RecruitTypeEunms;
-import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
-import com.herocheer.instructor.enums.SignStatusEnums;
+import com.herocheer.instructor.enums.*;
 import com.herocheer.instructor.service.*;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.instructor.utils.ExcelUtils;
@@ -95,6 +92,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 if(w.getType() == ScheduleUserTypeEnums.SUBSCRIBE_DUTY.getType()){
                     w.setStatus(AuditStatusEnums.to_audit.getState());
                 }
+                w.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
                 w.setStatus(AuditStatusEnums.to_audit.getState());//初始化待审核
                 w.setWorkingScheduleId(workingVo.getId());
                 //排班初始化写入服务时长
@@ -409,12 +407,14 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         scheduleUser.setUserId(user.getId());
         scheduleUser.setUserName(user.getUserName());
         scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
+        scheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
         scheduleUser.setServiceTime(DateUtil.timeToSecond(workingSchedule.getServiceEndTime()) - DateUtil.timeToSecond(workingSchedule.getServiceBeginTime()));
         return scheduleUser;
     }
 
     /**
      * @param monthData
+     * @param activityType
      * @param userId
      * @return
      * @author chenwf
@@ -422,7 +422,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-19 09:47:02
      */
     @Override
-    public List<WorkingUserInfoVo> getUserWorkingList(String monthData, Long userId) {
+    public List<WorkingUserInfoVo> getTaskInfoList(String monthData, int activityType, Long userId) {
         List<WorkingUserInfoVo> workingUserInfoVos = new ArrayList<>();
         if(StringUtils.isEmpty(monthData)){
             monthData = DateUtil.format(new Date(),DateUtil.YYYY_MM);
@@ -433,7 +433,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("scheduleBeginTime",DateUtil.beginOfMonth(scheduleDate).getTime());
         params.put("scheduleEndTime",DateUtil.endOfMonth(scheduleDate).getTime());
         params.put("userId",userId);
-        List<WorkingUserVo> workingUserVos = this.dao.getUserWorkingList(params);
+        params.put("activityType",activityType);
+        List<WorkingUserVo> workingUserVos = this.dao.getTaskInfoList(params);
         if(!workingUserVos.isEmpty()) {
             Map<String, List<WorkingUserVo>> map = workingUserVos.stream().collect(Collectors.groupingBy(s -> s.getScheduleTimeText()));
             for (Map.Entry<String, List<WorkingUserVo>> entry : map.entrySet()) {
@@ -468,17 +469,19 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     /**
      * @param workingScheduleUserId
      * @param userId
+     * @param activityType
      * @return
      * @author chenwf
      * @desc 获取值班任务信息(值班打卡)
      * @date 2021-01-19 09:47:02
      */
     @Override
-    public WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId) {
+    public WorkingUserVo getTaskInfo(Long workingScheduleUserId, Long userId, int activityType) {
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingScheduleUserId);
         params.put("userId",userId);
-        List<WorkingUserVo> workingUserVos = this.dao.getUserWorkingList(params);
+        params.put("activityType",activityType);
+        List<WorkingUserVo> workingUserVos = this.dao.getTaskInfoList(params);
         if(!workingUserVos.isEmpty()){
             WorkingUserVo v = workingUserVos.get(0);
             Map<String,Object> signMap = new HashMap<>();

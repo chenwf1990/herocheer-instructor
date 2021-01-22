@@ -74,20 +74,23 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
         if(workingUserVos.isEmpty()){
             throw new CommonException("没有该值班人员");
         }
+        Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
+        Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
+        if(!DateUtil.betweenTime(serviceBeginTime,serviceEndTime)){
+            throw new CommonException("当天值班才能打卡");
+        }
         int signStatus = getSignStatus(workingUserVo);//计算打卡状态
         workingSignRecord.setSignStatus(signStatus);
         WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
         scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
         if(workingSignRecord.getType() == SignType.SIGN_IN.getType()){
             if(workingUserVo.getSignInTime() == null){//打上班卡已第一次为准
-                Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
                 scheduleUser.setSignInTime(workingSignRecord.getSignTime());
                 scheduleUser.setStatus(signStatus);
                 scheduleUser.setServiceTime((int) ((serviceEndTime - scheduleUser.getSignInTime()) / 60 / 1000));
                 workingScheduleUserService.update(scheduleUser);
             }
         }else{//打下班卡已最后一次为准
-            Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
             if(workingUserVo.getSignInTime() != null){
                 serviceBeginTime = workingUserVo.getSignInTime();
             }

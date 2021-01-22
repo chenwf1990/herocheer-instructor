@@ -21,6 +21,8 @@ public class WorkingScheduleUserQueryVo {
     private Long scheduleBeginTime;
     @ApiModelProperty("值班结束日期")
     private Long scheduleEndTime;
+    @ApiModelProperty("活动类型 1驿站 2赛事")
+    private Long activityType;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")

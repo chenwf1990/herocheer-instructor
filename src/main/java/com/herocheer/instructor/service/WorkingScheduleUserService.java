@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
@@ -79,4 +80,17 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return
      */
     int deleteByWorkingScheduleIds(List<Long> idList);
+
+    /**
+     * @author chenwf
+     * @desc  值班审核
+     * @date 2021-01-22 09:57:02
+     * @param workingScheduleUserId
+     * @param approvalType
+     * @param approvalIdea
+     * @param user
+     * @param actualServiceTime
+     * @return
+     */
+    int approval(Long workingScheduleUserId, int approvalType, String approvalIdea, UserEntity user, int actualServiceTime);
 }

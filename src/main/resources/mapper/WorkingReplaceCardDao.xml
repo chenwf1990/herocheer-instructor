@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingReplaceCardDao">
     
     <sql id="table_field">
-      id, workingScheduleUserId, type, replaceCardTime, replaceCardReason, approvalStatus, approvalComments, approvalId, approvalBy, approvalTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, workingScheduleUserId, type, replaceCardTime, replaceCardReason, approvalStatus, approvalComments, approvalId, approvalBy, approvalTime, pics, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -36,6 +36,9 @@
         </if>
         <if test="approvalTime != null">
             approvalTime,
+        </if>
+        <if test="pics != null">
+            pics,
         </if>
         <if test="remarks != null">
             remarks,
@@ -70,6 +73,9 @@
         </if>
         <if test="approvalTime != null">
             #{approvalTime},
+        </if>
+        <if test="pics != null">
+            #{pics},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -114,6 +120,9 @@
             </if>
             <if test="approvalTime != null">
                 approvalTime = #{approvalTime},
+            </if>
+            <if test="pics != null">
+                pics = #{pics},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -161,6 +170,9 @@
             <if test="approvalTime != null">
                 and approvalTime = #{approvalTime}
             </if>
+            <if test="pics != null">
+                and pics = #{pics}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -206,6 +218,9 @@
             </if>
             <if test="approvalTime != null">
                 and approvalTime = #{approvalTime}
+            </if>
+            <if test="pics != null">
+                and pics = #{pics}
             </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
