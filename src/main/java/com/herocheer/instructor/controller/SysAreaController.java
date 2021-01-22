@@ -10,13 +10,16 @@ import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -50,13 +53,23 @@ public class SysAreaController extends BaseController{
 
 
     @GetMapping("/getAllAreaByRole")
-    @ApiOperation("获取区域树(权限过滤)")
+    @ApiOperation("获取区域权限树(权限过滤)")
     @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> getAllAreaByRole(){
         return ResponseResult.ok(sysAreaService.getAllArea(2));
     }
 
-    // TODO 根据pid筛选
 
+    /**
+     * 通过id获取区域
+     *
+     * @return {@link ResponseResult<List<SysArea>>}
+     */
+    @GetMapping("/{id:\\w+}")
+    @ApiOperation("根据id获取子层区域")
+    @AllowAnonymous
+    public ResponseResult<List<SysArea>> fetchAreaById(@ApiParam("区域ID") @PathVariable Long id , HttpServletRequest request){
+        return ResponseResult.ok(sysAreaService.findAreaById(id));
+    }
 
 }

@@ -2,8 +2,12 @@ package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
-import lombok.*;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -74,7 +78,7 @@ public class User extends BaseEntity {
     private String ixmToken;
     @ApiModelProperty("0：关闭、1：启用")   
     private Boolean status;
-    @ApiModelProperty("")   
+    @ApiModelProperty("指导项目")
     private String guideProject;
 
 }

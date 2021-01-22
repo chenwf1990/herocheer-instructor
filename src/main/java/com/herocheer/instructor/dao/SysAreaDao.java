@@ -1,11 +1,12 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.SysArea;
+import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -23,4 +24,20 @@ public interface SysAreaDao extends BaseDao<SysArea,Long>{
      * @return
      */
     List<SysArea> queryPageList(AreaQueryVo areaQueryVo);
+
+    /**
+     * 根据用户角色获取数据权限
+     *
+     * @param map 地图
+     * @return {@link List< SysMenu >}
+     */
+    List<SysArea> selectAreaTreeToRole(Map<String, Object> map);
+
+    /**
+     * 根据ID选择子层区域
+     *
+     * @param map 地图
+     * @return {@link List<SysArea>}
+     */
+    List<SysArea> selectAreaById(Map<String, Object> map);
 }

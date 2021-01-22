@@ -47,6 +47,19 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
     }
 
     /**
+     * 通过id查找区域
+     *
+     * @param id id
+     * @return {@link List<SysArea>}
+     */
+    @Override
+    public List<SysArea> findAreaById(Long id) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("pid",id);
+        return this.dao.selectAreaById(paramMap);
+    }
+
+    /**
      * @param type 1无权限 2有数据权限
      * @return
      * @author chenwf
@@ -58,9 +71,21 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
         return getAllArea(type,0L);
     }
 
+    /**
+     * 过滤数据权限
+     *
+     * @param sysAreas 系统领域
+     * @return {@link List<SysArea>}
+     */
     private List<SysArea> filterDataPermission(List<SysArea> sysAreas) {
-        //TODO 数据权限过滤
-        return sysAreas;
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("status", true);
+        paramMap.put("userId", 8L);
+//        paramMap.put("userId", user.getId());
+        Long [] roleArray01 = {2L,5L};
+//        Long [] roleArray =
+        paramMap.put("roleArray", roleArray01);
+        return this.dao.selectAreaTreeToRole(paramMap);
     }
 
     //组装成树结构

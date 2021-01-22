@@ -5,7 +5,6 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -42,4 +41,12 @@ public interface SysAreaService extends BaseService<SysArea,Long> {
      * @return
      */
     Page<SysArea> queryPageList(AreaQueryVo areaQueryVo);
+
+    /**
+     * 通过id查找区域
+     *
+     * @param id id
+     * @return {@link List<SysArea>}
+     */
+    List<SysArea> findAreaById(Long id);
 }

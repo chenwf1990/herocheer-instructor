@@ -62,4 +62,7 @@ public class SysUserVO {
     private int pageNo = 1;
     @ApiModelProperty("页数")
     private int pageSize = 10;
+
+    @ApiModelProperty("指导项目")
+    private String guideProject;
 }

@@ -132,4 +132,49 @@
         </where>
         order by id desc
     </select>
+
+    <!--根据用户角色获取数据权限-->
+    <select id="selectAreaTreeToRole" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysArea">
+        select e.* from `user` a
+        inner join sys_user_role b on a.id = b.userId
+        inner join sys_role c on b.roleId = c.id
+        inner join sys_role_area d on c.id = d.roleId
+        inner join sys_area e on e.id =  d.areaId
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="userId != null">
+                    and a.id = #{userId}
+                </if>
+                <if test="roleArray != null">
+                    and d.roleId in <foreach collection="roleArray" item="item" index="index" open="(" close=")" separator=","> '${item}' </foreach>
+                </if>
+                <if test="status != null">
+                    and a.status = #{status}
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <!--根据ID选择子层区域-->
+    <select id="selectAreaById" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysArea">
+        select <include refid="table_field"/> from sys_area
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="chinaCode != null">
+                and chinaCode = #{chinaCode}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
 </mapper>
