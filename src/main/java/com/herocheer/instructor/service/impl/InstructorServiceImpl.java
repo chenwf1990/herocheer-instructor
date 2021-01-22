@@ -270,7 +270,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setAreaName(areaName);
         instructor.setCertificatePic(dataList.get(15).toString());
 
-        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(), instructor.getPhone(), 2);
+        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(), instructor.getPhone(), UserType.instructor.getCode());
         instructor.setUserId(user.getId());
         return instructor;
     }

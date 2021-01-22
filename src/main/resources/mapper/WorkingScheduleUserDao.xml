@@ -443,6 +443,22 @@
         <if test="userName != null">
             and b.userName like CONCAT('%',#{userName},'')
         </if>
+        <if test="taskNo != null != null">
+            and b.taskNo like CONCAT('%',#{taskNo},'')
+        </if>
+        <if test="status != null">
+            and b.status = #{status}
+        </if>
+        <choose>
+            <when test="signStatus != null and signStatus == 0">
+                and (b.status = 2
+                     or
+
+            </when>
+            <when test="signStatus != null and signStatus == 1">
+
+            </when>
+        </choose>
     </select>
 
     <select id="findWorkingUser" parameterType="map" resultType="string">
