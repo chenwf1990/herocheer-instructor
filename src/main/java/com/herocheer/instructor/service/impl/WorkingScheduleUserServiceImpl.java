@@ -47,13 +47,14 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
 
     /**
      * @param workingScheduleUserQueryVo
+     * @param userId
      * @return
      * @author chenwf
      * @desc 值班人员列表查询
      * @date 2021-01-12 08:57:02
      */
     @Override
-    public Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo) {
+    public Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo, Long userId) {
         Page page = Page.startPage(workingScheduleUserQueryVo.getPageNo(),workingScheduleUserQueryVo.getPageSize());
         List<WorkingSchedulsUserVo> dataList = this.dao.queryPageList(workingScheduleUserQueryVo);
         if(!dataList.isEmpty()){
@@ -75,7 +76,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                             w.setSignStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
                         }
                     }
-                    if(DateUtil.beginOfDay(new Date()).getTime() <= scheduleBeginTime){
+                    if(DateUtil.beginOfDay(new Date()).getTime() <= scheduleBeginTime || userId != w.getApproveId()){
                         w.setStatus(-1);//当天之前的都不做审核，前端审核状态放空
                     }
                     //计算超出时长

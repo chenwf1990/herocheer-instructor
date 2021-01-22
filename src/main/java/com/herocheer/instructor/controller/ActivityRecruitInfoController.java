@@ -39,7 +39,6 @@ public class ActivityRecruitInfoController extends BaseController{
 
     @PostMapping("/queryPage")
     @ApiOperation("招募信息查询")
-    @AllowAnonymous
     public ResponseResult<Page<ActivityRecruitInfo>> queryPageList(@RequestBody ActivityRecruitInfoQueryVo queryVo,HttpServletRequest request){
         Page<ActivityRecruitInfo> page = activityRecruitInfoService.queryPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);

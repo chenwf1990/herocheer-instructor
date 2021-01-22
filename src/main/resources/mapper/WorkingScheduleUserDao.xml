@@ -421,7 +421,13 @@
         b.id,
         b.status,
         b.guideProject,
-        b.certificateGrade
+        b.certificateGrade,
+        CASE activityType
+        WHEN 1 THEN
+          (select cs.userId from courier_station cs where cs.id = a.courierStationId)
+        ELSE
+          (select act.matchApproverId from activity_recruit_info act where act.id = a.activityId)
+        END approveId
         FROM working_schedule a
         JOIN working_schedule_user b ON a.id = b.workingScheduleId
         where a.activityType = #{activityType}
