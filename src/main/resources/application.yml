@@ -2,7 +2,7 @@ server:
   port: 17071
 spring:
   profiles:
-    active: cwf
+    active: dev
 mybatis:
   mapperLocations: classpath*:mapper/**/*.xml
 swagger:

@@ -76,6 +76,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                             w.setSignStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
                         }
                     }
+                    //当天之前的都不做审核，前端审核状态放空 || 不是负责人不能审批
                     if(DateUtil.beginOfDay(new Date()).getTime() <= scheduleBeginTime || userId != w.getApproveId()){
                         w.setStatus(-1);//当天之前的都不做审核，前端审核状态放空
                     }
@@ -224,6 +225,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         scheduleUser.setApprovalId(user.getId());
         scheduleUser.setApprovalTime(System.currentTimeMillis());
         scheduleUser.setActualServiceTime(actualServiceTime);
+        scheduleUser.setStatus(AuditStatusEnums.to_pass.getState());
         return this.dao.update(scheduleUser);
     }
 

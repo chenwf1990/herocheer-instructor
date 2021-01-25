@@ -33,6 +33,14 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
      */
     ActivityRecruitInfoVo getActivityRecruitInfo(Long id);
 
+
+    /**
+     * 招募信息撤回
+     * @param id
+     * @return
+     */
+    Integer withdraw(Long id);
+
     /**
      * 保存招募信息
      * @param activityRecruitInfoVo

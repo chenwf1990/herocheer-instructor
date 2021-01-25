@@ -74,6 +74,14 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     }
 
     @Override
+    public Integer withdraw(Long id) {
+        ActivityRecruitInfo activityRecruitInfo=new ActivityRecruitInfo();
+        activityRecruitInfo.setId(id);
+        activityRecruitInfo.setStatus(RecruitStateEnums.WITHDRAW.getState());
+        return  dao.update(activityRecruitInfo);
+    }
+
+    @Override
     public Integer addActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
         activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
         Integer count=dao.insert(activityRecruitInfoVo);

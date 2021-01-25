@@ -51,6 +51,12 @@ public class ActivityRecruitInfoController extends BaseController{
         return ResponseResult.ok(activityRecruitInfoService.getActivityRecruitInfo(id));
     }
 
+    @GetMapping("/withdraw")
+    @ApiOperation("招募信息撤回")
+    public ResponseResult withdraw(@ApiParam("招募信息id") @RequestParam Long id){
+        return ResponseResult.ok(activityRecruitInfoService.withdraw(id));
+    }
+
     @PostMapping("/add")
     @ApiOperation("新增招募信息")
     public ResponseResult add(@RequestBody ActivityRecruitInfoVo activityRecruitInfoVo){

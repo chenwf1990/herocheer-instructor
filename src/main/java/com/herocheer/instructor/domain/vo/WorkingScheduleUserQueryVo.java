@@ -23,6 +23,12 @@ public class WorkingScheduleUserQueryVo {
     private Long scheduleEndTime;
     @ApiModelProperty("活动类型 1驿站 2赛事")
     private Long activityType;
+    @ApiModelProperty("任务编号")
+    private String taskNo;
+    @ApiModelProperty("审核状态 0不需要审核 1待审核 2已审核")
+    private Integer status;
+    @ApiModelProperty("打卡状态-0正常 1异常")
+    private Integer signStatus;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")
