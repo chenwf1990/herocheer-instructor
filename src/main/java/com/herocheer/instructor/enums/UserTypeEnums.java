@@ -6,7 +6,7 @@ package com.herocheer.instructor.enums;
  * @author gaorh
  * @create 2021-01-18
  */
-public enum UserType {
+public enum UserTypeEnums {
 
     weChatUser(1,"公众号用户"),
     instructor(2,"指导员"),
@@ -16,7 +16,7 @@ public enum UserType {
     private Integer code;
     private String name;
 
-    UserType(Integer code, String name) {
+    UserTypeEnums(Integer code, String name) {
         this.code = code;
         this.name = name;
     }

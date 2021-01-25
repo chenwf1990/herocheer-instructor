@@ -13,10 +13,37 @@ import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
-import com.herocheer.instructor.domain.entity.*;
-import com.herocheer.instructor.domain.vo.*;
-import com.herocheer.instructor.enums.*;
-import com.herocheer.instructor.service.*;
+import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
+import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
+import com.herocheer.instructor.domain.entity.CourierStation;
+import com.herocheer.instructor.domain.entity.Instructor;
+import com.herocheer.instructor.domain.entity.ServiceHours;
+import com.herocheer.instructor.domain.entity.WorkingSchedule;
+import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.entity.WorkingSignRecord;
+import com.herocheer.instructor.domain.vo.ActivityReservationVo;
+import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
+import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
+import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
+import com.herocheer.instructor.domain.vo.WorkingUserInfoVo;
+import com.herocheer.instructor.domain.vo.WorkingUserVo;
+import com.herocheer.instructor.domain.vo.WorkingVo;
+import com.herocheer.instructor.enums.AuditStatusEnums;
+import com.herocheer.instructor.enums.RecruitTypeEunms;
+import com.herocheer.instructor.enums.ReserveStatusEnums;
+import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
+import com.herocheer.instructor.enums.SignStatusEnums;
+import com.herocheer.instructor.enums.UserTypeEnums;
+import com.herocheer.instructor.service.ActivityRecruitDetailService;
+import com.herocheer.instructor.service.ActivityRecruitInfoService;
+import com.herocheer.instructor.service.CommonService;
+import com.herocheer.instructor.service.CourierStationService;
+import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.ServiceHoursService;
+import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.service.WorkingScheduleService;
+import com.herocheer.instructor.service.WorkingScheduleUserService;
+import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.instructor.utils.ExcelUtils;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -31,7 +58,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -535,7 +567,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         if (reservationVo.getReservationDate()==null||reservationVo.getRecruitDetailIds()==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,参数有误!");
         }
-        if(userEntity.getUserType()!= UserType.instructor.getCode()){
+        if(userEntity.getUserType()!= UserTypeEnums.instructor.getCode()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,未绑定指导员信息!");
         }
         Instructor instructor=instructorService.findInstructorByUserId(userEntity.getId());

@@ -3,11 +3,13 @@ package com.herocheer.instructor.service.impl;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.SysRoleDao;
 import com.herocheer.instructor.domain.entity.SysRole;
 import com.herocheer.instructor.domain.entity.SysRoleArea;
 import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
+import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -109,6 +111,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      *
      * @param id id
      */
+    @SysLog(module = "系统管理",bizType =  OperationConst.DELETE,bizDesc = "删除角色")
     @Override
     public void removeRoleById(Long id) {
         // 物理删除

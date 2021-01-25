@@ -7,6 +7,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
@@ -14,7 +15,8 @@ import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
-import com.herocheer.instructor.enums.UserType;
+import com.herocheer.instructor.enums.OperationConst;
+import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +83,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @param verCode  版本的代码
      * @return {@link String}
      */
+    @SysLog(module = "系统管理",bizType = OperationConst.SELECT,bizDesc = "用户登入")
     @Override
     public String login(String account, String password, String verCode) throws CommonException {
 
@@ -123,6 +126,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
+    @SysLog(module = "系统管理",bizType = OperationConst.INSERT,bizDesc = "用户注册")
     public User addUser(SysUserVO sysUserVO) {
         // 判断账号是否存在
         Map<String, Object> objectMap = new HashMap();
@@ -131,7 +135,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
             throw new CommonException("账号已存在");
         }
-        User user = User.builder().userType(UserType.sysUser.getCode()).build();
+        User user = User.builder().userType(UserTypeEnums.sysUser.getCode()).build();
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
         // 用户密码加密
@@ -188,6 +192,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @param sysUserVO 用户签证官
      * @return {@link User}
      */
+    @SysLog(module = "系统管理",bizType = OperationConst.UPDATE,bizDesc = "修改用户")
     @Transactional(rollbackFor = Exception.class)
     @Override
     public User modifyUser(SysUserVO sysUserVO) {
@@ -195,14 +200,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         if(sysUserVO.getId() == null || StringUtils.isBlank(sysUserVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");
         }
-        // 判断账号是否存在
-        /*Map<String, Object> objectMap = new HashMap();
-        objectMap.put("account", sysUserVO.getAccount());
-        if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
-            throw new CommonException("账号已存在");
-        }*/
 
-        User user = User.builder().userType(UserType.sysUser.getCode()).build();
+        User user = User.builder().userType(UserTypeEnums.sysUser.getCode()).build();
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
         int l = this.dao.update(user);
@@ -222,6 +221,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      */
+    @SysLog(module = "系统管理",bizType = OperationConst.UPDATE,bizDesc = "修改密码")
     @Override
     public void modifyPassword(Long userId,String oldPassword, String newPassword) {
         // 用户账号
@@ -244,6 +244,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      *
      * @param userId 用户id
      */
+    @SysLog(module = "系统管理",bizType = OperationConst.UPDATE,bizDesc = "重置密码")
     @Override
     public ResponseResult resetPassword(Long userId) {
         User user = this.get(userId);
@@ -290,9 +291,10 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @param weChatUserVO VO
      * @return {@link User}
      */
+    @SysLog(module = "系统管理",bizType = OperationConst.INSERT,bizDesc = "添加微信用户")
     @Override
     public User addWeChatUser(WeChatUserVO weChatUserVO) {
-        User user = User.builder().userType(UserType.weChatUser.getCode()).build();
+        User user = User.builder().userType(UserTypeEnums.weChatUser.getCode()).build();
         BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
         user.setUserName(weChatUserVO.getName());
         user.setPhone(weChatUserVO.getPhoneNo());

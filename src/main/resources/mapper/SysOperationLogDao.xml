@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.SysOperationLogDao">
+
+    <sql id="table_field">
+      id, bizId, ip, module, bizType, context, uri, request, response, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.SysOperationLog">
+        insert into sys_operation_log (
+        <trim suffixOverrides=",">
+            <if test="bizId != null">
+                bizId,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="module != null">
+                module,
+            </if>
+            <if test="bizType != null">
+                bizType,
+            </if>
+            <if test="context != null">
+                context,
+            </if>
+            <if test="uri != null">
+                uri,
+            </if>
+            <if test="request != null">
+                request,
+            </if>
+            <if test="response != null">
+                response,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="bizId != null">
+                #{bizId},
+            </if>
+            <if test="ip != null">
+                #{ip},
+            </if>
+            <if test="module != null">
+                #{module},
+            </if>
+            <if test="bizType != null">
+                #{bizType},
+            </if>
+            <if test="context != null">
+                #{context},
+            </if>
+            <if test="uri != null">
+                #{uri},
+            </if>
+            <if test="request != null">
+                #{request},
+            </if>
+            <if test="response != null">
+                #{response},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from sys_operation_log where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.SysOperationLog">
+        update sys_operation_log
+        <set>
+            <if test="bizId != null">
+                bizId = #{bizId},
+            </if>
+            <if test="ip != null">
+                ip = #{ip},
+            </if>
+            <if test="module != null">
+                module = #{module},
+            </if>
+            <if test="bizType != null">
+                bizType = #{bizType},
+            </if>
+            <if test="context != null">
+                context = #{context},
+            </if>
+            <if test="uri != null">
+                uri = #{uri},
+            </if>
+            <if test="request != null">
+                request = #{request},
+            </if>
+            <if test="response != null">
+                response = #{response},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysOperationLog">
+        select
+        <include refid="table_field"/>
+        from sys_operation_log where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysOperationLog">
+        select
+        <include refid="table_field"/>
+        from sys_operation_log
+        <where>
+            <if test="bizId != null">
+                and bizId = #{bizId}
+            </if>
+            <if test="ip != null">
+                and ip = #{ip}
+            </if>
+            <if test="module != null">
+                and module = #{module}
+            </if>
+            <if test="bizType != null">
+                and bizType = #{bizType}
+            </if>
+            <if test="context != null">
+                and context = #{context}
+            </if>
+            <if test="uri != null">
+                and uri = #{uri}
+            </if>
+            <if test="request != null">
+                and request = #{request}
+            </if>
+            <if test="response != null">
+                and response = #{response}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!--操作日志列表-->
+    <select id="selectSysOperationLogByPage" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysOperationLog">
+        select
+        <include refid="table_field"/>
+        from sys_operation_log
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="bizId != null">
+                    and bizId = #{bizId}
+                </if>
+                <if test="ip != null">
+                    and ip = #{ip}
+                </if>
+                <if test="module != null">
+                    and module = #{module}
+                </if>
+                <if test="bizType != null">
+                    and bizType = #{bizType}
+                </if>
+                <if test="context != null">
+                    and context = #{context}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+            </trim>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>
