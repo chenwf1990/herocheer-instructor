@@ -620,11 +620,33 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUser.setServiceTime(DateUtil.timeToSecond(activityRecruitDetail.getServiceEndTime())-
                     DateUtil.timeToSecond(activityRecruitDetail.getServiceStartTime()));
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()+1);
+            activityRecruitDetailService.update(activityRecruitDetail);
             count=count+workingScheduleUserService.insert(workingScheduleUser);
         }
         if (count!=recruitDetailIds.length){
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,请稍后重试!");
         }
         return count;
+    }
+
+    @Override
+    public Integer cancelReservation(Long id) {
+        WorkingScheduleUser workingScheduleUser=workingScheduleUserService.get(id);
+        if(workingScheduleUser==null || workingScheduleUser.getWorkingScheduleId()==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取预约信息失败!");
+        }
+        WorkingSchedule workingSchedule=dao.get(workingScheduleUser.getWorkingScheduleId());
+        if(workingSchedule==null || workingSchedule.getActivityDetailId()==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取招募信息失败!");
+        }
+        ActivityRecruitDetail activityRecruitDetail=activityRecruitDetailService.get(workingSchedule.getActivityDetailId());
+        if(new Date().getTime()>activityRecruitDetail.getServiceDate()){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"活动当天不能取消预约!");
+        }
+        activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()-1);
+        activityRecruitDetailService.update(activityRecruitDetail);
+        workingScheduleUser.setReserveStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
+        return workingScheduleUserService.update(workingScheduleUser);
     }
 }

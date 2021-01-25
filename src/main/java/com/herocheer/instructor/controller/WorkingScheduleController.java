@@ -126,4 +126,11 @@ public class WorkingScheduleController extends BaseController{
         Integer count=workingScheduleService.reservation(reservationVo,getUser(request));
         return ResponseResult.isSuccess(count);
     }
+
+    @PostMapping("/cancel/reservation")
+    @ApiOperation("活动取消预约")
+    public ResponseResult cancelReservation(@RequestBody Long id){
+        Integer count=workingScheduleService.cancelReservation(id);
+        return ResponseResult.isSuccess(count);
+    }
 }

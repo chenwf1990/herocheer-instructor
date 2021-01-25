@@ -109,4 +109,13 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @return
      */
     Integer reservation(ActivityReservationVo reservationVo, UserEntity userEntity);
+
+    /**
+     * @author linjf
+     * 活动预约
+     * date 2021-1-21 15:21:07
+     * @param id
+     * @return
+     */
+    Integer cancelReservation(Long id);
 }
