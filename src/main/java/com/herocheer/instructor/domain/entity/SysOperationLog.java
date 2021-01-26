@@ -30,7 +30,7 @@ public class SysOperationLog extends BaseEntity {
     private String ip;
     @ApiModelProperty("业务模块")
     private String module;
-    @ApiModelProperty("后台登录、密码修改")
+    @ApiModelProperty("操作类型：后台登录、密码修改")
     private String bizType;
     @ApiModelProperty("操作内容")
     private String context;

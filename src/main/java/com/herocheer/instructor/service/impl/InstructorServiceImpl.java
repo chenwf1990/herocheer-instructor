@@ -8,10 +8,23 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.InstructorDao;
 import com.herocheer.instructor.domain.HeaderParam;
-import com.herocheer.instructor.domain.entity.*;
+import com.herocheer.instructor.domain.entity.Instructor;
+import com.herocheer.instructor.domain.entity.InstructorCert;
+import com.herocheer.instructor.domain.entity.InstructorLog;
+import com.herocheer.instructor.domain.entity.SysArea;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
-import com.herocheer.instructor.enums.*;
-import com.herocheer.instructor.service.*;
+import com.herocheer.instructor.enums.AuditStateEnums;
+import com.herocheer.instructor.enums.AuditUnitEnums;
+import com.herocheer.instructor.enums.ChannelEnums;
+import com.herocheer.instructor.enums.ClientEnums;
+import com.herocheer.instructor.enums.SexEnums;
+import com.herocheer.instructor.enums.UserTypeEnums;
+import com.herocheer.instructor.service.InstructorCertService;
+import com.herocheer.instructor.service.InstructorLogService;
+import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.SysAreaService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.utils.ExcelUtils;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +35,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -270,7 +287,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setAreaName(areaName);
         instructor.setCertificatePic(dataList.get(15).toString());
 
-        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(), instructor.getPhone(), UserType.instructor.getCode());
+        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(), instructor.getPhone(), UserTypeEnums.instructor.getCode());
         instructor.setUserId(user.getId());
         return instructor;
     }

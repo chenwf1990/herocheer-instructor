@@ -11,6 +11,7 @@ import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.service.SysRoleService;
+import com.herocheer.instructor.utils.PinYinUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,15 +46,34 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
     @Transactional
     @Override
     public SysRole addRole(SysRoleVO sysRoleVO) {
-        // TODO 角色编码如何处理
-        Map<String, Object> map = new HashMap();
-        map.put("roleName",sysRoleVO.getRoleName());
-        if(this.dao.selectSysRoleOne(map) == 1){
+        Map<String, Object> roleMap = new HashMap();
+        roleMap.put("roleName",sysRoleVO.getRoleName());
+        if(this.dao.selectSysRoleOne(roleMap) >= 1){
             throw new CommonException("角色名已存在");
         }
 
         SysRole sysRole = SysRole.builder().build();
         BeanCopier.create(sysRoleVO.getClass(),sysRole.getClass(),false).copy(sysRoleVO,sysRole,null);
+
+        // 处理角色编码重复
+        Map<String, Object> codeMap = new HashMap();
+        // 角色编码取用角色名的拼首字母
+        String  oldCode  = PinYinUtil.toFirstChar(sysRole.getRoleName()).toLowerCase();
+        codeMap.put("code",oldCode);
+        int i = 1;
+        int sum = 0;
+        String newCode = null;
+        if(this.dao.selectSysRoleOne(codeMap) >= 1){
+            do{
+                sum = sum + i;
+                newCode = oldCode +"0" + sum;
+                codeMap.put("code",newCode);
+            }while (this.dao.selectSysRoleOne(codeMap) >= 1);
+            sysRole.setCode(newCode);
+        }else {
+            sysRole.setCode(oldCode);
+        }
+
         this.insert(sysRole);
 
         // 批量插入中间表

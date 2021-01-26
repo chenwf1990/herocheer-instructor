@@ -14,4 +14,8 @@ public class OperationConst {
     public static final String UPDATE = "更新";
     public static final String IMPORT = "导入";
     public static final String EXPORT = "导出";
+    public static final String LOGIN = "登入";
+    public static final String LOGOUT = "退出";
+    public static final String REGISTER = "注册";
+    public static final String CHECK = "审批";
 }

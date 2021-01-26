@@ -126,7 +126,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    @SysLog(module = "系统管理",bizType = OperationConst.INSERT,bizDesc = "用户注册")
+    @SysLog(module = "系统管理",bizType = OperationConst.REGISTER,bizDesc = "用户注册")
     public User addUser(SysUserVO sysUserVO) {
         // 判断账号是否存在
         Map<String, Object> objectMap = new HashMap();

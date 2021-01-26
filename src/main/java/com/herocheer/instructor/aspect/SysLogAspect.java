@@ -108,7 +108,7 @@ public class SysLogAspect {
             sysOperationLog.setIp(IPUtil.getRealIp(request)); // 请求IP
             sysOperationLogService.addSysOperationLog(sysOperationLog);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("系统报错：",e);
         }
     }
 }
