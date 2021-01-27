@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
@@ -17,6 +18,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -141,9 +144,9 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 创建我们聊天的用户
+     * 新增微信用户
      *
-     * @param weChatUserVO 我们聊天用户签证官
+     * @param weChatUserVO VO
      * @return {@link ResponseResult<User>}
      */
     @AllowAnonymous
@@ -151,6 +154,19 @@ public class UserController extends BaseController {
     @ApiOperation("新增微信用户")
     public ResponseResult<User> createWeChatUser(@ApiParam("微信用户") @RequestBody WeChatUserVO weChatUserVO){
         return ResponseResult.ok(userService.addWeChatUser(weChatUserVO));
+    }
+
+    /**
+     * 编辑微信用户
+     *
+     * @param weChatUserVO VO
+     * @return {@link ResponseResult<User>}
+     */
+    @AllowAnonymous
+    @PutMapping("/weChatUser")
+    @ApiOperation("编辑微信用户")
+    public ResponseResult<User> editWeChatUser(@ApiParam("微信用户") @RequestBody WeChatUserVO weChatUserVO){
+        return ResponseResult.ok(userService.modifyWeChatUser(weChatUserVO));
     }
     /**
      * 编辑用户信息
@@ -190,14 +206,13 @@ public class UserController extends BaseController {
      * @return {@link ResponseResult}
      */
     @PutMapping("/password")
-    @AllowAnonymous
     @ApiOperation("密码修改")
     public ResponseResult changePassword(@ApiParam("旧密码") @RequestParam String oldPassword,
                                          @ApiParam("新密码") @RequestParam String newPassword,HttpServletRequest request){
+        // 获取用户信息
+        UserEntity currentUser = this.getUser(request);
         // 修改密码
-        // TODO 获取用户信息
-        userService.modifyPassword(this.getUser(request).getId(),oldPassword,newPassword);
-        // sysUserService.modifyPassword(4L,oldPassword,newPassword);
+        userService.modifyPassword(currentUser.getId(),oldPassword,newPassword);
         return ResponseResult.ok();
     }
 
@@ -213,8 +228,7 @@ public class UserController extends BaseController {
     @ApiOperation("密码重置")
     public ResponseResult resetPassword(@ApiParam("用户ID") @PathVariable Long id, HttpServletRequest request){
         // 重置密码为：123456
-//        return userService.resetPassword(id);
-        return userService.resetPassword(11L);
+        return userService.resetPassword(this.getUser(request).getId());
     }
 
 
@@ -228,11 +242,15 @@ public class UserController extends BaseController {
     @AllowAnonymous
     @ApiOperation("用户退出")
     public ResponseResult logout(HttpServletRequest request){
-
-        // TODO 获取用户信息
-
-        //  TODO 删除缓存中的token
-        return ResponseResult.ok();
+        // 获取当前用户信息
+        UserEntity currentUser = this.getUser(request);
+        if(!ObjectUtils.isEmpty(currentUser) && StringUtils.hasText(currentUser.getToken())){
+            //  删除缓存中的token
+            redisClient.delete(currentUser.getToken());
+            return ResponseResult.ok();
+        }else {
+            return ResponseResult.fail();
+        }
     }
 
     /**

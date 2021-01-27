@@ -582,6 +582,7 @@
             </foreach>
         </where>
     </select>
+
     <select id="findUserProjectByUserIds" parameterType="list" resultType="com.herocheer.instructor.domain.vo.UserGuideProjectVo">
         select
         id,
@@ -596,6 +597,47 @@
             <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
                 #{id}
             </foreach>
+        </where>
+    </select>
+
+    <!--当前用户的角色-->
+    <select id="selectedRole" parameterType="Long" resultType="com.alibaba.fastjson.JSONObject">
+        select distinct b.id as roleId,b.`code` from sys_user_role a
+        inner join sys_role b on a.roleId = b.id
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="userId != null">
+                    and a.userId = #{userId}
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <!--当前用户的菜单-->
+    <select id="selectedMenu" parameterType="Long" resultType="com.alibaba.fastjson.JSONObject">
+        select distinct c.id as menuId, c.`code` from sys_user_role a
+        inner join sys_role_menu b on a.roleId=b.roleId
+        inner join sys_menu c on b.menuId = c.id
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="userId != null">
+                    and a.userId = #{userId}
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <!--当前用户的区域-->
+    <select id="selectedArea" parameterType="Long" resultType="com.alibaba.fastjson.JSONObject">
+        select distinct c.id as areaId, c.areaCode from sys_user_role a
+        inner join  sys_role_area b on a.roleId=b.roleId
+        inner join  sys_area c on b.areaId = c.id
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="userId != null">
+                    and a.userId = #{userId}
+                </if>
+            </trim>
         </where>
     </select>
 </mapper>

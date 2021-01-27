@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
@@ -15,6 +16,7 @@ import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
+import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.UserService;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author gaorh
@@ -42,6 +45,8 @@ import java.util.Map;
 @Service
 @Slf4j
 public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implements UserService {
+
+    private static final Long EXPIRETIME = 1800L;
     /**
      * 数据加密，在启动类中已经注入进IOC容器中
      */
@@ -100,11 +105,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 敏感信息不放Redis
         user.setPassword(null);
 
-        // token:userInfo用户信息
-        // TODO tokne-userMenu:menuInfo菜单权限
-        // TODO tokne-userArea:areaInfo数据权限 放入redis  可以异步处理
-        // 存入redis并设置过期时间为30分钟
-        redisClient.set(simpleUUID, JSONObject.toJSONString(user),1800);
+        //  todo token:userInfo用户信息,存入redis并设置过期时间为30分钟
+        redisClient.set(simpleUUID, JSONObject.toJSONString(user), 1800);
+        // 统一异步处理
+
+        //  token:role-roleInfo 角色信息
+        redisClient.set(simpleUUID+":role",this.findRoleByCurrentUser(user.getId()),1800);
+
+        // token:menu-menuInfo 菜单权限
+        redisClient.set(simpleUUID+":menu",this.findMenuByCurrentUser(user.getId()),1800);
+
+        // token:area-areaInfo 数据权限
+        this.findAreaByCurrentUser(simpleUUID,user.getId());
         return simpleUUID;
     }
 
@@ -199,6 +211,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
         if(sysUserVO.getId() == null || StringUtils.isBlank(sysUserVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");
+        }
+
+        // 判断用户名是否修改
+        if(!sysUserVO.getUserName().equals(this.get(sysUserVO.getId()).getUserName())){
+            throw new CommonException("用户名不能修改");
         }
 
         User user = User.builder().userType(UserTypeEnums.sysUser.getCode()).build();
@@ -303,10 +320,32 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("openid", weChatUserVO.getOpenid());
 
+        // 防重
         if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
             throw new CommonException("用户已存在");
         }
         this.insert(user);
+        return user;
+    }
+
+    /**
+     * 修改微信用户
+     *
+     * @param weChatUserVO VO
+     * @return {@link User}
+     */
+    @Override
+    public User modifyWeChatUser(WeChatUserVO weChatUserVO) {
+        if(weChatUserVO.getId() == null || StringUtils.isBlank(weChatUserVO.getId().toString())){
+            throw new CommonException("编辑ID不能为空");
+        }
+
+        User user = User.builder().build();
+        BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
+        user.setUserName(weChatUserVO.getName());
+        user.setPhone(weChatUserVO.getPhoneNo());
+
+        this.update(user);
         return user;
     }
 
@@ -386,5 +425,50 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public List<UserGuideProjectVo> findUserProjectByUserIds(List<Long> userIds) {
         return this.dao.findUserProjectByUserIds(userIds);
+    }
+
+    /**
+     * 当前用户的区域
+     *
+     * @param token  令牌
+     * @param userId 用户id
+     */
+    @Override
+    public void findAreaByCurrentUser(String token,Long userId) {
+        // 是否存在
+        redisClient.delete(token + CacheKeyConst.AREAID);
+        redisClient.delete(token + CacheKeyConst.AREACODE);
+
+        List<JSONObject> list = this.dao.selectedArea(userId);
+
+        List<String> codeList = list.stream().map(json -> json.getString("areaCode")).collect(Collectors.toList());
+        redisClient.set(token + CacheKeyConst.AREACODE,String.join(",", codeList),EXPIRETIME);
+
+        List<String> strList = list.stream().map(json -> json.getString("areaId")).collect(Collectors.toList());
+        redisClient.set(token + CacheKeyConst.AREAID,String.join(",", strList),EXPIRETIME);
+    }
+
+    /**
+     * 当前用户的菜单
+     *
+     * @param id id
+     * @return {@link String}
+     */
+    @Override
+    public String findMenuByCurrentUser(Long id) {
+        return JSON.toJSONString(this.dao.selectedMenu(id));
+    }
+
+    /**
+     * 当前用户的角色
+     *
+     * @param id id
+     * @return {@link String}
+     */
+    @Override
+    public String findRoleByCurrentUser(Long id) {
+        List<JSONObject> list = this.dao.selectedRole(id);
+        List<String> strList = list.stream().map(JSONObject -> JSONObject.getString("roleId")).collect(Collectors.toList());
+        return String.join(",", strList);
     }
 }

@@ -5,11 +5,11 @@ import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysMenuDao;
 import com.herocheer.instructor.domain.entity.SysMenu;
-import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MetaVO;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
@@ -39,16 +39,17 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
     /**
      * 查找菜单权限树 (封装菜单权限树)(hutool-treeUtil)
      *
-     * @param user 系统用户
-     * @return {@link List < Tree <Long>>}
+     * @param currentUser 当前用户
+     * @return {@link List<Tree<Long>>}
      */
     @Override
-    public List<Tree<Long>> findMenuTreeToUser(User user) {
+    public List<Tree<Long>> findMenuTreeToUser(UserEntity currentUser) {
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("status", true);
-        paramMap.put("userId", 8L);
-//        paramMap.put("userId", user.getId());
+        paramMap.put("userId", currentUser.getId());
+
+        // 获取用户的角色
         Long [] roleArray01 = {2L,5L};
 //        Long [] roleArray =
         paramMap.put("roleArray", roleArray01);

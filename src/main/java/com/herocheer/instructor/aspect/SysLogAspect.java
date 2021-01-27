@@ -36,27 +36,12 @@ public class SysLogAspect {
     private SysOperationLogService sysOperationLogService;
 
     /**
-     * 设置操作日志切入点 记录操作日志 在注解的位置切入代码
-     */
-//    @Pointcut("@annotation(com.herocheer.instructor.aspect.SysLog)")
-//    public void declareJoinPointerExpression() {
-//    }
-
-    /**
-     * 设置操作异常切入点记录异常日志 扫描所有controller包下操作
-     */
-//    @Pointcut("execution(* com.herocheer.instructor.controller..*.*(..))")
-//    public void operExceptionLogPoinCut() {
-//    }
-
-
-    /**
      * 正常返回通知，拦截用户操作日志，连接点正常执行完成后执行， 如果连接点抛出异常，则不会执行
      *
      * @param joinPoint 切入点
      * @param result      返回结果
      */
-    @AfterReturning(value = "execution(* com.herocheer.instructor.service.impl.*ServiceImpl.*(..)) && @annotation(sysLog)", returning = "result")
+    @AfterReturning(value = "execution(* com.herocheer.instructor.service.*Service.*(..)) && @annotation(sysLog)", returning = "result")
     public void saveOperLog(JoinPoint joinPoint, SysLog sysLog ,Object result) {
         // 获取RequestAttributes
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
@@ -79,19 +64,6 @@ public class SysLogAspect {
                 // 操作描述
                 sysOperationLog.setContext(SysLog.bizDesc());
             }
-
-            // 请求的方法参数值
-//            Object[] args = joinPoint.getArgs();
-//            // 请求的方法参数名称
-//            LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
-//            String[] paramNames = u.getParameterNames(method);
-//            if (args != null && paramNames != null) {
-//                String params = "";
-//                for (int i = 0; i < args.length; i++) {
-//                    params += "  " + paramNames[i] + ": " + args[i];
-//                }
-//                sysOperationLog.setRequest(params);
-//            }
 
             // 请求的参数
             Object[] args = joinPoint.getArgs();

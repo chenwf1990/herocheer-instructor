@@ -21,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeChatUserVO {
-    private long id;
+    private Long id;
     @ApiModelProperty("头像")
     private String imgUrl;
     @ApiModelProperty("用户名")

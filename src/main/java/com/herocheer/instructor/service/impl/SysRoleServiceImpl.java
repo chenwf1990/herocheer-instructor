@@ -43,6 +43,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      * @param sysRoleVO VO
      * @return {@link SysRole}
      */
+    @SysLog(module = "系统管理",bizType = OperationConst.INSERT,bizDesc = "添加角色")
     @Transactional
     @Override
     public SysRole addRole(SysRoleVO sysRoleVO) {
@@ -60,22 +61,21 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
         // 角色编码取用角色名的拼首字母
         String  oldCode  = PinYinUtil.toFirstChar(sysRole.getRoleName()).toLowerCase();
         codeMap.put("code",oldCode);
-        int i = 1;
-        int sum = 0;
+        int sum = 1;
         String newCode = null;
         if(this.dao.selectSysRoleOne(codeMap) >= 1){
+
             do{
-                sum = sum + i;
-                newCode = oldCode +"0" + sum;
+                newCode = oldCode +"0" + sum++;
                 codeMap.put("code",newCode);
             }while (this.dao.selectSysRoleOne(codeMap) >= 1);
+
             sysRole.setCode(newCode);
         }else {
             sysRole.setCode(oldCode);
         }
 
         this.insert(sysRole);
-
         // 批量插入中间表
         sysRoleService.settingMenuToRole(sysRoleVO.getMenuId(), sysRole.getId());
         return sysRole;

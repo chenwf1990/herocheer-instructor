@@ -11,13 +11,13 @@ import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/log")
 @Api(tags = "操作日志")
 public class SysOperationLogController extends BaseController {
-    @Resource
+    @Autowired
     private SysOperationLogService sysOperationLogService;
 
     /**

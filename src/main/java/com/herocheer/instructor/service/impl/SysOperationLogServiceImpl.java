@@ -8,7 +8,6 @@ import com.herocheer.instructor.service.SysOperationLogService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,7 +18,6 @@ import java.util.List;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class SysOperationLogServiceImpl extends BaseServiceImpl<SysOperationLogDao, SysOperationLog, Long> implements SysOperationLogService {
 
     /**

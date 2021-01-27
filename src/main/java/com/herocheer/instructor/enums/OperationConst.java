@@ -18,4 +18,5 @@ public class OperationConst {
     public static final String LOGOUT = "退出";
     public static final String REGISTER = "注册";
     public static final String CHECK = "审批";
+    public static final String FORBID = "禁用";
 }

@@ -101,6 +101,14 @@ public interface UserService extends BaseService<User, Long> {
     User addWeChatUser(WeChatUserVO weChatUserVO);
 
     /**
+     * 修改微信用户
+     *
+     * @param weChatUserVO VO
+     * @return {@link User}
+     */
+    User modifyWeChatUser(WeChatUserVO weChatUserVO);
+
+    /**
      * 查询用户信息
      *
      * @return {@link List<SysUserVO>}
@@ -139,4 +147,28 @@ public interface UserService extends BaseService<User, Long> {
      * @return
      */
     List<UserGuideProjectVo> findUserProjectByUserIds(List<Long> userIdList);
+
+    /**
+     * 当前用户的区域
+     *
+     * @param id    id
+     * @param token 令牌
+     */
+    void findAreaByCurrentUser(String token,Long id);
+
+    /**
+     * 当前用户的菜单
+     *
+     * @param id id
+     * @return {@link String}
+     */
+    String findMenuByCurrentUser(Long id);
+
+    /**
+     * 当前用户的角色
+     *
+     * @param id id
+     * @return {@link String}
+     */
+    String findRoleByCurrentUser(Long id);
 }

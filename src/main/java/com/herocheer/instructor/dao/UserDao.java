@@ -1,5 +1,6 @@
 package com.herocheer.instructor.dao;
 
+import com.alibaba.fastjson.JSONObject;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
@@ -69,4 +70,29 @@ public interface UserDao extends BaseDao<User, Long> {
      * @return
      */
     List<UserGuideProjectVo> findUserProjectByUserIds(List<Long> userIds);
+
+    /**
+     * 当前用户的角色
+     *
+     * @param id id
+     * @return {@link List<JSONObject>}
+     */
+    List<JSONObject> selectedRole(Long id);
+
+    /**
+     * 当前用户的菜单
+     *
+     * @param id id
+     * @return {@link List<JSONObject>}
+     */
+    List<JSONObject> selectedMenu(Long id);
+
+    /**
+     * 当前用户的区域
+     *
+     * @param id id
+     * @return {@link List<JSONObject>}
+     */
+    List<JSONObject> selectedArea(Long id);
+
 }
