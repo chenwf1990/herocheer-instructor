@@ -9,9 +9,9 @@ package com.herocheer.instructor.enums;
  */
 public enum RecruitStateEnums {
     PENDING(0,"待审核"),
-    WITHDRAW(1,"撤回"),
+    TO_RECRUITED(1,"招募待启动"),
     OVERRULE(2,"驳回"),
-    TO_RECRUITED(3,"招募待启动"),
+    WITHDRAW(3,"撤回"),
     RECRUITMENT(4,"招募中"),
     END_RECRUITED(5,"招募结束");
     RecruitStateEnums(){

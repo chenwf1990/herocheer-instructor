@@ -2,17 +2,12 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.common.constants.ResponseCode;
-import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
-import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
-import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
-import com.herocheer.instructor.domain.vo.InstructorQueryVo;
-import com.herocheer.instructor.enums.RecruitStateEnums;
+import com.herocheer.instructor.domain.vo.ApplicationListVo;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import io.swagger.annotations.ApiOperation;
@@ -99,8 +94,25 @@ public class ActivityRecruitInfoController extends BaseController{
     @GetMapping("/hours")
     @ApiOperation("查询活动的招募时段")
     public ResponseResult<List<ActivityRecruitDetailVo>> recruitHours(@ApiParam("招募信息id") @RequestParam Long recruitId,
-                                                                      @ApiParam("日期-时间戳")@RequestParam Long dateTime, HttpServletRequest request){
+                                                                      @ApiParam("日期-时间戳")@RequestParam Long dateTime,
+                                                                      HttpServletRequest request){
         return ResponseResult.ok(activityRecruitInfoService.getRecruitHours(recruitId,dateTime,getCurUserId(request)));
+    }
+
+    @GetMapping("/queryApplicationPage")
+    @ApiOperation("查询信息审批列表")
+    public ResponseResult<Page<ApplicationListVo>> queryApplicationPage(@ApiParam("类型(1.待审批2.已审批)") @RequestParam Integer type,
+                                                                        @ApiParam("页码") @RequestParam Integer pageNo,
+                                                                        @ApiParam("页数") @RequestParam Integer pageSize,
+                                                                        HttpServletRequest request){
+        return ResponseResult.ok(activityRecruitInfoService.queryApplicationPage(type,pageNo,pageSize,getCurUserId(request)));
+    }
+
+    @GetMapping("/getApplicationCount")
+    @ApiOperation("查询信息审批统计数")
+    public ResponseResult<Integer> getApplicationCount(@ApiParam("类型(1.待审批2.已审批)") @RequestParam Integer type,
+                                                                  HttpServletRequest request){
+        return ResponseResult.ok(activityRecruitInfoService.getApplicationCount(type,getCurUserId(request)));
     }
 
 }

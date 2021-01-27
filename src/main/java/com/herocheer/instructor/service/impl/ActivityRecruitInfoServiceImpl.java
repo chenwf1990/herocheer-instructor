@@ -12,6 +12,7 @@ import com.herocheer.instructor.dao.ActivityRecruitInfoDao;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
+import com.herocheer.instructor.domain.vo.ApplicationListVo;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.RecruitStateEnums;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
@@ -224,4 +225,39 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         }
         return recruitDetails;
     }
+
+    @Override
+    public Page<ApplicationListVo> queryApplicationPage(Integer type, Integer pageNo, Integer pageSize, Long userId) {
+        Page page = Page.startPage(pageNo,pageSize);
+        Map<String,Object> map=new HashMap<>();
+        if(type==1){//待审批,需要验证是否有审批权限
+            int[] statusArray={RecruitStateEnums.PENDING.getState()};
+            map.put("statusArray",statusArray);
+        }
+        if(type==2){//已审批
+            int[] statusArray={RecruitStateEnums.OVERRULE.getState(),RecruitStateEnums.TO_RECRUITED.getState()};
+            map.put("updateId",userId);
+            map.put("statusArray",statusArray);
+        }
+        List<ApplicationListVo> list=dao.findApplicationList(map);
+        page.setDataList(list);
+        return page;
+    }
+
+    @Override
+    public Integer getApplicationCount(Integer type, Long userId) {
+        Map<String,Object> map=new HashMap<>();
+        if(type==1){//待审批,需要验证是否有审批权限
+            int[] statusArray={RecruitStateEnums.PENDING.getState()};
+            map.put("statusArray",statusArray);
+        }
+        if(type==2){//已审批
+            int[] statusArray={RecruitStateEnums.OVERRULE.getState(),RecruitStateEnums.TO_RECRUITED.getState()};
+            map.put("updateId",userId);
+            map.put("statusArray",statusArray);
+        }
+        Integer count=dao.getApplicationCount(map);
+        return count;
+    }
+
 }

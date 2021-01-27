@@ -4,8 +4,8 @@
     <sql id="table_field">
       id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
        CASE
-		WHEN `status` = 3 AND recruitStartDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 4
-		WHEN `status` = 3 AND recruitEndDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 5
+		WHEN `status` = 1 AND recruitStartDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 4
+		WHEN `status` = 1 AND recruitEndDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 5
 		ELSE `status`
 	   END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
@@ -419,23 +419,104 @@
                 and status=#{status}
             </if>
             <if test="status!=null and status==4">
-                and status=3 and recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000
+                and status=1 and recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==5">
-                and status=3 and recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000
+                and status=1 and recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="userId!=null and type==1">
                 and createdId=#{userId}
             </if>
-            <if test="userId!=null and type==2">
-                and (matchApproverId=#{userId} and courierStationId in (SELECT id from courier_station where userId=#{userId}))
-            </if>
+<!--            <if test="userId!=null and type==2">-->
+<!--                and (matchApproverId=#{userId} or courierStationId in (SELECT id from courier_station where userId=#{userId}))-->
+<!--            </if>-->
         </where>
-        order by createdTime DESC
+        order by placedTop DESC,createdTime DESC
     </select>
 
     <select id="getActivityRecruitInfo" parameterType="java.lang.Long"
             resultType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo">
         select <include refid="table_field"/> from activity_recruit_info where id=#{id}
+    </select>
+
+    <select id="findApplicationList" resultType="com.herocheer.instructor.domain.vo.ApplicationListVo">
+        SELECT
+            *
+        FROM
+            (
+            SELECT
+                a.id,
+                0 AS 'source',
+                recruitType AS 'type',
+                a.title,
+                a.content,
+                a.recruitStartDate,
+                a.recruitEndDate,
+                a.createdTime,
+                a.`status`,
+                a.updateId
+            FROM
+                activity_recruit_info a UNION
+            SELECT
+                n.id,
+                1 AS 'source',
+                n.type,
+                n.title,
+                n.content,
+                '' AS 'recruitStartDate',
+                '' AS 'recruitEndDate',
+                n.createdTime,
+                n.auditState AS 'status',
+                n.updateId
+            FROM
+                news_notice n
+            ) t
+            <where>
+                <if test="statusArray!=null">
+                    t.status in(
+                    <foreach collection="statusArray" item="status" index="index" separator=",">
+                        #{status}
+                    </foreach>
+                    )
+                </if>
+                <if test="updateId!=null">
+                    AND updateId=#{updateId}
+                </if>
+            </where>
+        ORDER BY
+            t.createdTime DESC
+    </select>
+
+    <select id="getApplicationCount" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+        (
+        SELECT
+            a.id,
+            a.`status`,
+            a.updateId
+        FROM
+            activity_recruit_info a
+        UNION
+        SELECT
+            n.id,
+            n.auditState AS 'status',
+            n.updateId
+        FROM
+            news_notice n
+        ) t
+        <where>
+            <if test="statusArray!=null">
+                t.status in(
+                <foreach collection="statusArray" item="status" index="index" separator=",">
+                    #{status}
+                </foreach>
+                )
+            </if>
+            <if test="updateId!=null">
+                AND updateId=#{updateId}
+            </if>
+        </where>
     </select>
 </mapper>
