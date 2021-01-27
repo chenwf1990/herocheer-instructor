@@ -55,14 +55,14 @@ public class SysLogAspect {
             // 获取切入点所在的方法
             Method method = signature.getMethod();
             // 获取操作
-            SysLog SysLog = method.getAnnotation(SysLog.class);
-            if (SysLog != null) {
+            SysLog sysLogAnnotation = method.getAnnotation(SysLog.class);
+            if (sysLogAnnotation != null) {
                 // 操作模块
-                sysOperationLog.setModule(SysLog.module());
+                sysOperationLog.setModule(sysLogAnnotation.module());
                 // 操作类型
-                sysOperationLog.setBizType(SysLog.bizType());
+                sysOperationLog.setBizType(sysLogAnnotation.bizType());
                 // 操作描述
-                sysOperationLog.setContext(SysLog.bizDesc());
+                sysOperationLog.setContext(sysLogAnnotation.bizDesc());
             }
 
             // 请求的参数

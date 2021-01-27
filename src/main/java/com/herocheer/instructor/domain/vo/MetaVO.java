@@ -1,3 +1,4 @@
+
 package com.herocheer.instructor.domain.vo;
 
 import io.swagger.annotations.ApiModelProperty;

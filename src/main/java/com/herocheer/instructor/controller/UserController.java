@@ -1,3 +1,4 @@
+
 package com.herocheer.instructor.controller;
 
 import com.alibaba.fastjson.JSONObject;
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
@@ -46,7 +46,7 @@ import java.util.List;
 @RequestMapping
 @Api(tags = "系统用户")
 public class UserController extends BaseController {
-    @Resource
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -68,7 +68,7 @@ public class UserController extends BaseController {
         String key = "HEROCHEER-INSTRUCTOR-"+ verCode;
 
         // 存入redis并设置过期时间为60秒
-        redisClient.set(key.trim(), verCode, 3600);
+        redisClient.set(key.trim(), verCode, 1800);
         JSONObject jsonObject= new JSONObject();
         jsonObject.put("key", key);
         jsonObject.put("image", specCaptcha.toBase64());
@@ -191,7 +191,7 @@ public class UserController extends BaseController {
     @PostMapping("/account")
     @AllowAnonymous
     @ApiOperation("用户登入")
-    public ResponseResult loginAccount(@ApiParam("账号") @RequestParam String account,
+    public ResponseResult<String> loginAccount(@ApiParam("账号") @RequestParam String account,
                                        @ApiParam("密码") @RequestParam String password,
                                        @ApiParam("验证码") @RequestParam String verCode){
         // 登入流程

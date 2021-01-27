@@ -13,6 +13,7 @@
     <groupId>com.herocheer</groupId>
     <artifactId>herocheer-instructor</artifactId>
     <version>0.0.1</version>
+    <name>社会体育指导员平台</name>
 
     <dependencies>
         <dependency>

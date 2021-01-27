@@ -1,3 +1,4 @@
+
 package com.herocheer.instructor.utils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
  * @create 2021-01-20
  */
 public class IPUtil {
+
+    private IPUtil() {
+    }
 
     /**
      * 获取IP地址

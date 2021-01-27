@@ -1,8 +1,9 @@
+
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.SysRoleDao;
 import com.herocheer.instructor.domain.entity.SysRole;
@@ -19,6 +20,7 @@ import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +33,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 @Slf4j
 public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Long> implements SysRoleService {
 
@@ -46,7 +47,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
     @SysLog(module = "系统管理",bizType = OperationConst.INSERT,bizDesc = "添加角色")
     @Transactional
     @Override
-    public SysRole addRole(SysRoleVO sysRoleVO) {
+    public SysRole addRole(@Valid SysRoleVO sysRoleVO) {
         Map<String, Object> roleMap = new HashMap();
         roleMap.put("roleName",sysRoleVO.getRoleName());
         if(this.dao.selectSysRoleOne(roleMap) >= 1){
@@ -89,7 +90,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Override
     public void settingMenuToRole(String menuIds, Long roleId) {
-        if(StringUtils.isNotBlank(menuIds)){
+        if(CharSequenceUtil.isNotBlank(menuIds)){
             String[] arr = menuIds.split(",");
             List<SysRoleMenu> list = new ArrayList<>();
             SysRoleMenu sysRoleMenu = null;
@@ -111,7 +112,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Override
     public void settingAreaToRole(String areaIds, Long roleId) {
-        if(StringUtils.isNotBlank(areaIds)){
+        if(CharSequenceUtil.isNotBlank(areaIds)){
             String[] arr = areaIds.split(",");
             List<SysRoleArea> list = new ArrayList<>();
             SysRoleArea sysRoleArea = null;
@@ -156,8 +157,8 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      * @return {@link SysRole}
      */
     @Override
-    public SysRole modifyRole(SysRoleVO sysRoleVO) {
-        if(sysRoleVO.getId() == null || StringUtils.isBlank(sysRoleVO.getId().toString())){
+    public SysRole modifyRole(@Valid SysRoleVO sysRoleVO) {
+        if(sysRoleVO.getId() == null || CharSequenceUtil.isBlank(sysRoleVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");
         }
         SysRole sysRole = SysRole.builder().build();
@@ -174,7 +175,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Override
     public Page<SysRole> findRoleByPage(SysRoleVO sysRoleVO) {
-        Page page = Page.startPage(sysRoleVO.getPageNo(), sysRoleVO.getPageSize());
+        Page<SysRole> page = Page.startPage(sysRoleVO.getPageNo(), sysRoleVO.getPageSize());
         List<SysRole> sysUserList = this.dao.selectRoleByPage(sysRoleVO);
         page.setDataList(sysUserList);
         return page;

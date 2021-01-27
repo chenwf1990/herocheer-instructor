@@ -90,7 +90,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @SysLog(module = "系统管理",bizType = OperationConst.SELECT,bizDesc = "用户登入")
     @Override
-    public String login(String account, String password, String verCode) throws CommonException {
+    public String login(String account, String password, String verCode){
 
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("account", account);
@@ -284,8 +284,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     public User findUserByOpenId(Long id) {
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("openid", id);
-        User user = this.dao.selectSysUserOne(objectMap);
-        return user;
+        return this.dao.selectSysUserOne(objectMap);
     }
 
     /**
@@ -298,8 +297,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     public User findUserByPhone(String phone) {
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("phone", phone);
-        User user = this.dao.selectSysUserOne(objectMap);
-        return user;
+        return this.dao.selectSysUserOne(objectMap);
     }
 
     /**
@@ -468,7 +466,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public String findRoleByCurrentUser(Long id) {
         List<JSONObject> list = this.dao.selectedRole(id);
-        List<String> strList = list.stream().map(JSONObject -> JSONObject.getString("roleId")).collect(Collectors.toList());
+        List<String> strList = list.stream().map((JSONObject json) -> json.getString("roleId")).collect(Collectors.toList());
         return String.join(",", strList);
     }
 }

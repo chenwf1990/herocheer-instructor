@@ -1,3 +1,4 @@
+
 package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
@@ -5,6 +6,7 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.Page.Page;
@@ -316,7 +318,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         if(StringUtils.isEmpty(serviceTimes)){
             throw new CommonException("未配置服务时间段");
         }
-        JSONArray jsonArray = JSONObject.parseArray(serviceTimes);
+        JSONArray jsonArray = JSON.parseArray(serviceTimes);
         String times = "";
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject json = jsonArray.getJSONObject(i);

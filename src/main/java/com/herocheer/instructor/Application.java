@@ -1,3 +1,4 @@
+
 package com.herocheer.instructor;
 
 import org.mybatis.spring.annotation.MapperScan;
