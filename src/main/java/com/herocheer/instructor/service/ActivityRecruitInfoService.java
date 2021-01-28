@@ -8,6 +8,7 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
+import com.herocheer.instructor.domain.vo.ApplicationListVo;
 
 import java.util.List;
 
@@ -90,4 +91,19 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
      * @return
      */
     List<ActivityRecruitDetailVo> getRecruitHours(Long recruitId, Long dateTime, Long userId);
+
+    /**
+     * 分页查询审批列表
+     * @param type 1.待审批 2.已审批
+     * @return
+     */
+    Page<ApplicationListVo> queryApplicationPage(Integer type, Integer pageNo, Integer pageSize, Long userId);
+
+    /**
+     * 获取审批数
+     * @param type
+     * @param userId
+     * @return
+     */
+    Integer getApplicationCount(Integer type, Long userId);
 }

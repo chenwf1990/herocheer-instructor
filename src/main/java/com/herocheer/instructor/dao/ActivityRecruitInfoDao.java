@@ -3,10 +3,12 @@ package com.herocheer.instructor.dao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
+import com.herocheer.instructor.domain.vo.ApplicationListVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author makejava
@@ -23,5 +25,24 @@ public interface ActivityRecruitInfoDao extends BaseDao<ActivityRecruitInfo,Long
      */
     List<ActivityRecruitInfo> findList(ActivityRecruitInfoQueryVo queryVo);
 
+    /**
+     * 获取招募信息详情
+     * @param id
+     * @return
+     */
     ActivityRecruitInfoVo getActivityRecruitInfo(@Param("id") Long id);
+
+    /**
+     * 获取审批信息列表(招募和新闻)
+     * @param map
+     * @return
+     */
+    List<ApplicationListVo> findApplicationList(Map<String,Object> map);
+
+    /**
+     * 获取审批统计数
+     * @param map
+     * @return
+     */
+    Integer getApplicationCount(Map<String,Object> map);
 }
