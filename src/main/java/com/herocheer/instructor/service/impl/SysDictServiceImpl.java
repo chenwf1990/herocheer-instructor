@@ -97,7 +97,18 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
      * @return {@link List <SysDict>}
      */
     @Override
-    public List<SysDict> findDict(String type) {
+    public List<SysDict> findDictByPid(String type) {
         return this.dao.selectDictByPage( SysDictVO.builder().pid(type.toUpperCase()).build());
+    }
+
+    /**
+     * 模糊查询字典
+     *
+     * @param dictName dict类型名称
+     * @return {@link List<SysDict>}
+     */
+    @Override
+    public List<SysDict> findDictLikeDictName(String pid,String dictName) {
+        return this.dao.selectDictByPage( SysDictVO.builder().pid(pid).dictName(dictName).build());
     }
 }

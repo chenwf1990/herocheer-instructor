@@ -132,7 +132,7 @@
         <where>
             <trim prefixOverrides="AND | OR">
                 <if test="dictName != null">
-                    and dictName = #{dictName}
+                    and dictName like concat('%',#{dictName},'%')
                 </if>
                 <if test="pid != null">
                     and pid = #{pid}

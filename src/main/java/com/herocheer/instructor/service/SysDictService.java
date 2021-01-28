@@ -60,6 +60,15 @@ public interface SysDictService extends BaseService<SysDict, Long> {
      * @param type 类型
      * @return {@link List<SysDict>}
      */
-    List<SysDict> findDict(String type);
+    List<SysDict> findDictByPid(String type);
+
+    /**
+     * 模糊查询字典
+     *
+     * @param dictName dict类型名称
+     * @param pid      pid
+     * @return {@link List<SysDict>}
+     */
+    List<SysDict> findDictLikeDictName(String pid,String dictName);
 
 }

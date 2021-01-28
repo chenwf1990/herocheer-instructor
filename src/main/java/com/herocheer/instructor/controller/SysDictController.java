@@ -5,6 +5,7 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysDict;
 import com.herocheer.instructor.domain.vo.SysDictVO;
 import com.herocheer.instructor.service.SysDictService;
+import com.herocheer.instructor.utils.PinYinUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -115,10 +117,26 @@ public class SysDictController extends BaseController {
      * @param type    类型
      * @return {@link ResponseResult<List<SysDict>>}
      */
-    @GetMapping("/name/{type:\\w+}")
+    @GetMapping("/name/{type}")
     @ApiOperation("字典名称")
     @AllowAnonymous
-    public ResponseResult<List<SysDict>> fetchDict(@ApiParam("字典PID") @PathVariable String type, HttpServletRequest request){
-        return ResponseResult.ok( sysDictService.findDict(type));
+    public ResponseResult<List<SysDict>> fetchDictByPid(@ApiParam("字典PID") @PathVariable String type, HttpServletRequest request){
+        return ResponseResult.ok( sysDictService.findDictByPid(PinYinUtil.toFirstChar(type)));
+    }
+
+    /**
+     * 模糊查询字典
+     *
+     * @param request  请求
+     * @param dictName dict类型名称
+     * @return {@link ResponseResult<List<SysDict>>}
+     */
+    @GetMapping("/name")
+    @ApiOperation("模糊字典")
+    @AllowAnonymous
+    public ResponseResult<List<SysDict>> fetchDictLikeDictName(@ApiParam("字典名称") @RequestParam String dictName,
+                                                               @ApiParam("字典PID") @RequestParam String type,
+                                                               HttpServletRequest request){
+        return ResponseResult.ok( sysDictService.findDictLikeDictName(type,dictName));
     }
 }
