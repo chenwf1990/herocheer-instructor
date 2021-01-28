@@ -1,8 +1,6 @@
 package com.herocheer.instructor.service.impl;
 
 import cn.hutool.poi.excel.ExcelReader;
-import cn.hutool.poi.excel.ExcelUtil;
-import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.InstructorDao;
@@ -24,7 +22,7 @@ import com.herocheer.instructor.service.InstructorLogService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
-import com.herocheer.instructor.utils.ExcelUtils;
+import com.herocheer.instructor.utils.ExcelUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -197,7 +195,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     public void instructorImport(MultipartFile multipartFile, HttpServletRequest request) {
         try {
             List<Instructor> instructors = new ArrayList<>();
-            ExcelReader reader = ExcelUtil.getReader(multipartFile.getInputStream());
+            ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(multipartFile.getInputStream());
             //第一行是标题，第二行是标
             List<List<Object>> read = reader.read(1,1000);
             List<Object> title = read.get(0);
@@ -209,7 +207,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 }
                 List<Object> dataList = read.get(i);
                 for (int j = 0; j < dataList.size(); j++) {
-                    boolean required = ExcelUtils.isRequired(title.get(j), dataList.get(j));
+                    boolean required = ExcelUtil.isRequired(title.get(j), dataList.get(j));
                     if(!required){
                         throw new CommonException("第【"+(i+2)+"】行，第【"+(j+1)+"】列："+title.get(j)+"必填选项");
                     }

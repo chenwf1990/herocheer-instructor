@@ -4,7 +4,6 @@ package com.herocheer.instructor.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelReader;
-import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -47,7 +46,7 @@ import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
-import com.herocheer.instructor.utils.ExcelUtils;
+import com.herocheer.instructor.utils.ExcelUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.beans.BeanUtils;
@@ -331,7 +330,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         List<String> row1 = CollUtil.newArrayList("*所属驿站", "*排班日期", "*时段", "*值班站长","*固定值班人员（人员姓名请用逗号隔开）");
         List<String> row2 = CollUtil.newArrayList(courierStation.getName(), "2020-01-01", "", "张三","李四，王五");
         List<List<String>> rows = CollUtil.newArrayList(row1,row2);
-        ExcelWriter writer = ExcelUtil.getWriter(true);
+        ExcelWriter writer = cn.hutool.poi.excel.ExcelUtil.getWriter(true);
         //合并标题单元格
         writer.merge(row1.size() - 1, "值班排班导入模板");
         //设置列宽
@@ -379,7 +378,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             throw new CommonException("服务时段不存在");
         }
         try {
-            ExcelReader reader = ExcelUtil.getReader(multipartFile.getInputStream());
+            ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(multipartFile.getInputStream());
             //第一行是标题，第二行是标
             List<List<Object>> read = reader.read(1,1000);
             List<Object> title = read.get(0);
@@ -389,7 +388,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             for (int i = 1; i < read.size(); i++) {//0是标题，数据行从1开始
                 List<Object> data = read.get(i);
                 for (int j = 0; j < data.size(); j++) {
-                    boolean required = ExcelUtils.isRequired(title.get(j), data.get(j));
+                    boolean required = ExcelUtil.isRequired(title.get(j), data.get(j));
                     if(!required){
                         throw new CommonException("第【"+(i+2)+"】行，第【"+(j+1)+"】列："+title.get(j)+"必填选项");
                     }
