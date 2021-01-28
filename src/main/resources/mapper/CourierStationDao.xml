@@ -217,23 +217,31 @@
     </select>
 
     <!--驿站列表分页查询-->
-    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.CourierStationQueryVo" resultType="com.herocheer.instructor.domain.entity.CourierStation">
-        select <include refid="table_field"/> from courier_station
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.CourierStationQueryVo" resultType="com.herocheer.instructor.domain.vo.CourierStationVo">
+        select
+        a.*
+        <if test="reqType != null">
+        ,(select count(1) from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.userId = #{userId}) as collectNum
+        </if>
+        from courier_station a
         <where>
             <if test="name != null">
-                and name like concat('%',#{name},'%')
+                and a.name like concat('%',#{name},'%')
             </if>
             <if test="gradeName != null">
-                and gradeName = #{gradeName}
+                and a.gradeName = #{gradeName}
             </if>
             <if test="areaCode != null">
-                and areaCode like concat(#{areaCode},'%')
+                and a.areaCode like concat(#{areaCode},'%')
             </if>
             <if test="beginTime != null">
-                and createdTime >= #{beginTime}
+                and a.createdTime >= #{beginTime}
             </if>
             <if test="endTime != null">
-                and createdTime &lt;= #{endTime}
+                and a.createdTime &lt;= #{endTime}
+            </if>
+            <if test="reqType != null and reqType == 2">
+                and exists(select uc.id from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.userId = #{userId})
             </if>
         </where>
         order by id desc

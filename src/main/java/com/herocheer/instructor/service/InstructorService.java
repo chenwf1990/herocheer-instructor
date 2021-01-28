@@ -64,8 +64,6 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      */
     long updateInstructor(Instructor instructor);
 
-    void loginTest(String token, Long userId);
-
     /**
      * @author chenwf
      * @desc  指导员证书修改列表
@@ -93,4 +91,11 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * @return
      */
     Instructor findInstructorByUserId(Long userId);
+
+    /**
+     * 获取认证信息
+     * @param userId
+     * @return
+     */
+    List<Instructor> getAuthInfo(Long userId);
 }

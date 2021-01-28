@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
+import com.herocheer.instructor.domain.vo.CourierStationVo;
 
 /**
  * @author chenwf
@@ -28,5 +29,5 @@ public interface CourierStationService extends BaseService<CourierStation,Long> 
      * @param courierStationQueryVo
      * @return
      */
-    Page<CourierStation> queryPageList(CourierStationQueryVo courierStationQueryVo);
+    Page<CourierStationVo> queryPageList(CourierStationQueryVo courierStationQueryVo);
 }

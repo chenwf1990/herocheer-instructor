@@ -2,6 +2,7 @@ package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
+import com.herocheer.instructor.domain.vo.CourierStationVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
 import java.util.List;
@@ -20,5 +21,5 @@ public interface CourierStationDao extends BaseDao<CourierStation,Long>{
      * @param courierStationQueryVo
      * @return
      */
-    List<CourierStation> queryPageList(CourierStationQueryVo courierStationQueryVo);
+    List<CourierStationVo> queryPageList(CourierStationQueryVo courierStationQueryVo);
 }

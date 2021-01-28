@@ -136,13 +136,14 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      * @date 2021-01-20 20:57:02
      */
     @Override
-    public int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime,Integer type) {
+    public int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime) {
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingScheduleUserId);
         List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
         WorkingUserVo workingUserVo = workingUserVos.get(0);
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
         Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
+        int type = getPunchCardType(replaceCardTime,serviceBeginTime);
         if(type == SignType.SIGN_IN.getType()){//签到补卡
             //未签到或者签到时间 > 补卡时间，可更新
             if(workingUserVo.getSignInTime() == null || replaceCardTime < workingUserVo.getSignInTime()){
@@ -163,7 +164,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                 this.dao.update(scheduleUser);
             }
         }
-        return 1;
+        return type;
     }
 
     /**

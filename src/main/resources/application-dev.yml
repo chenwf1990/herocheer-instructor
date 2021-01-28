@@ -12,3 +12,12 @@ spring:
     port: 6379
     password:
     timeout: 5000ms
+file:
+  ftp:
+    host: 192.168.100.10
+    port: 21
+    username: Administrator
+    password: xz107110%
+    basePath: /instructor
+    visitPath: D:/ftpserver #访问地址前缀  linux http://localhost:1111/xxx/xx/xx.png
+

@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
+import com.herocheer.instructor.domain.vo.CourierStationVo;
 import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author chenwf
@@ -29,9 +31,10 @@ public class CourierStationController extends BaseController{
 
     @PostMapping("/queryPageList")
     @ApiOperation("驿站列表列表查询")
-    @AllowAnonymous
-    public ResponseResult<Page<CourierStation>> queryPageList(@RequestBody CourierStationQueryVo courierStationQueryVo){
-        Page<CourierStation> page = courierStationService.queryPageList(courierStationQueryVo);
+    public ResponseResult<Page<CourierStationVo>> queryPageList(@RequestBody CourierStationQueryVo courierStationQueryVo,
+                                                                HttpServletRequest request){
+        courierStationQueryVo.setUserId(getCurUserId(request));
+        Page<CourierStationVo> page = courierStationService.queryPageList(courierStationQueryVo);
         return ResponseResult.ok(page);
     }
 

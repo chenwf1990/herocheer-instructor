@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.NewsNoticeDao">
     
     <sql id="table_field">
-      id, type, pic, title, auditState, auditTime, auditIdea, content, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, type, pic, title, auditState, auditTime, auditIdea, content, top, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -30,6 +30,9 @@
         </if>
         <if test="content != null">
             content,
+        </if>
+        <if test="top != null">
+            top,
         </if>
         <if test="remarks != null">
             remarks,
@@ -58,6 +61,9 @@
         </if>
         <if test="content != null">
             #{content},
+        </if>
+        <if test="top != null">
+            #{top},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -96,6 +102,9 @@
             </if>
             <if test="content != null">
                 content = #{content},
+            </if>
+            <if test="top != null">
+                top = #{top},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -137,11 +146,22 @@
             <if test="content != null">
                 and content = #{content}
             </if>
+            <if test="top != null">
+                and top = #{top}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
     </select>
     
     <!--查询条数-->
@@ -168,6 +188,9 @@
             </if>
             <if test="content != null">
                 and content = #{content}
+            </if>
+            <if test="top != null">
+                and top = #{top}
             </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
@@ -202,6 +225,6 @@
                 </foreach>
             </if>
         </where>
-        order by id desc
+        order by top desc,updateTime desc
     </select>
 </mapper>

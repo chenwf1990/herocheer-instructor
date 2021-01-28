@@ -23,6 +23,10 @@ public class CourierStationQueryVo implements Serializable {
     private Long beginTime;
     @ApiModelProperty("创建时间(结束时间)")
     private Long endTime;
+    @ApiModelProperty("请求类型 1驿站 2我关注的驿站")
+    private Integer reqType;
+    @ApiModelProperty("用户id")
+    private Long userId;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")
