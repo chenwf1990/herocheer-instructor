@@ -1,6 +1,8 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
+import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
@@ -55,4 +57,11 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @date 2021-01-21 11:57:02
      */
     int deleteByWorkingScheduleIds(List<Long> idList);
+
+    /**
+     * 服务报表统计
+     * @param serviceHoursQueryVo
+     * @return
+     */
+    List<ServiceHoursReportVo> serviceHoursReport(ServiceHoursQueryVo serviceHoursQueryVo);
 }

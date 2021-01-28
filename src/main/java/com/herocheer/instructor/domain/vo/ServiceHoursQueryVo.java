@@ -26,6 +26,9 @@ public class ServiceHoursQueryVo implements Serializable {
     @ApiModelProperty("创建时间(结束时间)")
     private Long endTime;
 
+    @ApiModelProperty("姓名(支持前后模糊查询)")
+    private String userName;
+
     @ApiModelProperty("页码")
     private int pageNo;
 
