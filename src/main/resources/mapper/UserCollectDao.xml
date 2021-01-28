@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.UserCollectDao">
+    
+    <sql id="table_field">
+      objectId, objectName, type, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.UserCollect">
+        insert into user_collect (
+    <trim suffixOverrides=",">
+        <if test="objectId != null">
+            objectId,
+        </if>
+        <if test="objectName != null">
+            objectName,
+        </if>
+        <if test="type != null">
+            type,
+        </if>
+        <if test="userId != null">
+            userId,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="objectId != null">
+            #{objectId},
+        </if>
+        <if test="objectName != null">
+            #{objectName},
+        </if>
+        <if test="type != null">
+            #{type},
+        </if>
+        <if test="userId != null">
+            #{userId},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from user_collect where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.UserCollect">
+        update user_collect
+        <set>
+            <if test="objectId != null">
+                objectId = #{objectId},
+            </if>
+            <if test="objectName != null">
+                objectName = #{objectName},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.UserCollect">
+        select <include refid="table_field"/> from user_collect where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.UserCollect">
+        select <include refid="table_field"/> from user_collect
+        <where>
+            <if test="objectId != null">
+                and objectId = #{objectId}
+            </if>
+            <if test="objectName != null">
+                and objectName = #{objectName}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from user_collect
+        <where>
+            <if test="objectId != null">
+                and objectId = #{objectId}
+            </if>
+            <if test="objectName != null">
+                and objectName = #{objectName}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+    <delete id="deleteByParams" parameterType="map">
+        delete from user_collect
+        where type = #{type}
+        and objectId = #{objectId}
+        and userId = #{userId}
+    </delete>
+</mapper>

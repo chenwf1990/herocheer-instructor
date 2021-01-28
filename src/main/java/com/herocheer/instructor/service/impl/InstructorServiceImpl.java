@@ -2,7 +2,6 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
@@ -53,8 +52,6 @@ import java.util.stream.Collectors;
 public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instructor,Long> implements InstructorService {
     @Resource
     private InstructorLogService instructorLogService;
-    @Resource
-    private RedisClient redisClient;
     @Resource
     private InstructorCertService instructorCertService;
     @Resource
@@ -172,21 +169,6 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         addInstructorCert(instructor);
         instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"修改");
         return count;
-    }
-
-    @Override
-    public void loginTest(String token, Long userId) {
-        JSONObject json = new JSONObject();
-        if(userId != null){
-            User user = userService.get(userId);
-            json = JSONObject.parseObject(JSONObject.toJSONString(user));
-        }else{
-            json.put("id",1);
-            json.put("userName","chenweifeng");
-            json.put("userType",1);
-            json.put("phone","13655080001");
-        }
-        redisClient.set(token,json.toJSONString());
     }
 
     /**
@@ -322,5 +304,35 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             instructors.get(0);
         }
         return null;
+    }
+
+    /**
+     * 获取认证信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<Instructor> getAuthInfo(Long userId) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("userId",userId);
+        List<Instructor> instructors = this.dao.findByLimit(params);
+        if(instructors.isEmpty()){
+            return instructors;
+        }
+        Instructor instructor = instructors.get(0);
+        if(instructor.getAuditState() == AuditStateEnums.to_pass.getState()){
+            params.put("userId",userId);
+            params.put("instructorId",instructor.getId());
+            params.put("orderBy","id");
+            List<InstructorLog> logs = instructorLogService.findByLimit(params);
+            for (InstructorLog log : logs) {
+                log.setId(log.getInstructorId());
+                Instructor model = new Instructor();
+                BeanUtils.copyProperties(log,model);
+                instructors.add(model);
+            }
+        }
+        return instructors;
     }
 }

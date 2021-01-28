@@ -3,7 +3,6 @@ package com.herocheer.instructor.controller;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorCert;
 import com.herocheer.instructor.domain.entity.InstructorLog;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -98,23 +96,7 @@ public class InstructorController extends BaseController{
     }
 
 
-    @PostMapping("/loginTest")
-    @ApiOperation("模拟测试登录")
-    @AllowAnonymous
-    public ResponseResult loginTest(@ApiParam("key值") @RequestParam String token,
-                                    @ApiParam("用户id") @RequestParam(required = false) Long userId){
-        if(StringUtils.isEmpty(token)){
-            token = "chenweifeng";
-        }
-//        JSONObject json = new JSONObject();
-//        json.put("id",1);
-//        json.put("userName","chenweifeng");
-//        json.put("userType",1);
-//        json.put("phone","13655080001");
-//        redisClient.set(token,json.toJSONString());
-        instructorService.loginTest(token,userId);
-        return ResponseResult.ok().setMessage(token);
-    }
+
 
 
     @PostMapping("/instructorImport")
@@ -122,6 +104,13 @@ public class InstructorController extends BaseController{
     public ResponseResult<List<InstructorCert>> instructorImport(MultipartFile multipartFile,HttpServletRequest request){
         instructorService.instructorImport(multipartFile,request);
         return ResponseResult.ok();
+    }
+
+    @GetMapping("/getAuthInfo")
+    @ApiOperation("获取认证信息")
+    public ResponseResult<List<Instructor>> getAuthInfo(HttpServletRequest request){
+        List<Instructor> instructors = instructorService.getAuthInfo(getCurUserId(request));
+        return ResponseResult.ok(instructors);
     }
 
 }

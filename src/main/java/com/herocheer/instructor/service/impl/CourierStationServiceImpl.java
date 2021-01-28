@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.instructor.dao.CourierStationDao;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
+import com.herocheer.instructor.domain.vo.CourierStationVo;
 import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -41,9 +42,10 @@ public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao
      * @date 2021-01-07 17:26:18
      */
     @Override
-    public Page<CourierStation> queryPageList(CourierStationQueryVo courierStationQueryVo) {
+    public Page<CourierStationVo> queryPageList(CourierStationQueryVo courierStationQueryVo) {
+        courierStationQueryVo.setUserId(18L);
         Page page = Page.startPage(courierStationQueryVo.getPageNo(),courierStationQueryVo.getPageSize());
-        List<CourierStation> courierStations = this.dao.queryPageList(courierStationQueryVo);
+        List<CourierStationVo> courierStations = this.dao.queryPageList(courierStationQueryVo);
         page.setDataList(courierStations);
         return page;
     }

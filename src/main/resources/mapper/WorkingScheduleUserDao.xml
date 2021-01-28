@@ -422,6 +422,10 @@
         b.status,
         b.guideProject,
         b.certificateGrade,
+        getPunchCartStatus(
+          a.scheduleTime + time_to_sec(a.serviceBeginTime),
+          a.scheduleTime + time_to_sec(a.serviceEndTime),
+          b.signInTime,b.signOutTime,b.status) as signStatus,
         CASE activityType
         WHEN 1 THEN
           (select cs.userId from courier_station cs where cs.id = a.courierStationId)
@@ -443,22 +447,19 @@
         <if test="userName != null">
             and b.userName like CONCAT('%',#{userName},'')
         </if>
-        <if test="taskNo != null != null">
+        <if test="taskNo != null">
             and b.taskNo like CONCAT('%',#{taskNo},'')
         </if>
         <if test="status != null">
             and b.status = #{status}
         </if>
-        <choose>
-            <when test="signStatus != null and signStatus == 0">
-                and (b.status = 2
-                     or
+        <if test="signStatus != null">
+            and getPunchCartStatus(
+            a.scheduleTime + time_to_sec(a.serviceBeginTime),
+            a.scheduleTime + time_to_sec(a.serviceEndTime),
+            b.signInTime,b.signOutTime,b.status) = #{signStatus}
+        </if>
 
-            </when>
-            <when test="signStatus != null and signStatus == 1">
-
-            </when>
-        </choose>
     </select>
 
     <select id="findWorkingUser" parameterType="map" resultType="string">

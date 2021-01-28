@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 新闻公告
- * @date 2020/12/30
+ * @date 2021-01-25 09:31:02
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -26,6 +26,8 @@ public class NewsNotice extends BaseEntity {
     private String auditIdea;
     @ApiModelProperty("内容")   
     private String content;
+    @ApiModelProperty("置顶 0否 1是")   
+    private Integer top;
     @ApiModelProperty("备注")   
     private String remarks;
 

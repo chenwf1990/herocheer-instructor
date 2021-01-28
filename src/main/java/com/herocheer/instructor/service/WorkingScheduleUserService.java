@@ -61,7 +61,7 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @param replaceCardTime
      * @return
      */
-    int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime,Integer type);
+    int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime);
 
     /**
      * @author chenwf

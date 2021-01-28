@@ -18,5 +18,12 @@ swagger:
     name: chenwf
     url: http://localhost:18081/
     email: 349830964@qq.com
+file:
+  upload:
+    savePath: D:/images/
+    visitPath: D:/images/
+wechat:
+  appId: wx5e3449374c04489c
+  appScret: 82fdb32c5c4c461481545c42b93ffc46
 
 

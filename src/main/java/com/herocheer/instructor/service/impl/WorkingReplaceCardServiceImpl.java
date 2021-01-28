@@ -64,6 +64,9 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
      */
     @Override
     public int saveReplaceCard(WorkingReplaceCard workingReplaceCard, UserEntity userEntity) {
+        if(workingReplaceCard.getReplaceCardTime() < System.currentTimeMillis()){
+            throw new CommonException("当前时间段不能补卡");
+        }
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingReplaceCard.getWorkingScheduleUserId());
         params.put("userId",userEntity.getId());
@@ -113,7 +116,7 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
         int count = this.dao.update(workingReplaceCard);
         if(approvalStatus == AuditStateEnums.to_pass.getState()){//审核通过
             //审核通过更新用户签到时间
-            workingScheduleUserService.updateSignTime(workingReplaceCard.getWorkingScheduleUserId(),userEntity.getId(),workingReplaceCard.getReplaceCardTime(),workingReplaceCard.getType());
+            int type = workingScheduleUserService.updateSignTime(workingReplaceCard.getWorkingScheduleUserId(), userEntity.getId(), workingReplaceCard.getReplaceCardTime());
             //添加打卡记录
             WorkingSignRecord signRecord = new WorkingSignRecord();
             signRecord.setWorkingScheduleUserId(workingReplaceCard.getWorkingScheduleUserId());
@@ -121,6 +124,7 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
             signRecord.setSignTime(workingReplaceCard.getReplaceCardTime());
             signRecord.setType(workingReplaceCard.getType());
             signRecord.setIsReissueCard(ReissueCardEnums.NO.getState());
+            signRecord.setType(type);
             workingSignRecordService.insert(signRecord);
         }
         return count;
