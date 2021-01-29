@@ -3,22 +3,15 @@ package com.herocheer.instructor.service.impl;
 import cn.hutool.poi.excel.ExcelReader;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.dao.InstructorApplyDao;
 import com.herocheer.instructor.dao.InstructorDao;
-import com.herocheer.instructor.domain.HeaderParam;
 import com.herocheer.instructor.domain.entity.Instructor;
-import com.herocheer.instructor.domain.entity.InstructorCert;
-import com.herocheer.instructor.domain.entity.InstructorLog;
+import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
-import com.herocheer.instructor.enums.AuditStateEnums;
-import com.herocheer.instructor.enums.AuditUnitEnums;
-import com.herocheer.instructor.enums.ChannelEnums;
-import com.herocheer.instructor.enums.ClientEnums;
-import com.herocheer.instructor.enums.SexEnums;
-import com.herocheer.instructor.enums.UserTypeEnums;
-import com.herocheer.instructor.service.InstructorCertService;
-import com.herocheer.instructor.service.InstructorLogService;
+import com.herocheer.instructor.enums.*;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
@@ -32,11 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,13 +38,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instructor,Long> implements InstructorService {
     @Resource
-    private InstructorLogService instructorLogService;
-    @Resource
-    private InstructorCertService instructorCertService;
-    @Resource
     private SysAreaService sysAreaService;
     @Resource
     private UserService userService;
+    @Resource
+    private InstructorApplyDao instructorApplyDao;
 
     /**
      * @param instructorQueryVo
@@ -72,116 +59,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         return page;
     }
 
-    /**
-     * @param id
-     * @param auditState
-     * @param auditIdea
-     * @return
-     * @author chenwf
-     * @desc 指导员审批
-     * @date 2021-01-04 17:26:18
-     */
-    @Override
-    public void approval(Long id, int auditState, String auditIdea) {
-        Instructor instructor = this.dao.get(id);
-        if(instructor == null){
-            throw new CommonException("指导员不存在");
-        }
-        if(instructor.getAuditState() != AuditStateEnums.to_audit.getState()){
-            throw new CommonException("非待审核中");
-        }
-        instructor.setId(id);
-        instructor.setAuditState(auditState);
-        instructor.setAuditIdea(auditIdea);
-        instructor.setAuditTime(System.currentTimeMillis());
-        this.dao.update(instructor);
-        this.addInstructorCert(instructor);
-        //增加审批日志
-        instructorLogService.addLog(id,auditState,auditIdea,null);
-        if(auditState == AuditStateEnums.to_pass.getState()){
-            //TODO chenwf 更新用户类型
-        }
-    }
 
-    /**
-     * @param instructorId
-     * @return
-     * @author chenwf
-     * @desc 指导员审批日志列表
-     * @date 2021-01-04 17:26:18
-     */
-    @Override
-    public List<InstructorLog> getApprovalLog(Long instructorId) {
-        Map<String,Object> params = new HashMap<>();
-        params.put("instructorId",instructorId);
-        return this.instructorLogService.findByLimit(params);
-    }
-
-    /**
-     * @param instructor
-     * @param userId
-     * @author chenwf
-     * @desc 添加指导员
-     * @date 2021-01-04 17:26:18
-     */
-    @Override
-    public void addInstructor(Instructor instructor, Long userId) {
-        int channel = HeaderParam.getInstance().getClient();
-        instructor.setChannel(channel);
-        if(ClientEnums.pc.getType() == channel){
-            instructor.setAuditState(AuditStateEnums.to_pass.getState());
-        }else{
-            instructor.setUserId(userId);
-        }
-        this.dao.insert(instructor);
-        instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"新增");
-        addInstructorCert(instructor); //添加证书日志
-    }
-
-    //添加证书日志
-    private void addInstructorCert(Instructor instructor) {
-        if(instructor.getAuditState() == AuditStateEnums.to_pass.getState()){
-            InstructorCert cert = new InstructorCert();
-            BeanUtils.copyProperties(instructor,cert);
-            cert.setInstructorId(instructor.getId());
-            this.instructorCertService.insert(cert);
-        }
-    }
-
-    /**
-     * @param instructor
-     * @return
-     * @author chenwf
-     * @desc 编剧指导员
-     * @date 2021-01-04 17:26:18
-     */
-    @Override
-    public long updateInstructor(Instructor instructor) {
-        Instructor model = this.dao.get(instructor.getId());
-        if(model.getAuditState() == AuditStateEnums.to_pass.getState()){
-            instructor.setAuditState(AuditStateEnums.to_audit.getState());
-        }else{
-            instructor.setAuditState(AuditStateEnums.to_audit.getState());
-        }
-        long count = this.dao.update(instructor);
-        addInstructorCert(instructor);
-        instructorLogService.addLog(instructor.getId(),instructor.getAuditState(),instructor.getAuditIdea(),"修改");
-        return count;
-    }
-
-    /**
-     * @param instructorId
-     * @return
-     * @author chenwf
-     * @desc 指导员证书修改列表
-     * @date 2021-01-14 17:26:18
-     */
-    @Override
-    public List<InstructorCert> getInstructorCertList(Long instructorId) {
-        Map<String,Object> param = new HashMap<>();
-        param.put("instructorId",instructorId);
-        return this.instructorCertService.findByLimit(param);
-    }
 
     /**
      * @param multipartFile
@@ -195,12 +73,22 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     public void instructorImport(MultipartFile multipartFile, HttpServletRequest request) {
         try {
             List<Instructor> instructors = new ArrayList<>();
-            ExcelReader reader = cn.hutool.poi.excel.ExcelUtil.getReader(multipartFile.getInputStream());
+            ExcelReader reader = ExcelUtil.getReader(multipartFile.getInputStream());
             //第一行是标题，第二行是标
             List<List<Object>> read = reader.read(1,1000);
             List<Object> title = read.get(0);
             //获取所有地区数据
             List<SysArea> areas = sysAreaService.findByLimit(new HashMap<>());
+            //判断是否已经导入过
+            List<String> cardNoList = new ArrayList<>();
+            for (int i = 1; i < read.size(); i++) {
+                cardNoList.add(read.get(i).get(2).toString());//身份证
+            }
+            List<InstructorApply> applies = this.instructorApplyDao.findByCardNos(cardNoList);
+            if(!applies.isEmpty()){
+                String cardNos = applies.stream().map(s ->s.getCardNo()).collect(Collectors.joining(","));
+                throw new CommonException(cardNos + ":已存在");
+            }
             for (int i = 0; i < read.size(); i++) {
                 if(i == 0){//标题行
                     continue;
@@ -219,6 +107,8 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             if(!instructors.isEmpty()){
                 //批量插入指导员数据
                 this.dao.batchInsert(instructors);
+                //批量插入申请单
+                this.instructorApplyDao.batchInsert(instructors);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -240,6 +130,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             throw new CommonException(errMsg+instructor.getCardNo()+"已存在该指导员数据");
         }
         instructor.setWorkUnit(dataList.get(3).toString());
+        instructor.setChannel(ChannelEnums.imp.getType());
         instructor.setPhone(dataList.get(4).toString());
         instructor.setCertificateNo(dataList.get(5).toString());
         instructor.setCertificateGrade(dataList.get(6).toString());
@@ -304,33 +195,68 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         return null;
     }
 
+
     /**
-     * 获取认证信息
+     * 添加指导员
      *
-     * @param userId
-     * @return
+     * @param apply
      */
     @Override
-    public List<Instructor> getAuthInfo(Long userId) {
-        Map<String,Object> params = new HashMap<>();
-        params.put("userId",userId);
-        List<Instructor> instructors = this.dao.findByLimit(params);
-        if(instructors.isEmpty()){
-            return instructors;
-        }
-        Instructor instructor = instructors.get(0);
-        if(instructor.getAuditState() == AuditStateEnums.to_pass.getState()){
-            params.put("userId",userId);
-            params.put("instructorId",instructor.getId());
-            params.put("orderBy","id");
-            List<InstructorLog> logs = instructorLogService.findByLimit(params);
-            for (InstructorLog log : logs) {
-                log.setId(log.getInstructorId());
-                Instructor model = new Instructor();
-                BeanUtils.copyProperties(log,model);
-                instructors.add(model);
+    public void saveInstructor(InstructorApply apply) {
+        if(apply.getAuditState() == AuditStateEnums.to_pass.getState()){
+            if(ChannelEnums.pc.getType() != apply.getChannel() && ChannelEnums.imp.getType() != apply.getChannel()){
+                return;
             }
         }
-        return instructors;
+        Instructor instructor = new Instructor();
+        Map<String,Object> params = new HashMap<>();
+        params.put("cardNo",apply.getCardNo());
+        List<Instructor> instructors = this.dao.findByLimit(params);
+        if(instructors.isEmpty()){//不存在  插入指导员数据
+            BeanUtils.copyProperties(apply,instructor);
+            this.dao.insert(instructor);
+        }else{
+            //更新指导员数据
+            instructor = instructors.get(0);
+            if(!StringUtils.isEmpty(instructor.getOpenId())) {//存在绑定微信公众号得部分修改
+                instructor.setPhone(apply.getPhone());
+                instructor.setWorkUnit(apply.getWorkUnit());
+                instructor.setAreaCode(apply.getAreaCode());
+                instructor.setAreaName(apply.getAreaName());
+                instructor.setGuideProject(apply.getGuideProject());
+                instructor.setCertificateNo(apply.getCertificateNo());
+                instructor.setCertificateGrade(apply.getCertificateGrade());
+                instructor.setOpeningDate(apply.getOpeningDate());
+                instructor.setGuideStation(apply.getGuideStation());
+                instructor.setAuditUnitType(apply.getAuditUnitType());
+                instructor.setAuditUnitName(apply.getAuditUnitName());
+                instructor.setOtherAuditUnitName(apply.getOtherAuditUnitName());
+                this.dao.update(instructor);
+            }else{//否则全部都可以修改
+                Instructor update = new Instructor();
+                BeanUtils.copyProperties(apply,update);
+                update.setId(instructor.getId());
+                this.dao.update(update);
+            }
+        }
+    }
+
+    @Override
+    public int deleteInstructor(Long id) {
+        Instructor instructor = this.dao.get(id);
+        verifyCanDelOrUpdate(instructor);
+        return this.dao.delete(id);
+    }
+
+    /**
+     * 验证是否可删除或修改
+     * @param instructor
+     */
+    private void verifyCanDelOrUpdate(Instructor instructor) {
+        if(instructor.getAuditState() == AuditStateEnums.to_pass.getState()){
+            if(!StringUtils.isEmpty(instructor.getOpenId())){
+                throw new CommonException("已绑定微信公众号不能删除");
+            }
+        }
     }
 }

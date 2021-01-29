@@ -8,6 +8,7 @@ import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
+import com.herocheer.instructor.enums.AuditStatusEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.enums.SignType;
 import com.herocheer.instructor.service.CommonService;
@@ -86,13 +87,19 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
         if(workingSignRecord.getType() == SignType.SIGN_IN.getType()){
             if(workingUserVo.getSignInTime() == null){//打上班卡已第一次为准
                 scheduleUser.setSignInTime(workingSignRecord.getSignTime());
-                scheduleUser.setStatus(signStatus);
-                scheduleUser.setServiceTime((int) ((serviceEndTime - scheduleUser.getSignInTime()) / 60 / 1000));
-                workingScheduleUserService.update(scheduleUser);
+                scheduleUser.setStatus(AuditStatusEnums.to_no_audit.getState());
+            }else{
+                scheduleUser.setServiceTime((int) ((scheduleUser.getSignInTime() - workingSignRecord.getSignTime()) / 60 / 1000));
             }
+            workingScheduleUserService.update(scheduleUser);
         }else{//打下班卡已最后一次为准
-            if(workingUserVo.getSignInTime() != null){
-                serviceBeginTime = workingUserVo.getSignInTime();
+            //获取签到的第一条数据
+            Map<String,Object> signRecordMap = new HashMap<>();
+            signRecordMap.put("workingScheduleUserId",workingSignRecord.getWorkingScheduleUserId());
+            signRecordMap.put("orderBy","signTime");
+            List<WorkingSignRecord> signRecords = this.dao.findByLimit(signRecordMap);
+            if(!signRecords.isEmpty()){//判断是否有第一次打卡时间
+                scheduleUser.setServiceTime((int) ((workingSignRecord.getSignTime() - signRecords.get(0).getSignTime()) / 60 / 1000));
             }
             scheduleUser.setSignOutTime(workingSignRecord.getSignTime());
             scheduleUser.setStatus(signStatus);

@@ -7,13 +7,13 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 指导员证书表
- * @date 2020/12/30
+ * @date 2021-01-29 09:02:43
  * @company 厦门熙重电子科技有限公司
  */
 @Data
-public class InstructorCert extends BaseEntity {
-    @ApiModelProperty("指导员id")   
-    private Long instructorId;
+public class InstructorApplyAuditLog extends BaseEntity {
+    @ApiModelProperty("指导员申请单id")   
+    private Long applyId;
     @ApiModelProperty("姓名")   
     private String name;
     @ApiModelProperty("性别 0女1男2未知")   

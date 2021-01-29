@@ -11,7 +11,8 @@ public enum ClientEnums {
     h5(1,"H5"),
     xcx(2,"小程序"),
     ios(3,"ios"),
-    android(4,"安卓");
+    android(4,"安卓"),
+    pc_import(5,"pc导入");
 
 
     private int type;

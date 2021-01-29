@@ -64,7 +64,6 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                 long scheduleBeginTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceBeginTime());
                 if(w.getSignInTime() == null && System.currentTimeMillis() <= scheduleBeginTime){//服务开始时间大于当前时间不去设置状态
                     w.setSignStatus(-1);//前端打卡状态放空
-                    w.setServiceTime(-1);//前端服务时长放空
                     w.setStatus(-1);//前端审核状态放空
                 }else {
                     Long serviceBeginTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceBeginTime());

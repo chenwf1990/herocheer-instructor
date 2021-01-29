@@ -475,7 +475,6 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         scheduleUser.setUserName(user.getUserName());
         scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
         scheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
-        scheduleUser.setServiceTime(DateUtil.timeToSecond(workingSchedule.getServiceEndTime()) - DateUtil.timeToSecond(workingSchedule.getServiceBeginTime()));
         scheduleUser.setGuideProject(StringUtils.isEmpty(user.getInstructorGuideProject()) ? user.getGuideProject() : user.getInstructorGuideProject());
         scheduleUser.setCertificateGrade(user.getCertificateGrade());
         scheduleUser.setTaskNo(DateUtil.getNewTime());
@@ -650,8 +649,6 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUser.setUserName(userEntity.getUserName());
             workingScheduleUser.setCertificateGrade(instructor.getCertificateGrade());
             workingScheduleUser.setGuideProject(instructor.getGuideProject());
-            workingScheduleUser.setServiceTime(DateUtil.timeToSecond(activityRecruitDetail.getServiceEndTime())-
-                    DateUtil.timeToSecond(activityRecruitDetail.getServiceStartTime()));
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
             count=count+workingScheduleUserService.insert(workingScheduleUser);
             //已预约数加一
