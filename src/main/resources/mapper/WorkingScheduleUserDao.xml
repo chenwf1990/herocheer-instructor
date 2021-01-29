@@ -438,6 +438,7 @@
         a.activityType,
         a.activityId,
         a.activityTitle,
+        a.activityAddress,
         a.courierStationId,
         a.courierStationName,
         a.scheduleTime,
@@ -576,7 +577,7 @@
                 and u.reserveStatus=#{reserveStatus}
             </if>
             <if test="userName!=null">
-                and u.userName like count('%',#{userName},'%')
+                and u.userName like concat('%',#{userName},'%')
             </if>
             <if test="type!=null and type==2">
                 and (u.signInTime is not null or u.signOutTime is not null or u.serviceTime is not null)

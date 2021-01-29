@@ -475,7 +475,6 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         scheduleUser.setUserName(user.getUserName());
         scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
         scheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
-        scheduleUser.setServiceTime(DateUtil.timeToSecond(workingSchedule.getServiceEndTime()) - DateUtil.timeToSecond(workingSchedule.getServiceBeginTime()));
         scheduleUser.setGuideProject(StringUtils.isEmpty(user.getInstructorGuideProject()) ? user.getGuideProject() : user.getInstructorGuideProject());
         scheduleUser.setCertificateGrade(user.getCertificateGrade());
         scheduleUser.setTaskNo(DateUtil.getNewTime());
@@ -590,7 +589,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 if(activityRecruitDetail.getHadRecruitNumber()>=activityRecruitDetail.getRecruitNumber()){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约人数已满!");
                 }
-                if(activityRecruitDetail.getServiceDate()!=reservationVo.getReservationDate()){
+                if(!activityRecruitDetail.getServiceDate().equals(reservationVo.getReservationDate())){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约日期和预约时段不匹配!");
                 }
                 Map<String,Object> map=new HashMap<>();
@@ -600,7 +599,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 map.put("serviceEndTime",activityRecruitDetail.getServiceEndTime());
                 //查询当前是否存在时间重合的预约记录
                 List<String> userNames=workingScheduleUserService.findWorkingUser(map);
-                if (userNames!=null||userNames.size()>0){
+                if (userNames.size()>0){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,您预约活动和已预约活动时间存在重复!");
                 }
             }else {
@@ -611,7 +610,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 if(activityRecruitInfo.getRecruitStartDate()>new Date().getTime()){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募未开始!");
                 }
-                if(activityRecruitInfo.getServiceEndDate()<new Date().getTime()){
+                if(activityRecruitInfo.getRecruitEndDate()<new Date().getTime()){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募已结束!");
                 }
             }else {
@@ -622,13 +621,14 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingMap.put("activityDetailId",activityRecruitDetail.getId());
             workingSchedules=dao.findByLimit(workingMap);
             Long workingScheduleId;
-            if(workingSchedules==null){
+            if(workingSchedules.size()==0){
                 //保存排班信息
                 WorkingSchedule workingSchedule=new WorkingSchedule();
                 workingSchedule.setActivityId(activityRecruitInfo.getId());
                 workingSchedule.setActivityTitle(activityRecruitInfo.getTitle());
                 workingSchedule.setActivityDetailId(activityRecruitDetail.getId());
                 workingSchedule.setActivityType(activityRecruitInfo.getRecruitType());
+                workingSchedule.setActivityAddress(activityRecruitInfo.getAddress());
                 if(activityRecruitInfo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
                     workingSchedule.setCourierStationId(activityRecruitInfo.getCourierStationId());
                     workingSchedule.setCourierStationName(activityRecruitInfo.getCourierStation());
@@ -650,8 +650,6 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUser.setUserName(userEntity.getUserName());
             workingScheduleUser.setCertificateGrade(instructor.getCertificateGrade());
             workingScheduleUser.setGuideProject(instructor.getGuideProject());
-            workingScheduleUser.setServiceTime(DateUtil.timeToSecond(activityRecruitDetail.getServiceEndTime())-
-                    DateUtil.timeToSecond(activityRecruitDetail.getServiceStartTime()));
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
             count=count+workingScheduleUserService.insert(workingScheduleUser);
             //已预约数加一

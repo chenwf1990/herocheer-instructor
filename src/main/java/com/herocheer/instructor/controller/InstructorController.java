@@ -1,14 +1,10 @@
 package com.herocheer.instructor.controller;
 
-import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.Instructor;
-import com.herocheer.instructor.domain.entity.InstructorCert;
-import com.herocheer.instructor.domain.entity.InstructorLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorService;
-import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author chenwf
@@ -32,12 +27,9 @@ import java.util.List;
 public class InstructorController extends BaseController{
     @Resource
     private InstructorService instructorService;
-    @Resource
-    private RedisClient redisClient;
 
     @PostMapping("/queryPageList")
     @ApiOperation("指导员列表查询")
-    @AllowAnonymous
     public ResponseResult<Page<Instructor>> queryPageList(@RequestBody InstructorQueryVo instructorQueryVo){
         Page<Instructor> page = instructorService.queryPageList(instructorQueryVo);
         return ResponseResult.ok(page);
@@ -45,72 +37,25 @@ public class InstructorController extends BaseController{
 
     @GetMapping("/get")
     @ApiOperation("根据id查询指导员")
-    @AllowAnonymous
     public ResponseResult<Instructor> get(@ApiParam("指导员id") @RequestParam Long id){
 
         return ResponseResult.ok(instructorService.get(id));
-    }
-
-    @PostMapping("/add")
-    @ApiOperation("新增指导员")
-    public ResponseResult add(@RequestBody Instructor instructor, HttpServletRequest request){
-        instructorService.addInstructor(instructor,getCurUserId(request));
-        return ResponseResult.ok();
-    }
-
-    @PostMapping("/update")
-    @ApiOperation("编辑指导员")
-    public ResponseResult update(@RequestBody Instructor instructor){
-        return ResponseResult.isSuccess(instructorService.updateInstructor(instructor));
     }
 
 
     @DeleteMapping("/delete")
     @ApiOperation("删除指导员")
     public ResponseResult delete(@ApiParam("指导员id") @RequestParam Long id){
-        return ResponseResult.isSuccess(instructorService.delete(id));
+
+        return ResponseResult.isSuccess(instructorService.deleteInstructor(id));
     }
-
-    @GetMapping("/approval")
-    @ApiOperation("指导员审批")
-    public ResponseResult approval(@ApiParam("指导员id") @RequestParam Long id,
-                                   @ApiParam("审核状态 0待审核1审核通过2审核驳回") @RequestParam int auditState,
-                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea){
-        instructorService.approval(id,auditState,auditIdea);
-        return ResponseResult.ok();
-    }
-
-
-    @GetMapping("/getApprovalLog")
-    @ApiOperation("指导员审批日志列表")
-    public ResponseResult<List<InstructorLog>> getApprovalLog(@ApiParam("指导员id") @RequestParam Long instructorId){
-        List<InstructorLog> logs = instructorService.getApprovalLog(instructorId);
-        return ResponseResult.ok(logs);
-    }
-
-    @GetMapping("/getInstructorCertList")
-    @ApiOperation("指导员证书列表")
-    public ResponseResult<List<InstructorCert>> getInstructorCertList(@ApiParam("指导员id") @RequestParam Long instructorId){
-        List<InstructorCert> logs = instructorService.getInstructorCertList(instructorId);
-        return ResponseResult.ok(logs);
-    }
-
-
-
 
 
     @PostMapping("/instructorImport")
     @ApiOperation("指导员导入")
-    public ResponseResult<List<InstructorCert>> instructorImport(MultipartFile multipartFile,HttpServletRequest request){
+    public ResponseResult instructorImport(MultipartFile multipartFile,HttpServletRequest request){
         instructorService.instructorImport(multipartFile,request);
         return ResponseResult.ok();
-    }
-
-    @GetMapping("/getAuthInfo")
-    @ApiOperation("获取认证信息")
-    public ResponseResult<List<Instructor>> getAuthInfo(HttpServletRequest request){
-        List<Instructor> instructors = instructorService.getAuthInfo(getCurUserId(request));
-        return ResponseResult.ok(instructors);
     }
 
 }

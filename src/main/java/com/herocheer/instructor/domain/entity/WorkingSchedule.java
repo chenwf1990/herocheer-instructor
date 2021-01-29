@@ -18,6 +18,8 @@ public class WorkingSchedule extends BaseEntity {
     private String activityTitle;
     @ApiModelProperty("活动明细")   
     private Long activityDetailId;
+    @ApiModelProperty("活动地址")
+    private String activityAddress;
     @ApiModelProperty("活动类型 1驿站 2赛事")   
     private Integer activityType;
     @ApiModelProperty("驿站id")   

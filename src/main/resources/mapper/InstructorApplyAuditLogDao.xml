@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.herocheer.instructor.dao.InstructorCertDao">
+<mapper namespace="com.herocheer.instructor.dao.InstructorApplyAuditLogDao">
     
     <sql id="table_field">
-      id, instructorId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      applyId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.InstructorCert">
-        insert into instructor_cert (
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.InstructorApplyAuditLog">
+        insert into instructor_apply_audit_log (
     <trim suffixOverrides=",">
-        <if test="instructorId != null">
-            instructorId,
+        <if test="applyId != null">
+            applyId,
         </if>
         <if test="name != null">
             name,
@@ -86,8 +86,8 @@
     </trim>
     ) VALUES (
     <trim suffixOverrides=",">
-        <if test="instructorId != null">
-            #{instructorId},
+        <if test="applyId != null">
+            #{applyId},
         </if>
         <if test="name != null">
             #{name},
@@ -165,15 +165,15 @@
     
     <!--通过主键删除-->
     <delete id="delete" parameterType="long">
-        delete from instructor_cert where id = #{id}
+        delete from instructor_apply_audit_log where id = #{id}
     </delete>
     
     <!--通过主键修改数据-->
-    <update id="update" parameterType="com.herocheer.instructor.domain.entity.InstructorCert">
-        update instructor_cert
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.InstructorApplyAuditLog">
+        update instructor_apply_audit_log
         <set>
-            <if test="instructorId != null">
-                instructorId = #{instructorId},
+            <if test="applyId != null">
+                applyId = #{applyId},
             </if>
             <if test="name != null">
                 name = #{name},
@@ -250,18 +250,18 @@
     </update>
        
     <!--主键id单表查询-->
-    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.InstructorCert">
-        select <include refid="table_field"/> from instructor_cert where id = #{id}
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.InstructorApplyAuditLog">
+        select <include refid="table_field"/> from instructor_apply_audit_log where id = #{id}
     </select>
     
     
     
     <!--查询指定行数据-->
-    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.InstructorCert">
-        select <include refid="table_field"/> from instructor_cert
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.InstructorApplyAuditLog">
+        select <include refid="table_field"/> from instructor_apply_audit_log
         <where>
-            <if test="instructorId != null">
-                and instructorId = #{instructorId}
+            <if test="applyId != null">
+                and applyId = #{applyId}
             </if>
             <if test="name != null">
                 and name = #{name}
@@ -334,15 +334,22 @@
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
-        order by id DESC
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
     </select>
     
     <!--查询条数-->
     <select id="count" parameterType="map" resultType="java.lang.Integer">
-        select count(1) from instructor_cert
+        select count(1) from instructor_apply_audit_log
         <where>
-            <if test="instructorId != null">
-                and instructorId = #{instructorId}
+            <if test="applyId != null">
+                and applyId = #{applyId}
             </if>
             <if test="name != null">
                 and name = #{name}
