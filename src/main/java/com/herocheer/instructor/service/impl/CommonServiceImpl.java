@@ -30,7 +30,7 @@ public class CommonServiceImpl implements CommonService {
         Long curTime = System.currentTimeMillis();
         int signStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();//0.正常签到 1.异常签到 2.待完成
         if(signInTime != null && signOutTime != null){
-            if(signInTime <= serviceBeginTime || signOutTime <= serviceEndTime + DateUtil.TWO_HOURS){
+            if(signInTime <= serviceBeginTime && signOutTime <= serviceEndTime + DateUtil.TWO_HOURS){
                 signStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
             }
         }else if (signInTime != null && signOutTime == null){

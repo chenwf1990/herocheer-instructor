@@ -145,11 +145,11 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
         Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
         int type = getPunchCardType(replaceCardTime,serviceBeginTime);
+        WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
+        scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
         if(type == SignType.SIGN_IN.getType()){//签到补卡
             //未签到或者签到时间 > 补卡时间，可更新
             if(workingUserVo.getSignInTime() == null || replaceCardTime < workingUserVo.getSignInTime()){
-                WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
-                scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignInTime(replaceCardTime);
                 scheduleUser.setServiceTime((int) (serviceEndTime - replaceCardTime));
                 scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
@@ -157,8 +157,6 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
             }
         }else{//签退补卡
             if(workingUserVo.getSignOutTime() == null || replaceCardTime > workingUserVo.getSignOutTime()){
-                WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
-                scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
                 scheduleUser.setSignOutTime(replaceCardTime);
                 scheduleUser.setServiceTime((int) (replaceCardTime - serviceBeginTime));
                 scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());

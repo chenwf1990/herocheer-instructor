@@ -146,8 +146,6 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 scheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
                 scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());//初始化待审核
                 scheduleUser.setWorkingScheduleId(workingVo.getId());
-                //排班初始化写入服务时长
-                scheduleUser.setServiceTime(DateUtil.timeToSecond(workingVo.getServiceEndTime()) - DateUtil.timeToSecond(workingVo.getServiceBeginTime()));
                 scheduleUser.setGuideProject(StringUtils.isEmpty(user.getInstructorGuideProject()) ? user.getGuideProject() : user.getInstructorGuideProject());
                 scheduleUser.setCertificateGrade(user.getCertificateGrade());
             });

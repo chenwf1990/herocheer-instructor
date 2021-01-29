@@ -86,6 +86,12 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
         return false;
     }
 
+    public static boolean betweenTime(){
+        Date date = new Date();
+
+        return betweenTime(DateUtil.beginOfDay(date).getTime(),DateUtil.endOfDay(date).getTime(),date.getTime());
+    }
+
     /**
      * 获取当前时间
      * @return
