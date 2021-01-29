@@ -4,8 +4,8 @@
     <sql id="table_field">
       id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
        CASE
-		WHEN `status` = 1 AND recruitStartDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 4
-		WHEN `status` = 1 AND recruitEndDate >= UNIX_TIMESTAMP(NOW())* 1000 THEN 5
+        WHEN `status` = 1 AND recruitEndDate <![CDATA[ <= ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 5
+        WHEN `status` = 1 AND recruitStartDate <![CDATA[ <= ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 4
 		ELSE `status`
 	   END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>

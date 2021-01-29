@@ -4,6 +4,8 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
+import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 
@@ -94,4 +96,11 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return
      */
     int approval(Long workingScheduleUserId, int approvalType, String approvalIdea, UserEntity user, int actualServiceTime);
+
+    /**
+     * 查询活动预约或服务记录
+     * @param queryVo
+     * @return
+     */
+    Page<ReservationInfoVo> findReservationInfoPage(ReservationInfoQueryVo queryVo);
 }

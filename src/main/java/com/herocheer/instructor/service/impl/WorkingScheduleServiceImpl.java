@@ -326,7 +326,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             }
             times = json.getString("startTime") + "~" + json.getString("endTime") + ",";
         }
-        // 准备将数据集合封装成Excel对象
+        //准备将数据集合封装成Excel对象
         List<String> row1 = CollUtil.newArrayList("*所属驿站", "*排班日期", "*时段", "*值班站长","*固定值班人员（人员姓名请用逗号隔开）");
         List<String> row2 = CollUtil.newArrayList(courierStation.getName(), "2020-01-01", "", "张三","李四，王五");
         List<List<String>> rows = CollUtil.newArrayList(row1,row2);
@@ -653,9 +653,10 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUser.setServiceTime(DateUtil.timeToSecond(activityRecruitDetail.getServiceEndTime())-
                     DateUtil.timeToSecond(activityRecruitDetail.getServiceStartTime()));
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            count=count+workingScheduleUserService.insert(workingScheduleUser);
+            //已预约数加一
             activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()+1);
             activityRecruitDetailService.update(activityRecruitDetail);
-            count=count+workingScheduleUserService.insert(workingScheduleUser);
         }
         if (count!=recruitDetailIds.length){
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,请稍后重试!");
@@ -677,8 +678,10 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         if(new Date().getTime()>activityRecruitDetail.getServiceDate()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"活动当天不能取消预约!");
         }
+        //已预约数减一
         activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()-1);
         activityRecruitDetailService.update(activityRecruitDetail);
+        //设置状态取消预约
         workingScheduleUser.setReserveStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
         return workingScheduleUserService.update(workingScheduleUser);
     }

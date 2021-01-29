@@ -545,4 +545,43 @@
              GROUP BY b.userId
         ) t order by t.serviceTime desc
     </select>
+    
+    <select id="findReservationInfo" parameterType="com.herocheer.instructor.domain.vo.ReservationInfoQueryVo"
+            resultType="com.herocheer.instructor.domain.vo.ReservationInfoVo">
+        SELECT
+            u.id,
+            s.activityId,
+            s.scheduleTime,
+            s.serviceBeginTime,
+            s.serviceEndTime,
+            u.userName,
+            u.guideProject,
+            u.certificateGrade,
+            u.createdTime,
+            u.reserveStatus,
+            u.signInTime,
+            u.signOutTime,
+            u.serviceTime
+        FROM
+            working_schedule_user u
+        LEFT JOIN working_schedule s ON s.id = u.workingScheduleId
+        <where>
+            <if test="activityId!=null">
+                and s.activityId=#{activityId}
+            </if>
+            <if test="scheduleTime!=null">
+                and s.scheduleTime=#{scheduleTime,}
+            </if>
+            <if test="reserveStatus!=null">
+                and u.reserveStatus=#{reserveStatus}
+            </if>
+            <if test="userName!=null">
+                and u.userName like count('%',#{userName},'%')
+            </if>
+            <if test="type!=null and type==2">
+                and (u.signInTime is not null or u.signOutTime is not null or u.serviceTime is not null)
+            </if>
+        </where>
+        order by u.createdTime desc
+    </select>
 </mapper>

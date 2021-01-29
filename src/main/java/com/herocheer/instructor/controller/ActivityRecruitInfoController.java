@@ -100,7 +100,7 @@ public class ActivityRecruitInfoController extends BaseController{
     }
 
     @GetMapping("/queryApplicationPage")
-    @ApiOperation("查询信息审批列表")
+    @ApiOperation("公众号-查询信息审批列表")
     public ResponseResult<Page<ApplicationListVo>> queryApplicationPage(@ApiParam("类型(1.待审批2.已审批)") @RequestParam Integer type,
                                                                         @ApiParam("页码") @RequestParam Integer pageNo,
                                                                         @ApiParam("页数") @RequestParam Integer pageSize,
@@ -109,10 +109,12 @@ public class ActivityRecruitInfoController extends BaseController{
     }
 
     @GetMapping("/getApplicationCount")
-    @ApiOperation("查询信息审批统计数")
+    @ApiOperation("公众号-查询信息审批统计数")
     public ResponseResult<Integer> getApplicationCount(@ApiParam("类型(1.待审批2.已审批)") @RequestParam Integer type,
                                                                   HttpServletRequest request){
         return ResponseResult.ok(activityRecruitInfoService.getApplicationCount(type,getCurUserId(request)));
     }
+
+
 
 }

@@ -1,14 +1,13 @@
 package com.herocheer.instructor.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.dao.ActivityRecruitInfoDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
-import com.herocheer.instructor.dao.ActivityRecruitInfoDao;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
@@ -20,9 +19,8 @@ import com.herocheer.instructor.service.ActivityRecruitApprovalService;
 import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
-import com.herocheer.instructor.utils.DateUtil;
-import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -54,6 +52,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     public Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo,Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         queryVo.setUserId(userId);
+        if (queryVo.getType()==2){
+            queryVo.setStatus(RecruitStateEnums.PENDING.getState());
+        }
         List<ActivityRecruitInfo> instructors = dao.findList(queryVo);
         page.setDataList(instructors);
         return page;
@@ -173,15 +174,16 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         if(activityRecruitInfo.getStatus()==RecruitStateEnums.TO_RECRUITED.getState()
             &&activityRecruitInfo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()
             && StringUtils.isNotBlank(activityRecruitInfo.getServiceHours())){
-            List<Map<String,String>> list = JSONArray.parseObject(activityRecruitInfo.getServiceHours(), List.class);
+            String[] serviceHours=activityRecruitInfo.getServiceHours().split(",");
             ActivityRecruitDetail detail=new ActivityRecruitDetail();
             detail.setRecruitId(activityRecruitInfo.getId());
             detail.setRecruitNumber(activityRecruitInfo.getRecruitNumber());
             for(Long i=activityRecruitInfo.getServiceStartDate();i<activityRecruitInfo.getServiceEndDate();i=i+24*60*60*1000){
-                for(Map<String,String> map:list){
+                for(String hours:serviceHours){
+                    String[] time=hours.split("-");
                     detail.setServiceDate(i);
-                    detail.setServiceStartTime(map.get("startTime"));
-                    detail.setServiceEndTime(map.get("endTime"));
+                    detail.setServiceStartTime(time[0]);
+                    detail.setServiceEndTime(time[1]);
                     activityRecruitDetailService.insert(detail);
                     detail.setId(null);
                 }

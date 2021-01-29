@@ -8,6 +8,8 @@ import com.herocheer.instructor.dao.WorkingScheduleUserDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
+import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
@@ -230,6 +232,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         return this.dao.update(scheduleUser);
     }
 
+
     //判断是否审批负责人
     private WorkingUserVo isHasApprovalAuth(Long workingScheduleUserId, Long userId) {
         //查找当前的负责人
@@ -251,5 +254,16 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
             }
         }
         return workingUserVo;
+    }
+
+    @Override
+    public Page<ReservationInfoVo> findReservationInfoPage(ReservationInfoQueryVo queryVo) {
+        Page page=Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
+        if(queryVo.getType()==2){
+            queryVo.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+        }
+        List<ReservationInfoVo> list=dao.findReservationInfo(queryVo);
+        page.setDataList(list);
+        return page;
     }
 }
