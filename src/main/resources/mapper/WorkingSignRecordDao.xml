@@ -228,4 +228,27 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
+    <select id="findMatchSignRecord" resultType="com.herocheer.instructor.domain.vo.MatchSignRecordVo">
+        SELECT
+            r.id,
+            s.activityId,
+            r.signTime,
+            r.signPlace,
+            u.userName,
+            r.pics
+        FROM
+            working_sign_record r
+            LEFT JOIN working_schedule_user u ON r.workingScheduleUserId = u.id
+            LEFT JOIN working_schedule s ON u.workingScheduleId = s.id
+        <where>
+            <if test="activityId!=null">
+                and s.activityId=#{activityId}
+            </if>
+            <if test="userName!=null and userName=''">
+                and u.userName like CONCAT('%',#{userName},'')
+            </if>
+        </where>
+        order by r.signTime desc
+    </select>
 </mapper>

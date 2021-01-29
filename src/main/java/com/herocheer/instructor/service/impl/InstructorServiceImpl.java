@@ -190,7 +190,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         param.put("userId",userId);
         List<Instructor> instructors = this.dao.findByLimit(param);
         if(!instructors.isEmpty()){
-            instructors.get(0);
+            return instructors.get(0);
         }
         return null;
     }

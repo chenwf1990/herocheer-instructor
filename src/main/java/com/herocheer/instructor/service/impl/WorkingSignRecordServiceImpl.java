@@ -1,18 +1,18 @@
 package com.herocheer.instructor.service.impl;
 
+import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.dao.WorkingSignRecordDao;
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
+import com.herocheer.instructor.domain.vo.MatchSignRecordVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
 import com.herocheer.instructor.enums.AuditStatusEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.enums.SignType;
 import com.herocheer.instructor.service.CommonService;
-import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
@@ -124,5 +124,13 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
             return SignStatusEnums.SIGN_NORMAL.getStatus();
         }
         return signStatus;
+    }
+
+    @Override
+    public Page<MatchSignRecordVo> queryMatchSignRecord(Integer pageNo, Integer pageSize, Long activityId, String userName) {
+        Page page=Page.startPage(pageNo,pageSize);
+        List<MatchSignRecordVo> list=dao.findMatchSignRecord(activityId,userName);
+        page.setDataList(list);
+        return page;
     }
 }

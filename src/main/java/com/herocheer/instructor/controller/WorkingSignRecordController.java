@@ -1,8 +1,10 @@
 package com.herocheer.instructor.controller;
 
+import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
+import com.herocheer.instructor.domain.vo.MatchSignRecordVo;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -39,6 +41,16 @@ public class WorkingSignRecordController extends BaseController{
     public ResponseResult addWorkingSignRecord(@RequestBody WorkingSignRecord workingSignRecord, HttpServletRequest request){
         UserEntity userEntity = getUser(request);
         return ResponseResult.isSuccess(workingSignRecordService.addWorkingSignRecord(workingSignRecord,userEntity));
+    }
+
+    @GetMapping("/matchSignRecord")
+    @ApiOperation("获取赛事打卡记录")
+    public ResponseResult<Page<MatchSignRecordVo>> queryMatchSignRecord(@ApiParam("活动id") @RequestParam Long activityId,
+                                                                        @ApiParam("人员名称") @RequestParam String userName,
+                                                                        @ApiParam("页数") @RequestParam Integer pageSize,
+                                                                        @ApiParam("页码") @RequestParam Integer pageNo){
+        Page<MatchSignRecordVo> page = workingSignRecordService.queryMatchSignRecord(pageNo,pageSize,activityId,userName);
+        return ResponseResult.ok(page);
     }
 
 }

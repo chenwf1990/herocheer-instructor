@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleDao">
     
     <sql id="table_field">
-      id, activityId, activityTitle, activityDetailId, activityType, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, activityId, activityTitle,activityAddress, activityDetailId, activityType, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -16,7 +16,10 @@
         <if test="activityTitle != null">
             activityTitle,
         </if>
-        <if test="activityDetailId != null">
+        <if test="activityAddress != null">
+            activityAddress,
+        </if>
+        <if test="activityAddress != null">
             activityDetailId,
         </if>
         <if test="activityType != null">
@@ -52,6 +55,9 @@
         </if>
         <if test="activityTitle != null">
             #{activityTitle},
+        </if>
+        <if test="activityAddress != null">
+            #{activityAddress},
         </if>
         <if test="activityDetailId != null">
             #{activityDetailId},
@@ -99,6 +105,9 @@
             </if>
             <if test="activityTitle != null">
                 activityTitle = #{activityTitle},
+            </if>
+            <if test="activityAddress != null">
+                activityAddress = #{activityAddress},
             </if>
             <if test="activityDetailId != null">
                 activityDetailId = #{activityDetailId},

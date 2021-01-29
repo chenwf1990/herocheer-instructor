@@ -1,8 +1,10 @@
 package com.herocheer.instructor.service;
 
+import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
-import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.WorkingSignRecord;
+import com.herocheer.instructor.domain.vo.MatchSignRecordVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
 
 import java.util.List;
@@ -39,4 +41,14 @@ public interface WorkingSignRecordService extends BaseService<WorkingSignRecord,
      * @return
      */
     int getSignStatus(WorkingUserVo workingUserVo);
+
+    /**
+     * 查询赛事打卡记录
+     * @param pageNo
+     * @param pageSize
+     * @param activityId
+     * @param userName
+     * @return
+     */
+    Page<MatchSignRecordVo> queryMatchSignRecord(Integer pageNo,Integer pageSize,Long activityId,String userName);
 }
