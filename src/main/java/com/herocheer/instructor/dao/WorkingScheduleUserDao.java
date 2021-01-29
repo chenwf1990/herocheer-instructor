@@ -3,6 +3,8 @@ package com.herocheer.instructor.dao;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
+import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
+import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
@@ -64,4 +66,11 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return
      */
     List<ServiceHoursReportVo> serviceHoursReport(ServiceHoursQueryVo serviceHoursQueryVo);
+
+    /**
+     * 查询活动预约或服务记录
+     * @param queryVo
+     * @return
+     */
+    List<ReservationInfoVo> findReservationInfo(ReservationInfoQueryVo queryVo);
 }
