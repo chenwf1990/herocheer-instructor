@@ -31,7 +31,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/operation")
-@Api(tags = "菜单功能操作表")
+@Api(tags = "操作功能")
 @Slf4j
 public class SysOperationController extends BaseController {
     @Resource

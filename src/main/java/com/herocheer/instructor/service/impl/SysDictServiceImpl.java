@@ -98,7 +98,7 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
      */
     @Override
     public List<SysDict> findDictByPid(String type) {
-        return this.dao.selectDictByPage( SysDictVO.builder().pid(type.toUpperCase()).build());
+        return this.dao.selectDictByPage( SysDictVO.builder().status(true).pid(type.toUpperCase()).build());
     }
 
     /**
@@ -109,6 +109,6 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
      */
     @Override
     public List<SysDict> findDictLikeDictName(String pid,String dictName) {
-        return this.dao.selectDictByPage( SysDictVO.builder().pid(pid).dictName(dictName).build());
+        return this.dao.selectDictByPage( SysDictVO.builder().status(true).pid(pid).dictName(dictName).build());
     }
 }
