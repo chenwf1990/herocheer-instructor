@@ -46,7 +46,7 @@ public class SysMenuVO {
     private Long updateTime;
 
     @ApiModelProperty("0：关闭、1：启用")
-    private Boolean status = true;
+    private Boolean status = false;
 
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;

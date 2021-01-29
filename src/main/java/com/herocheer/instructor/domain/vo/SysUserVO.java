@@ -28,13 +28,14 @@ public class SysUserVO {
     private Long userId;
     @ApiModelProperty("机构ID")
     private Long deptId;
+
     @ApiModelProperty("账号")
     private String account;
     @ApiModelProperty("密码")
     private String password;
     @ApiModelProperty("用户姓名")
-    @NotBlank(message = "用户名不能为空")
     private String userName;
+
     @ApiModelProperty("邮箱")
     @Email(message = "邮箱格式不正确")
     private String email;

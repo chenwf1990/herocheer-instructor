@@ -151,9 +151,9 @@
 
     <!--查找用户的菜单权限-->
     <select id="selectMenuTreeToUser" parameterType="map" resultType="com.herocheer.instructor.domain.vo.OptionTreeVO">
-        select id,pid,menuName as `name` from sys_menu
+        select id,pid,menuName as `name` from sys_menu where  status = false
         union all
-        select id,pid,operationName as `name` from sys_operation
+        select id,pid,operationName as `name` from sys_operation where  status = false
     </select>
 
     <!--根据用户角色获取权限-->

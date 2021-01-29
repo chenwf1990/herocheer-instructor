@@ -63,11 +63,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @param verCode 验证码
      */
     private void checkAcount(User user, String password, String verCode) {
-        // 判断验证码
+        /*// 判断验证码
         String redisCode = "HEROCHEER-INSTRUCTOR-"+ verCode.trim();
         if (!redisClient.hasKey(redisCode)) {
             throw new CommonException("验证码不正确");
-        }
+        }*/
 
         // 检查登入账号是否正确
         if(ObjectUtils.isEmpty(user)){
@@ -88,16 +88,16 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @param verCode  版本的代码
      * @return {@link String}
      */
-    @SysLog(module = "系统管理",bizType = OperationConst.SELECT,bizDesc = "用户登入")
+    @SysLog(module = "系统管理",bizType = OperationConst.SELECT,bizDesc = "后台用户登入")
     @Override
-    public String login(String account, String password, String verCode){
+    public String login(String account, String password){
 
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("account", account);
         User user = this.dao.selectSysUserOne(objectMap);
 
         // 登入验证账号（只支持账号）同时登入和密码
-        this.checkAcount(user,password,verCode);
+        this.checkAcount(user,password,null);
 
         // 生成的是不带-的字符串，类似于：b17f24ff026d40949c85a24f4f375d42
         String simpleUUID = IdUtil.simpleUUID();
@@ -109,14 +109,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         redisClient.set(simpleUUID, JSONObject.toJSONString(user), 1800);
         // 统一异步处理
 
-        //  token:role-roleInfo 角色信息
+        /*//  token:role-roleInfo 角色信息
         redisClient.set(simpleUUID+":role",this.findRoleByCurrentUser(user.getId()),1800);
 
         // token:menu-menuInfo 菜单权限
         redisClient.set(simpleUUID+":menu",this.findMenuByCurrentUser(user.getId()),1800);
 
         // token:area-areaInfo 数据权限
-        this.findAreaByCurrentUser(simpleUUID,user.getId());
+        this.findAreaByCurrentUser(simpleUUID,user.getId());*/
         return simpleUUID;
     }
 
@@ -317,7 +317,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 判断账号是否存在
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("openid", weChatUserVO.getOpenid());
-
         // 防重
         if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
             throw new CommonException("用户已存在");

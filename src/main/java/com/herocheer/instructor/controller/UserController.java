@@ -180,22 +180,21 @@ public class UserController extends BaseController {
     public ResponseResult<User> editUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
         return ResponseResult.ok(userService.modifyUser(sysUserVO));
     }
+
     /**
      * 登录账户
      *
-     * @param account 账号
+     * @param account  账号
      * @param password 密码
-     * @param verCode  验证码
-     * @return {@link ResponseResult}
+     * @return {@link ResponseResult<String>}
      */
-    @PostMapping("/account")
+    @GetMapping("/account")
     @AllowAnonymous
     @ApiOperation("用户登入")
     public ResponseResult<String> loginAccount(@ApiParam("账号") @RequestParam String account,
-                                       @ApiParam("密码") @RequestParam String password,
-                                       @ApiParam("验证码") @RequestParam String verCode){
+                                       @ApiParam("密码") @RequestParam String password){
         // 登入流程
-        return ResponseResult.ok(userService.login(account,password,verCode));
+        return ResponseResult.ok(userService.login(account,password));
     }
 
     /**
@@ -228,7 +227,7 @@ public class UserController extends BaseController {
     @ApiOperation("密码重置")
     public ResponseResult resetPassword(@ApiParam("用户ID") @PathVariable Long id, HttpServletRequest request){
         // 重置密码为：123456
-        return userService.resetPassword(this.getUser(request).getId());
+        return userService.resetPassword(id);
     }
 
 
@@ -239,7 +238,6 @@ public class UserController extends BaseController {
      * @return {@link ResponseResult}
      */
     @DeleteMapping("/user")
-    @AllowAnonymous
     @ApiOperation("用户退出")
     public ResponseResult logout(HttpServletRequest request){
         // 获取当前用户信息
@@ -248,9 +246,8 @@ public class UserController extends BaseController {
             //  删除缓存中的token
             redisClient.delete(currentUser.getToken());
             return ResponseResult.ok();
-        }else {
-            return ResponseResult.fail();
         }
+        return ResponseResult.fail();
     }
 
     /**
@@ -279,7 +276,7 @@ public class UserController extends BaseController {
     @AllowAnonymous
     @ApiOperation("验证码验证")
     public ResponseResult vaildCaptcha(@ApiParam("验证码") @RequestParam String verCode){
-        String redisCode = "HEROCHEER-INSTRUCTOR-"+ verCode.trim();
+        String redisCode = "INSTRUCTOR-CODE-KEY"+ verCode.trim();
         // 判断验证码
         if (!redisClient.hasKey(redisCode)) {
             return ResponseResult.fail("验证码不正确");

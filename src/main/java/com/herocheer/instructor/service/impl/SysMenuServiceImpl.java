@@ -13,6 +13,7 @@ import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.vo.MetaVO;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
+import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -44,17 +45,21 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      */
     @Override
     public List<Tree<Long>> findMenuTreeToUser(UserEntity currentUser) {
-
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("status", true);
-        paramMap.put("userId", currentUser.getId());
+        paramMap.put("status", false);
 
-        // 获取用户的角色
-        Long [] roleArray01 = {2L,5L};
-//        Long [] roleArray =
-        paramMap.put("roleArray", roleArray01);
-
-        List<SysMenu> sysMenus = this.dao.selectMenuTreeToRole(paramMap);
+        List<SysMenu> sysMenus = null;
+        // 非超级管理员
+        if(!UserTypeEnums.sysAdmin.getCode().equals(currentUser.getUserType())){
+            paramMap.put("userId", currentUser.getId());
+            // 获取用户的角色
+            Long [] roleArray01 = {2L,5L};
+            // Long [] roleArray =
+            paramMap.put("roleArray", roleArray01);
+            sysMenus = this.dao.selectMenuTreeToRole(paramMap);
+        }else {
+            sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().status(false).build());
+        }
 
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
@@ -62,7 +67,12 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         for (SysMenu sysMenu:sysMenus){
             hashMap = new HashMap();
             hashMap.put("path",sysMenu.getUrl());
-            hashMap.put("component","layout/publics");
+            if (sysMenu.getPid().equals(0L)) {
+                hashMap.put("component", "layout/publics");
+                // TODO 无子节点的节点要处理
+            } else {
+                hashMap.put("component", sysMenu.getUrl().substring(1));
+            }
             hashMap.put("meta", MetaVO.builder().hidden(sysMenu.getStatus()).icon(sysMenu.getIcon()).title(sysMenu.getMenuName()).build());
             TreeNode<Long> treeNode = new TreeNode<Long>(sysMenu.getId(), sysMenu.getPid(), sysMenu.getMenuName(), 5).setExtra(hashMap);
             nodeList.add(treeNode);
@@ -88,7 +98,9 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
 
-        List<OptionTreeVO> optionTreeList = this.dao.selectMenuTreeToUser(new HashMap<>());
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("status", false);
+        List<OptionTreeVO> optionTreeList = this.dao.selectMenuTreeToUser(paramMap);
         Map<String, Object> hashMap = null;
         for (OptionTreeVO optionTree:optionTreeList){
             hashMap = new HashMap();

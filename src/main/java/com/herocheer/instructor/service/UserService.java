@@ -22,12 +22,11 @@ public interface UserService extends BaseService<User, Long> {
     /**
      * 登录
      *
-     * @param account 账号
+     * @param account  账号
      * @param password 密码
-     * @param verCode  版本的代码
      * @return {@link String}
      */
-    String login(String account,String password,String verCode);
+    String login(String account,String password);
 
     /**
      * token:用户相关信息放入redis
