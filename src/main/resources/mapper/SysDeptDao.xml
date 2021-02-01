@@ -99,6 +99,9 @@
                 <if test="status != null">
                     and status = #{status}
                 </if>
+                <if test="pid != null">
+                    and pid = #{pid}
+                </if>
                 <if test="beginTime != null">
                     and createdTime >= #{beginTime}
                 </if>

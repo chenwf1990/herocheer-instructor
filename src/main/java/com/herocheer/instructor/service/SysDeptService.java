@@ -1,5 +1,6 @@
 package com.herocheer.instructor.service;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysDept;
@@ -59,4 +60,20 @@ public interface SysDeptService extends BaseService<SysDept, Long> {
      * @return {@link List<SysDept>}
      */
     List<SysDept>  findDept();
+
+
+    /**
+     * 发现部门树
+     *
+     * @return {@link List<Tree<Long>>}
+     */
+    List<Tree<Long>>  findDeptTree();
+
+    /**
+     * 通过id查询部门
+     *
+     * @param sysDeptVO 系统部门签证官
+     * @return {@link Page<SysDept>}
+     */
+    Page<SysDept> findDeptById(SysDeptVO sysDeptVO);
 }

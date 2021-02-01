@@ -1,5 +1,9 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNode;
+import cn.hutool.core.lang.tree.TreeUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
@@ -13,7 +17,9 @@ import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -105,5 +111,42 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptDao, SysDept, Lon
     @Override
     public List<SysDept> findDept() {
         return this.dao.selectDeptByPage(new SysDeptVO());
+    }
+
+    /**
+     * 发现部门树
+     *
+     * @return {@link List<Tree<Long>>}
+     */
+    @Override
+    public List<Tree<Long>> findDeptTree() {
+        // 构建node列表
+        List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
+        List<SysDept> sysDepts = this.dao.selectDeptByPage(SysDeptVO.builder().pid(null).build());
+        sysDepts.stream().forEach(sysDept -> {
+            Map<String, Object> hashMap = new HashMap();
+            hashMap.put("label",sysDept.getDeptName());
+            TreeNode<Long> treeNode = new TreeNode<Long>(sysDept.getId(), sysDept.getPid(), sysDept.getDeptName(), 5).setExtra(hashMap);
+            nodeList.add(treeNode);
+        });
+        // 0表示最顶层的id是0
+        List<Tree<Long>> treeList = TreeUtil.build(nodeList, 0L);
+        return treeList;
+    }
+
+    /**
+     * 通过id查询部门
+     *
+     * @param sysDeptVO 系统部门签证官
+     * @return {@link Page<SysDept>}
+     */
+    @Override
+    public Page<SysDept> findDeptById(SysDeptVO sysDeptVO) {
+        Page page = Page.startPage(sysDeptVO.getPageNo(), sysDeptVO.getPageSize());
+        sysDeptVO.setPid(sysDeptVO.getId());
+        sysDeptVO.setId(null);
+        List<SysDept> sysUserList = this.dao.selectDeptByPage(sysDeptVO);
+        page.setDataList(sysUserList);
+        return page;
     }
 }

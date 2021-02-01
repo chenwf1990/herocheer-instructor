@@ -464,6 +464,19 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @Override
     public String findRoleByCurrentUser(Long id) {
+
+        // 是否存在
+        /*redisClient.delete(token + CacheKeyConst.AREAID);
+        redisClient.delete(token + CacheKeyConst.AREACODE);
+
+        List<JSONObject> list = this.dao.selectedArea(userId);
+
+        List<String> codeList = list.stream().map(json -> json.getString("areaCode")).collect(Collectors.toList());
+        redisClient.set(token + CacheKeyConst.AREACODE,String.join(",", codeList),EXPIRETIME);
+
+        List<String> strList = list.stream().map(json -> json.getString("areaId")).collect(Collectors.toList());
+        redisClient.set(token + CacheKeyConst.AREAID,String.join(",", strList),EXPIRETIME);
+*/
         List<JSONObject> list = this.dao.selectedRole(id);
         List<String> strList = list.stream().map((JSONObject json) -> json.getString("roleId")).collect(Collectors.toList());
         return String.join(",", strList);

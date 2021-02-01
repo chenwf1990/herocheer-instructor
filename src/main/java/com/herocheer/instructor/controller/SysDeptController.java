@@ -1,9 +1,12 @@
 
 package com.herocheer.instructor.controller;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.entity.SysDept;
+import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysDeptVO;
 import com.herocheer.instructor.service.SysDeptService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -119,5 +122,32 @@ public class SysDeptController extends BaseController {
         return ResponseResult.ok(sysDeptService.findDept());
     }
 
-    // TODO 组织结构树
+    /**
+     * 获取部门树
+     *
+     * @param request 请求
+     * @return {@link ResponseResult<OptionTreeVO>}
+     */
+    @GetMapping("/tree")
+    @ApiOperation("组织机构树")
+    @AllowAnonymous
+    public ResponseResult<List<Tree<Long>>> fetchDeptTree(HttpServletRequest request){
+        return ResponseResult.ok(sysDeptService.findDeptTree());
+    }
+
+
+    /**
+     * 根据id获取子机构
+     *
+     * @param request   请求
+     * @param sysDeptVO 系统部门签证官
+     * @return {@link ResponseResult<Page<SysArea>>}
+     */
+    @PostMapping("/tree/page")
+    @ApiOperation("根据id获取子机构")
+    @AllowAnonymous
+    public ResponseResult<Page<SysDept>> fetchDeptById(@ApiParam("系统机构") @RequestBody SysDeptVO sysDeptVO, HttpServletRequest request){
+        return ResponseResult.ok(sysDeptService.findDeptById(sysDeptVO));
+    }
+
 }
