@@ -79,6 +79,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
             instructorApply.setAuditState(AuditStateEnums.to_pass.getState());
         }else{
             instructorApply.setUserId(curUserId);
+            instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         }
         int count = this.dao.insert(instructorApply);
         //写入日志

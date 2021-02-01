@@ -5,10 +5,10 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.WorkingReplaceCardDao;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.domain.entity.WorkingReplaceCard;
+import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
-import com.herocheer.instructor.enums.AuditStateEnums;
-import com.herocheer.instructor.enums.ReissueCardEnums;
+import com.herocheer.instructor.enums.*;
 import com.herocheer.instructor.service.WorkingReplaceCardService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
@@ -78,14 +78,23 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
             throw new CommonException("只能补当前值班日期的卡");
         }
         int type = workingScheduleUserService.getPunchCardType(workingReplaceCard.getReplaceCardTime(), serviceBeginTime);
+        if(type == SignType.SIGN_IN.getType()){
+            if(workingUserVo.getSignInTime() != null && workingReplaceCard.getReplaceCardTime() > workingUserVo.getSignInTime()){
+                throw new CommonException("补卡时间不能大于签到时间");
+            }
+        }else{
+            if(workingUserVo.getSignOutTime() != null && workingReplaceCard.getReplaceCardTime() < workingUserVo.getSignOutTime()){
+                throw new CommonException("补卡时间不能小于签退时间");
+            }
+        }
         //查询是否补卡
         Map<String,Object> cardMap = new HashMap<>();
         cardMap.put("type",type);
         cardMap.put("workingScheduleUserId",workingReplaceCard.getWorkingScheduleUserId());
-        cardMap.put("approvalStatusList", Arrays.asList(AuditStateEnums.to_pass.getState(),AuditStateEnums.to_audit.getState()));
+        cardMap.put("approvalStatusList", Arrays.asList(AuditStateEnums.to_audit.getState()));
         int replaceCardCount = this.dao.findReplaceCardCount(cardMap);
         if(replaceCardCount > 0){
-            throw new CommonException("已补卡");
+            throw new CommonException("补卡审核中..请勿重复申请");
         }
         workingReplaceCard.setType(type);
         workingReplaceCard.setApprovalStatus(AuditStateEnums.to_audit.getState());
@@ -104,28 +113,70 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
      */
     @Override
     public int approval(Long id, int approvalStatus, String approvalComments, UserEntity userEntity) {
-        WorkingReplaceCard workingReplaceCard = this.dao.get(id);
-        if(workingReplaceCard.getApprovalStatus() == AuditStateEnums.to_pass.getState()){
+        WorkingReplaceCard card = this.dao.get(id);
+        if(card.getApprovalStatus() == AuditStateEnums.to_pass.getState()){
             throw new CommonException("已审核通过");
         }
-        workingReplaceCard.setApprovalStatus(approvalStatus);
-        workingReplaceCard.setApprovalComments(approvalComments);
-        workingReplaceCard.setApprovalId(userEntity.getId());
-        workingReplaceCard.setApprovalBy(userEntity.getUserName());
-        workingReplaceCard.setApprovalTime(System.currentTimeMillis());
-        int count = this.dao.update(workingReplaceCard);
+        card.setApprovalStatus(approvalStatus);
+        card.setApprovalComments(approvalComments);
+        card.setApprovalId(userEntity.getId());
+        card.setApprovalBy(userEntity.getUserName());
+        card.setApprovalTime(System.currentTimeMillis());
+        int count = this.dao.update(card);
+        int type = card.getType();
         if(approvalStatus == AuditStateEnums.to_pass.getState()){//审核通过
-            //审核通过更新用户签到时间
-            int type = workingScheduleUserService.updateSignTime(workingReplaceCard.getWorkingScheduleUserId(), userEntity.getId(), workingReplaceCard.getReplaceCardTime());
             //添加打卡记录
             WorkingSignRecord signRecord = new WorkingSignRecord();
-            signRecord.setWorkingScheduleUserId(workingReplaceCard.getWorkingScheduleUserId());
-            signRecord.setReplaceCardId(workingReplaceCard.getId());
-            signRecord.setSignTime(workingReplaceCard.getReplaceCardTime());
-            signRecord.setType(workingReplaceCard.getType());
+            signRecord.setWorkingScheduleUserId(card.getWorkingScheduleUserId());
+            signRecord.setReplaceCardId(card.getId());
+            signRecord.setSignTime(card.getReplaceCardTime());
+            signRecord.setType(card.getType());
             signRecord.setIsReissueCard(ReissueCardEnums.NO.getState());
             signRecord.setType(type);
             workingSignRecordService.insert(signRecord);
+            //审核通过，用户值班表也需要做更新
+            Map<String,Object> params = new HashMap<>();
+            params.put("workingScheduleUserId",card.getWorkingScheduleUserId());
+            List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
+            WorkingUserVo workingUserVo = workingUserVos.get(0);
+            WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
+            scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
+            //备注：补卡时间只能再签到时间和签退时间之间
+            if(card.getType() == SignType.SIGN_IN.getType()){
+                //无签到 || 签到时间 > 补卡时间
+                if(workingUserVo.getSignInTime() == null || workingUserVo.getSignInTime() > card.getReplaceCardTime()){
+                    scheduleUser.setSignInTime(card.getReplaceCardTime());
+                    scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
+                    if(workingUserVo.getSignOutTime() != null){
+                        scheduleUser.setStatus(AuditStatusEnums.to_pass.getState());
+                        int serviceTime = (int) (workingUserVo.getSignOutTime() - card.getReplaceCardTime());
+                        scheduleUser.setServiceTime(serviceTime / 60 / 1000);
+                        scheduleUser.setActualServiceTime(scheduleUser.getServiceTime());
+                        scheduleUser.setApprovalType(ApprovalTypeEnums.SIGN_TIME.getType());
+                        scheduleUser.setApprovalTime(System.currentTimeMillis());
+                        scheduleUser.setApprovalId(userEntity.getId());
+                    }
+                }else{
+                    throw new CommonException("补卡时间只能再签到时间和签退时间之间");
+                }
+            }else{
+                if(workingUserVo.getSignOutTime() == null || workingUserVo.getSignOutTime() > card.getReplaceCardTime()){
+                    scheduleUser.setSignOutTime(card.getReplaceCardTime());
+                    scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
+                    if(scheduleUser.getSignInTime() != null){
+                        scheduleUser.setStatus(AuditStatusEnums.to_pass.getState());
+                        int serviceTime = (int) (card.getReplaceCardTime() - workingUserVo.getSignInTime());
+                        scheduleUser.setServiceTime(serviceTime / 60 / 1000);
+                        scheduleUser.setActualServiceTime(scheduleUser.getServiceTime());
+                        scheduleUser.setApprovalType(ApprovalTypeEnums.SIGN_TIME.getType());
+                        scheduleUser.setApprovalTime(System.currentTimeMillis());
+                        scheduleUser.setApprovalId(userEntity.getId());
+                    }
+                }else {
+                    throw new CommonException("补卡时间只能再签到时间和签退时间之间");
+                }
+            }
+            workingScheduleUserService.update(scheduleUser);
         }
         return count;
     }

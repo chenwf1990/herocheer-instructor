@@ -432,8 +432,7 @@
         </where>
     </delete>
 
-    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo"
-            resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
+    <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
         SELECT
         a.activityType,
         a.activityId,

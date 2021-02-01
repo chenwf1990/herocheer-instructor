@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,20 +77,22 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
             throw new CommonException("没有该值班人员");
         }
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
-        Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
-        if(!DateUtil.betweenTime(serviceBeginTime,serviceEndTime)){
+        if(!DateUtil.betweenTime()){
             throw new CommonException("当天值班才能打卡");
         }
         int signStatus = getSignStatus(workingUserVo);//计算打卡状态
+        int signType = workingScheduleUserService.getPunchCardType(workingSignRecord.getSignTime(),serviceBeginTime);
+
         workingSignRecord.setSignStatus(signStatus);
+        workingSignRecord.setType(signType);
+
         WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
         scheduleUser.setId(workingUserVo.getWorkingScheduleUserId());
-        if(workingSignRecord.getType() == SignType.SIGN_IN.getType()){
+        if(signType == SignType.SIGN_IN.getType()){
             if(workingUserVo.getSignInTime() == null){//打上班卡已第一次为准
                 scheduleUser.setSignInTime(workingSignRecord.getSignTime());
-                scheduleUser.setStatus(AuditStatusEnums.to_no_audit.getState());
             }else{
-                scheduleUser.setServiceTime((int) ((scheduleUser.getSignInTime() - workingSignRecord.getSignTime()) / 60 / 1000));
+                scheduleUser.setServiceTime((int) ((workingSignRecord.getSignTime() - workingUserVo.getSignInTime()) / 60 / 1000));
             }
             workingScheduleUserService.update(scheduleUser);
         }else{//打下班卡已最后一次为准
@@ -103,7 +106,6 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
             }
             scheduleUser.setSignOutTime(workingSignRecord.getSignTime());
             scheduleUser.setStatus(signStatus);
-            scheduleUser.setServiceTime((int) ((scheduleUser.getSignOutTime() - serviceBeginTime) / 60 / 1000));
             workingScheduleUserService.update(scheduleUser);
         }
         return this.dao.insert(workingSignRecord);

@@ -585,15 +585,15 @@
 
     <select id="findUserProjectByUserIds" parameterType="list" resultType="com.herocheer.instructor.domain.vo.UserGuideProjectVo">
         select
-        id,
-        userName,
-        guideProject,
+        a.id,
+        a.userName,
+        a.guideProject,
         b.certificateGrade,
         b.guideProject as instructorGuideProject
         from user a
         left join instructor b on a.id = b.userId
         <where>
-            and id in
+            and a.id in
             <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
                 #{id}
             </foreach>

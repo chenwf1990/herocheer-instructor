@@ -17,6 +17,7 @@ import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.utils.ExcelUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.apache.xmlbeans.UserType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -214,6 +215,8 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         List<Instructor> instructors = this.dao.findByLimit(params);
         if(instructors.isEmpty()){//不存在  插入指导员数据
             BeanUtils.copyProperties(apply,instructor);
+            User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+            instructor.setUserId(user.getId());
             this.dao.insert(instructor);
         }else{
             //更新指导员数据
