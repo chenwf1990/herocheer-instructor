@@ -11,7 +11,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
- * @author chenwf
+ * @author gaorh
  * @desc 机构表、部门表、部门架构表
  * @date 2020/12/30
  * @company 厦门熙重电子科技有限公司
@@ -28,11 +28,13 @@ public class SysDept extends BaseEntity {
     private Long pid;
     @ApiModelProperty("部门名称或下属机构名称")
     private String deptName;
-    @ApiModelProperty("部门级别：Level的设计原则：0.*.* 其中，0是顶级结构，第一个*是顶级结构下的结构，第二个*是顶级结构下的结构下的结构")
+    @ApiModelProperty("机构级别：Level的设计原则：0.*.* 其中，0是顶级结构，第一个*是顶级结构下的结构，第二个*是顶级结构下的结构下的结构")
     private String level;
     @ApiModelProperty("排序号")
     private Long sortNo;
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status;
+    @ApiModelProperty("上级名称")
+    private String parentName;
 
 }

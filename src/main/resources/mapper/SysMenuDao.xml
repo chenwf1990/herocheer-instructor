@@ -110,7 +110,7 @@
     <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysMenu">
         select
         <include refid="table_field"/>
-        from sys_menu where `status`= 1 and id = #{id}
+        from sys_menu where `status`= 0 and id = #{id}
     </select>
 
 

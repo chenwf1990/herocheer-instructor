@@ -14,6 +14,7 @@ import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +38,6 @@ public class SysOperationServiceImpl extends BaseServiceImpl<SysOperationDao, Sy
         SysOperation sysOperation = SysOperation.builder().build();
         BeanCopier.create(sysOperationVO.getClass(),sysOperation.getClass(),false).copy(sysOperationVO,sysOperation,null);
         sysOperation.setId(IdUtil.getSnowflake(1, 1).nextId());
-
 
         // 处理编码重复
         Map<String, Object> codeMap = new HashMap();
@@ -98,5 +98,18 @@ public class SysOperationServiceImpl extends BaseServiceImpl<SysOperationDao, Sy
         BeanCopier.create(sysOperationVO.getClass(),sysOperation.getClass(),false).copy(sysOperationVO,sysOperation,null);
         this.update(sysOperation);
         return sysOperation;
+    }
+
+    /**
+     * 通过pid找到操作
+     *
+     * @param pid pid
+     * @return {@link List <SysOperation>}
+     */
+    @Override
+    public List<SysOperation> findOperationByPid(Long pid) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("pid",pid);
+        return this.dao.selectOperationByPid(map);
     }
 }

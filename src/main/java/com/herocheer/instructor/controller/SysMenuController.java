@@ -84,9 +84,9 @@ public class SysMenuController extends BaseController {
      * @return {@link ResponseResult<SysMenu>}
      */
     @GetMapping("/{id:\\w+}")
-    @ApiOperation("根据ID获取菜单")
+    @ApiOperation("回显菜单")
     @AllowAnonymous
-    public ResponseResult<SysMenu> fetchMenuById(@ApiParam("菜单ID") @PathVariable Long id, HttpServletRequest request){
+    public ResponseResult<SysMenuVO> fetchMenuById(@ApiParam("菜单ID") @PathVariable Long id, HttpServletRequest request){
         return ResponseResult.ok(sysMenuService.findMenuById(id));
     }
 

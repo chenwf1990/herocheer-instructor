@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.SysDeptDao">
 
     <sql id="table_field">
-      id, pid, deptName, level, sortNo, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, pid, deptName, level, sortNo, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime, parentName      
     </sql>
 
     <!--单表新增-->
@@ -26,6 +26,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="parentName != null">
+                parentName,
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
         ) VALUES (
@@ -44,6 +47,9 @@
             </if>
             <if test="status != null">
                 #{status},
+            </if>
+            <if test="parentName != null">
+                #{parentName},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -74,6 +80,9 @@
             <if test="status != null">
                 status = #{status},
             </if>
+            <if test="parentName != null">
+                parentName = #{parentName},
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
         where id = #{id}
@@ -84,6 +93,35 @@
         select
         <include refid="table_field"/>
         from sys_dept where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysDept">
+        select
+        <include refid="table_field"/>
+        from sys_dept
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="level != null">
+                and level = #{level}
+            </if>
+            <if test="sortNo != null">
+                and sortNo = #{sortNo}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="parentName != null">
+                and parentName = #{parentName}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
     </select>
 
     <!--机构列表-->
@@ -112,28 +150,4 @@
         </where>
     </select>
 
-    <!--查询指定行数据-->
-    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysDept">
-        select
-        <include refid="table_field"/>
-        from sys_dept
-        <where>
-            <if test="pid != null">
-                and pid = #{pid}
-            </if>
-            <if test="deptName != null">
-                and deptName = #{deptName}
-            </if>
-            <if test="level != null">
-                and level = #{level}
-            </if>
-            <if test="sortNo != null">
-                and sortNo = #{sortNo}
-            </if>
-            <if test="status != null">
-                and status = #{status}
-            </if>
-            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
-        </where>
-    </select>
 </mapper>

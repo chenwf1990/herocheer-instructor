@@ -112,7 +112,7 @@ public class UserController extends BaseController {
      */
     @AllowAnonymous
     @GetMapping("/user/{id:\\w+}")
-    @ApiOperation("获取个人用户信息")
+    @ApiOperation("个人信息")
     public ResponseResult<User> fetchUserById(@ApiParam("用户ID") @PathVariable Long id){
         return ResponseResult.ok(userService.get(id));
     }

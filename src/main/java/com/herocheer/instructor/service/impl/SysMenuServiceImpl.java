@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.util.IdUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
@@ -15,12 +16,15 @@ import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.SysMenuService;
+import com.herocheer.instructor.service.SysOperationService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +39,11 @@ import java.util.stream.Collectors;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 @Slf4j
 public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Long> implements SysMenuService {
 
+    @Autowired
+    private SysOperationService sysOperationService;
     /**
      * 查找菜单权限树 (封装菜单权限树)(hutool-treeUtil)
      *
@@ -126,7 +131,6 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             String str = String.join(",", roleMenus);
             optionTree.setSelectedNode(str);
         }
-
         return optionTree;
     }
 
@@ -136,12 +140,23 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      * @param sysMenuVO VO
      * @return {@link SysMenu}
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public SysMenu addMenu(SysMenuVO sysMenuVO) {
         SysMenu sysMenu = SysMenu.builder().build();
         BeanCopier.create(sysMenuVO.getClass(),sysMenu.getClass(),false).copy(sysMenuVO,sysMenu,null);
         //  上级为空事pid默认为0
         this.insert(sysMenu);
+
+        // 菜单的操作功能
+        if(!CollectionUtils.isEmpty(sysMenuVO.getSysOperationList())){
+            sysMenuVO.getSysOperationList().stream().forEach(sysOperation -> {
+                // 批量插入
+                sysOperation.setPid(sysMenu.getId());
+                sysOperation.setId(IdUtil.getSnowflake(1, 1).nextId());
+                sysOperationService.insert(sysOperation);
+            });
+        }
         return sysMenu;
     }
 
@@ -149,11 +164,19 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      * 通过id找到菜单
      *
      * @param id id
-     * @return {@link SysMenu}
+     * @return {@link SysMenuVO}
      */
     @Override
-    public SysMenu findMenuById(Long id) {
-        return this.get(id);
+    public SysMenuVO findMenuById(Long id) {
+        SysMenu sysMenu = this.get(id);
+        if(ObjectUtils.isEmpty(sysMenu)){
+            throw new CommonException("查无数据");
+        }
+        SysMenuVO sysMenuVO = SysMenuVO.builder().build();
+        BeanCopier.create(sysMenu.getClass(),sysMenuVO.getClass(),false).copy(sysMenu,sysMenuVO,null);
+        // 回显菜单操作
+        sysMenuVO.setSysOperationList(sysOperationService.findOperationByPid(id));
+        return sysMenuVO;
     }
 
     /**
@@ -162,6 +185,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      * @param sysMenuVO 系统菜单签证官
      * @return {@link SysMenu}
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public SysMenu modifyMenuById(SysMenuVO sysMenuVO) {
         if(sysMenuVO.getId() == null || StringUtils.isBlank(sysMenuVO.getId().toString())){
@@ -170,6 +194,17 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         SysMenu sysMenu = SysMenu.builder().build();
         BeanCopier.create(sysMenuVO.getClass(),sysMenu.getClass(),false).copy(sysMenuVO,sysMenu,null);
         this.update(sysMenu);
+
+        // 菜单的操作功能
+        if(!CollectionUtils.isEmpty(sysMenuVO.getSysOperationList())){
+            sysMenuVO.getSysOperationList().stream().forEach(sysOperation -> {
+                // 更新
+                if(sysOperation.getId() == null || StringUtils.isBlank(sysOperation.getId().toString())){
+                    throw new CommonException("菜单的操作ID不能为空");
+                }
+                sysOperationService.update(sysOperation);
+            });
+        }
         return sysMenu;
     }
 

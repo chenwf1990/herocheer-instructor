@@ -4,6 +4,8 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysOperation;
 import com.herocheer.instructor.domain.vo.SysOperationVO;
 
+import java.util.List;
+
 /**
  * @author gaorh
  * @desc 功能操作表(SysOperation)表服务接口
@@ -42,5 +44,13 @@ public interface SysOperationService extends BaseService<SysOperation, Long> {
      * @return {@link SysOperation}
      */
     SysOperation modifyOperation(SysOperationVO sysOperationVO);
+
+    /**
+     * 通过pid找到操作
+     *
+     * @param pid pid
+     * @return {@link List<SysOperation>}
+     */
+    List<SysOperation> findOperationByPid(Long pid);
 
 }

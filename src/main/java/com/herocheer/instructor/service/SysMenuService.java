@@ -46,9 +46,9 @@ public interface SysMenuService extends BaseService<SysMenu, Long> {
      * 通过id找到菜单
      *
      * @param id id
-     * @return {@link SysMenu}
+     * @return {@link SysMenuVO}
      */
-    SysMenu findMenuById(Long id);
+    SysMenuVO findMenuById(Long id);
 
     /**
      * 通过id修改菜单

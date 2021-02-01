@@ -1,5 +1,6 @@
 package com.herocheer.instructor.domain.vo;
 
+import com.herocheer.instructor.domain.entity.SysOperation;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * 菜单VO
@@ -57,4 +59,7 @@ public class SysMenuVO {
     private int pageNo = 1;
     @ApiModelProperty("页数")
     private int pageSize = 10;
+
+    @ApiModelProperty("操作功能")
+    private List<SysOperation> sysOperationList;
 }

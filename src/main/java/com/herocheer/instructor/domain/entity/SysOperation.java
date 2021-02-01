@@ -1,5 +1,6 @@
 package com.herocheer.instructor.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.herocheer.common.base.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,10 +25,11 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class SysOperation extends BaseEntity {
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long id;
     @ApiModelProperty("父ID")
     private Long pid;
-    @ApiModelProperty("菜单ID")
-    private Long menuId;
     @ApiModelProperty("图标")
     private String icon;
     @ApiModelProperty(" 查看、添加、 编辑、 详情、 删除")

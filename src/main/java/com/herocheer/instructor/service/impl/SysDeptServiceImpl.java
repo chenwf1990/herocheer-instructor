@@ -98,6 +98,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptDao, SysDept, Lon
     @Override
     public Page<SysDept> findDeptByPage(SysDeptVO sysDeptVO) {
         Page page = Page.startPage(sysDeptVO.getPageNo(), sysDeptVO.getPageSize());
+        sysDeptVO.setPid(null);
         List<SysDept> sysUserList = this.dao.selectDeptByPage(sysDeptVO);
         page.setDataList(sysUserList);
         return page;

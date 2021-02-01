@@ -28,6 +28,8 @@ public class SysDeptVO {
     private Long sortNo;
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status = true;
+    @ApiModelProperty("上级名称")
+    private String parentName;
 
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;
