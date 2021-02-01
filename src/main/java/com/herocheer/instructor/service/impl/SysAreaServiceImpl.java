@@ -5,6 +5,8 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.exception.CommonException;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysAreaDao;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
@@ -47,16 +49,22 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
     }
 
     /**
-     * 通过id查找区域
+     * 通过id查找子区域
      *
-     * @param id id
-     * @return {@link List<SysArea>}
+     * @param areaQueryVo 区域查询签证官
+     * @return {@link Page<SysArea>}
      */
     @Override
-    public List<SysArea> findAreaById(Long id) {
+    public Page<SysArea> findAreaById(AreaQueryVo areaQueryVo) {
+        if(areaQueryVo.getId() == null || StringUtils.isBlank(areaQueryVo.getId().toString())){
+            throw new CommonException("ID不能为空");
+        }
+        Page page = Page.startPage(areaQueryVo.getPageNo(),areaQueryVo.getPageSize());
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("pid",id);
-        return this.dao.selectAreaById(paramMap);
+        paramMap.put("pid",areaQueryVo.getId());
+        List<SysArea> areas = this.dao.selectAreaById(paramMap);
+        page.setDataList(areas);
+        return page;
     }
 
     /**

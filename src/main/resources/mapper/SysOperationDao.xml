@@ -129,4 +129,26 @@
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
+    <!--只返回一个操作信息-->
+    <select id="selectSysOperateOne" parameterType="map" resultType="int">
+        select count(1) from sys_operation
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="pid != null">
+                    and pid = #{pid}
+                </if>
+                <if test="operationName != null">
+                    and operationName = #{operationName}
+                </if>
+                <if test="code != null">
+                    and code = #{code}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                limit 1
+            </trim>
+        </where>
+    </select>
 </mapper>

@@ -12,7 +12,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +29,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/area")
-@Api(tags = "区域管理")
+@Api(tags = "系统区域")
 public class SysAreaController extends BaseController{
     @Resource
     private SysAreaService sysAreaService;
@@ -61,15 +60,15 @@ public class SysAreaController extends BaseController{
 
 
     /**
-     * 通过id获取区域
+     * 根据id获取子层区域
      *
      * @return {@link ResponseResult<List<SysArea>>}
      */
-    @GetMapping("/{id:\\w+}")
+    @PostMapping("/page")
     @ApiOperation("根据id获取子层区域")
     @AllowAnonymous
-    public ResponseResult<List<SysArea>> fetchAreaById(@ApiParam("区域ID") @PathVariable Long id , HttpServletRequest request){
-        return ResponseResult.ok(sysAreaService.findAreaById(id));
+    public ResponseResult<Page<SysArea>> fetchAreaById(@ApiParam("区域VO") @RequestBody AreaQueryVo areaQueryVo, HttpServletRequest request){
+        return ResponseResult.ok(sysAreaService.findAreaById(areaQueryVo));
     }
 
 }

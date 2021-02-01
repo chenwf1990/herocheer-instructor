@@ -43,10 +43,10 @@ public interface SysAreaService extends BaseService<SysArea,Long> {
     Page<SysArea> queryPageList(AreaQueryVo areaQueryVo);
 
     /**
-     * 通过id查找区域
+     * 通过id查找子区域
      *
-     * @param id id
-     * @return {@link List<SysArea>}
+     * @param areaQueryVo 区域查询签证官
+     * @return {@link Page<SysArea>}
      */
-    List<SysArea> findAreaById(Long id);
+    Page<SysArea> findAreaById(AreaQueryVo areaQueryVo);
 }

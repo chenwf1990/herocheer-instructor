@@ -3,6 +3,8 @@ package com.herocheer.instructor.dao;
 import com.herocheer.instructor.domain.entity.SysOperation;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
+import java.util.Map;
+
 /**
  * @author gaorh
  * @desc 功能操作表(SysOperation)表数据库访问层
@@ -11,4 +13,11 @@ import com.herocheer.mybatis.base.dao.BaseDao;
  */
 public interface SysOperationDao extends BaseDao<SysOperation, Long> {
 
+    /**
+     * 选择一个操作
+     *
+     * @param map 地图
+     * @return int
+     */
+    int selectSysOperateOne(Map<String, Object> map);
 }

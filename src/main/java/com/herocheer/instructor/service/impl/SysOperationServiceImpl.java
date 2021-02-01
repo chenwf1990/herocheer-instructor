@@ -7,10 +7,14 @@ import com.herocheer.instructor.dao.SysOperationDao;
 import com.herocheer.instructor.domain.entity.SysOperation;
 import com.herocheer.instructor.domain.vo.SysOperationVO;
 import com.herocheer.instructor.service.SysOperationService;
+import com.herocheer.instructor.utils.PinYinUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -33,6 +37,27 @@ public class SysOperationServiceImpl extends BaseServiceImpl<SysOperationDao, Sy
         SysOperation sysOperation = SysOperation.builder().build();
         BeanCopier.create(sysOperationVO.getClass(),sysOperation.getClass(),false).copy(sysOperationVO,sysOperation,null);
         sysOperation.setId(IdUtil.getSnowflake(1, 1).nextId());
+
+
+        // 处理编码重复
+        Map<String, Object> codeMap = new HashMap();
+        // 编码取用操作名的拼首字母
+        String  oldCode  = PinYinUtil.toFirstChar(sysOperation.getOperationName()).toLowerCase();
+        codeMap.put("code",oldCode);
+        int sum = 1;
+        String newCode = null;
+        if(this.dao.selectSysOperateOne(codeMap) >= 1){
+
+            do{
+                newCode = oldCode +"0" + sum++;
+                codeMap.put("code",newCode);
+            }while (this.dao.selectSysOperateOne(codeMap) >= 1);
+
+            sysOperation.setCode(newCode);
+        }else {
+            sysOperation.setCode(oldCode);
+        }
+
         this.insert(sysOperation);
         return sysOperation;
     }
