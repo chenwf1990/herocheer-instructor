@@ -35,7 +35,7 @@ public class UploadServiceImpl implements UploadService {
         String fileName = file.getOriginalFilename();
         long time = System.currentTimeMillis();
         String newFileName = time + fileName.substring(fileName.lastIndexOf("."));
-        String dr = DateUtil.format(new Date(), DateUtil.IMAGE_PARAENT);
+        String dr = "instructor/" + DateUtil.format(new Date(), DateUtil.IMAGE_PARAENT);
         File tempFile = new File(path + dr);
         if (!tempFile.exists()) {
             tempFile.mkdirs();

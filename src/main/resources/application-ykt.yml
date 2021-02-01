@@ -1,0 +1,19 @@
+server:
+  port: 17071
+spring:
+  datasource:
+    url: jdbc:mysql://ykt.herocheer.com:3306/herocheer_instructor?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: xz107110
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: ykt.herocheer.com
+    database: 4
+    port: 6379
+    password: 123456
+    timeout: 5000ms
+file:
+  upload:
+    savePath: D:/instructor-java/file/
+    visitPath: http://ykt.herocheer.com:8086/file/
+
