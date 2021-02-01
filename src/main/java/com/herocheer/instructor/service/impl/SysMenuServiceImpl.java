@@ -25,6 +25,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author gaorh
@@ -49,6 +51,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         paramMap.put("status", false);
 
         List<SysMenu> sysMenus = null;
+        Set<Long> longSet = null;
         // 非超级管理员
         if(!UserTypeEnums.sysAdmin.getCode().equals(currentUser.getUserType())){
             paramMap.put("userId", currentUser.getId());
@@ -57,8 +60,10 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             // Long [] roleArray =
             paramMap.put("roleArray", roleArray01);
             sysMenus = this.dao.selectMenuTreeToRole(paramMap);
+            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
         }else {
             sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().status(false).build());
+            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
         }
 
         // 构建node列表
@@ -67,9 +72,9 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         for (SysMenu sysMenu:sysMenus){
             hashMap = new HashMap();
             hashMap.put("path",sysMenu.getUrl());
-            if (sysMenu.getPid().equals(0L)) {
+            // 无子节点的节点
+            if (sysMenu.getPid().equals(0L) && longSet.contains(sysMenu.getId())) {
                 hashMap.put("component", "layout/publics");
-                // TODO 无子节点的节点要处理
             } else {
                 hashMap.put("component", sysMenu.getUrl().substring(1));
             }

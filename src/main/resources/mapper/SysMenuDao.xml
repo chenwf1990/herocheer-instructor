@@ -197,7 +197,7 @@
                 </if>
             </trim>
         </where>
-        order by id desc
+        order by orderNo asc;
     </select>
 
     <!--选中的菜单节点-->
