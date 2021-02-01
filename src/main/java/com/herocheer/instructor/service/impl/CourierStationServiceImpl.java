@@ -43,7 +43,6 @@ public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao
      */
     @Override
     public Page<CourierStationVo> queryPageList(CourierStationQueryVo courierStationQueryVo) {
-        courierStationQueryVo.setUserId(18L);
         Page page = Page.startPage(courierStationQueryVo.getPageNo(),courierStationQueryVo.getPageSize());
         List<CourierStationVo> courierStations = this.dao.queryPageList(courierStationQueryVo);
         page.setDataList(courierStations);
