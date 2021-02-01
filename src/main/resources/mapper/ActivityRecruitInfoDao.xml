@@ -419,10 +419,10 @@
                 and status=#{status}
             </if>
             <if test="status!=null and status==4">
-                and status=1 and recruitStartDate >= UNIX_TIMESTAMP(NOW())*1000
+                and status=1 and recruitStartDate <![CDATA[ >= ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==5">
-                and status=1 and recruitEndDate >= UNIX_TIMESTAMP(NOW())*1000
+                and status=1 and recruitEndDate <![CDATA[ >= ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="userId!=null and type==1">
                 and createdId=#{userId}

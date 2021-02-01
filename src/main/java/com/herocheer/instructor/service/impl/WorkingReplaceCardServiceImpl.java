@@ -64,9 +64,6 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
      */
     @Override
     public int saveReplaceCard(WorkingReplaceCard workingReplaceCard, UserEntity userEntity) {
-        if(workingReplaceCard.getReplaceCardTime() < System.currentTimeMillis()){
-            throw new CommonException("当前时间段不能补卡");
-        }
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingReplaceCard.getWorkingScheduleUserId());
         params.put("userId",userEntity.getId());
@@ -74,7 +71,7 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
         WorkingUserVo workingUserVo = workingUserVos.get(0);
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
         Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
-        if(!DateUtil.betweenTime(serviceBeginTime,serviceEndTime)){
+        if(!DateUtil.betweenTime(serviceBeginTime,serviceEndTime,workingReplaceCard.getReplaceCardTime())){
             throw new CommonException("只能补当前值班日期的卡");
         }
         int type = workingScheduleUserService.getPunchCardType(workingReplaceCard.getReplaceCardTime(), serviceBeginTime);
@@ -163,7 +160,7 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
                 if(workingUserVo.getSignOutTime() == null || workingUserVo.getSignOutTime() > card.getReplaceCardTime()){
                     scheduleUser.setSignOutTime(card.getReplaceCardTime());
                     scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
-                    if(scheduleUser.getSignInTime() != null){
+                    if(workingUserVo.getSignInTime() != null){
                         scheduleUser.setStatus(AuditStatusEnums.to_pass.getState());
                         int serviceTime = (int) (card.getReplaceCardTime() - workingUserVo.getSignInTime());
                         scheduleUser.setServiceTime(serviceTime / 60 / 1000);

@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Data
 public class ReservationInfoQueryVo implements Serializable {
 
-    @ApiModelProperty("1.预约信息2.服务信息")
+    @ApiModelProperty("1.预约信息2.服务信息3.个人预约信息")
     private Integer type;
 
     @ApiModelProperty("活动id")
@@ -22,6 +22,9 @@ public class ReservationInfoQueryVo implements Serializable {
 
     @ApiModelProperty("用户名称")
     private String userName;
+
+    @ApiModelProperty("用户id")
+    private Long userId;
 
     @ApiModelProperty("服务日期")
     private Long scheduleTime;

@@ -11,9 +11,11 @@ import java.security.AlgorithmParameters;
 import java.security.Security;
 
 /**
- * @author huangjunjie
- * @date 2019/8/7 下午4:45
- **/
+ * @desc
+ * @author chenwf
+ * @create 2021/2/2
+ * @company 厦门熙重电子科技有限公司
+ */
 @Slf4j
 public class AesCbcUtil {
     static {
@@ -33,6 +35,7 @@ public class AesCbcUtil {
      */
     public static String decrypt(String data, String key, String iv, String encodingFormat) throws Exception {
         //被加密的数据
+        log.info("dad{}{}{}",data,data,data);
         byte[] dataByte = Base64.decodeBase64(data);
         //加密秘钥
         byte[] keyByte = Base64.decodeBase64(key);

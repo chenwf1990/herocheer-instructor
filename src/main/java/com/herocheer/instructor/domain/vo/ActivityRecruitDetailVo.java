@@ -12,6 +12,6 @@ import lombok.Data;
  **/
 @Data
 public class ActivityRecruitDetailVo extends ActivityRecruitDetail {
-    @ApiModelProperty("招募标题")
+    @ApiModelProperty("状态(0.可预约1.不可预约)")
     private Integer status;
 }

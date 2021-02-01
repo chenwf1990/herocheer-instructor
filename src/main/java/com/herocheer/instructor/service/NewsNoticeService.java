@@ -39,9 +39,10 @@ public interface NewsNoticeService extends BaseService<NewsNotice,Long> {
      * @date 2021-01-04 17:26:18
      * @param id
      * @param auditState
+     * @param auditIdea
      * @return
      */
-    long approval(Long id, int auditState);
+    long approval(Long id, int auditState, String auditIdea);
 
     /**
      * @author chenwf

@@ -52,7 +52,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     public Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo,Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         queryVo.setUserId(userId);
-        if (queryVo.getType()==2){
+        if (queryVo.getType()!=null&&queryVo.getType()==2){
             queryVo.setStatus(RecruitStateEnums.PENDING.getState());
         }
         List<ActivityRecruitInfo> instructors = dao.findList(queryVo);
@@ -220,7 +220,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                     detail.setStatus(1);
                 }
             }
-            if(detail.getStatus()!=1){
+            if(detail.getStatus()!=null&&detail.getStatus()!=1){
                 detail.setStatus(0);
             }
             recruitDetails.add(detail);

@@ -67,19 +67,21 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     /**
      * @param id
      * @param auditState
+     * @param auditIdea
      * @return
      * @author chenwf
      * @desc 新闻活动审批
      * @date 2021-01-04 17:26:18
      */
     @Override
-    public long approval(Long id, int auditState) {
+    public long approval(Long id, int auditState, String auditIdea) {
         NewsNotice newsNotice = this.dao.get(id);
         if(newsNotice.getAuditState() == AuditStateEnums.to_pass.getState()){
             throw new CommonException("该新闻已审批");
         }
         newsNotice.setAuditState(auditState);
         newsNotice.setAuditTime(System.currentTimeMillis());
+        newsNotice.setAuditIdea(auditIdea);
         long count = this.dao.update(newsNotice);
         newsNoticeLogService.addLog(id,auditState,newsNotice.getAuditIdea(),"审核");
         return count;
@@ -110,6 +112,7 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     public List<NewsNoticeLog> getApprovalLog(Long newsId) {
         Map<String,Object> params = new HashMap<>();
         params.put("newsNoticeId",newsId);
+        params.put("orderBy","id desc");
         return newsNoticeLogService.findByLimit(params);
     }
 }

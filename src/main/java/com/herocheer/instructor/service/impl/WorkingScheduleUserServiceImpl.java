@@ -243,7 +243,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
             if(courierStation.getUserId() != userId) {
                 throw new CommonException("不是驿站负责人，不能审批");
             }
-        }if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
+        }else if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
             //查询活动
             ActivityRecruitInfo activityRecruitInfo = activityRecruitInfoService.get(workingUserVo.getActivityId());
             if(activityRecruitInfo.getMatchApproverId() != userId){
@@ -254,10 +254,13 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     }
 
     @Override
-    public Page<ReservationInfoVo> findReservationInfoPage(ReservationInfoQueryVo queryVo) {
+    public Page<ReservationInfoVo> findReservationInfoPage(ReservationInfoQueryVo queryVo,Long userId) {
         Page page=Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
-        if(queryVo.getType()==2){
+        if(queryVo.getType()!=null&&queryVo.getType()==2){
             queryVo.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+        }
+        if(queryVo.getType()!=null&&queryVo.getType()==3){
+            queryVo.setUserId(userId);
         }
         List<ReservationInfoVo> list=dao.findReservationInfo(queryVo);
         page.setDataList(list);

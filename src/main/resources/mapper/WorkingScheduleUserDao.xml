@@ -532,6 +532,7 @@
              FROM working_schedule a
              INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
              <where>
+                 and b.status in (0,2)
                  <if test="userName != null">
                      and b.userName like concat('%',#{userName},'%')
                  </if>
@@ -566,6 +567,9 @@
             working_schedule_user u
         LEFT JOIN working_schedule s ON s.id = u.workingScheduleId
         <where>
+            <if test="userId!=null">
+                and u.userId=#{userId}
+            </if>
             <if test="activityId!=null">
                 and s.activityId=#{activityId}
             </if>
