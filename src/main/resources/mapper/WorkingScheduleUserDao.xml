@@ -566,6 +566,9 @@
             working_schedule_user u
         LEFT JOIN working_schedule s ON s.id = u.workingScheduleId
         <where>
+            <if test="userId!=null">
+                and u.userId=#{userId}
+            </if>
             <if test="activityId!=null">
                 and s.activityId=#{activityId}
             </if>

@@ -55,8 +55,9 @@ public class WorkingScheduleUserController extends BaseController{
 
     @PostMapping("/queryReservationInfoPage")
     @ApiOperation("查询预约记录或者服务记录")
-    public ResponseResult<Page<ReservationInfoVo>> queryReservationInfoPage(@RequestBody ReservationInfoQueryVo queryVo){
-        Page<ReservationInfoVo> page = workingScheduleUserService.findReservationInfoPage(queryVo);
+    public ResponseResult<Page<ReservationInfoVo>> queryReservationInfoPage(@RequestBody ReservationInfoQueryVo queryVo,
+                                                                            HttpServletRequest request){
+        Page<ReservationInfoVo> page = workingScheduleUserService.findReservationInfoPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
 }

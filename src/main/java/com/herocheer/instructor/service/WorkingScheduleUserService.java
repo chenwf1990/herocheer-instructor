@@ -102,5 +102,5 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @param queryVo
      * @return
      */
-    Page<ReservationInfoVo> findReservationInfoPage(ReservationInfoQueryVo queryVo);
+    Page<ReservationInfoVo> findReservationInfoPage(ReservationInfoQueryVo queryVo,Long userId);
 }
