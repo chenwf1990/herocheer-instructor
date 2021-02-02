@@ -7,7 +7,6 @@
         WHEN `status` = 1 AND recruitEndDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
         WHEN `status` = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate THEN 4
         ELSE `status`
-        END AS 'status'
         END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
