@@ -85,10 +85,10 @@ public interface UserService extends BaseService<User, Long> {
     /**
      * 根据openId获取微信用户信息
      *
-     * @param id id
+     * @param openId id
      * @return {@link User}
      */
-    User findUserByOpenId(Long id);
+    User findUserByOpenId(String openId);
 
 
     /**

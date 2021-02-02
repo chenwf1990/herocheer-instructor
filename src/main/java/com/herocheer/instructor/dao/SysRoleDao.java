@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.entity.SysRoleArea;
 import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -57,4 +58,12 @@ public interface SysRoleDao extends BaseDao<SysRole, Long> {
      * @return {@link SysRole}
      */
     int selectSysRoleOne(Map<String, Object> map);
+
+    /**
+     * 检测是否有审批的权限
+     * @param curUserId
+     * @param roleCode
+     * @return
+     */
+    int checkIsAuditAuth(@Param("userId") Long curUserId, @Param("roleCode")String roleCode);
 }

@@ -3,13 +3,16 @@
 <mapper namespace="com.herocheer.instructor.dao.InstructorApplyDao">
     
     <sql id="table_field">
-      id, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, instructorId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.InstructorApply">
         insert into instructor_apply (
     <trim suffixOverrides=",">
+        <if test="instructorId != null">
+            instructorId,
+        </if>
         <if test="name != null">
             name,
         </if>
@@ -83,6 +86,9 @@
     </trim>
     ) VALUES (
     <trim suffixOverrides=",">
+        <if test="instructorId != null">
+            #{instructorId},
+        </if>
         <if test="name != null">
             #{name},
         </if>
@@ -166,6 +172,9 @@
     <update id="update" parameterType="com.herocheer.instructor.domain.entity.InstructorApply">
         update instructor_apply
         <set>
+            <if test="instructorId != null">
+                instructorId = #{instructorId},
+            </if>
             <if test="name != null">
                 name = #{name},
             </if>
@@ -251,6 +260,9 @@
     <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.InstructorApply">
         select <include refid="table_field"/> from instructor_apply
         <where>
+            <if test="instructorId != null">
+                and instructorId = #{instructorId}
+            </if>
             <if test="name != null">
                 and name = #{name}
             </if>
@@ -336,6 +348,9 @@
     <select id="count" parameterType="map" resultType="java.lang.Integer">
         select count(1) from instructor_apply
         <where>
+            <if test="instructorId != null">
+                and instructorId = #{instructorId}
+            </if>
             <if test="name != null">
                 and name = #{name}
             </if>
@@ -409,9 +424,11 @@
         </where>
     </select>
 
+
     <insert id ="batchInsert" parameterType="java.util.List" >
         insert into instructor_apply(
         name,
+        instructorId,
         sex,
         auditState,
         auditTime,
@@ -440,6 +457,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.name},
+            #{instructorId},
             #{item.sex},
             #{item.auditState},
             #{item.auditTime},
@@ -480,6 +498,7 @@
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.InstructorQueryVo" resultType="com.herocheer.instructor.domain.entity.InstructorApply">
         select <include refid="table_field"/> from instructor_apply
         <where>
+            and channel not in (0,5)
             <if test="name != null">
                 and name like concat('%',#{name},'%')
             </if>

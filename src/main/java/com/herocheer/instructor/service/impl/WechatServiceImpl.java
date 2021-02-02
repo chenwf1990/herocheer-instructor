@@ -1,8 +1,6 @@
 package com.herocheer.instructor.service.impl;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
@@ -11,12 +9,10 @@ import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.service.WechatService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -56,9 +52,7 @@ public class WechatServiceImpl implements WechatService {
         String result = HttpUtil.get(access_url, param);
         log.info("获取微信access_token:code={},result={}", code, result);
         JSONObject resultJson = JSONObject.parseObject(result);
-        if (resultJson.containsKey("errcode") && !resultJson.getString("errcode").equals("0")) {
-            throw new CommonException("登录异常"+resultJson.getString("errmsg"));
-        }
+        validResult(resultJson);
         return resultJson;
     }
 
@@ -92,9 +86,7 @@ public class WechatServiceImpl implements WechatService {
         String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+ access_token +"&type=jsapi";//这个url链接和参数不能变
         String result = HttpUtil.get(url);
         JSONObject resultJson = JSONObject.parseObject(result);
-        if (resultJson.containsKey("errcode") && !resultJson.getString("errcode").equals("0")) {
-            throw new CommonException("系统错误:"+resultJson.getString("errmsg"));
-        }
+        validResult(resultJson);
         return resultJson;
     }
 
@@ -116,10 +108,15 @@ public class WechatServiceImpl implements WechatService {
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+appScret;
         String result = HttpUtil.get(url);
         JSONObject resultJson = JSONObject.parseObject(result);
+        validResult(resultJson);
+        return resultJson;
+    }
+
+    //验证微信交互是否正常
+    private void validResult(JSONObject resultJson) {
         if (resultJson.containsKey("errcode") && !resultJson.getString("errcode").equals("0")) {
             throw new CommonException("系统错误:"+resultJson.getString("errmsg"));
         }
-        return resultJson;
     }
 
     /**
@@ -152,5 +149,28 @@ public class WechatServiceImpl implements WechatService {
         wxInfoVO.setSignature(signature);
         wxInfoVO.setTicket(jsapi_ticket);
         return wxInfoVO;
+    }
+
+    /**
+     * @param wecharCode
+     * @return
+     */
+    @Override
+    public JSONObject getOauth2(String wecharCode) {
+        String codeUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+appId
+                + "&secret="+appScret
+                + "&code="+wecharCode
+                + "&grant_type=authorization_code";
+        String result = HttpUtil.get(codeUrl);
+        JSONObject json = JSONObject.parseObject(result);
+        validResult(json);
+        String accessToken = json.getString("access_token");
+        String infoUrl = "https://api.weixin.qq.com/sns/userinfo?access_token="+accessToken
+                + "&openid="+json.getString("openid")
+                + "&lang=zh_CN";
+        String userResult = HttpUtil.get(infoUrl);
+        JSONObject userJson = JSONObject.parseObject(userResult);
+        validResult(json);
+        return userJson;
     }
 }

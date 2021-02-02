@@ -78,4 +78,11 @@ public interface SysRoleService extends BaseService<SysRole, Long> {
      */
     void settingAreaToRole(String areaIds, Long roleId);
 
+    /**
+     * 检测是否有审批的权限
+     * @param curUserId 审批人
+     * @param auditUnitType 审批类型
+     * @return
+     */
+    boolean checkIsAuditAuth(Long curUserId, String auditUnitType);
 }

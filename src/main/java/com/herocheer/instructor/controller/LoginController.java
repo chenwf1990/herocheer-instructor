@@ -2,6 +2,7 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WechaLoginVo;
 import com.herocheer.instructor.service.LoginService;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -27,9 +28,10 @@ public class LoginController {
 
     @PostMapping("/wecharLogin")
     @ApiOperation("微信登录")
-    public ResponseResult wecharLogin(@RequestBody WechaLoginVo wechaLoginVo){
-        loginService.wechatLogin(wechaLoginVo);
-        return ResponseResult.ok();
+    @AllowAnonymous
+    public ResponseResult<UserInfoVo> wecharLogin(@RequestBody WechaLoginVo wechaLoginVo){
+        UserInfoVo userVO = loginService.wechatLogin(wechaLoginVo);
+        return ResponseResult.ok(userVO);
     }
 
     @PostMapping("/loginTest")

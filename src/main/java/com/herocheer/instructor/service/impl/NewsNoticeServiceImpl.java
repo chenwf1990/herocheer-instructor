@@ -7,8 +7,10 @@ import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
 import com.herocheer.instructor.domain.vo.NewsQueryVo;
 import com.herocheer.instructor.enums.AuditStateEnums;
+import com.herocheer.instructor.enums.AuditUnitEnums;
 import com.herocheer.instructor.service.NewsNoticeLogService;
 import com.herocheer.instructor.service.NewsNoticeService;
+import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,8 @@ import java.util.Map;
 public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNotice,Long> implements NewsNoticeService {
     @Resource
     private NewsNoticeLogService newsNoticeLogService;
+    @Resource
+    private SysRoleService sysRoleService;
 
     /**
      * @param newsQueryVo
@@ -68,16 +72,22 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
      * @param id
      * @param auditState
      * @param auditIdea
+     * @param curUserId
      * @return
      * @author chenwf
      * @desc 新闻活动审批
      * @date 2021-01-04 17:26:18
      */
     @Override
-    public long approval(Long id, int auditState, String auditIdea) {
+    public long approval(Long id, int auditState, String auditIdea, Long curUserId) {
         NewsNotice newsNotice = this.dao.get(id);
         if(newsNotice.getAuditState() == AuditStateEnums.to_pass.getState()){
             throw new CommonException("该新闻已审批");
+        }
+        //检测是否有审批权限
+        boolean isAuth = sysRoleService.checkIsAuditAuth(curUserId, AuditUnitEnums.NEWS_AUDIT.getRoleCode());
+        if(!isAuth){
+            throw new CommonException("没有审批的权限");
         }
         newsNotice.setAuditState(auditState);
         newsNotice.setAuditTime(System.currentTimeMillis());

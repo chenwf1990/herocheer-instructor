@@ -60,8 +60,9 @@ public class InstructorApplyController extends BaseController{
     @ApiOperation("指导员申请单审批")
     public ResponseResult approval(@ApiParam("指导员id") @RequestParam Long id,
                                    @ApiParam("审核状态 0待审核1审核通过2审核驳回") @RequestParam int auditState,
-                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea){
-        instructorApplyService.approval(id,auditState,auditIdea);
+                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea,
+                                   HttpServletRequest request){
+        instructorApplyService.approval(id,auditState,auditIdea,getCurUserId(request));
         return ResponseResult.ok();
     }
 
@@ -75,9 +76,9 @@ public class InstructorApplyController extends BaseController{
 
     @GetMapping("/getAuthInfo")
     @ApiOperation("获取认证信息")
-    public ResponseResult<List<InstructorApply>> getAuthInfo(@ApiParam("身份证") @RequestParam(required = false) String cardNo,
+    public ResponseResult<List<InstructorApply>> getAuthInfo(@ApiParam("指导员id") @RequestParam(required = false) Long instructorId,
                                                              HttpServletRequest request){
-        List<InstructorApply> applies = instructorApplyService.getAuthInfo(getCurUserId(request),cardNo);
+        List<InstructorApply> applies = instructorApplyService.getAuthInfo(getCurUserId(request),instructorId);
         return ResponseResult.ok(applies);
     }
 }

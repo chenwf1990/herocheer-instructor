@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -67,8 +68,9 @@ public class NewsNoticeController extends BaseController{
     @ApiOperation("新闻活动审批")
     public ResponseResult approval(@ApiParam("新闻活动id") @RequestParam Long id,
                                    @ApiParam("审核状态 1通过2驳回3撤回") @RequestParam int auditState,
-                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea){
-        newsNoticeService.approval(id,auditState,auditIdea);
+                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea,
+                                   HttpServletRequest request){
+        newsNoticeService.approval(id,auditState,auditIdea,getCurUserId(request));
         return ResponseResult.ok();
     }
 

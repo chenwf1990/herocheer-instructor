@@ -45,4 +45,11 @@ public interface WechatService {
      * @param pageUrl
      */
     WxInfoVO getWxInfo(String pageUrl);
+
+    /**
+     *
+     * @param wecharCode
+     * @return
+     */
+    JSONObject getOauth2(String wecharCode);
 }

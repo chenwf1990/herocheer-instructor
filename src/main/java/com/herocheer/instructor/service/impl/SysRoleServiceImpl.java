@@ -4,12 +4,14 @@ package com.herocheer.instructor.service.impl;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.SysRoleDao;
 import com.herocheer.instructor.domain.entity.SysRole;
 import com.herocheer.instructor.domain.entity.SysRoleArea;
 import com.herocheer.instructor.domain.entity.SysRoleMenu;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
+import com.herocheer.instructor.enums.AuditUnitEnums;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.instructor.utils.PinYinUtil;
@@ -194,5 +196,25 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
     @Override
     public List<SysRole> findRole() {
         return this.dao.selectRoleByPage(new SysRoleVO());
+    }
+
+    /**
+     * 检测是否有审批的权限
+     *
+     * @param curUserId     审批人
+     * @param auditUnitType 审批类型
+     * @return
+     */
+    @Override
+    public boolean checkIsAuditAuth(Long curUserId, String auditUnitType) {
+        String roleCode = AuditUnitEnums.getRoleCode(auditUnitType);
+        if(StringUtils.isEmpty(roleCode)){
+            throw new CommonException("审批编码异常");
+        }
+        int count = this.dao.checkIsAuditAuth(curUserId,roleCode);
+        if(count > 0){
+            return true;
+        }
+        return false;
     }
 }

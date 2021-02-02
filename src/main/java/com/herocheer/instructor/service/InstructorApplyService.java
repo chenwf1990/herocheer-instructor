@@ -42,8 +42,9 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
      * @param id
      * @param auditState
      * @param auditIdea
+     * @param curUserId
      */
-    void approval(Long id, int auditState, String auditIdea);
+    void approval(Long id, int auditState, String auditIdea, Long curUserId);
 
     /**
      * 指导员申请单列表查询
@@ -55,10 +56,10 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
     /**
      * 获取指导员认证信息
      * @param curUserId
-     * @param cardNo
+     * @param instructorId
      * @return
      */
-    List<InstructorApply> getAuthInfo(Long curUserId, String cardNo);
+    List<InstructorApply> getAuthInfo(Long curUserId, Long instructorId);
 
     /**
      * 获取审批列表信息

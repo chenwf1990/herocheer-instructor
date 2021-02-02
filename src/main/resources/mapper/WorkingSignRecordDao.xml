@@ -245,8 +245,8 @@
             <if test="activityId!=null">
                 and s.activityId=#{activityId}
             </if>
-            <if test="userName!=null and userName=''">
-                and u.userName like CONCAT('%',#{userName},'')
+            <if test="userName!=null and userName != ''">
+                and u.userName like CONCAT('%',#{userName},'%')
             </if>
         </where>
         order by r.signTime desc

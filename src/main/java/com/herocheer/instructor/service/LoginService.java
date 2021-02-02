@@ -1,7 +1,7 @@
 package com.herocheer.instructor.service;
 
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WechaLoginVo;
-import com.herocheer.instructor.domain.vo.WxInfoVO;
 
 /**
  * @author chenwf
@@ -16,7 +16,7 @@ public interface LoginService {
      * @date 2021/1/26
      * @param wechaLoginVo
      */
-    void wechatLogin(WechaLoginVo wechaLoginVo);
+    UserInfoVo wechatLogin(WechaLoginVo wechaLoginVo);
 
     void loginTest(String token, Long userId);
 
