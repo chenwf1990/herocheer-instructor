@@ -71,7 +71,6 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         instructorApply.setInstructorId(instructorApply.getId());
         Map<String,Object> applyMap = new HashMap<>();
         applyMap.put("cardNo",instructorApply.getCardNo());
-        applyMap.put("userId",curUserId);
         List<InstructorApply> applyList = this.dao.findByLimit(applyMap);
         if(!applyList.isEmpty()){
             //是否存在待审核数据
@@ -163,16 +162,16 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      * 获取指导员认证信息
      *
      * @param curUserId
-     * @param cardNo
+     * @param instructorId
      * @return
      */
     @Override
-    public List<InstructorApply> getAuthInfo(Long curUserId, String cardNo) {
+    public List<InstructorApply> getAuthInfo(Long curUserId, Long instructorId) {
         Map<String,Object> params = new HashMap<>();
-        if(StringUtils.isEmpty(cardNo)){
+        if(instructorId == null){
             params.put("userId",curUserId);
         }else {
-            params.put("cardNo",cardNo);
+            params.put("instructorId", instructorId);
         }
         params.put("orderBy","id desc");
         List<InstructorApply> applies = this.dao.findByLimit(params);

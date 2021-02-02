@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface InstructorApplyDao extends BaseDao<InstructorApply,Long>{
 
-    void batchInsert(List<Instructor> instructors);
+    void batchInsert(List<InstructorApply> instructorApplies);
 
     /**
      * 根据身份证查找指导员申请

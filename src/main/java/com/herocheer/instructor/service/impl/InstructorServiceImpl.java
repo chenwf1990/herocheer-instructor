@@ -110,10 +110,16 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 instructors.add(instructor);
             }
             if(!instructors.isEmpty()){
-                //批量插入指导员数据
-                this.dao.batchInsert(instructors);
+                List<InstructorApply> applyList = new ArrayList<>();
+                for (Instructor instructor : instructors) {
+                    this.dao.insert(instructor);
+                    InstructorApply apply = new InstructorApply();
+                    BeanUtils.copyProperties(instructor,apply);
+                    apply.setInstructorId(instructor.getId());
+                    applyList.add(apply);
+                }
                 //批量插入申请单
-                this.instructorApplyDao.batchInsert(instructors);
+                this.instructorApplyDao.batchInsert(applyList);
             }
         } catch (IOException e) {
             throw new CommonException(e.getMessage());
@@ -215,40 +221,55 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             }
         }
         Instructor instructor = new Instructor();
-        Map<String,Object> params = new HashMap<>();
-        params.put("cardNo",apply.getCardNo());
-        List<Instructor> instructors = this.dao.findByLimit(params);
-        if(instructors.isEmpty()){//不存在  插入指导员数据
-            BeanUtils.copyProperties(apply,instructor);
-            User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
-            instructor.setUserId(user.getId());
-            instructor.setOpenId(user.getOpenid());
-            this.dao.insert(instructor);
+        if(apply.getInstructorId() != null){
+            instructor = this.dao.get(apply.getInstructorId());//修改指导员数据
+            updateInstructor(instructor,apply);
         }else{
-            //更新指导员数据
-            instructor = instructors.get(0);
-            if(!StringUtils.isEmpty(instructor.getOpenId())) {//存在绑定微信公众号得部分修改
-                instructor.setPhone(apply.getPhone());
-                instructor.setWorkUnit(apply.getWorkUnit());
-                instructor.setAreaCode(apply.getAreaCode());
-                instructor.setAreaName(apply.getAreaName());
-                instructor.setGuideProject(apply.getGuideProject());
-                instructor.setCertificateNo(apply.getCertificateNo());
-                instructor.setCertificateGrade(apply.getCertificateGrade());
-                instructor.setOpeningDate(apply.getOpeningDate());
-                instructor.setGuideStation(apply.getGuideStation());
-                instructor.setAuditUnitType(apply.getAuditUnitType());
-                instructor.setAuditUnitName(apply.getAuditUnitName());
-                instructor.setOtherAuditUnitName(apply.getOtherAuditUnitName());
-                this.dao.update(instructor);
-            }else{//否则全部都可以修改
-                Instructor update = new Instructor();
-                BeanUtils.copyProperties(apply,update);
-                update.setId(instructor.getId());
-                this.dao.update(update);
+            Map<String,Object> params = new HashMap<>();
+            params.put("cardNo",apply.getCardNo());
+            List<Instructor> instructors = this.dao.findByLimit(params);
+            if(instructors.isEmpty()){//不存在  插入指导员数据
+                BeanUtils.copyProperties(apply,instructor);
+                User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+                instructor.setUserId(user.getId());
+                instructor.setOpenId(user.getOpenid());
+                this.dao.insert(instructor);
+            }else{
+                updateInstructor(instructors.get(0),apply);
             }
         }
+
+
         return instructor;
+    }
+
+    private void updateInstructor(Instructor instructor, InstructorApply apply) {
+        if(!StringUtils.isEmpty(instructor.getOpenId())) {//存在绑定微信公众号得部分修改
+            instructor.setPhone(apply.getPhone());
+            instructor.setWorkUnit(apply.getWorkUnit());
+            instructor.setAreaCode(apply.getAreaCode());
+            instructor.setAreaName(apply.getAreaName());
+            instructor.setGuideProject(apply.getGuideProject());
+            instructor.setCertificateNo(apply.getCertificateNo());
+            instructor.setCertificateGrade(apply.getCertificateGrade());
+            instructor.setOpeningDate(apply.getOpeningDate());
+            instructor.setGuideStation(apply.getGuideStation());
+            instructor.setAuditUnitType(apply.getAuditUnitType());
+            instructor.setAuditUnitName(apply.getAuditUnitName());
+            instructor.setOtherAuditUnitName(apply.getOtherAuditUnitName());
+            this.dao.update(instructor);
+        }else{//否则全部都可以修改
+            Map<String,Object> params = new HashMap<>();
+            params.put("cardNo",apply.getCardNo());
+            List<Instructor> instructors = this.dao.findByLimit(params);
+            if(!instructors.isEmpty()){
+                throw new CommonException("指导员已存在：{}",apply.getCardNo());
+            }
+            Instructor update = new Instructor();
+            BeanUtils.copyProperties(apply,update);
+            update.setId(instructor.getId());
+            this.dao.update(update);
+        }
     }
 
     @Override
