@@ -4,8 +4,8 @@
     <sql id="table_field">
       id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
        CASE
-        WHEN `status` = 1 AND recruitEndDate <![CDATA[ <= ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 5
-        WHEN `status` = 1 AND recruitStartDate <![CDATA[ <= ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 4
+        WHEN `status` = 1 AND recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000 and recruitEndDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
+        WHEN `status` = 1 AND recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000 and recruitEndDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
 		ELSE `status`
 	   END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
@@ -395,7 +395,7 @@
         select <include refid="table_field"/> from activity_recruit_info
         <where>
             <if test="title!=null and title!=''">
-                and title ilke concat('%',#{title},'%')
+                and title like concat('%',#{title},'%')
             </if>
             <if test="recruitType!=null">
                 and recruitType=#{recruitType}
@@ -415,14 +415,20 @@
             <if test="endTime!=null">
                 and createdTime <![CDATA[ <= ]]> #{endTime}
             </if>
-            <if test="status!=null and status!=4 and status!=5">
+            <if test="status!=null and status!=4 and status!=5 and status!=1">
                 and status=#{status}
             </if>
+            <if test="status!=null and status==1">
+                and status=1 and recruitEndDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                and recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+            </if>
             <if test="status!=null and status==4">
-                and status=1 and recruitStartDate <![CDATA[ >= ]]> UNIX_TIMESTAMP(NOW())*1000
+                and status=1 and recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
+                and recruitEndDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==5">
-                and status=1 and recruitEndDate <![CDATA[ >= ]]> UNIX_TIMESTAMP(NOW())*1000
+                and status=1 and recruitEndDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
+                and recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="userId!=null and type==1">
                 and createdId=#{userId}
