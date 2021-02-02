@@ -42,8 +42,8 @@ public class Instructor extends BaseEntity {
     private String certificateGrade;
     @ApiModelProperty("发证日期")   
     private Long openingDate;
-    @ApiModelProperty("审批单位类型 0其他 1湖里区文旅局2思明区文旅局3集美区文旅局4海沧文旅局5翔安文旅局6同安文旅局 7厦门市体育局")
-    private Integer auditUnitType;
+    @ApiModelProperty("审批单位类型 7厦门市体育局")
+    private String auditUnitType;
     @ApiModelProperty("审批单位名称")   
     private String auditUnitName;
     @ApiModelProperty("其他审批单位名称")   

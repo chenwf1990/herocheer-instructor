@@ -73,6 +73,10 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     @Override
     public void instructorImport(MultipartFile multipartFile, HttpServletRequest request) {
         try {
+            String originalFilename = multipartFile.getOriginalFilename().toLowerCase();
+            if(!originalFilename.contains(".xls") && !originalFilename.contains(".xlsx")){
+                throw new CommonException("模板错误，数据导入失败");
+            }
             List<Instructor> instructors = new ArrayList<>();
             ExcelReader reader = ExcelUtil.getReader(multipartFile.getInputStream());
             //第一行是标题，第二行是标
@@ -88,7 +92,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             List<InstructorApply> applies = this.instructorApplyDao.findByCardNos(cardNoList);
             if(!applies.isEmpty()){
                 String cardNos = applies.stream().map(s ->s.getCardNo()).collect(Collectors.joining(","));
-                throw new CommonException(cardNos + ":已存在");
+                throw new CommonException("{}:已存在",cardNos);
             }
             for (int i = 0; i < read.size(); i++) {
                 if(i == 0){//标题行
@@ -112,7 +116,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 this.instructorApplyDao.batchInsert(instructors);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new CommonException(e.getMessage());
         }
     }
 
@@ -161,6 +165,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
 
         User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(), instructor.getPhone(), UserTypeEnums.instructor.getCode());
         instructor.setUserId(user.getId());
+        instructor.setOpenId(user.getOpenid());
         return instructor;
     }
 
@@ -203,10 +208,10 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
      * @param apply
      */
     @Override
-    public void saveInstructor(InstructorApply apply) {
+    public Instructor saveInstructor(InstructorApply apply) {
         if(apply.getAuditState() == AuditStateEnums.to_pass.getState()){
             if(ChannelEnums.pc.getType() != apply.getChannel() && ChannelEnums.imp.getType() != apply.getChannel()){
-                return;
+                return null;
             }
         }
         Instructor instructor = new Instructor();
@@ -217,6 +222,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             BeanUtils.copyProperties(apply,instructor);
             User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
             instructor.setUserId(user.getId());
+            instructor.setOpenId(user.getOpenid());
             this.dao.insert(instructor);
         }else{
             //更新指导员数据
@@ -242,6 +248,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 this.dao.update(update);
             }
         }
+        return instructor;
     }
 
     @Override

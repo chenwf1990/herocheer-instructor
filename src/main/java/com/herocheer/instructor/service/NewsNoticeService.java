@@ -40,9 +40,10 @@ public interface NewsNoticeService extends BaseService<NewsNotice,Long> {
      * @param id
      * @param auditState
      * @param auditIdea
+     * @param curUserId
      * @return
      */
-    long approval(Long id, int auditState, String auditIdea);
+    long approval(Long id, int auditState, String auditIdea, Long curUserId);
 
     /**
      * @author chenwf

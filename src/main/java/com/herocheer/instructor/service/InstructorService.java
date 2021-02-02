@@ -48,7 +48,7 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * 添加指导员
      * @param instructorApply
      */
-    void saveInstructor(InstructorApply instructorApply);
+    Instructor saveInstructor(InstructorApply instructorApply);
 
     int deleteInstructor(Long id);
 }

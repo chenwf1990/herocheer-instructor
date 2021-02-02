@@ -96,6 +96,10 @@ public class WorkingScheduleController extends BaseController{
     public ResponseResult workingScheduleImport(@RequestParam("file") MultipartFile multipartFile,HttpServletRequest request){
         String courierStationId = request.getParameter("courierStationId");
         String serviceTimeId = request.getParameter("serviceTimeId");
+        String originalFilename = multipartFile.getOriginalFilename().toLowerCase();
+        if(!originalFilename.contains(".xls") && !originalFilename.contains(".xlsx")){
+            throw new CommonException("模板错误，数据导入失败");
+        }
         workingScheduleService.workingScheduleImport(Long.valueOf(courierStationId),Long.valueOf(serviceTimeId),multipartFile);
         return ResponseResult.ok();
     }

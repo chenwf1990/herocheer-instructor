@@ -161,4 +161,15 @@
         </where>
     </select>
 
+    <select id="checkIsAuditAuth" resultType="int">
+        select
+            count(1)
+        from
+            sys_role a
+            INNER JOIN sys_user_role b on a.id = b.roleId
+        where a.`code` = #{roleCode}
+          and b.userId = #{userId}
+          and a.status = 1
+    </select>
+
 </mapper>

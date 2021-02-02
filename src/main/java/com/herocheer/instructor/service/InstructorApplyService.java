@@ -42,8 +42,9 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
      * @param id
      * @param auditState
      * @param auditIdea
+     * @param curUserId
      */
-    void approval(Long id, int auditState, String auditIdea);
+    void approval(Long id, int auditState, String auditIdea, Long curUserId);
 
     /**
      * 指导员申请单列表查询

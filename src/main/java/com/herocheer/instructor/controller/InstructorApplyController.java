@@ -60,8 +60,9 @@ public class InstructorApplyController extends BaseController{
     @ApiOperation("指导员申请单审批")
     public ResponseResult approval(@ApiParam("指导员id") @RequestParam Long id,
                                    @ApiParam("审核状态 0待审核1审核通过2审核驳回") @RequestParam int auditState,
-                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea){
-        instructorApplyService.approval(id,auditState,auditIdea);
+                                   @ApiParam("审核意见") @RequestParam(required = false) String auditIdea,
+                                   HttpServletRequest request){
+        instructorApplyService.approval(id,auditState,auditIdea,getCurUserId(request));
         return ResponseResult.ok();
     }
 

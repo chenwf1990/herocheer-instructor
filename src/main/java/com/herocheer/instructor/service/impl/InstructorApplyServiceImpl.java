@@ -5,6 +5,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.InstructorApplyAuditLogDao;
 import com.herocheer.instructor.dao.InstructorApplyDao;
+import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
@@ -13,6 +14,7 @@ import com.herocheer.instructor.enums.ChannelEnums;
 import com.herocheer.instructor.service.InstructorApplyAuditLogService;
 import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,8 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     private InstructorService instructorService;
     @Resource
     private InstructorApplyAuditLogService instructorApplyAuditLogService;
+    @Resource
+    private SysRoleService sysRoleService;
 
     /**
      * 指导员申请单列表查询
@@ -63,6 +67,8 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      */
     @Override
     public int addInstructorApply(InstructorApply instructorApply, Long curUserId) {
+        //PC端新增的时候id==指导员id，公众号的id为null，所以没有影响
+        instructorApply.setInstructorId(instructorApply.getId());
         Map<String,Object> applyMap = new HashMap<>();
         applyMap.put("cardNo",instructorApply.getCardNo());
         applyMap.put("userId",curUserId);
@@ -81,11 +87,14 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
             instructorApply.setUserId(curUserId);
             instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         }
+        //添加指导员数据
+        Instructor instructor = instructorService.saveInstructor(instructorApply);
+        if(instructor != null) {
+            instructorApply.setInstructorId(instructor.getId());
+        }
         int count = this.dao.insert(instructorApply);
         //写入日志
         insertLog(instructorApply);
-        //添加指导员数据
-        instructorService.saveInstructor(instructorApply);
         return count;
     }
 
@@ -120,18 +129,24 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      * @param id
      * @param auditState
      * @param auditIdea
+     * @param curUserId
      * @author chenwf
      * @desc 指导员申请单审批
      * @date 2021-01-29 08:50:36
      */
     @Override
-    public void approval(Long id, int auditState, String auditIdea) {
+    public void approval(Long id, int auditState, String auditIdea, Long curUserId) {
         InstructorApply apply = this.dao.get(id);
         if(apply == null){
             throw new CommonException("指导员不存在");
         }
         if(apply.getAuditState() != AuditStateEnums.to_audit.getState()){
             throw new CommonException("非待审核中");
+        }
+        //检测是否有审批权限
+        boolean isAuth = sysRoleService.checkIsAuditAuth(curUserId,apply.getAuditUnitType());
+        if(!isAuth){
+            throw new CommonException("没有审批的权限");
         }
         apply.setId(id);
         apply.setAuditState(auditState);

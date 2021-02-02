@@ -12,6 +12,8 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Data
 public class InstructorApply extends BaseEntity {
+    @ApiModelProperty("指导员id")
+    private Long instructorId;
     @ApiModelProperty("姓名")   
     private String name;
     @ApiModelProperty("性别：0-未知、1-男、2-女")
@@ -42,8 +44,8 @@ public class InstructorApply extends BaseEntity {
     private String certificateGrade;
     @ApiModelProperty("发证日期")   
     private Long openingDate;
-    @ApiModelProperty("审批单位类型 0其他 1湖里区文旅局2思明区文旅局3集美区文旅局4海沧文旅局5翔安文旅局6同安文旅局")   
-    private Integer auditUnitType;
+    @ApiModelProperty("审批单位类型")
+    private String auditUnitType;
     @ApiModelProperty("审批单位名称")   
     private String auditUnitName;
     @ApiModelProperty("其他审批单位名称")   
