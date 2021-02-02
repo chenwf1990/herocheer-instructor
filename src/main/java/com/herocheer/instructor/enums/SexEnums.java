@@ -7,9 +7,9 @@ package com.herocheer.instructor.enums;
  * @company 厦门熙重电子科技有限公司
  */
 public enum SexEnums {
-    man(0,"男"),
-    woman(1,"女"),
-    unknown(2,"未知");
+    unknown(0,"未知"),
+    man(1,"男"),
+    woman(2,"女");
 
 
     private int type;

@@ -16,7 +16,7 @@ public class InstructorApplyAuditLog extends BaseEntity {
     private Long applyId;
     @ApiModelProperty("姓名")   
     private String name;
-    @ApiModelProperty("性别 0女1男2未知")   
+    @ApiModelProperty("性别：0-未知、1-男、2-女")
     private Integer sex;
     @ApiModelProperty("审核状态 0待审核1审核通过2审核驳回")   
     private Integer auditState;
