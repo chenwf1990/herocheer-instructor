@@ -1,21 +1,19 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
-import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WechaLoginVo;
-import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.service.LoginService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
-import com.herocheer.instructor.utils.AesCbcUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author chenwf
@@ -39,26 +37,22 @@ public class LoginServiceImpl implements LoginService {
      * @date 2021/1/26
      */
     @Override
-    public void wechatLogin(WechaLoginVo wechaLoginVo) {
-        //获取微信accessToken
-        JSONObject jsonStr = wechatService.getAccessTokenByCode(wechaLoginVo.getWecharCode());
-        String sessionKey = jsonStr.getString("session_key");
+    public UserInfoVo wechatLogin(WechaLoginVo wechaLoginVo) {
+        UserInfoVo userVO = new UserInfoVo();
+        JSONObject jsonStr = wechatService.getOauth2(wechaLoginVo.getCode());
         String openId = jsonStr.getString("openid");
-        String retStr = null;
-        try {
-            retStr = AesCbcUtil.decrypt(wechaLoginVo.getEncryptedData(), sessionKey, wechaLoginVo.getIv(), "UTF-8");
-        } catch (Exception e) {
-            throw new CommonException("系统异常，解析失败");
-
+        //查找是否存在该openId用户
+        User user = userService.findUserByOpenId(openId);
+        if(user == null){
+            //1：i健身查找是否存在改用户
+            //2：不存在就告诉前端跳转到i运动注册用户信息
+            //3：存在就直接创建用户数据
         }
-        JSONObject retStrJson = JSONObject.parseObject(retStr);
-        String unionId = retStrJson.getString("unionId");
-        String nickName = retStrJson.getString("nickName");
-        String headPic = retStrJson.getString("avatarUrl");
-        String gender = retStrJson.getString("gender"); //性别 0：未知、1：男、2：女
-        //1:根据openId获取用户信息
-
-        //2：获取不到用户，就根据openId拉取i健身的用户信息，拉取不到，跳转到i厦门
+        String token = IdUtil.simpleUUID();
+        BeanUtils.copyProperties(user,userVO);
+        userVO.setToken(token);
+        redisClient.set(token,JSONObject.toJSONString(userVO),1 * 24 * 60 * 60);
+        return userVO;
     }
 
     @Override

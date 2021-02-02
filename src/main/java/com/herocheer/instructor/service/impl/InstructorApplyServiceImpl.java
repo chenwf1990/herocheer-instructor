@@ -90,6 +90,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         Instructor instructor = instructorService.saveInstructor(instructorApply);
         if(instructor != null) {
             instructorApply.setInstructorId(instructor.getId());
+            instructorApply.setUserId(instructor.getUserId());
         }
         int count = this.dao.insert(instructorApply);
         //写入日志

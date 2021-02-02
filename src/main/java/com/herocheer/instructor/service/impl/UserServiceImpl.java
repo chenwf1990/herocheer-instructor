@@ -277,13 +277,13 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     /**
      * 根据openId获取微信用户信息
      *
-     * @param id id
+     * @param openId id
      * @return {@link User}
      */
     @Override
-    public User findUserByOpenId(Long id) {
+    public User findUserByOpenId(String openId) {
         Map<String, Object> objectMap = new HashMap();
-        objectMap.put("openid", id);
+        objectMap.put("openid", openId);
         return this.dao.selectSysUserOne(objectMap);
     }
 

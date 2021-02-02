@@ -43,7 +43,7 @@ public class WorkingReplaceCardController extends BaseController{
 
     @GetMapping("/approval")
     @ApiOperation("补卡审核")
-    public ResponseResult<WorkingReplaceCard> approval(@ApiParam("补卡id") @RequestParam Long id,
+    public ResponseResult approval(@ApiParam("补卡id") @RequestParam Long id,
                                                        @ApiParam("审核状态 0待审核1审核通过2审核驳回") @RequestParam int approvalStatus,
                                                        @ApiParam("审核意见") @RequestParam(required = false) String approvalComments,
                                                        HttpServletRequest request){
