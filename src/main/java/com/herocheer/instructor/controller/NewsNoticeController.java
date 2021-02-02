@@ -68,7 +68,7 @@ public class NewsNoticeController extends BaseController{
     public ResponseResult approval(@ApiParam("新闻活动id") @RequestParam Long id,
                                    @ApiParam("审核状态 1通过2驳回3撤回") @RequestParam int auditState,
                                    @ApiParam("审核意见") @RequestParam(required = false) String auditIdea){
-        newsNoticeService.approval(id,auditState);
+        newsNoticeService.approval(id,auditState,auditIdea);
         return ResponseResult.ok();
     }
 

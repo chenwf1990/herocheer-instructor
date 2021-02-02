@@ -243,7 +243,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
             if(courierStation.getUserId() != userId) {
                 throw new CommonException("不是驿站负责人，不能审批");
             }
-        }if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
+        }else if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
             //查询活动
             ActivityRecruitInfo activityRecruitInfo = activityRecruitInfoService.get(workingUserVo.getActivityId());
             if(activityRecruitInfo.getMatchApproverId() != userId){

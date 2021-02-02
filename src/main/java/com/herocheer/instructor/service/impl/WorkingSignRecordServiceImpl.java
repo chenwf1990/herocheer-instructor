@@ -77,6 +77,7 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
             throw new CommonException("没有该值班人员");
         }
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
+        Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
         if(!DateUtil.betweenTime()){
             throw new CommonException("当天值班才能打卡");
         }
@@ -105,7 +106,13 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
                 scheduleUser.setServiceTime((int) ((workingSignRecord.getSignTime() - signRecords.get(0).getSignTime()) / 60 / 1000));
             }
             scheduleUser.setSignOutTime(workingSignRecord.getSignTime());
-            scheduleUser.setStatus(signStatus);
+            //判断早晚打卡是否有存在异常
+            scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
+            if(workingUserVo.getSignInTime() != null && serviceBeginTime >= workingUserVo.getSignInTime()
+                    && serviceEndTime + DateUtil.TWO_HOURS <= workingSignRecord.getSignTime()){
+                //早晚打卡都是正常的，不需要审核
+                scheduleUser.setStatus(AuditStatusEnums.to_no_audit.getState());
+            }
             workingScheduleUserService.update(scheduleUser);
         }
         return this.dao.insert(workingSignRecord);

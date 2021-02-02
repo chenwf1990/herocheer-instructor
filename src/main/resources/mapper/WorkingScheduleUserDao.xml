@@ -532,6 +532,7 @@
              FROM working_schedule a
              INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
              <where>
+                 and b.status in (0,2)
                  <if test="userName != null">
                      and b.userName like concat('%',#{userName},'%')
                  </if>
