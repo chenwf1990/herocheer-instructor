@@ -1,197 +1,210 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.UserDao">
-    
+
     <sql id="table_field">
-      id, imgUrl, nickName, userName, account, password, sex, userType, age, email, phone, source, certificateNo, channel, birthday, address, postcode, openid, unionID, insuranceStatus, commitmentStatus, ixmUserId, ixmUserName, ixmRealNameLevel, ixmUserRealName, ixmLoginStatus, ixmToken, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime, guideProject      
+      id, imgUrl, nickName, userName, account, password, sex, userType, age, email, phone, source, certificateNo, channel, birthday, address, postcode, openid, unionID, insuranceStatus, commitmentStatus, ixmUserId, ixmUserName, ixmRealNameLevel, ixmUserRealName, ixmLoginStatus, ixmToken, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime, guideProject, deptName, deptId      
     </sql>
-    
+
     <!--单表新增-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.User">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.User">
         insert into user (
-    <trim suffixOverrides=",">
-        <if test="imgUrl != null">
-            imgUrl,
-        </if>
-        <if test="nickName != null">
-            nickName,
-        </if>
-        <if test="userName != null">
-            userName,
-        </if>
-        <if test="account != null">
-            account,
-        </if>
-        <if test="password != null">
-            password,
-        </if>
-        <if test="sex != null">
-            sex,
-        </if>
-        <if test="userType != null">
-            userType,
-        </if>
-        <if test="age != null">
-            age,
-        </if>
-        <if test="email != null">
-            email,
-        </if>
-        <if test="phone != null">
-            phone,
-        </if>
-        <if test="source != null">
-            source,
-        </if>
-        <if test="certificateNo != null">
-            certificateNo,
-        </if>
-        <if test="channel != null">
-            channel,
-        </if>
-        <if test="birthday != null">
-            birthday,
-        </if>
-        <if test="address != null">
-            address,
-        </if>
-        <if test="postcode != null">
-            postcode,
-        </if>
-        <if test="openid != null">
-            openid,
-        </if>
-        <if test="unionID != null">
-            unionID,
-        </if>
-        <if test="insuranceStatus != null">
-            insuranceStatus,
-        </if>
-        <if test="commitmentStatus != null">
-            commitmentStatus,
-        </if>
-        <if test="ixmUserId != null">
-            ixmUserId,
-        </if>
-        <if test="ixmUserName != null">
-            ixmUserName,
-        </if>
-        <if test="ixmRealNameLevel != null">
-            ixmRealNameLevel,
-        </if>
-        <if test="ixmUserRealName != null">
-            ixmUserRealName,
-        </if>
-        <if test="ixmLoginStatus != null">
-            ixmLoginStatus,
-        </if>
-        <if test="ixmToken != null">
-            ixmToken,
-        </if>
-        <if test="status != null">
-            status,
-        </if>
-        <if test="guideProject != null">
-            guideProject,
-        </if>
-        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
-    </trim>
-    ) VALUES (
-    <trim suffixOverrides=",">
-        <if test="imgUrl != null">
-            #{imgUrl},
-        </if>
-        <if test="nickName != null">
-            #{nickName},
-        </if>
-        <if test="userName != null">
-            #{userName},
-        </if>
-        <if test="account != null">
-            #{account},
-        </if>
-        <if test="password != null">
-            #{password},
-        </if>
-        <if test="sex != null">
-            #{sex},
-        </if>
-        <if test="userType != null">
-            #{userType},
-        </if>
-        <if test="age != null">
-            #{age},
-        </if>
-        <if test="email != null">
-            #{email},
-        </if>
-        <if test="phone != null">
-            #{phone},
-        </if>
-        <if test="source != null">
-            #{source},
-        </if>
-        <if test="certificateNo != null">
-            #{certificateNo},
-        </if>
-        <if test="channel != null">
-            #{channel},
-        </if>
-        <if test="birthday != null">
-            #{birthday},
-        </if>
-        <if test="address != null">
-            #{address},
-        </if>
-        <if test="postcode != null">
-            #{postcode},
-        </if>
-        <if test="openid != null">
-            #{openid},
-        </if>
-        <if test="unionID != null">
-            #{unionID},
-        </if>
-        <if test="insuranceStatus != null">
-            #{insuranceStatus},
-        </if>
-        <if test="commitmentStatus != null">
-            #{commitmentStatus},
-        </if>
-        <if test="ixmUserId != null">
-            #{ixmUserId},
-        </if>
-        <if test="ixmUserName != null">
-            #{ixmUserName},
-        </if>
-        <if test="ixmRealNameLevel != null">
-            #{ixmRealNameLevel},
-        </if>
-        <if test="ixmUserRealName != null">
-            #{ixmUserRealName},
-        </if>
-        <if test="ixmLoginStatus != null">
-            #{ixmLoginStatus},
-        </if>
-        <if test="ixmToken != null">
-            #{ixmToken},
-        </if>
-        <if test="status != null">
-            #{status},
-        </if>
-        <if test="guideProject != null">
-            #{guideProject},
-        </if>
-	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
-    </trim>
-    )
+        <trim suffixOverrides=",">
+            <if test="imgUrl != null">
+                imgUrl,
+            </if>
+            <if test="nickName != null">
+                nickName,
+            </if>
+            <if test="userName != null">
+                userName,
+            </if>
+            <if test="account != null">
+                account,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="userType != null">
+                userType,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="source != null">
+                source,
+            </if>
+            <if test="certificateNo != null">
+                certificateNo,
+            </if>
+            <if test="channel != null">
+                channel,
+            </if>
+            <if test="birthday != null">
+                birthday,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="postcode != null">
+                postcode,
+            </if>
+            <if test="openid != null">
+                openid,
+            </if>
+            <if test="unionID != null">
+                unionID,
+            </if>
+            <if test="insuranceStatus != null">
+                insuranceStatus,
+            </if>
+            <if test="commitmentStatus != null">
+                commitmentStatus,
+            </if>
+            <if test="ixmUserId != null">
+                ixmUserId,
+            </if>
+            <if test="ixmUserName != null">
+                ixmUserName,
+            </if>
+            <if test="ixmRealNameLevel != null">
+                ixmRealNameLevel,
+            </if>
+            <if test="ixmUserRealName != null">
+                ixmUserRealName,
+            </if>
+            <if test="ixmLoginStatus != null">
+                ixmLoginStatus,
+            </if>
+            <if test="ixmToken != null">
+                ixmToken,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="guideProject != null">
+                guideProject,
+            </if>
+            <if test="deptName != null">
+                deptName,
+            </if>
+            <if test="deptId != null">
+                deptId,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="imgUrl != null">
+                #{imgUrl},
+            </if>
+            <if test="nickName != null">
+                #{nickName},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="account != null">
+                #{account},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="sex != null">
+                #{sex},
+            </if>
+            <if test="userType != null">
+                #{userType},
+            </if>
+            <if test="age != null">
+                #{age},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="source != null">
+                #{source},
+            </if>
+            <if test="certificateNo != null">
+                #{certificateNo},
+            </if>
+            <if test="channel != null">
+                #{channel},
+            </if>
+            <if test="birthday != null">
+                #{birthday},
+            </if>
+            <if test="address != null">
+                #{address},
+            </if>
+            <if test="postcode != null">
+                #{postcode},
+            </if>
+            <if test="openid != null">
+                #{openid},
+            </if>
+            <if test="unionID != null">
+                #{unionID},
+            </if>
+            <if test="insuranceStatus != null">
+                #{insuranceStatus},
+            </if>
+            <if test="commitmentStatus != null">
+                #{commitmentStatus},
+            </if>
+            <if test="ixmUserId != null">
+                #{ixmUserId},
+            </if>
+            <if test="ixmUserName != null">
+                #{ixmUserName},
+            </if>
+            <if test="ixmRealNameLevel != null">
+                #{ixmRealNameLevel},
+            </if>
+            <if test="ixmUserRealName != null">
+                #{ixmUserRealName},
+            </if>
+            <if test="ixmLoginStatus != null">
+                #{ixmLoginStatus},
+            </if>
+            <if test="ixmToken != null">
+                #{ixmToken},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="guideProject != null">
+                #{guideProject},
+            </if>
+            <if test="deptName != null">
+                #{deptName},
+            </if>
+            <if test="deptId != null">
+                #{deptId},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
     </insert>
-    
+
     <!--通过主键删除-->
     <delete id="delete" parameterType="long">
         delete from user where id = #{id}
     </delete>
-    
+
     <!--通过主键修改数据-->
     <update id="update" parameterType="com.herocheer.instructor.domain.entity.User">
         update user
@@ -280,21 +293,30 @@
             <if test="guideProject != null">
                 guideProject = #{guideProject},
             </if>
-		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+            <if test="deptName != null">
+                deptName = #{deptName},
+            </if>
+            <if test="deptId != null">
+                deptId = #{deptId},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
         where id = #{id}
     </update>
-       
+
     <!--主键id单表查询-->
     <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.User">
-        select <include refid="table_field"/> from user where id = #{id}
+        select
+        <include refid="table_field"/>
+        from user where id = #{id}
     </select>
-    
-    
-    
+
+
     <!--查询指定行数据-->
     <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.User">
-        select <include refid="table_field"/> from user
+        select
+        <include refid="table_field"/>
+        from user
         <where>
             <if test="imgUrl != null">
                 and imgUrl = #{imgUrl}
@@ -380,7 +402,13 @@
             <if test="guideProject != null">
                 and guideProject = #{guideProject}
             </if>
-		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         <choose>
             <when test="orderBy != null and orderBy != ''">
@@ -389,9 +417,9 @@
             <otherwise>
                 order by id DESC
             </otherwise>
-        </choose> 
+        </choose>
     </select>
-    
+
     <!--查询条数-->
     <select id="count" parameterType="map" resultType="java.lang.Integer">
         select count(1) from user
@@ -480,7 +508,13 @@
             <if test="guideProject != null">
                 and guideProject = #{guideProject}
             </if>
-		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
 
@@ -604,13 +638,12 @@
     </select>
 
     <!--当前用户的角色-->
-    <select id="selectedRole" parameterType="Long" resultType="com.alibaba.fastjson.JSONObject">
-        select distinct b.id as roleId,b.`code` from sys_user_role a
-        inner join sys_role b on a.roleId = b.id
+    <select id="selectedRole" parameterType="Long" resultType="String">
+        select roleId from sys_user_role
         <where>
             <trim prefixOverrides="AND | OR">
                 <if test="userId != null">
-                    and a.userId = #{userId}
+                    and userId = #{userId}
                 </if>
             </trim>
         </where>
@@ -640,6 +673,42 @@
                 <if test="userId != null">
                     and a.userId = #{userId}
                 </if>
+            </trim>
+        </where>
+    </select>
+
+    <!--根据id逻辑删除-->
+    <update id="delectSysUserById" parameterType="map">
+        update `user`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <!--通过用户id找到角色ID-->
+    <select id="findRoleByUserId" parameterType="Long" resultType="String">
+        select roleId from sys_user_role
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="userId != null">
+                    and userId = #{userId}
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <!--通过用户id找到角色ID-->
+    <select id="findUserByUserType" parameterType="java.util.List" resultType="com.herocheer.instructor.domain.vo.MemberVO">
+        select <include refid="table_field"/> from user
+        <where>
+            <trim prefixOverrides="AND | OR">
+                and userType in
+                <foreach item="userType" index="index" collection="list" open="(" separator="," close=")">
+                    #{userType}
+                </foreach>
             </trim>
         </where>
     </select>

@@ -3,6 +3,7 @@ package com.herocheer.instructor.dao;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
@@ -75,9 +76,9 @@ public interface UserDao extends BaseDao<User, Long> {
      * 当前用户的角色
      *
      * @param id id
-     * @return {@link List<JSONObject>}
+     * @return {@link List<String>}
      */
-    List<JSONObject> selectedRole(Long id);
+    List<String> selectedRole(Long id);
 
     /**
      * 当前用户的菜单
@@ -95,4 +96,27 @@ public interface UserDao extends BaseDao<User, Long> {
      */
     List<JSONObject> selectedArea(Long id);
 
+    /**
+     * 删除系统用户
+     *
+     * @param map 地图
+     * @return int
+     */
+    int delectSysUserById(Map<String, Object> map);
+
+    /**
+     * 通过用户id找到角色ID
+     *
+     * @param userId 用户id
+     * @return {@link List<Long>}
+     */
+    List<String> findRoleByUserId(Long userId);
+
+    /**
+     * 根据userType查询用户
+     *
+     * @param userType 用户类型
+     * @return {@link List<User>}
+     */
+    List<MemberVO> findUserByUserType(List<String> userType);
 }

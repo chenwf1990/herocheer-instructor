@@ -77,8 +77,9 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
         }
 
         this.insert(sysRole);
+
         // 批量插入中间表
-        sysRoleService.settingMenuToRole(sysRoleVO.getMenuId(), sysRole.getId());
+        // sysRoleService.settingMenuToRole(sysRoleVO.getMenuId(), sysRole.getId());
         return sysRole;
     }
 
@@ -90,6 +91,10 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Override
     public void settingMenuToRole(String menuIds, Long roleId) {
+        // 删除关联
+        this.dao.deleteById(roleId);
+
+        // 批量插入
         if(CharSequenceUtil.isNotBlank(menuIds)){
             String[] arr = menuIds.split(",");
             List<SysRoleMenu> list = new ArrayList<>();

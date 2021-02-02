@@ -34,6 +34,7 @@ public class WeChatUserVO {
     private Integer age;
     @ApiModelProperty("邮箱")
     private String email;
+    @NotBlank(message = "手机号不能为空")
     @ApiModelProperty("手机号码")
     private String phoneNo;
     @ApiModelProperty("用户来源：1-从i厦门绑定的用户；2-后台系统录入的")

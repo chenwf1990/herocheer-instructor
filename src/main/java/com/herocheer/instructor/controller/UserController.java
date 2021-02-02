@@ -58,7 +58,6 @@ public class UserController extends BaseController {
      * @param request 请求
      * @return {@link ResponseResult < JSONObject >}
      */
-    @AllowAnonymous
     @GetMapping("/captcha")
     @ApiOperation("生成验证码")
     public ResponseResult<JSONObject> fetchCaptcha(HttpServletRequest request){
@@ -82,7 +81,6 @@ public class UserController extends BaseController {
      * @param sysUserVO 用户签证官
      * @return {@link ResponseResult}
      */
-    @AllowAnonymous
     @PostMapping("/user")
     @ApiOperation("用户注册")
     public ResponseResult<User> registerUser(@ApiParam("用户信息") @Valid @RequestBody SysUserVO sysUserVO){
@@ -96,7 +94,6 @@ public class UserController extends BaseController {
      * @param request   请求
      * @return {@link ResponseResult<Page<User>>}
      */
-    @AllowAnonymous
     @PostMapping("/user/page")
     @ApiOperation("用户列表")
     public ResponseResult<Page<User>> queryUsers(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){
@@ -110,11 +107,10 @@ public class UserController extends BaseController {
      * @param id id
      * @return {@link ResponseResult}
      */
-    @AllowAnonymous
     @GetMapping("/user/{id:\\w+}")
     @ApiOperation("个人信息")
-    public ResponseResult<User> fetchUserById(@ApiParam("用户ID") @PathVariable Long id){
-        return ResponseResult.ok(userService.get(id));
+    public ResponseResult<SysUserVO> fetchUserById(@ApiParam("用户ID") @PathVariable Long id){
+        return ResponseResult.ok(userService.findUserById(id));
     }
 
     /**
@@ -204,7 +200,7 @@ public class UserController extends BaseController {
      * @param newPassword 新密码
      * @return {@link ResponseResult}
      */
-    @PutMapping("/password")
+    @GetMapping("/password")
     @ApiOperation("密码修改")
     public ResponseResult changePassword(@ApiParam("旧密码") @RequestParam String oldPassword,
                                          @ApiParam("新密码") @RequestParam String newPassword,HttpServletRequest request){
@@ -256,9 +252,8 @@ public class UserController extends BaseController {
      * @param request 请求
      * @return {@link ResponseResult}
      */
-    @AllowAnonymous
     @PutMapping("/user/status")
-    @ApiOperation("禁用")
+    @ApiOperation("禁用用户")
     public ResponseResult forbidSysUser(HttpServletRequest request){
         // TODO 获取当前用户信息,更新状态
 
@@ -266,6 +261,20 @@ public class UserController extends BaseController {
         return ResponseResult.ok();
     }
 
+    /**
+     * 删除系统用户
+     *
+     * @param id      id
+     * @param request 请求
+     * @return {@link ResponseResult}
+     */
+    @DeleteMapping("/user/{id:\\w+}")
+    @ApiOperation("删除用户")
+    public ResponseResult dropSysUserById(@ApiParam("用户ID") @PathVariable Long id, HttpServletRequest request){
+        // 逻辑删除
+        userService.removeSysUserById(id);
+        return ResponseResult.ok();
+    }
     /**
      * 验证验证码
      *
@@ -297,4 +306,16 @@ public class UserController extends BaseController {
         return ResponseResult.ok( userService.findUser());
     }
 
+    /**
+     * 根据userType获取用户
+     *
+     * @param request 请求
+     * @return {@link ResponseResult<List<SysUserVO>>}
+     */
+    @GetMapping("/user/name/{userType}")
+    @ApiOperation("根据userType返回用户")
+    @AllowAnonymous
+    public ResponseResult<List<MemberVO>> fetchUserByuserType(@ApiParam("用户类型") @PathVariable String userType,HttpServletRequest request){
+        return ResponseResult.ok(userService.findUserByUserType(userType));
+    }
 }

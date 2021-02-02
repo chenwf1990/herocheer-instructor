@@ -5,6 +5,8 @@ import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
+import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
@@ -14,6 +16,7 @@ import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.vo.MetaVO;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
+import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.instructor.service.SysOperationService;
@@ -44,6 +47,9 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
 
     @Autowired
     private SysOperationService sysOperationService;
+
+    @Autowired
+    private RedisClient redisClient;
     /**
      * 查找菜单权限树 (封装菜单权限树)(hutool-treeUtil)
      *
@@ -60,10 +66,18 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         // 非超级管理员
         if(!UserTypeEnums.sysAdmin.getCode().equals(currentUser.getUserType())){
             paramMap.put("userId", currentUser.getId());
+
             // 获取用户的角色
-            Long [] roleArray01 = {2L,5L};
-            // Long [] roleArray =
-            paramMap.put("roleArray", roleArray01);
+            String key = StrUtil.format(CacheKeyConst.ROLEID, currentUser.getPhone(), currentUser.getId());
+//            String key = "role:13774517597:53";
+            String roleStr = redisClient.get(key);
+
+            // TODO 逻辑不够严谨，需完善
+            if(StrUtil.isNotBlank(roleStr)){
+                String [] roleArray = roleStr.split(",");
+                paramMap.put("roleArray", roleArray);
+            }
+
             sysMenus = this.dao.selectMenuTreeToRole(paramMap);
             longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
         }else {
@@ -182,7 +196,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
     /**
      * 通过id修改菜单
      *
-     * @param sysMenuVO 系统菜单签证官
+     * @param sysMenuVO VO
      * @return {@link SysMenu}
      */
     @Transactional(rollbackFor = Exception.class)

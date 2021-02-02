@@ -27,7 +27,9 @@ public class SysUserVO {
     @ApiModelProperty("用户ID")
     private Long userId;
     @ApiModelProperty("机构ID")
-    private Long deptId;
+    private String deptId;
+    @ApiModelProperty("机构名称")
+    private String deptName;
 
     @ApiModelProperty("账号")
     private String account;

@@ -50,6 +50,14 @@ public interface UserService extends BaseService<User, Long> {
      * @return {@link Page <User>}
      */
     Page<User> findUserByPage(SysUserVO sysUserVO);
+
+    /**
+     * 根据userId查找用户信息
+     *
+     * @param id id
+     * @return {@link SysUserVO}
+     */
+    SysUserVO findUserById(Long id);
     /**
      * 修改用户
      *
@@ -114,6 +122,13 @@ public interface UserService extends BaseService<User, Long> {
      */
     List<MemberVO> findUser();
 
+    /**
+     * 根据userType查询用户
+     *
+     * @param userType 用户类型
+     * @return {@link List<MemberVO>}
+     */
+    List<MemberVO> findUserByUserType(String userType);
 
     /**
      * 添加用户信息
@@ -166,8 +181,15 @@ public interface UserService extends BaseService<User, Long> {
     /**
      * 当前用户的角色
      *
-     * @param id id
-     * @return {@link String}
+     * @param user 用户
      */
-    String findRoleByCurrentUser(Long id);
+    void findRoleByCurrentUser(User user);
+
+    /**
+     * 删除系统用户
+     *
+     * @param id id
+     * @return int
+     */
+    int removeSysUserById(Long id);
 }

@@ -65,8 +65,7 @@ public class SysRoleController extends BaseController {
      */
     @PostMapping("/menu")
     @ApiOperation("分配菜单权限")
-    @AllowAnonymous
-    public ResponseResult<SysRole> settingMenuToRole(@ApiParam("角色ID") @RequestBody RoleMenuVO roleMenuVO, HttpServletRequest request){
+    public ResponseResult<SysRole> settingMenuToRole(@ApiParam("角色ID") @Valid @RequestBody RoleMenuVO roleMenuVO, HttpServletRequest request){
         sysRoleService.settingMenuToRole(roleMenuVO.getMenuId(),roleMenuVO.getRoleId());
         return ResponseResult.ok();
     }

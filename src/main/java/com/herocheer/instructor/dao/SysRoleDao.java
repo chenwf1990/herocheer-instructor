@@ -35,6 +35,14 @@ public interface SysRoleDao extends BaseDao<SysRole, Long> {
     int insertBatchSysRoleMenu(List<SysRoleMenu> sysRoleMenus);
 
     /**
+     * 通过id删除
+     *
+     * @param id id
+     * @return int
+     */
+    int deleteById(Long id);
+
+    /**
      * 批量插入角色区域中间表
      *
      * @param sysRoleAres VO

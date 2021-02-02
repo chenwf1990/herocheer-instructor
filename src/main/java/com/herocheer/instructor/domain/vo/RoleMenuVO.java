@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -27,6 +26,5 @@ public class RoleMenuVO {
     @NotNull(message = "角色ID不能为空")
     private Long roleId;
     @ApiModelProperty("菜单ID")
-    @NotBlank(message = "菜单ID不能为空")
     private String menuId;
 }

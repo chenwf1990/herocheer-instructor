@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
@@ -31,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implements UserService {
 
-    private static final Long EXPIRETIME = 1800L;
+    private static final Long EXPIRETIME = 3600L;
     /**
      * 数据加密，在启动类中已经注入进IOC容器中
      */
@@ -83,9 +85,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     /**
      * 登录
      *
-     * @param account 账号
+     * @param account  账号
      * @param password 密码
-     * @param verCode  版本的代码
      * @return {@link String}
      */
     @SysLog(module = "系统管理",bizType = OperationConst.SELECT,bizDesc = "后台用户登入")
@@ -106,13 +107,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         user.setPassword(null);
 
         //  todo token:userInfo用户信息,存入redis并设置过期时间为30分钟
-        redisClient.set(simpleUUID, JSONObject.toJSONString(user), 1800);
+        redisClient.set(simpleUUID, JSONObject.toJSONString(user), EXPIRETIME);
+
         // 统一异步处理
+        //  当前用户的角色信息放入缓存
+        this.findRoleByCurrentUser(user);
 
-        /*//  token:role-roleInfo 角色信息
-        redisClient.set(simpleUUID+":role",this.findRoleByCurrentUser(user.getId()),1800);
-
-        // token:menu-menuInfo 菜单权限
+        /*
+        // token:menu-menuInfo 菜单权限  菜单权限树
         redisClient.set(simpleUUID+":menu",this.findMenuByCurrentUser(user.getId()),1800);
 
         // token:area-areaInfo 数据权限
@@ -196,6 +198,25 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         List<User> sysUserList = this.dao.selectSysUserByPage(sysUserVO);
         page.setDataList(sysUserList);
         return page;
+    }
+
+    /**
+     * 根据userId查找用户信息
+     *
+     * @param id id
+     * @return {@link SysUserVO}
+     */
+    @Override
+    public SysUserVO findUserById(Long id) {
+        User user = this.get(id);
+        SysUserVO sysUser = SysUserVO.builder().build();
+        BeanCopier.create(user.getClass(),sysUser.getClass(),false).copy(user,sysUser,null);
+
+        // 用户角色信息
+        String roleId = String.join(",", this.dao.findRoleByUserId(id));
+        sysUser.setRoleId(roleId);
+        sysUser.setPassword(null);
+        return sysUser;
     }
 
     /**
@@ -368,6 +389,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     }
 
     /**
+     * 根据userType查询用户
+     *
+     * @param userType 用户类型
+     * @return {@link List<MemberVO>}
+     */
+    @Override
+    public List<MemberVO> findUserByUserType(String userType) {
+        List<String> stringList = Arrays.asList(userType.split(","));
+        return this.dao.findUserByUserType(stringList);
+    }
+
+    /**
      * 添加用户信息
      *
      * @return
@@ -459,26 +492,33 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     /**
      * 当前用户的角色
      *
-     * @param id id
-     * @return {@link String}
+     * @param user 用户
      */
     @Override
-    public String findRoleByCurrentUser(Long id) {
-
+    public void findRoleByCurrentUser(User user) {
         // 是否存在
-        /*redisClient.delete(token + CacheKeyConst.AREAID);
-        redisClient.delete(token + CacheKeyConst.AREACODE);
+//        redisClient.delete(CacheKeyConst.ROLEID);
+//        redisClient.delete(CacheKeyConst.ROLECODE);
 
-        List<JSONObject> list = this.dao.selectedArea(userId);
+        List<String> list = this.dao.selectedRole(41L);
+        if(CollectionUtils.isEmpty(list)){
+            return;
+        }
+        String idStr = StrUtil.format(CacheKeyConst.ROLEID, user.getPhone(), user.getId());
+        redisClient.set(idStr,String.join(",", list),EXPIRETIME);
+    }
 
-        List<String> codeList = list.stream().map(json -> json.getString("areaCode")).collect(Collectors.toList());
-        redisClient.set(token + CacheKeyConst.AREACODE,String.join(",", codeList),EXPIRETIME);
-
-        List<String> strList = list.stream().map(json -> json.getString("areaId")).collect(Collectors.toList());
-        redisClient.set(token + CacheKeyConst.AREAID,String.join(",", strList),EXPIRETIME);
-*/
-        List<JSONObject> list = this.dao.selectedRole(id);
-        List<String> strList = list.stream().map((JSONObject json) -> json.getString("roleId")).collect(Collectors.toList());
-        return String.join(",", strList);
+    /**
+     * 删除系统用户
+     *
+     * @param id id
+     * @return int
+     */
+    @Override
+    public int removeSysUserById(Long id) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", 0);
+        map.put("id", id);
+        return this.dao.delectSysUserById(map);
     }
 }

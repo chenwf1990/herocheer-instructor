@@ -81,4 +81,8 @@ public class User extends BaseEntity {
     @ApiModelProperty("指导项目")
     private String guideProject;
 
+    @ApiModelProperty("机构ID")
+    private String deptId;
+    @ApiModelProperty("机构名称")
+    private String deptName;
 }
