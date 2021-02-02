@@ -223,6 +223,15 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         Instructor instructor = new Instructor();
         if(apply.getInstructorId() != null){
             instructor = this.dao.get(apply.getInstructorId());//修改指导员数据
+            if(!instructor.getCardNo().equals(apply.getCardNo())){
+                //未修改身份证，不必进行是否存在该身份证的指导员
+                Map<String,Object> params = new HashMap<>();
+                params.put("cardNo",apply.getCardNo());
+                List<Instructor> instructors = this.dao.findByLimit(params);
+                if(!instructors.isEmpty()){
+                    throw new CommonException("指导员已存在：{}",apply.getCardNo());
+                }
+            }
             updateInstructor(instructor,apply);
         }else{
             Map<String,Object> params = new HashMap<>();
@@ -259,12 +268,6 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             instructor.setOtherAuditUnitName(apply.getOtherAuditUnitName());
             this.dao.update(instructor);
         }else{//否则全部都可以修改
-            Map<String,Object> params = new HashMap<>();
-            params.put("cardNo",apply.getCardNo());
-            List<Instructor> instructors = this.dao.findByLimit(params);
-            if(!instructors.isEmpty()){
-                throw new CommonException("指导员已存在：{}",apply.getCardNo());
-            }
             Instructor update = new Instructor();
             BeanUtils.copyProperties(apply,update);
             update.setId(instructor.getId());

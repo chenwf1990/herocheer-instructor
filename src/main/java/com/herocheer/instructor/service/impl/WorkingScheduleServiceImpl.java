@@ -235,7 +235,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 filter(y -> y.getId() == null).
                 map(y -> y.getId()).
                 collect(Collectors.toList());
-        if(userIdList.isEmpty()){
+        if(!userIdList.isEmpty()){
             List<UserGuideProjectVo> users = userService.findUserProjectByUserIds(userIdList);
             //查找到的用户信息按用户名称进行聚合，后续根据用户名key查找用户信息velue
             userMap = users.stream().collect(Collectors.groupingBy(UserGuideProjectVo::getId));
