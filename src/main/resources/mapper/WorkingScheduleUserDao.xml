@@ -477,10 +477,10 @@
             and a.scheduleTime &lt;= #{scheduleEndTime} - TIME_TO_SEC(a.serviceEndTime)
         </if>
         <if test="userName != null">
-            and b.userName like CONCAT('%',#{userName},'')
+            and b.userName like CONCAT('%',#{userName},'%')
         </if>
         <if test="taskNo != null">
-            and b.taskNo like CONCAT('%',#{taskNo},'')
+            and b.taskNo like CONCAT('%',#{taskNo},'%')
         </if>
         <if test="status != null">
             and b.status = #{status}

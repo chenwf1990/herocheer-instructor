@@ -263,7 +263,7 @@
                 and a.scheduleTime &lt;= #{scheduleEndTime}
             </if>
             <if test="userName != null">
-                and EXISTS (select y.id from working_schedule_user y where a.id = y.workingScheduleId and y.userName like CONCAT('%',#{userName},''))
+                and EXISTS (select y.id from working_schedule_user y where a.id = y.workingScheduleId and y.userName like CONCAT('%',#{userName},'%'))
             </if>
         </where>
         order by id desc
