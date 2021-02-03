@@ -191,6 +191,15 @@ public interface UserService extends BaseService<User, Long> {
      * @param id id
      * @return {@link List<String>}
      */
+    String findRoleByCurrentUser(Long id);
+
+    void updateUser(User user);
+    /**
+     * 找到用户的角色权限
+     *
+     * @param id id
+     * @return {@link List<String>}
+     */
     List<String> findRoleId(Long id);
 
     /**

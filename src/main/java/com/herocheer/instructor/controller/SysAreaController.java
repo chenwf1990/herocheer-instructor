@@ -1,6 +1,7 @@
 package com.herocheer.instructor.controller;
 
 import cn.hutool.core.lang.tree.Tree;
+import com.herocheer.cache.annotation.RedisCache;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysArea;

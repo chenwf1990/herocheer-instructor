@@ -500,7 +500,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         params.put("scheduleEndTime",DateUtil.endOfMonth(scheduleDate).getTime());
         params.put("userId",userId);
         params.put("activityType",activityType);
-        List<WorkingUserVo> workingUserVos = this.dao.getUserWorkingList(params);
+        List<WorkingUserVo> workingUserVos = this.dao.getTaskInfoList(params);
         if(!workingUserVos.isEmpty()) {
             Map<String, List<WorkingUserVo>> map = workingUserVos.stream().collect(Collectors.groupingBy(s -> s.getScheduleTimeText()));
             for (Map.Entry<String, List<WorkingUserVo>> entry : map.entrySet()) {

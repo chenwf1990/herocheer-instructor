@@ -104,7 +104,7 @@ public class WorkingScheduleController extends BaseController{
         return ResponseResult.ok();
     }
 
-    @PostMapping("/getTaskInfoList")
+    @GetMapping("/getTaskInfoList")
     @ApiOperation("获取任务信息(日历)")
     public ResponseResult<List<WorkingUserInfoVo>> getTaskInfoList(@ApiParam("当前月份(yyyy-MM)") @RequestParam(required = false) String monthData,
                                                                       @ApiParam("招募活动类型 1驿站 2赛事") @RequestParam int activityType,
