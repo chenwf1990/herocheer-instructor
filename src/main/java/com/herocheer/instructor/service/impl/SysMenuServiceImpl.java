@@ -20,6 +20,7 @@ import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.instructor.service.SysOperationService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
     private SysOperationService sysOperationService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private RedisClient redisClient;
     /**
      * 查找菜单权限树 (封装菜单权限树)(hutool-treeUtil)
@@ -69,13 +73,15 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
 
             // 获取用户的角色
             String key = StrUtil.format(CacheKeyConst.ROLEID, currentUser.getPhone(), currentUser.getId());
-//            String key = "role:13774517597:53";
             String roleStr = redisClient.get(key);
 
-            // TODO 逻辑不够严谨，需完善
+            // Redis中未取到，就到DB中取
             if(StrUtil.isNotBlank(roleStr)){
                 String [] roleArray = roleStr.split(",");
                 paramMap.put("roleArray", roleArray);
+            }else {
+                List<String> stringList= userService.findRoleId(currentUser.getId());
+                paramMap.put("roleArray", String.join(",", stringList));
             }
 
             sysMenus = this.dao.selectMenuTreeToRole(paramMap);
@@ -92,7 +98,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             hashMap = new HashMap();
             hashMap.put("path",sysMenu.getUrl());
             // 无子节点的节点
-            if (sysMenu.getPid().equals(0L) && longSet.contains(sysMenu.getId())) {
+            if (sysMenu.getPid().equals(9999L) && longSet.contains(sysMenu.getId())) {
                 hashMap.put("component", "layout/publics");
             } else {
                 hashMap.put("component", sysMenu.getUrl().substring(1));
@@ -101,12 +107,13 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             TreeNode<Long> treeNode = new TreeNode<Long>(sysMenu.getId(), sysMenu.getPid(), sysMenu.getMenuName(), 5).setExtra(hashMap);
             nodeList.add(treeNode);
         }
+
         // 最外面一层
         Map<String, Object> rootMap = new HashMap();
         rootMap.put("path","/");
         rootMap.put("component","layout/index");
         rootMap.put("redirect","/sportPolitical/sportPoliticalManage");
-        nodeList.add(new TreeNode<Long>(0L, -1L, "社会体育指导员平台", 5).setExtra(rootMap));
+        nodeList.add(new TreeNode<Long>(9999L, -1L, "社会体育指导员平台", 5).setExtra(rootMap));
 
         List<Tree<Long>> treeList = TreeUtil.build(nodeList, -1L);
         return treeList;
@@ -133,7 +140,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             nodeList.add(treeNode);
         }
         // 0表示最顶层的id是0
-        List<Tree<Long>> treeList = TreeUtil.build(nodeList, 0L);
+        List<Tree<Long>> treeList = TreeUtil.build(nodeList, 9999L);
 
         OptionTreeVO optionTree = OptionTreeVO.builder().build();
         optionTree.setTreeList(treeList);
@@ -210,13 +217,12 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         this.update(sysMenu);
 
         // 菜单的操作功能
+        sysOperationService.delete(sysMenuVO.getId());
+
         if(!CollectionUtils.isEmpty(sysMenuVO.getSysOperationList())){
             sysMenuVO.getSysOperationList().stream().forEach(sysOperation -> {
-                // 更新
-                if(sysOperation.getId() == null || StringUtils.isBlank(sysOperation.getId().toString())){
-                    throw new CommonException("菜单的操作ID不能为空");
-                }
-                sysOperationService.update(sysOperation);
+                // 更新 = 删除 + 插入
+                sysOperationService.insert(sysOperation);
             });
         }
         return sysMenu;

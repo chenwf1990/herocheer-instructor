@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implements UserService {
 
-    private static final Long EXPIRETIME = 3600L;
     /**
      * 数据加密，在启动类中已经注入进IOC容器中
      */
@@ -107,7 +106,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         user.setPassword(null);
 
         //  todo token:userInfo用户信息,存入redis并设置过期时间为30分钟
-        redisClient.set(simpleUUID, JSONObject.toJSONString(user), EXPIRETIME);
+        redisClient.set(simpleUUID, JSONObject.toJSONString(user), CacheKeyConst.EXPIRETIME);
 
         // 统一异步处理
         //  当前用户的角色信息放入缓存
@@ -168,11 +167,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     /**
      * 批处理系统用户角色中间表
      *
-     * @param sysUserVO 系统用户签证官
+     * @param sysUserVO VO
      * @param user      用户
      */
     private void batchSysUserRole(SysUserVO sysUserVO, User user) {
         if(StringUtils.isNotBlank(sysUserVO.getRoleId())){
+            // 编辑时删除缓存
+            String key = null;
+            if(sysUserVO.getId() != null || StringUtils.isNotBlank(sysUserVO.getId().toString())){
+                key = StrUtil.format(CacheKeyConst.ROLEID, user.getPhone(), user.getId());
+                redisClient.delete(key);
+            }
+
             String[] arr = sysUserVO.getRoleId().split(",");
             List<SysUserRole> list = new ArrayList<>();
             SysUserRole sysUserRole = null;
@@ -183,6 +189,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
                 list.add(sysUserRole);
             }
             this.dao.insertBatchSysUserRole(list);
+
+            // 编辑时重置缓存
+            if(sysUserVO.getId() != null || StringUtils.isNotBlank(sysUserVO.getId().toString())){
+                redisClient.set(key,sysUserVO.getRoleId(),CacheKeyConst.EXPIRETIME);
+            }
         }
     }
 
@@ -229,7 +240,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Transactional(rollbackFor = Exception.class)
     @Override
     public User modifyUser(SysUserVO sysUserVO) {
-
         if(sysUserVO.getId() == null || StringUtils.isBlank(sysUserVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");
         }
@@ -472,10 +482,10 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         List<JSONObject> list = this.dao.selectedArea(userId);
 
         List<String> codeList = list.stream().map(json -> json.getString("areaCode")).collect(Collectors.toList());
-        redisClient.set(token + CacheKeyConst.AREACODE,String.join(",", codeList),EXPIRETIME);
+        redisClient.set(token + CacheKeyConst.AREACODE,String.join(",", codeList),CacheKeyConst.EXPIRETIME);
 
         List<String> strList = list.stream().map(json -> json.getString("areaId")).collect(Collectors.toList());
-        redisClient.set(token + CacheKeyConst.AREAID,String.join(",", strList),EXPIRETIME);
+        redisClient.set(token + CacheKeyConst.AREAID,String.join(",", strList),CacheKeyConst.EXPIRETIME);
     }
 
     /**
@@ -490,22 +500,31 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     }
 
     /**
-     * 当前用户的角色
+     * 角色权限放进缓存
      *
      * @param user 用户
      */
     @Override
     public void findRoleByCurrentUser(User user) {
-        // 是否存在
-//        redisClient.delete(CacheKeyConst.ROLEID);
-//        redisClient.delete(CacheKeyConst.ROLECODE);
 
-        List<String> list = this.dao.selectedRole(41L);
+        List<String> list = findRoleId(user.getId());
+//        List<String> list = this.dao.selectedRole(41L);
         if(CollectionUtils.isEmpty(list)){
             return;
         }
         String idStr = StrUtil.format(CacheKeyConst.ROLEID, user.getPhone(), user.getId());
-        redisClient.set(idStr,String.join(",", list),EXPIRETIME);
+        redisClient.set(idStr,String.join(",", list),CacheKeyConst.EXPIRETIME);
+    }
+
+    /**
+     * 找到用户的角色权限
+     *
+     * @param id id
+     * @return {@link List<String>}
+     */
+    @Override
+    public List<String> findRoleId(Long id) {
+        return this.dao.selectedRole(id);
     }
 
     /**

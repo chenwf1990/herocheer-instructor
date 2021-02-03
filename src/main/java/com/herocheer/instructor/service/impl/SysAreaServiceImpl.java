@@ -68,6 +68,17 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
     }
 
     /**
+     * 找到区域节点
+     *
+     * @param id id
+     * @return {@link List<String>}
+     */
+    @Override
+    public List<String> findAreaNode(Long id) {
+        return this.dao.selectedAreaNode(id);
+    }
+
+    /**
      * @param type 1无权限 2有数据权限
      * @return
      * @author chenwf

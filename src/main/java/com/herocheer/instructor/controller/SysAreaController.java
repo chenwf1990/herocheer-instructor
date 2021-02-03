@@ -5,13 +5,16 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
+import com.herocheer.instructor.domain.vo.AreaTreeVO;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +38,7 @@ public class SysAreaController extends BaseController{
     private SysAreaService sysAreaService;
 
     @PostMapping("/queryPageList")
-    @ApiOperation("区域列表查询")
+    @ApiOperation("区域列表")
     @AllowAnonymous
     public ResponseResult<Page<SysArea>> queryPageList(@RequestBody AreaQueryVo areaQueryVo){
         Page<SysArea> pageList = sysAreaService.queryPageList(areaQueryVo);
@@ -43,7 +46,7 @@ public class SysAreaController extends BaseController{
     }
 
     @GetMapping("/getAllArea")
-    @ApiOperation("获取区域树(无权限)")
+    @ApiOperation("区域树(无权限)")
     @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> getAllArea(){
         List<Tree<Long>> nodeList = sysAreaService.getAllArea(1);
@@ -52,13 +55,36 @@ public class SysAreaController extends BaseController{
 
 
     @GetMapping("/getAllAreaByRole")
-    @ApiOperation("获取区域权限树(权限过滤)")
+    @ApiOperation("区域权限树(权限过滤)")
     @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> getAllAreaByRole(){
         return ResponseResult.ok(sysAreaService.getAllArea(2));
     }
 
 
+    /**
+     * 通过角色id获取区域
+     *
+     * @param roleId  角色id
+     * @param request 请求
+     * @return {@link ResponseResult<AreaTreeVO>}
+     */
+    @GetMapping("/{roleId:\\w+}")
+    @ApiOperation("根据roleId获取区域树")
+    @AllowAnonymous
+    public ResponseResult<AreaTreeVO> fetchAreaByRoleId(@ApiParam("角色ID") @PathVariable Long roleId, HttpServletRequest request){
+        AreaTreeVO areaTreeVO = AreaTreeVO.builder().build();
+        List<Tree<Long>> nodeList = sysAreaService.getAllArea(1);
+        areaTreeVO.setTreeNode(nodeList);
+        //  选中节点
+        List<String> stringList = sysAreaService.findAreaNode(roleId);
+        if(CollectionUtils.isEmpty(stringList)){
+            areaTreeVO.setSelectedNode(null);
+            return ResponseResult.ok(areaTreeVO);
+        }
+        areaTreeVO.setSelectedNode(String.join(",",stringList));
+        return ResponseResult.ok(areaTreeVO);
+    }
     /**
      * 根据id获取子层区域
      *

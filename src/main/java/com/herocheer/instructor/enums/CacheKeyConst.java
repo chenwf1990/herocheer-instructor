@@ -8,7 +8,7 @@ package com.herocheer.instructor.enums;
  */
 public class CacheKeyConst {
 
-    private static final Long EXPIRETIME = 3600L;
+    public static final Long EXPIRETIME = 3600L;
 
     public static final String  AREAID= ":area:id";
     public static final String AREACODE = ":area:code";

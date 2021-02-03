@@ -109,6 +109,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
             }
             this.dao.insertBatchSysRoleMenu(list);
         }
+
     }
 
     /**

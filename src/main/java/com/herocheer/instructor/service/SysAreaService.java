@@ -49,4 +49,12 @@ public interface SysAreaService extends BaseService<SysArea,Long> {
      * @return {@link Page<SysArea>}
      */
     Page<SysArea> findAreaById(AreaQueryVo areaQueryVo);
+
+    /**
+     * 找到区域节点
+     *
+     * @param id id
+     * @return {@link List<String>}
+     */
+    List<String> findAreaNode(Long id);
 }

@@ -158,21 +158,22 @@
 
     <!--根据用户角色获取权限-->
     <select id="selectMenuTreeToRole" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysMenu">
-        select distinct e.*  from `user` a
-        inner join sys_user_role b on a.id = b.userId
-        inner join sys_role c on b.roleId = c.id
-        inner join sys_role_menu d on c.id = d.roleId
-        inner join sys_menu e on e.id =  d.menuId
+        select distinct e.*
+        FROM sys_user_role b
+        INNER JOIN sys_role_menu d
+        ON b.roleId = d.roleId
+        INNER JOIN sys_menu e
+        ON e.id = d.menuId
         <where>
             <trim prefixOverrides="AND | OR">
                 <if test="userId != null">
-                    and a.id = #{userId}
+                    and b.userId = #{userId}
                 </if>
                 <if test="roleArray != null">
                     and d.roleId in <foreach collection="roleArray" item="item" index="index" open="(" close=")" separator=","> '${item}' </foreach>
                 </if>
                 <if test="status != null">
-                    and a.status = #{status}
+                    and e.status = #{status}
                 </if>
             </trim>
         </where>
@@ -197,7 +198,7 @@
                 </if>
             </trim>
         </where>
-        order by orderNo asc;
+        order by orderNo asc
     </select>
 
     <!--选中的菜单节点-->

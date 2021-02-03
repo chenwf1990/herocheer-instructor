@@ -186,6 +186,14 @@ public interface UserService extends BaseService<User, Long> {
     void findRoleByCurrentUser(User user);
 
     /**
+     * 找到用户的角色权限
+     *
+     * @param id id
+     * @return {@link List<String>}
+     */
+    List<String> findRoleId(Long id);
+
+    /**
      * 删除系统用户
      *
      * @param id id

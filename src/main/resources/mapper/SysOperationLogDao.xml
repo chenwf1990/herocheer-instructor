@@ -186,7 +186,6 @@
                     and status = #{status}
                 </if>
             </trim>
-            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
 </mapper>

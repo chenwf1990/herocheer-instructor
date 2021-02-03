@@ -40,4 +40,12 @@ public interface SysAreaDao extends BaseDao<SysArea,Long>{
      * @return {@link List<SysArea>}
      */
     List<SysArea> selectAreaById(Map<String, Object> map);
+
+    /**
+     * 选中的区域节点
+     *
+     * @param id id
+     * @return {@link List<String>}
+     */
+    List<String> selectedAreaNode(Long id);
 }

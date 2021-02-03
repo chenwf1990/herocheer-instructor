@@ -112,7 +112,7 @@ public class SysMenuController extends BaseController {
      * @return {@link ResponseResult<Page<SysMenu>>}
      */
     @PostMapping("/page")
-    @ApiOperation("查询菜单列表")
+    @ApiOperation("菜单列表")
     @AllowAnonymous
     public ResponseResult<Page<SysMenu>> fetchMenuByPage(@RequestBody SysMenuVO sysMenuVO,HttpServletRequest request){
         Page<SysMenu> page = sysMenuService.findMenuByPage(sysMenuVO);

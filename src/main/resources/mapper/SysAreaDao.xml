@@ -177,4 +177,16 @@
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+    <!--选中的菜单节点-->
+    <select id="selectedAreaNode" parameterType="Long" resultType="String">
+        SELECT areaId FROM sys_role_area
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="roleId != null">
+                    and roleId = #{roleId}
+                </if>
+            </trim>
+        </where>
+    </select>
+
 </mapper>
