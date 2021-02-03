@@ -135,7 +135,7 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
     public List<Tree<Long>> getAllArea(int type, Long parentId) {
         List<SysArea> sysAreas = this.dao.findByLimit(new HashMap<>());
         if(type == 2){
-            sysAreas = filterDataPermission(sysAreas);
+//            sysAreas = filterDataPermission(sysAreas);
         }
         //组装成树结构
         List<Tree<Long>> treeNodes = getTreeNode(sysAreas,parentId);
