@@ -114,7 +114,7 @@ public class WorkingScheduleController extends BaseController{
         return ResponseResult.ok(workingUserInfoVos);
     }
 
-    @PostMapping("/getTaskInfo")
+    @GetMapping("/getTaskInfo")
     @ApiOperation("获取值班任务信息(值班打卡)")
     public ResponseResult<WorkingUserVo> getTaskInfo(@ApiParam("值班人员id") @RequestParam() Long workingScheduleUserId,
                                                      @ApiParam("招募活动类型 1驿站 2赛事") @RequestParam int activityType,

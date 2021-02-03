@@ -51,4 +51,11 @@ public interface InstructorService extends BaseService<Instructor,Long> {
     Instructor saveInstructor(InstructorApply instructorApply);
 
     int deleteInstructor(Long id);
+
+    /**
+     * 根据身份证号码获取指导员
+     * @param cardNo
+     * @return
+     */
+    Instructor findByCardNo(String cardNo);
 }

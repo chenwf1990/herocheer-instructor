@@ -14,14 +14,7 @@ import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
-import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
-import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
-import com.herocheer.instructor.domain.entity.CourierStation;
-import com.herocheer.instructor.domain.entity.Instructor;
-import com.herocheer.instructor.domain.entity.ServiceHours;
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
-import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
-import com.herocheer.instructor.domain.entity.WorkingSignRecord;
+import com.herocheer.instructor.domain.entity.*;
 import com.herocheer.instructor.domain.vo.ActivityReservationVo;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
@@ -35,16 +28,7 @@ import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.enums.UserTypeEnums;
-import com.herocheer.instructor.service.ActivityRecruitDetailService;
-import com.herocheer.instructor.service.ActivityRecruitInfoService;
-import com.herocheer.instructor.service.CommonService;
-import com.herocheer.instructor.service.CourierStationService;
-import com.herocheer.instructor.service.InstructorService;
-import com.herocheer.instructor.service.ServiceHoursService;
-import com.herocheer.instructor.service.UserService;
-import com.herocheer.instructor.service.WorkingScheduleService;
-import com.herocheer.instructor.service.WorkingScheduleUserService;
-import com.herocheer.instructor.service.WorkingSignRecordService;
+import com.herocheer.instructor.service.*;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.instructor.utils.ExcelUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -95,6 +79,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     private ActivityRecruitInfoService activityRecruitInfoService;
     @Resource
     private ActivityRecruitDetailService activityRecruitDetailService;
+    @Resource
+    private WorkingReplaceCardService workingReplaceCardService;
 
     /**
      * @param workingScheduleQueryVo
@@ -550,11 +536,28 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         List<WorkingUserVo> workingUserVos = this.dao.getTaskInfoList(params);
         if(!workingUserVos.isEmpty()){
             WorkingUserVo v = workingUserVos.get(0);
-            Map<String,Object> signMap = new HashMap<>();
-            signMap.put("workingScheduleUserId",workingScheduleUserId);
-            signMap.put("orderBy","signTime");
-            List<WorkingSignRecord> signRecords = workingSignRecordService.findByLimit(signMap);
+            List<WorkingSignRecord> signRecords = workingSignRecordService.getSignRecords(workingScheduleUserId);
             v.setSignRecords(signRecords);
+            List<WorkingReplaceCard> replaceCards = workingReplaceCardService.getReplaceCardList(workingScheduleUserId);
+            v.setReplaceCards(replaceCards);
+            //签到是否异常：Ex 8-18  时间 >8 || 时间 > 18+2 都属于异常打卡
+            Integer signInStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
+            Integer signOutStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
+            if(v.getStatus() != AuditStatusEnums.to_audit.getState()){
+                Long serviceBeginTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceBeginTime());
+                Long serviceEndTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceEndTime()) + DateUtil.TWO_HOURS;
+                if((v.getSignInTime() == null && System.currentTimeMillis() > serviceBeginTime)
+                        || (v.getSignInTime() != null && v.getSignInTime() > serviceBeginTime)){
+                    signInStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();
+                }
+
+                if((v.getSignOutTime() == null && System.currentTimeMillis() > serviceEndTime)
+                        || (v.getSignOutTime() != null && v.getSignOutTime() > serviceEndTime)){
+                    signOutStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();
+                }
+            }
+            v.setSignInStatus(signInStatus);
+            v.setSignOutStatus(signOutStatus);
             return v;
         }
         return null;

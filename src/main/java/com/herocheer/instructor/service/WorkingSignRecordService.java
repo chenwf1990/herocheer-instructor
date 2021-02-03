@@ -51,4 +51,6 @@ public interface WorkingSignRecordService extends BaseService<WorkingSignRecord,
      * @return
      */
     Page<MatchSignRecordVo> queryMatchSignRecord(Integer pageNo,Integer pageSize,Long activityId,String userName);
+
+    List<WorkingSignRecord> getSignRecords(Long workingScheduleUserId);
 }

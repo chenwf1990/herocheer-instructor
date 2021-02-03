@@ -142,4 +142,13 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
         page.setDataList(list);
         return page;
     }
+
+    @Override
+    public List<WorkingSignRecord> getSignRecords(Long workingScheduleUserId) {
+        Map<String,Object> signMap = new HashMap<>();
+        signMap.put("workingScheduleUserId",workingScheduleUserId);
+        signMap.put("orderBy","signTime");
+        List<WorkingSignRecord> signRecords = this.dao.findByLimit(signMap);
+        return signRecords;
+    }
 }

@@ -300,6 +300,7 @@
         c.signInTime,
         c.signOutTime,
         c.serviceTime,
+        c.status,
         c.id as workingScheduleUserId
         from working_schedule b
         INNER JOIN working_schedule_user c on c.workingScheduleId = b.id
@@ -316,6 +317,9 @@
         </if>
         <if test="userId != null">
             and c.userId = #{userId}
+        </if>
+        <if test="workingScheduleUserId != null">
+            and c.id = #{workingScheduleUserId}
         </if>
         ORDER BY b.scheduleTime,b.serviceBeginTime
     </select>

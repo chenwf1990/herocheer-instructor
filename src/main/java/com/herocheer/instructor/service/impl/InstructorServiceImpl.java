@@ -17,7 +17,6 @@ import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.utils.ExcelUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
-import org.apache.xmlbeans.UserType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -215,52 +214,83 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
      */
     @Override
     public Instructor saveInstructor(InstructorApply apply) {
+        //审核通过才走以下流程
+        //PC端的新增和导入，没有审核通过也可以往下走流程
         if(apply.getAuditState() != AuditStateEnums.to_pass.getState()){
             if(ChannelEnums.pc.getType() != apply.getChannel() && ChannelEnums.imp.getType() != apply.getChannel()){
                 return null;
             }
         }
         Instructor instructor = new Instructor();
-        if(apply.getInstructorId() != null){
-            instructor = this.dao.get(apply.getInstructorId());//修改指导员数据
-            if(!instructor.getCardNo().equals(apply.getCardNo())){
-                //未修改身份证，不必进行是否存在该身份证的指导员
-                Map<String,Object> params = new HashMap<>();
-                params.put("cardNo",apply.getCardNo());
-                List<Instructor> instructors = this.dao.findByLimit(params);
-                if(!instructors.isEmpty()){
+        if(!apply.getChannel().equals(ChannelEnums.h5.getType())) {
+            if(apply.getInstructorId() != null){//走编辑流程
+                instructor = this.dao.get(apply.getInstructorId());//修改指导员数据
+                if(!instructor.getCardNo().equals(apply.getCardNo())){
+                    //未修改身份证，不必进行是否存在该身份证的指导员
+                    Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
+                    if(cardInstructor != null){
+                        throw new CommonException("指导员已存在：{}",apply.getCardNo());
+                    }
+                }
+                updateInstructor(instructor,apply);
+            }else {
+                Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
+                if(cardInstructor != null){
                     throw new CommonException("指导员已存在：{}",apply.getCardNo());
                 }
-            }
-            updateInstructor(instructor,apply);
-        }else{
-            Map<String,Object> params = new HashMap<>();
-            params.put("cardNo",apply.getCardNo());
-            List<Instructor> instructors = this.dao.findByLimit(params);
-            if(instructors.isEmpty()){//不存在  插入指导员数据
                 BeanUtils.copyProperties(apply,instructor);
-                User user;
-                if(apply.getChannel().equals(ChannelEnums.h5.getType())) {//公众号有直接关联用户id
-                    user = userService.get(apply.getUserId());
-                    if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
-                        user.setUserType(UserTypeEnums.instructor.getCode());
-                        userService.updateUser(user);
-                    }
-                }else{//pc端的新增和导入，是系统运维人员导入的，没有直接关联用户id，须通过身份证查找用户，找不到新增
-                    user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+                User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+                instructor.setUserId(user.getId());
+                instructor.setOpenId(user.getOpenid());
+                instructor.setAuditState(AuditStateEnums.to_pass.getState());
+                this.dao.insert(instructor);
+            }
+        }else {
+            Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
+            if(cardInstructor == null){
+                BeanUtils.copyProperties(apply,instructor);
+                User user = userService.get(apply.getUserId());
+                if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
+                    user.setUserType(UserTypeEnums.instructor.getCode());
+                    userService.updateUser(user);
                 }
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
+                instructor.setAuditState(AuditStateEnums.to_pass.getState());
                 this.dao.insert(instructor);
-            }else{
-                updateInstructor(instructors.get(0),apply);
+            }else {
+                updateInstructor(cardInstructor,apply);
             }
+
         }
         return instructor;
     }
 
+    private void insertInstructor(Instructor instructor, InstructorApply apply) {
+        Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
+        if(cardInstructor != null){
+            throw new CommonException("指导员已存在：{}",apply.getCardNo());
+        }
+        BeanUtils.copyProperties(apply,instructor);
+        User user;
+        if(apply.getChannel().equals(ChannelEnums.h5.getType())) {
+            user = userService.get(apply.getUserId());
+            if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
+                user.setUserType(UserTypeEnums.instructor.getCode());
+                userService.updateUser(user);
+            }
+        }else {
+            user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+        }
+        instructor.setUserId(user.getId());
+        instructor.setOpenId(user.getOpenid());
+        instructor.setAuditState(AuditStateEnums.to_pass.getState());
+        this.dao.insert(instructor);
+    }
+
     private void updateInstructor(Instructor instructor, InstructorApply apply) {
         if(!StringUtils.isEmpty(instructor.getOpenId())) {//存在绑定微信公众号得部分修改
+            instructor.setCardNo(null);
             instructor.setPhone(apply.getPhone());
             instructor.setWorkUnit(apply.getWorkUnit());
             instructor.setAreaCode(apply.getAreaCode());
@@ -301,5 +331,22 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 throw new CommonException("已绑定微信公众号不能删除");
             }
         }
+    }
+
+    /**
+     * 根据身份证号码获取指导员
+     *
+     * @param cardNo
+     * @return
+     */
+    @Override
+    public Instructor findByCardNo(String cardNo) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("cardNo",cardNo);
+        List<Instructor> instructors = this.dao.findByLimit(params);
+        if(!instructors.isEmpty()){
+            return instructors.get(0);
+        }
+        return null;
     }
 }
