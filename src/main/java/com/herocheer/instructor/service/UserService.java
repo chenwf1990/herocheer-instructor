@@ -170,4 +170,6 @@ public interface UserService extends BaseService<User, Long> {
      * @return {@link String}
      */
     String findRoleByCurrentUser(Long id);
+
+    void updateUser(User user);
 }

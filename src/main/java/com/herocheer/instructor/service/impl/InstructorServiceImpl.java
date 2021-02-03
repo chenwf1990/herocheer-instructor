@@ -215,7 +215,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
      */
     @Override
     public Instructor saveInstructor(InstructorApply apply) {
-        if(apply.getAuditState() == AuditStateEnums.to_pass.getState()){
+        if(apply.getAuditState() != AuditStateEnums.to_pass.getState()){
             if(ChannelEnums.pc.getType() != apply.getChannel() && ChannelEnums.imp.getType() != apply.getChannel()){
                 return null;
             }
@@ -239,7 +239,16 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             List<Instructor> instructors = this.dao.findByLimit(params);
             if(instructors.isEmpty()){//不存在  插入指导员数据
                 BeanUtils.copyProperties(apply,instructor);
-                User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+                User user;
+                if(apply.getChannel().equals(ChannelEnums.h5.getType())) {//公众号有直接关联用户id
+                    user = userService.get(apply.getUserId());
+                    if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
+                        user.setUserType(UserTypeEnums.instructor.getCode());
+                        userService.updateUser(user);
+                    }
+                }else{//pc端的新增和导入，是系统运维人员导入的，没有直接关联用户id，须通过身份证查找用户，找不到新增
+                    user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+                }
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
                 this.dao.insert(instructor);
@@ -247,8 +256,6 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 updateInstructor(instructors.get(0),apply);
             }
         }
-
-
         return instructor;
     }
 
@@ -266,11 +273,13 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             instructor.setAuditUnitType(apply.getAuditUnitType());
             instructor.setAuditUnitName(apply.getAuditUnitName());
             instructor.setOtherAuditUnitName(apply.getOtherAuditUnitName());
+            instructor.setAuditState(AuditStateEnums.to_pass.getState());
             this.dao.update(instructor);
         }else{//否则全部都可以修改
             Instructor update = new Instructor();
             BeanUtils.copyProperties(apply,update);
             update.setId(instructor.getId());
+            update.setAuditState(AuditStateEnums.to_pass.getState());
             this.dao.update(update);
         }
     }

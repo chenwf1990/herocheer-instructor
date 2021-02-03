@@ -6,10 +6,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.UserDao;
+import com.herocheer.instructor.domain.HeaderParam;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MemberVO;
@@ -20,8 +22,10 @@ import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -85,7 +89,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      *
      * @param account 账号
      * @param password 密码
-     * @param verCode  版本的代码
      * @return {@link String}
      */
     @SysLog(module = "系统管理",bizType = OperationConst.SELECT,bizDesc = "后台用户登入")
@@ -377,11 +380,15 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 判断身份证是否存在是否存在
         Map<String, Object> params = new HashMap();
         params.put("certificateNo", cardNo);
-        User user = this.dao.selectSysUserOne(params);
-        if(user != null){
+        List<User> users = this.dao.findByLimit(params);
+        User user = new User();
+        if(!users.isEmpty()){
+            user = users.get(0);
+            if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
+                user.setUserType(UserTypeEnums.instructor.getCode());
+            }
             return user;
         }
-        user = new User();
         user.setCertificateNo(cardNo);
         user.setUserName(name);
         user.setPhone(phone);
@@ -480,5 +487,15 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         List<JSONObject> list = this.dao.selectedRole(id);
         List<String> strList = list.stream().map((JSONObject json) -> json.getString("roleId")).collect(Collectors.toList());
         return String.join(",", strList);
+    }
+
+    @Override
+    public void updateUser(User user) {
+        this.dao.update(user);
+        UserEntity userEntity = new UserEntity();
+        BeanUtils.copyProperties(user,userEntity);
+        HeaderParam headerParam = HeaderParam.getInstance();
+        userEntity.setToken(headerParam.getToken());
+        redisClient.set(userEntity.getToken(),JSONObject.toJSONString(userEntity), 1 * 24 * 60 * 60);
     }
 }

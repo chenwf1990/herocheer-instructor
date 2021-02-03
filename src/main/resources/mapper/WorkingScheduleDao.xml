@@ -311,7 +311,6 @@
         </if>
         where c.reserveStatus = 0
         and b.activityType = #{activityType}
-        and c.id = #{workingScheduleUserId}
         <if test="scheduleBeginTime != null and scheduleEndTime != null">
             and b.scheduleTime between #{scheduleBeginTime} and #{scheduleEndTime}
         </if>

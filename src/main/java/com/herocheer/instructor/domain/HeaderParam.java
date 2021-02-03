@@ -21,7 +21,7 @@ public class HeaderParam {
     public HeaderParam(){
         final HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         this.token = request.getHeader("authorization");
-//        this.client = Integer.parseInt(request.getHeader("client"));
+        this.client = Integer.parseInt(request.getHeader("client"));
     }
 
     public static HeaderParam getInstance() {
