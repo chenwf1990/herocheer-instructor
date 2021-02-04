@@ -491,7 +491,7 @@
             a.scheduleTime + time_to_sec(a.serviceEndTime),
             b.signInTime,b.signOutTime,b.status) = #{signStatus}
         </if>
-
+        order by a.scheduleTime desc
     </select>
 
     <select id="findWorkingUser" parameterType="map" resultType="string">
