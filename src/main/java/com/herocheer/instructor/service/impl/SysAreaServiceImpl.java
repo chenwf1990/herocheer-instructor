@@ -96,6 +96,7 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
      * @return {@link List<SysArea>}
      */
     private List<SysArea> filterDataPermission(List<SysArea> sysAreas) {
+
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("status", true);
         paramMap.put("userId", 8L);
@@ -103,6 +104,7 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
         Long [] roleArray01 = {2L,5L};
 //        Long [] roleArray =
         paramMap.put("roleArray", roleArray01);
+
         return this.dao.selectAreaTreeToRole(paramMap);
     }
 

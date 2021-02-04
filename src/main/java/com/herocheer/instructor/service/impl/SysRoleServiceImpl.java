@@ -95,7 +95,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
     @Transactional(rollbackFor = Exception.class)
     public void settingMenuToRole(String menuIds, Long roleId) {
         // 删除关联
-        this.dao.deleteById(roleId);
+        this.dao.deleteMenuById(roleId);
 
         // 批量插入
         if(CharSequenceUtil.isNotBlank(menuIds)){
@@ -119,9 +119,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      * @param areaIds 区域id
      * @param roleId  角色id
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void settingAreaToRole(String areaIds, Long roleId) {
+        // 删除关联
+        this.dao.deleteAreaById(roleId);
+
         if(CharSequenceUtil.isNotBlank(areaIds)){
             String[] arr = areaIds.split(",");
             List<SysRoleArea> list = new ArrayList<>();
@@ -134,7 +138,6 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
             }
             this.dao.insertBatchSysRoleArea(list);
         }
-
     }
 
     /**

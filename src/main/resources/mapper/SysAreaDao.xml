@@ -135,21 +135,16 @@
 
     <!--根据用户角色获取数据权限-->
     <select id="selectAreaTreeToRole" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysArea">
-        select e.* from `user` a
-        inner join sys_user_role b on a.id = b.userId
-        inner join sys_role c on b.roleId = c.id
-        inner join sys_role_area d on c.id = d.roleId
-        inner join sys_area e on e.id =  d.areaId
+        select e.* from sys_user_role b
+        inner join sys_role_area d on b.roleId = d.roleId
+        inner join sys_area e on d.areaId =  e.id
         <where>
             <trim prefixOverrides="AND | OR">
                 <if test="userId != null">
-                    and a.id = #{userId}
+                    and b.userId = #{userId}
                 </if>
                 <if test="roleArray != null">
                     and d.roleId in <foreach collection="roleArray" item="item" index="index" open="(" close=")" separator=","> '${item}' </foreach>
-                </if>
-                <if test="status != null">
-                    and a.status = #{status}
                 </if>
             </trim>
         </where>
