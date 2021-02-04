@@ -41,7 +41,16 @@ public interface SysRoleDao extends BaseDao<SysRole, Long> {
      * @param id id
      * @return int
      */
-    int deleteById(Long id);
+    int deleteMenuById(Long id);
+
+
+    /**
+     * 通过id删除区域关联表
+     *
+     * @param id id
+     * @return int
+     */
+    int deleteAreaById(Long id);
 
     /**
      * 批量插入角色区域中间表

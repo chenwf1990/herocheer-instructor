@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.AreaPermissionVO;
 import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
@@ -163,12 +164,12 @@ public interface UserService extends BaseService<User, Long> {
     List<UserGuideProjectVo> findUserProjectByUserIds(List<Long> userIdList);
 
     /**
-     * 当前用户的区域
+     * 通过当前用户找到区域
      *
-     * @param id    id
-     * @param token 令牌
+     * @param userId 用户id
+     * @return {@link AreaPermissionVO}
      */
-    void findAreaByCurrentUser(String token,Long id);
+    AreaPermissionVO findAreaByCurrentUser(Long userId);
 
     /**
      * 当前用户的菜单

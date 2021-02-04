@@ -15,6 +15,7 @@ import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.HeaderParam;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.AreaPermissionVO;
 import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
@@ -23,7 +24,6 @@ import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.UserService;
-import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -116,12 +116,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         //  当前用户的角色信息放入缓存
         this.findRoleByCurrentUser(user);
 
-        /*
         // token:menu-menuInfo 菜单权限  菜单权限树
-        redisClient.set(simpleUUID+":menu",this.findMenuByCurrentUser(user.getId()),1800);
-
-        // token:area-areaInfo 数据权限
-        this.findAreaByCurrentUser(simpleUUID,user.getId());*/
+        // redisClient.set(simpleUUID+":menu",this.findMenuByCurrentUser(user.getId()),1800);
         return simpleUUID;
     }
 
@@ -476,24 +472,22 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     }
 
     /**
-     * 当前用户的区域
+     * 通过当前用户找到区域
      *
-     * @param token  令牌
      * @param userId 用户id
+     * @return {@link AreaPermissionVO}
      */
     @Override
-    public void findAreaByCurrentUser(String token,Long userId) {
-        // 是否存在
-        redisClient.delete(token + CacheKeyConst.AREAID);
-        redisClient.delete(token + CacheKeyConst.AREACODE);
-
+    public AreaPermissionVO findAreaByCurrentUser(Long userId) {
         List<JSONObject> list = this.dao.selectedArea(userId);
-
-        List<String> codeList = list.stream().map(json -> json.getString("areaCode")).collect(Collectors.toList());
-        redisClient.set(token + CacheKeyConst.AREACODE,String.join(",", codeList),CacheKeyConst.EXPIRETIME);
-
-        List<String> strList = list.stream().map(json -> json.getString("areaId")).collect(Collectors.toList());
-        redisClient.set(token + CacheKeyConst.AREAID,String.join(",", strList),CacheKeyConst.EXPIRETIME);
+        AreaPermissionVO areaPermission = AreaPermissionVO.builder().build();
+        if(!CollectionUtils.isEmpty(list)){
+            List<String> codeList = list.stream().map(json -> json.getString("areaCode")).collect(Collectors.toList());
+            areaPermission.setAreaCode(String.join(",", codeList));
+            List<String> strList = list.stream().map(json -> json.getString("areaId")).collect(Collectors.toList());
+            areaPermission.setAreaId(String.join(",", strList));
+        }
+        return areaPermission;
     }
 
     /**

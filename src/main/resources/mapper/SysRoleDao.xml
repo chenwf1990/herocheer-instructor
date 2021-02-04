@@ -122,8 +122,13 @@
     </select>
 
     <!--通过主键删除-->
-    <delete id="deleteById" parameterType="Long">
+    <delete id="deleteMenuById" parameterType="Long">
         delete from sys_role_menu where roleId = #{id}
+    </delete>
+
+    <!--通过主键删除-->
+    <delete id="deleteAreaById" parameterType="Long">
+        delete from sys_role_area where roleId = #{id}
     </delete>
 
     <!-- 插入批量SysRoleMenu-->
