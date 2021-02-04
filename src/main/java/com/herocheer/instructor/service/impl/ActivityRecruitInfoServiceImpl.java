@@ -36,7 +36,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecruitInfoDao, ActivityRecruitInfo,Long> implements ActivityRecruitInfoService {
 
     @Resource
@@ -84,6 +83,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Integer addActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
         activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
         Integer count=dao.insert(activityRecruitInfoVo);
@@ -149,6 +149,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Integer approval(ActivityRecruitApproval activityRecruitApproval) {
         ActivityRecruitInfo activityRecruitInfo=dao.get(activityRecruitApproval.getRecruitId());
         if(activityRecruitInfo==null){

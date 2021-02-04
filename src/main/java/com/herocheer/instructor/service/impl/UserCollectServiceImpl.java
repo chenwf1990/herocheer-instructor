@@ -20,7 +20,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class UserCollectServiceImpl extends BaseServiceImpl<UserCollectDao, UserCollect,Long> implements UserCollectService {
 
     /**
@@ -31,6 +30,7 @@ public class UserCollectServiceImpl extends BaseServiceImpl<UserCollectDao, User
      * @date 2021-01-26 11:24:26
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int userCollect(UserCollectVo userCollectVo) {
         Map<String,Object> params = new HashMap<>();
         params.put("type", userCollectVo.getType());

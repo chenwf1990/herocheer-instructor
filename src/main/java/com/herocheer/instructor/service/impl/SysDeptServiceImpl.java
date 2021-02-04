@@ -28,7 +28,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 @Slf4j
 public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptDao, SysDept, Long> implements SysDeptService {
 
@@ -39,6 +38,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptDao, SysDept, Lon
      * @return {@link SysDept}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysDept addDept(SysDeptVO sysDeptVO) {
         if(sysDeptVO.getPid() != 0L){
             // 0.*.*的结构 其中，0是顶级结构，第一个*是顶级结构下的结构，第二个*是顶级结构下的结构下的结构
@@ -56,6 +56,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptDao, SysDept, Lon
      * @param id id
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeDeptById(Long id) {
         // 物理删除
         this.delete(id);
@@ -79,6 +80,7 @@ public class SysDeptServiceImpl extends BaseServiceImpl<SysDeptDao, SysDept, Lon
      * @return {@link SysDept}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysDept modifyDept(SysDeptVO sysDeptVO) {
         if(sysDeptVO.getId() == null || StringUtils.isBlank(sysDeptVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");

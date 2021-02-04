@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class NewsNoticeLogServiceImpl extends BaseServiceImpl<NewsNoticeLogDao, NewsNoticeLog,Long> implements NewsNoticeLogService {
 
     /**
@@ -26,6 +25,7 @@ public class NewsNoticeLogServiceImpl extends BaseServiceImpl<NewsNoticeLogDao, 
      * @date 2021-01-06 09:18:39
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addLog(Long id, Integer auditState,String auditIdea, String remarks) {
         NewsNoticeLog log = new NewsNoticeLog();
         log.setNewsNoticeId(id);

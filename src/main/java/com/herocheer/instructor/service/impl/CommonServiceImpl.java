@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class CommonServiceImpl implements CommonService {
     /**
      * @author chenwf

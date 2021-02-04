@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long> implements SysAreaService {
     @Resource
     private RedisClient redisClient;

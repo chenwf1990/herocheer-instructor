@@ -27,7 +27,6 @@ import java.util.*;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplaceCardDao, WorkingReplaceCard,Long> implements WorkingReplaceCardService {
     @Resource
     private WorkingSignRecordService workingSignRecordService;
@@ -60,6 +59,7 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
      * @date 2021-01-20 19:43:45
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int saveReplaceCard(WorkingReplaceCard workingReplaceCard, UserEntity userEntity) {
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingReplaceCard.getWorkingScheduleUserId());
@@ -108,6 +108,7 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
      * @date 2021-01-20 19:43:45
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int approval(Long id, int approvalStatus, String approvalComments, UserEntity userEntity) {
         WorkingReplaceCard card = this.dao.get(id);
         if(card.getApprovalStatus() == AuditStateEnums.to_pass.getState()){

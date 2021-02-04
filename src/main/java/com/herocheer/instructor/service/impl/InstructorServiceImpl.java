@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instructor,Long> implements InstructorService {
     @Resource
     private SysAreaService sysAreaService;
@@ -70,6 +69,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
      * @date 2021-01-14 17:26:18
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void instructorImport(MultipartFile multipartFile, HttpServletRequest request) {
         try {
             String originalFilename = multipartFile.getOriginalFilename().toLowerCase();
@@ -213,6 +213,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
      * @param apply
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Instructor saveInstructor(InstructorApply apply) {
         //审核通过才走以下流程
         //PC端的新增和导入，没有审核通过也可以往下走流程
@@ -250,7 +251,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             if(cardInstructor == null){
                 BeanUtils.copyProperties(apply,instructor);
                 User user = userService.get(apply.getUserId());
-                if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
+                if(user.getUserType().equals(UserTypeEnums.weChatUser.getCode())){
                     user.setUserType(UserTypeEnums.instructor.getCode());
                     userService.updateUser(user);
                 }
@@ -264,28 +265,6 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
 
         }
         return instructor;
-    }
-
-    private void insertInstructor(Instructor instructor, InstructorApply apply) {
-        Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
-        if(cardInstructor != null){
-            throw new CommonException("指导员已存在：{}",apply.getCardNo());
-        }
-        BeanUtils.copyProperties(apply,instructor);
-        User user;
-        if(apply.getChannel().equals(ChannelEnums.h5.getType())) {
-            user = userService.get(apply.getUserId());
-            if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
-                user.setUserType(UserTypeEnums.instructor.getCode());
-                userService.updateUser(user);
-            }
-        }else {
-            user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
-        }
-        instructor.setUserId(user.getId());
-        instructor.setOpenId(user.getOpenid());
-        instructor.setAuditState(AuditStateEnums.to_pass.getState());
-        this.dao.insert(instructor);
     }
 
     private void updateInstructor(Instructor instructor, InstructorApply apply) {
@@ -315,6 +294,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteInstructor(Long id) {
         Instructor instructor = this.dao.get(id);
         verifyCanDelOrUpdate(instructor);

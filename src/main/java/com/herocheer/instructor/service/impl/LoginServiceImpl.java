@@ -22,7 +22,6 @@ import javax.annotation.Resource;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class LoginServiceImpl implements LoginService {
     @Resource
     private WechatService wechatService;
