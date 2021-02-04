@@ -56,7 +56,6 @@ public class SysAreaController extends BaseController{
 
     @GetMapping("/getAllAreaByRole")
     @ApiOperation("区域权限树(权限过滤)")
-    @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> getAllAreaByRole(){
         return ResponseResult.ok(sysAreaService.getAllArea(2));
     }

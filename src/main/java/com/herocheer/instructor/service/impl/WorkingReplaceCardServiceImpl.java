@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author chenwf
@@ -70,8 +67,10 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
         List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
         WorkingUserVo workingUserVo = workingUserVos.get(0);
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
-        Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
-        if(!DateUtil.betweenTime(serviceBeginTime,serviceEndTime,workingReplaceCard.getReplaceCardTime())){
+        if(!DateUtil.betweenTime(DateUtil.beginOfDay(
+                new Date(workingUserVo.getScheduleTime())).getTime(),
+                DateUtil.endOfDay(new Date(workingUserVo.getScheduleTime())).getTime(),
+                workingReplaceCard.getReplaceCardTime())){
             throw new CommonException("只能补当前值班日期的卡");
         }
         int type = workingScheduleUserService.getPunchCardType(workingReplaceCard.getReplaceCardTime(), serviceBeginTime);

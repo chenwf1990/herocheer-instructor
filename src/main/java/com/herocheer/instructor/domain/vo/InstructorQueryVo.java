@@ -25,6 +25,8 @@ public class InstructorQueryVo implements Serializable {
     private String name;
     @ApiModelProperty("手机号码(支持前后模糊查询)")
     private String phone;
+    @ApiModelProperty("指导项目(支持前后模糊查询)")
+    private String guideProject;
     @ApiModelProperty("证书等级")
     private String certificateGrade;
     @ApiModelProperty("创建时间(开始时间)")
