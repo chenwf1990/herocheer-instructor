@@ -33,7 +33,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRecordDao, WorkingSignRecord,Long> implements WorkingSignRecordService {
     @Resource
     private WorkingScheduleUserService workingScheduleUserService;
@@ -66,6 +65,7 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
      * @date 2021-01-12 11:17:12
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long addWorkingSignRecord(WorkingSignRecord workingSignRecord, UserEntity userEntity) {
         workingSignRecord.setSignTime(System.currentTimeMillis());//设置打卡时间
         Map<String,Object> params = new HashMap<>();

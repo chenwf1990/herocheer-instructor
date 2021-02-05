@@ -1,11 +1,10 @@
 package com.herocheer.instructor.service.impl;
 
-import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.dao.InstructorApplyAuditLogDao;
+import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.service.InstructorApplyAuditLogService;
-import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 /**
  * @author chenwf
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class InstructorApplyAuditLogServiceImpl extends BaseServiceImpl<InstructorApplyAuditLogDao, InstructorApplyAuditLog,Long> implements InstructorApplyAuditLogService {
     
 }

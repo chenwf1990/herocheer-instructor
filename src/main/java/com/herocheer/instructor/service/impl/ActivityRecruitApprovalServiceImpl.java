@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class ActivityRecruitApprovalServiceImpl extends BaseServiceImpl<ActivityRecruitApprovalDao, ActivityRecruitApproval,Long> implements ActivityRecruitApprovalService {
     
 }

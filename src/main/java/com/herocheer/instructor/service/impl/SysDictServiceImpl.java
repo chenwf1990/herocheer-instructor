@@ -11,6 +11,7 @@ import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
      * @return {@link SysDict}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysDict addDict(SysDictVO sysDictVO) {
         SysDict sysDict = SysDict.builder().build();
         BeanCopier.create(sysDictVO.getClass(),sysDict.getClass(),false).copy(sysDictVO,sysDict,null);
@@ -66,6 +68,7 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
      * @return {@link SysDict}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysDict modifyDict(SysDictVO sysDictVO) {
         if(sysDictVO.getId() == null || StringUtils.isBlank(sysDictVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");

@@ -59,7 +59,6 @@ import java.util.stream.Stream;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleDao, WorkingSchedule,Long> implements WorkingScheduleService {
     @Resource
     private WorkingScheduleUserService workingScheduleUserService;
@@ -104,6 +103,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-11 14:30:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addWorkingScheduls(List<WorkingVo> workingScheduls) {
         if(workingScheduls.isEmpty()){
             return;
@@ -193,6 +193,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-12 08:47:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateWorkingScheduls(WorkingVo workingVo) {
         if(workingVo.getScheduleTime() < System.currentTimeMillis()){
             throw new CommonException("值班日期中不能修改");
@@ -219,7 +220,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         Map<Long, List<UserGuideProjectVo>> userMap = new HashMap<>();
         List<Long> userIdList = workingScheduleUsers.stream().
                 filter(y -> y.getId() == null).
-                map(y -> y.getId()).
+                map(y -> y.getUserId()).
                 collect(Collectors.toList());
         if(!userIdList.isEmpty()){
             List<UserGuideProjectVo> users = userService.findUserProjectByUserIds(userIdList);
@@ -261,7 +262,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-12 08:47:02
      */
     @Override
-    public int batchDelete(String ids) {
+    @Transactional(rollbackFor = Exception.class)
+    public int  batchDelete(String ids) {
         List<Long> idList = Stream.of(ids.split(",")).map(s -> Long.parseLong(s)).collect(Collectors.toList());
         if(idList.isEmpty()){
             throw new CommonException("请选择要删除的排班信息");
@@ -351,6 +353,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-19 09:47:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void workingScheduleImport(Long courierStationId, Long serviceTimeId, MultipartFile multipartFile) {
         //查找驿站
         CourierStation courierStation = this.courierStationService.get(courierStationId);
@@ -564,6 +567,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Integer reservation(ActivityReservationVo reservationVo, UserEntity userEntity) {
         if (reservationVo.getReservationDate()==null||reservationVo.getRecruitDetailIds()==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,参数有误!");
@@ -608,10 +612,10 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             }
             activityRecruitInfo=activityRecruitInfoService.get(activityRecruitDetail.getRecruitId());
             if(activityRecruitInfo!=null){
-                if(activityRecruitInfo.getRecruitStartDate()>new Date().getTime()){
+                if(activityRecruitInfo.getRecruitStartDate()>System.currentTimeMillis()){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募未开始!");
                 }
-                if(activityRecruitInfo.getRecruitEndDate()<new Date().getTime()){
+                if(activityRecruitInfo.getRecruitEndDate()<System.currentTimeMillis()){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募已结束!");
                 }
             }else {
@@ -664,6 +668,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Integer cancelReservation(Long id) {
         WorkingScheduleUser workingScheduleUser=workingScheduleUserService.get(id);
         if(workingScheduleUser==null || workingScheduleUser.getWorkingScheduleId()==null){

@@ -27,7 +27,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNotice,Long> implements NewsNoticeService {
     @Resource
     private NewsNoticeLogService newsNoticeLogService;
@@ -57,6 +56,7 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
      * @date 2021-01-04 17:26:18
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long updateNewsNotice(NewsNotice newsNotice) {
         NewsNotice model = this.dao.get(newsNotice.getId());
         if(model.getAuditState() == AuditStateEnums.to_pass.getState()){
@@ -79,6 +79,7 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
      * @date 2021-01-04 17:26:18
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long approval(Long id, int auditState, String auditIdea, Long curUserId) {
         NewsNotice newsNotice = this.dao.get(id);
         if(newsNotice.getAuditState() == AuditStateEnums.to_pass.getState()){
@@ -105,6 +106,7 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
      * @date 2021-01-04 17:26:18
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long addNews(NewsNotice newsNotice) {
         long count = this.dao.insert(newsNotice);
         newsNoticeLogService.addLog(newsNotice.getId(),newsNotice.getAuditState(),newsNotice.getAuditIdea(),"新增");

@@ -12,6 +12,7 @@ import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ public class SysOperationServiceImpl extends BaseServiceImpl<SysOperationDao, Sy
      * @return {@link SysOperation}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysOperation addOperation(SysOperationVO sysOperationVO) {
         SysOperation sysOperation = SysOperation.builder().build();
         BeanCopier.create(sysOperationVO.getClass(),sysOperation.getClass(),false).copy(sysOperationVO,sysOperation,null);
@@ -68,6 +70,7 @@ public class SysOperationServiceImpl extends BaseServiceImpl<SysOperationDao, Sy
      * @param id id
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeOperationById(Long id) {
         this.delete(id);
     }
@@ -90,6 +93,7 @@ public class SysOperationServiceImpl extends BaseServiceImpl<SysOperationDao, Sy
      * @return {@link SysOperation}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysOperation modifyOperation(SysOperationVO sysOperationVO) {
         if(sysOperationVO.getId() == null || StringUtils.isBlank(sysOperationVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");

@@ -32,7 +32,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyDao, InstructorApply,Long> implements InstructorApplyService {
     @Resource
     private InstructorApplyAuditLogDao instructorApplyAuditLogDao;
@@ -66,6 +65,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      * @date 2021-01-29 08:50:36
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int addInstructorApply(InstructorApply instructorApply, Long curUserId) {
         //PC端新增的时候id==指导员id，公众号的id为null，所以没有影响
         instructorApply.setInstructorId(instructorApply.getId());
@@ -98,7 +98,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         return count;
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     private void insertLog(InstructorApply instructorApply) {
         InstructorApplyAuditLog log = new InstructorApplyAuditLog();
         BeanUtils.copyProperties(instructorApply,log);
@@ -114,11 +114,13 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      * @date 2021-01-29 08:50:36
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateInstructor(InstructorApply instructorApply) {
         InstructorApply model = this.dao.get(instructorApply.getId());
         if(model.getAuditState() == AuditStateEnums.to_pass.getState()){
             throw new CommonException("审核通过不能修改");
         }
+        instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         int count = this.dao.update(instructorApply);
         //写入日志
         insertLog(instructorApply);
@@ -135,6 +137,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      * @date 2021-01-29 08:50:36
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void approval(Long id, int auditState, String auditIdea, Long curUserId) {
         InstructorApply apply = this.dao.get(id);
         if(apply == null){

@@ -36,7 +36,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingScheduleUserDao, WorkingScheduleUser,Long> implements WorkingScheduleUserService {
     @Resource
     private WorkingScheduleDao workingScheduleDao;
@@ -100,6 +99,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      * @date 2021-01-11 14:30:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchInsert(List<WorkingScheduleUser> workingScheduleUsers) {
         this.dao.batchInsert(workingScheduleUsers);
     }
@@ -111,6 +111,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      * @date 2021-01-12 08:57:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long deleteByMap(Map<String, Object> params) {
         return this.dao.deleteByMap(params);
     }
@@ -137,6 +138,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      * @date 2021-01-20 20:57:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateSignTime(Long workingScheduleUserId, Long userId, Long replaceCardTime) {
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingScheduleUserId);
@@ -187,6 +189,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      * @date 2021-01-20 20:57:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteByWorkingScheduleIds(List<Long> idList) {
         return this.dao.deleteByWorkingScheduleIds(idList);
     }
@@ -203,6 +206,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      * @date 2021-01-22 09:57:02
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int approval(Long workingScheduleUserId, int approvalType, String approvalIdea, UserEntity user, int actualServiceTime) {
         //判断是否审批负责人
         WorkingUserVo workingUserVo = isHasApprovalAuth(workingScheduleUserId, user.getId());

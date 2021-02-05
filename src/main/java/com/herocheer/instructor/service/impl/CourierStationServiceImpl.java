@@ -19,7 +19,6 @@ import java.util.List;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao, CourierStation,Long> implements CourierStationService {
 
     /**
@@ -30,6 +29,7 @@ public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao
      * @date 2021-01-07 17:26:18
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int addCourierStation(CourierStation courierStation) {
         return this.dao.insert(courierStation);
     }

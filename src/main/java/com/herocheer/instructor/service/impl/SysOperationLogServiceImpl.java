@@ -8,6 +8,7 @@ import com.herocheer.instructor.service.SysOperationLogService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class SysOperationLogServiceImpl extends BaseServiceImpl<SysOperationLogD
      * @return {@link SysOperationLog}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysOperationLog addSysOperationLog(SysOperationLogVO sysOperationLogVO) {
         SysOperationLog sysOperationLog = SysOperationLog.builder().build();
         BeanCopier.create(sysOperationLogVO.getClass(),sysOperationLog.getClass(),false).copy(sysOperationLogVO,sysOperationLog,null);
@@ -40,6 +42,7 @@ public class SysOperationLogServiceImpl extends BaseServiceImpl<SysOperationLogD
      * @param id id
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeSysOperationLogById(Long id) {
         this.delete(id);
     }

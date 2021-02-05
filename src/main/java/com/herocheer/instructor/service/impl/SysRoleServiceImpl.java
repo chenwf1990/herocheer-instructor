@@ -92,6 +92,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      * @param roleId  角色id
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void settingMenuToRole(String menuIds, Long roleId) {
         // 删除关联
         this.dao.deleteMenuById(roleId);
@@ -120,6 +121,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void settingAreaToRole(String areaIds, Long roleId) {
         // 删除关联
         this.dao.deleteAreaById(roleId);
@@ -145,6 +147,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @SysLog(module = "系统管理",bizType =  OperationConst.DELETE,bizDesc = "删除角色")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeRoleById(Long id) {
         // 物理删除
         this.delete(id);
@@ -168,6 +171,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      * @return {@link SysRole}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public SysRole modifyRole(@Valid SysRoleVO sysRoleVO) {
         if(sysRoleVO.getId() == null || CharSequenceUtil.isBlank(sysRoleVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");

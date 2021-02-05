@@ -18,7 +18,6 @@ import java.util.List;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 public class ServiceHoursServiceImpl extends BaseServiceImpl<ServiceHoursDao, ServiceHours,Long> implements ServiceHoursService {
 
     @Override

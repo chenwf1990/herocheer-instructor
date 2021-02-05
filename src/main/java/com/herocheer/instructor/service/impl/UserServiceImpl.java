@@ -271,6 +271,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @SysLog(module = "系统管理",bizType = OperationConst.UPDATE,bizDesc = "修改密码")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void modifyPassword(Long userId,String oldPassword, String newPassword) {
         // 用户账号
         User user = this.get(userId);
@@ -294,6 +295,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @SysLog(module = "系统管理",bizType = OperationConst.UPDATE,bizDesc = "重置密码")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult resetPassword(Long userId) {
         User user = this.get(userId);
         if(!ObjectUtils.isEmpty(user)){
@@ -339,6 +341,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @SysLog(module = "系统管理",bizType = OperationConst.INSERT,bizDesc = "添加微信用户")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public User addWeChatUser(WeChatUserVO weChatUserVO) {
         User user = User.builder().userType(UserTypeEnums.weChatUser.getCode()).build();
         BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
@@ -361,6 +364,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @return {@link User}
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public User modifyWeChatUser(WeChatUserVO weChatUserVO) {
         if(weChatUserVO.getId() == null || StringUtils.isBlank(weChatUserVO.getId().toString())){
             throw new CommonException("编辑ID不能为空");
@@ -412,6 +416,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public User addUser(String name, String cardNo, Integer sex, String phone, Integer userType) {
         // 判断身份证是否存在是否存在
         Map<String, Object> params = new HashMap();
@@ -420,7 +425,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         User user = new User();
         if(!users.isEmpty()){
             user = users.get(0);
-            if(user.getUserType() == UserTypeEnums.weChatUser.getCode() ){
+            if(user.getUserType().equals(UserTypeEnums.weChatUser.getCode())){
                 user.setUserType(UserTypeEnums.instructor.getCode());
             }
             return user;
@@ -532,6 +537,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @return int
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int removeSysUserById(Long id) {
         Map<String, Object> map = new HashMap<>();
         map.put("status", 0);
@@ -540,6 +546,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateUser(User user) {
         this.dao.update(user);
         UserEntity userEntity = new UserEntity();
