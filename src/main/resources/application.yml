@@ -1,8 +1,13 @@
 server:
-  port: 8083
+  port: 17071
 spring:
   profiles:
     active: dev
+  servlet: # 设置上传文件的大小
+    multipart:
+      enabled: true
+      max-file-size: 10485760
+      max-request-size: 10MB
 mybatis:
   mapperLocations: classpath*:mapper/**/*.xml
 swagger:
@@ -23,9 +28,9 @@ file:
     savePath: D:/images/
     visitPath: D:/images/
 
-#wechat:
-#  appId: wx5e3449374c04489c
-#  appScret: 82fdb32c5c4c461481545c42b93ffc46
+wechat_xxkj:
+  appId: wx5e3449374c04489c
+  appScret: 82fdb32c5c4c461481545c42b93ffc46
 
 #i厦门
 #ixm:

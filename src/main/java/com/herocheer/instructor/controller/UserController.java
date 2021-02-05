@@ -7,10 +7,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.AreaPermissionVO;
-import com.herocheer.instructor.domain.vo.MemberVO;
-import com.herocheer.instructor.domain.vo.SysUserVO;
-import com.herocheer.instructor.domain.vo.WeChatUserVO;
+import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
@@ -22,15 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -112,6 +101,18 @@ public class UserController extends BaseController {
     @ApiOperation("个人信息")
     public ResponseResult<SysUserVO> fetchUserById(@ApiParam("用户ID") @PathVariable Long id){
         return ResponseResult.ok(userService.findUserById(id));
+    }
+
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return {@link ResponseResult}
+     */
+    @GetMapping("/userInfo")
+    @ApiOperation("获取当前登录用户信息")
+    public ResponseResult<UserInfoVo> findUserInfo(HttpServletRequest request){
+        UserInfoVo userInfoVo = userService.findUserInfo(getCurUserId(request));
+        return ResponseResult.ok(userInfoVo);
     }
 
     /**

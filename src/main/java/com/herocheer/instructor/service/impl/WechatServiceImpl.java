@@ -62,6 +62,12 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     @Value("${ixm.appName}")
     private String appName;
 
+
+    @Value("${wechat_xxkj.appId}")
+    private String xxkj_appid;
+    @Value("${wechat_xxkj.appScret}")
+    private String xxkj_secret;
+
     @Resource
     private RedisClient redisClient;
 
@@ -79,8 +85,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     public JSONObject getAccessTokenByCode(String code) {
         Map<String, Object> param = new HashMap<>();
         param = new HashMap<>();
-        param.put("appid", appid);
-        param.put("secret", secret);
+        param.put("appid", xxkj_appid);
+        param.put("secret", xxkj_secret);
         param.put("js_code", code);
         param.put("grant_type", "authorization_code");
         String access_url = "https://api.weixin.qq.com/sns/jscode2session";
@@ -140,7 +146,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
     //{"access_token":"ACCESS_TOKEN","expires_in":7200}
     private JSONObject getAccessToken() {
-        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret;
+        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+xxkj_appid+"&secret="+xxkj_secret;
         String result = HttpUtil.get(url);
         JSONObject resultJson = JSONObject.parseObject(result);
         validResult(resultJson);
@@ -178,7 +184,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         String signature = SecureUtil.sha1(str);
 
         WxInfoVO wxInfoVO = new WxInfoVO();
-        wxInfoVO.setAppId(appid);
+        wxInfoVO.setAppId(xxkj_appid);
         wxInfoVO.setNonceStr(noncestr);
         wxInfoVO.setTimestamp(timestamp);
         wxInfoVO.setSignature(signature);
@@ -192,8 +198,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
      */
     @Override
     public JSONObject getOauth2(String wecharCode) {
-        String codeUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+appid
-                + "&secret="+secret
+        String codeUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+xxkj_secret
+                + "&secret="+xxkj_appid
                 + "&code="+wecharCode
                 + "&grant_type=authorization_code";
         String result = HttpUtil.get(codeUrl);

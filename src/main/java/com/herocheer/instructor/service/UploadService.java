@@ -3,6 +3,8 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.entity.UploadFileVO;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author chenwf
  * @desc
@@ -12,4 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UploadService {
 
     UploadFileVO uploadFile(MultipartFile file);
+
+    void downloadFile(String filePath, HttpServletResponse response);
 }
