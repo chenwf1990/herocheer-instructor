@@ -6,6 +6,7 @@ import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WechaLoginVo;
+import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.LoginService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
@@ -43,9 +44,15 @@ public class LoginServiceImpl implements LoginService {
         //查找是否存在该openId用户
         User user = userService.findUserByOpenId(openId);
         if(user == null){
+
             //1：i健身查找是否存在改用户
             //2：不存在就告诉前端跳转到i运动注册用户信息
             //3：存在就直接创建用户数据
+            user = new User();
+            user.setUserType(UserTypeEnums.weChatUser.getCode());
+            user.setUserName(openId);
+            user.setOpenid(openId);
+            userService.insert(user);
         }
         String token = IdUtil.simpleUUID();
         BeanUtils.copyProperties(user,userVO);

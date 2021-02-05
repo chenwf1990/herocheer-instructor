@@ -4,11 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.AreaPermissionVO;
-import com.herocheer.instructor.domain.vo.MemberVO;
-import com.herocheer.instructor.domain.vo.SysUserVO;
-import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
-import com.herocheer.instructor.domain.vo.WeChatUserVO;
+import com.herocheer.instructor.domain.vo.*;
 
 import java.util.List;
 
@@ -202,4 +198,11 @@ public interface UserService extends BaseService<User, Long> {
      * @return int
      */
     int removeSysUserById(Long id);
+
+    /**
+     * 查找用户信息
+     * @param curUserId
+     * @return
+     */
+    UserInfoVo findUserInfo(Long curUserId);
 }

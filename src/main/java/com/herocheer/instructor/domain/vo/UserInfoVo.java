@@ -20,4 +20,6 @@ public class UserInfoVo extends UserEntity {
     private String imgUrl;
     @ApiModelProperty("昵称")
     private String nickName;
+    @ApiModelProperty("是否是指导员 false不是 true是")
+    private Boolean instructorFlag;
 }

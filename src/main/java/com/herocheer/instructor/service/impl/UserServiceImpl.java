@@ -7,22 +7,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.UserDao;
-import com.herocheer.instructor.domain.HeaderParam;
+import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.AreaPermissionVO;
-import com.herocheer.instructor.domain.vo.MemberVO;
-import com.herocheer.instructor.domain.vo.SysUserVO;
-import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
-import com.herocheer.instructor.domain.vo.WeChatUserVO;
+import com.herocheer.instructor.domain.vo.*;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
+import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -60,6 +53,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
     @Autowired
     private RedisClient redisClient;
+
+    @Resource
+    private InstructorService instructorService;
 
     /**
      * 检查账号
@@ -549,10 +545,26 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Transactional(rollbackFor = Exception.class)
     public void updateUser(User user) {
         this.dao.update(user);
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(user,userEntity);
-        HeaderParam headerParam = HeaderParam.getInstance();
-        userEntity.setToken(headerParam.getToken());
-        redisClient.set(userEntity.getToken(),JSONObject.toJSONString(userEntity), 1 * 24 * 60 * 60);
+    }
+
+    /**
+     * 查找用户信息
+     *
+     * @param curUserId
+     * @return
+     */
+    @Override
+    public UserInfoVo findUserInfo(Long curUserId) {
+        User user = this.dao.get(curUserId);
+        UserInfoVo infoVo = new UserInfoVo();
+        BeanUtils.copyProperties(user,infoVo);
+        //查询是否是指导员
+        boolean instructorFlag = true;
+        if(!user.getUserType().equals(UserTypeEnums.instructor.getCode())) {
+            Instructor instructor = instructorService.findInstructorByUserId(curUserId);
+            instructorFlag = instructor == null ? false : true;
+        }
+        infoVo.setInstructorFlag(instructorFlag);
+        return infoVo;
     }
 }
