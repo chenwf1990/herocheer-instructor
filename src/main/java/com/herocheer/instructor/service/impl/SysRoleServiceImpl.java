@@ -121,7 +121,6 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void settingAreaToRole(String areaIds, Long roleId) {
         // 删除关联
         this.dao.deleteAreaById(roleId);
