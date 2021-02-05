@@ -80,6 +80,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
                 String [] roleArray = roleStr.split(",");
                 paramMap.put("roleArray", roleArray);
             }else {
+                // TODO 用户没有角色信息时该怎么处理？
                 List<String> stringList= userService.findRoleId(currentUser.getId());
                 paramMap.put("roleArray", String.join(",", stringList));
             }
@@ -98,6 +99,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             hashMap = new HashMap();
             hashMap.put("path",sysMenu.getUrl());
             // 无子节点的节点
+            // TODO  处理方式 生产对象存入集合
             if (sysMenu.getPid().equals(9999L) && longSet.contains(sysMenu.getId())) {
                 hashMap.put("component", "layout/publics");
             } else {

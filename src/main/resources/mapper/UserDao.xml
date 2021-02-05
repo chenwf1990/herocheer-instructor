@@ -548,6 +548,9 @@
                 <if test="openid != null">
                     and a.openid = #{openid}
                 </if>
+                <if test="openid != null">
+                    and a.certificateNo = #{certificateNo}
+                </if>
                 and a.`status`=1 limit 1
             </trim>
         </where>
@@ -712,4 +715,9 @@
             </trim>
         </where>
     </select>
+
+    <!-- 重置openid-->
+    <update id="resetByOpenId" parameterType="String">
+        update `user` set openid = null where openid = #{openid}
+    </update>
 </mapper>

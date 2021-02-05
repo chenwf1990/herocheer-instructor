@@ -4,9 +4,9 @@ import cn.hutool.core.lang.tree.Tree;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
  * @create 2021-01-20
  */
 @ApiModel(description = "菜单功能树VO")
-@SuperBuilder
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -119,4 +119,11 @@ public interface UserDao extends BaseDao<User, Long> {
      * @return {@link List<User>}
      */
     List<MemberVO> findUserByUserType(List<String> userType);
+
+    /**
+     * 重置openid为null
+     *
+     * @param openid openid
+     */
+    void resetByOpenId(String openid);
 }

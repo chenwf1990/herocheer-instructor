@@ -79,6 +79,41 @@
             <artifactId>pinyin4j</artifactId>
             <version>2.5.0</version>
         </dependency>
+
+        <!--测试-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- trs-->
+        <dependency>
+            <groupId>trsids-sdk</groupId>
+            <artifactId>trsids-sdk</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}\src\main\lib\trsids-sdk.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <!-- 微信 -->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

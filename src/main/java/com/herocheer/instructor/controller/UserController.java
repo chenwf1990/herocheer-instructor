@@ -140,18 +140,6 @@ public class UserController extends BaseController {
         return ResponseResult.ok(userService.findUserByPhone(phone));
     }
 
-    /**
-     * 新增微信用户
-     *
-     * @param weChatUserVO VO
-     * @return {@link ResponseResult<User>}
-     */
-    @AllowAnonymous
-    @PostMapping("/weChatUser")
-    @ApiOperation("新增微信用户")
-    public ResponseResult<User> createWeChatUser(@ApiParam("微信用户") @RequestBody WeChatUserVO weChatUserVO){
-        return ResponseResult.ok(userService.addWeChatUser(weChatUserVO));
-    }
 
     /**
      * 编辑微信用户

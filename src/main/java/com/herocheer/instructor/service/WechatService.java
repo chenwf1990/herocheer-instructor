@@ -1,7 +1,11 @@
 package com.herocheer.instructor.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author chenwf
@@ -52,4 +56,11 @@ public interface WechatService {
      * @return
      */
     JSONObject getOauth2(String wecharCode);
+
+    User ixmUserIsLogin(HttpSession session, String code, String openid);
+
+    String ixmLoginUrl(String callBackUrl);
+
+    User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token);
+
 }

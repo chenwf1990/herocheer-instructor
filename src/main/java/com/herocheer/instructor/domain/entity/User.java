@@ -72,7 +72,7 @@ public class User extends BaseEntity {
     private String ixmRealNameLevel;
     @ApiModelProperty("i厦门用户真实姓名")   
     private String ixmUserRealName;
-    @ApiModelProperty("i厦门微信公众号登录状态")   
+    @ApiModelProperty("i厦门微信公众号登录状态， 0-登出；1-登录")
     private Boolean ixmLoginStatus;
     @ApiModelProperty("i厦门token")   
     private String ixmToken;

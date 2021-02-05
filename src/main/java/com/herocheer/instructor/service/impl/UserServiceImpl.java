@@ -342,8 +342,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     public User addWeChatUser(WeChatUserVO weChatUserVO) {
         User user = User.builder().userType(UserTypeEnums.weChatUser.getCode()).build();
         BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
-        user.setUserName(weChatUserVO.getName());
-        user.setPhone(weChatUserVO.getPhoneNo());
 
         // 判断账号是否存在
         Map<String, Object> objectMap = new HashMap();
@@ -370,8 +368,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
         User user = User.builder().build();
         BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
-        user.setUserName(weChatUserVO.getName());
-        user.setPhone(weChatUserVO.getPhoneNo());
 
         this.update(user);
         return user;
