@@ -29,22 +29,22 @@ file:
     visitPath: D:/images/
 
 #i厦门
-#ixm:
-#  url: https://www.ixiamen.org.cn
-#  appName: XXCDSSFWGLXT
-#  secret: g8y&9X6TLMUKoLd
-#  redirectUrl: https://wechat.ixiamen.org.cn/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
-#  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
-#  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
-
-#测试i厦门
 ixm:
-  url: https://test.ixiamen.org.cn
+  url: https://www.ixiamen.org.cn
   appName: XXCDSSFWGLXT
   secret: g8y&9X6TLMUKoLd
-  redirectUrl: ${ixm.url}/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
+  redirectUrl: https://wechat.ixiamen.org.cn/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
   userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
   userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
+
+#测试i厦门
+#ixm:
+#  url: https://test.ixiamen.org.cn
+#  appName: XXCDSSFWGLXT
+#  secret: g8y&9X6TLMUKoLd
+#  redirectUrl: ${ixm.url}/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
+#  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
+#  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
 
 #微信公众号配置
 wechat:
