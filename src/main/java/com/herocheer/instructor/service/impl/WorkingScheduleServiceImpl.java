@@ -400,8 +400,10 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 List<Object> dataList = read.get(i);
                 buildSaveWorkingSchedule(courierStation,serviceHours,dataList,userMap,i);
             }
-        }catch (Exception e){
+        } catch (CommonException e){
             throw new CommonException(e.getMessage());
+        } catch (Exception e){
+            throw new CommonException("模板错误，数据导入失败");
         }
 
     }

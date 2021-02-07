@@ -457,7 +457,7 @@
         <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.name},
-            #{instructorId},
+            #{item.instructorId},
             #{item.sex},
             #{item.auditState},
             #{item.auditTime},
