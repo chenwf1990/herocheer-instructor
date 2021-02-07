@@ -113,7 +113,6 @@
             <artifactId>weixin-java-mp</artifactId>
             <version>4.0.0</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -121,6 +120,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 工程主入口-->
+                    <mainClass>com.herocheer.instructor.Application</mainClass>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
