@@ -13,12 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -48,16 +43,16 @@ public class SysAreaController extends BaseController{
     @GetMapping("/getAllArea")
     @ApiOperation("区域树(无权限)")
     @AllowAnonymous
-    public ResponseResult<List<Tree<Long>>> getAllArea(){
-        List<Tree<Long>> nodeList = sysAreaService.getAllArea(1);
+    public ResponseResult<List<Tree<Long>>> getAllArea(@ApiParam("父级pid 厦门市1") @RequestParam(required = false) Long pid){
+        List<Tree<Long>> nodeList = sysAreaService.getAllArea(1,pid);
         return ResponseResult.ok(nodeList);
     }
 
 
     @GetMapping("/getAllAreaByRole")
     @ApiOperation("区域权限树(权限过滤)")
-    public ResponseResult<List<Tree<Long>>> getAllAreaByRole(){
-        return ResponseResult.ok(sysAreaService.getAllArea(2));
+    public ResponseResult<List<Tree<Long>>> getAllAreaByRole(@ApiParam("父级pid 厦门市1") @RequestParam(required = false) Long pid){
+        return ResponseResult.ok(sysAreaService.getAllArea(2,pid));
     }
 
 

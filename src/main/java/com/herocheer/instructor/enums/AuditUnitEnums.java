@@ -11,9 +11,9 @@ public enum AuditUnitEnums {
     HLQ("WLJ_HLQ", "湖里区文旅局","WLJ_HLQ"),
     SMQ("WLJ_SMQ", "思明区文旅局","WLJ_SMQ"),
     JMQ("WLJ_JMQ", "集美区文旅局","WLJ_JMQ"),
-    HCQ("WLJ_HCQ", "海沧文旅局","WLJ_HCQ"),
-    XAQ("WLJ_XAQ", "翔安文旅局","WLJ_XAQ"),
-    TAQ("WLJ_TAQ", "同安文旅局","WLJ_TAQ"),
+    HCQ("WLJ_HCQ", "海沧区文旅局","WLJ_HCQ"),
+    XAQ("WLJ_XAQ", "翔安区文旅局","WLJ_XAQ"),
+    TAQ("WLJ_TAQ", "同安区文旅局","WLJ_TAQ"),
     TYJ("WLJ_TYJ", "体育局","WLJ_TYJ"),
     NEWS_AUDIT("NEWS_AUDIT", "新闻审批","NEWS_AUDIT");
 

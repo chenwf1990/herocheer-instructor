@@ -2,6 +2,7 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
@@ -139,6 +140,9 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
 //            sysAreas = filterDataPermission(sysAreas);
         }
         //组装成树结构
+        if(parentId == null){
+            parentId = 2L;//厦门市下所有数据(不包含厦门市顶层)
+        }
         List<Tree<Long>> treeNodes = getTreeNode(sysAreas,parentId);
         return treeNodes;
     }

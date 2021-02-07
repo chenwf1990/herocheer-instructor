@@ -120,8 +120,11 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 //批量插入申请单
                 this.instructorApplyDao.batchInsert(applyList);
             }
-        } catch (IOException e) {
+        } catch (CommonException e){
             throw new CommonException(e.getMessage());
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new CommonException("模板错误，数据导入失败");
         }
     }
 
@@ -149,6 +152,9 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setOpeningDate(((Date) dataList.get(9)).getTime());
         instructor.setAuditUnitName(dataList.get(10).toString());
         instructor.setAuditUnitType(AuditUnitEnums.getType(instructor.getAuditUnitName()));
+        if(StringUtils.isEmpty(instructor.getAuditUnitType())){
+            throw new CommonException("{}：审批单位错误：{}",errMsg,instructor.getAuditUnitName());
+        }
         instructor.setOtherAuditUnitName(dataList.get(11).toString());
         //12,13,14 常驻区（区）,常驻区（街道）,常驻区（社区）
         String areaCode = "";
