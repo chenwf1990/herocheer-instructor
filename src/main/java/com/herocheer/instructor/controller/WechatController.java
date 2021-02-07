@@ -44,6 +44,15 @@ public class WechatController {
         return ResponseResult.ok(wxInfo);
     }
 
+
+    /**
+     * ixm登录用户是存在的(@AllowAnonymous不能去掉)
+     *
+     * @param session 会话
+     * @param code    代码
+     * @param openid  openid
+     * @return {@link ResponseResult<User>}
+     */
     @PostMapping("ixmLoginUserIsExist")
     @ApiOperation(value = "判断i厦门微信登录用户是否存在")
     @AllowAnonymous
@@ -55,6 +64,12 @@ public class WechatController {
         return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code, openid));
     }
 
+    /**
+     * ixm登录网址(@AllowAnonymous不能去掉)
+     *
+     * @param callBackUrl 回调url
+     * @return {@link ResponseResult<String>}
+     */
     @PostMapping("ixmLoginUrl")
     @AllowAnonymous
     @ApiOperation(value = "i厦门公众号登录页地址")
@@ -65,8 +80,18 @@ public class WechatController {
         return ResponseResult.ok(wechatService.ixmLoginUrl(callBackUrl));
     }
 
+    /**
+     * ixm登录 (@AllowAnonymous不能去掉)
+     *
+     * @param request 请求
+     * @param session 会话
+     * @param openid  openid
+     * @param token   令牌
+     * @return {@link ResponseResult<User>}
+     */
     @PostMapping("ixmLogin")
     @ApiOperation(value = "i厦门公众号登录")
+    @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openid", value = "微信用户openid"),
             @ApiImplicitParam(name = "token", value = "i厦门token")
