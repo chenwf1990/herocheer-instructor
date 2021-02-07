@@ -52,6 +52,7 @@ public class LoginServiceImpl implements LoginService {
             user.setUserType(UserTypeEnums.weChatUser.getCode());
             user.setUserName(openId);
             user.setOpenid(openId);
+            user.setStatus(true);
             userService.insert(user);
         }
         String token = IdUtil.simpleUUID();

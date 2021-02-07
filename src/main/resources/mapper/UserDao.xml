@@ -548,10 +548,10 @@
                 <if test="openid != null">
                     and a.openid = #{openid}
                 </if>
-                <if test="openid != null">
+                <if test="certificateNo != null">
                     and a.certificateNo = #{certificateNo}
                 </if>
-                and a.`status`=1 limit 1
+                limit 1
             </trim>
         </where>
     </select>
