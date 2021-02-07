@@ -10,6 +10,7 @@ import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.enums.AuditStateEnums;
+import com.herocheer.instructor.enums.AuditUnitEnums;
 import com.herocheer.instructor.enums.ChannelEnums;
 import com.herocheer.instructor.service.InstructorApplyAuditLogService;
 import com.herocheer.instructor.service.InstructorApplyService;
@@ -86,6 +87,9 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
             instructorApply.setUserId(curUserId);
             instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         }
+        if(StringUtils.isEmpty(instructorApply.getAuditUnitName())){
+            instructorApply.setAuditUnitName(AuditUnitEnums.getName(instructorApply.getAuditUnitType()));
+        }
         //添加指导员数据
         Instructor instructor = instructorService.saveInstructor(instructorApply);
         if(instructor != null) {
@@ -98,7 +102,6 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         return count;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     private void insertLog(InstructorApply instructorApply) {
         InstructorApplyAuditLog log = new InstructorApplyAuditLog();
         BeanUtils.copyProperties(instructorApply,log);

@@ -61,6 +61,16 @@ public enum AuditUnitEnums {
         return null;
     }
 
+    public static String getName(String code) {
+        AuditUnitEnums[] array = values();
+        for (AuditUnitEnums en : array) {
+            if (en.getCode().equals(code)) {
+                return en.getName();
+            }
+        }
+        return null;
+    }
+
     public static String getRoleCode(String code) {
         AuditUnitEnums[] array = values();
         for (AuditUnitEnums en : array) {
