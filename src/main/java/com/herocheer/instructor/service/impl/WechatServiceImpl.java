@@ -241,6 +241,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         }
         user.setIxmToken("");
         session.setAttribute(WechatConst.SESSION_USER, user);
+        user.setTokenId(IdUtil.simpleUUID());
         return user;
     }
 
