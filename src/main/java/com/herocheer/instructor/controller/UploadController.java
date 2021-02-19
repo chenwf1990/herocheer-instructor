@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -42,5 +44,16 @@ public class UploadController {
     public ResponseResult downloadFile(@ApiParam("文件地址") @RequestParam String filePath, HttpServletResponse response){
         uploadService.downloadFile(filePath,response);
         return ResponseResult.ok();
+    }
+
+
+    @PostMapping(value = "/upload")
+    @ApiOperation(value = "富文本编辑器上传文件api")
+    @AllowAnonymous
+    public Map<String, Object> upload(MultipartFile file){
+        UploadFileVO uploadFile = uploadService.uploadFile(file);
+        Map<String,Object> map = new HashMap<>();
+        map.put("link",uploadFile.getFilePath());
+        return map;
     }
 }
