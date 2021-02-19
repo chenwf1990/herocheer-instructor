@@ -15,6 +15,7 @@ import com.herocheer.instructor.dao.SysMenuDao;
 import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.vo.MetaVO;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
+import com.herocheer.instructor.domain.vo.SysMenuTmpVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
@@ -66,7 +67,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         paramMap.put("status", false);
 
         List<SysMenu> sysMenus = null;
-        Set<Long> longSet = null;
+        Set<SysMenuTmpVO> longSet = null;
         // 非超级管理员
         if(!UserTypeEnums.sysAdmin.getCode().equals(currentUser.getUserType())){
             paramMap.put("userId", currentUser.getId());
@@ -86,10 +87,21 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             }
 
             sysMenus = this.dao.selectMenuTreeToRole(paramMap);
-            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
+
+            longSet =  sysMenus.stream().map(menu -> {
+                SysMenuTmpVO sysMenuTmp = SysMenuTmpVO.builder().build();
+                sysMenuTmp.setPid(menu.getPid());;
+                sysMenuTmp.setStatus(menu.getStatus());
+                return  sysMenuTmp;
+            }).collect(Collectors.toSet());
         }else {
             sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().status(false).build());
-            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
+            longSet =  sysMenus.stream().map(menu -> {
+                SysMenuTmpVO sysMenuTmp = SysMenuTmpVO.builder().build();
+                sysMenuTmp.setPid(menu.getPid());;
+                sysMenuTmp.setStatus(menu.getStatus());
+                return  sysMenuTmp;
+            }).collect(Collectors.toSet());
         }
 
         // 构建node列表

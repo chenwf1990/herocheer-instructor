@@ -4,13 +4,16 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.service.WechatService;
+import com.herocheer.instructor.utils.SmsCodeUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
+import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +35,8 @@ import javax.validation.constraints.NotBlank;
 @Slf4j
 @RequestMapping("/wechar")
 @Api(tags = "微信信息")
-public class WechatController {
+@Validated
+public class WechatController extends BaseController {
     @Resource
     private WechatService wechatService;
 
@@ -99,5 +103,48 @@ public class WechatController {
     public ResponseResult<User> ixmLogin(HttpServletRequest request, HttpSession session, @NotBlank(message = "微信用户openid不能为空") String openid,
                                                @NotBlank(message = "i厦门token不能为空") String token) {
         return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token));
+    }
+
+    /**
+     * 获取短信验证码
+     *
+     * @param request 请求
+     * @param phone   电话
+     * @return {@link ResponseResult<User>}
+     */
+    @GetMapping("/sms/code")
+    @ApiOperation(value = "短信验证码")
+    @AllowAnonymous
+    @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query")
+    public ResponseResult fetchSmsCode(@NotBlank(message = "手机号不能为空") String phone,HttpServletRequest request) {
+        SmsCodeUtil.getSmsCode(phone);
+        return ResponseResult.ok();
+    }
+
+
+    /**
+     * 验证短信验证码
+     *
+     * @param phone   电话
+     * @param code    验证码
+     * @param request 请求
+     * @return {@link ResponseResult<User>}
+     */
+    @GetMapping("/sms/binding")
+    @ApiOperation(value = "手机绑定")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "code", value = "验证码", dataType = "String",paramType = "query")
+    })
+    public ResponseResult verifySmsCode(@NotBlank(message = "手机号不能为空") String phone,
+                                         @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
+        ResponseResult  result = SmsCodeUtil.verifySmsCode(phone, code);
+        if("F".equals(result.getSuccess())){
+            return ResponseResult.fail();
+        }
+        // TODO 验证成功后 绑定手机和openid
+
+        return ResponseResult.ok();
     }
 }

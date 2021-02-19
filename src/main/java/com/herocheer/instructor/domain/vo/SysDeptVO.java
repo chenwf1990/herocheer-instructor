@@ -1,5 +1,6 @@
 package com.herocheer.instructor.domain.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
  * @author gaorh
  * @create 2021-01-15
  */
+@ApiModel(description = "组织结构VO")
 @Builder
 @Data
 @AllArgsConstructor

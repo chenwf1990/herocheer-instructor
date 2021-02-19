@@ -128,6 +128,7 @@ public class SysMenuController extends BaseController {
      */
     @GetMapping("/tree/user")
     @ApiOperation("菜单权限树")
+    @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> fetchMenuTreeToUser(HttpServletRequest request){
         // 获取用户信息
         UserEntity currentUser = this.getUser(request);

@@ -7,9 +7,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.controller.SourceEnums;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.enums.WechatConst;
@@ -21,7 +21,6 @@ import com.trs.idm.util.Base64Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -234,7 +233,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         }
 
         // user.getIxmLoginStatus() == 0 登出
-        if (user.getIxmLoginStatus()) {
+        if (user.getIxmLoginStatus() == null || !(user.getIxmLoginStatus())) {
             user = User.builder().build();
             user.setOpenid(openid);
             return user;
@@ -242,6 +241,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         user.setIxmToken("");
         session.setAttribute(WechatConst.SESSION_USER, user);
         user.setTokenId(IdUtil.simpleUUID());
+        // TODO 用户信息放入Redis
         return user;
     }
 
@@ -324,6 +324,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setIxmToken(ssoSessionId);
             sysUser.setOpenid(openid);
             sysUser.setUserType(UserTypeEnums.weChatUser.getCode());
+            sysUser.setSource(SourceEnums.ixm.getCode().toString());
 
             this.insert(sysUser);
 
@@ -362,10 +363,9 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         sysUser.setIxmToken("");
         //用户信息存入session
         session.setAttribute(WechatConst.SESSION_USER, sysUser);
-        WeChatUserVO weChatUser = WeChatUserVO.builder().build();
-        BeanCopier.create(sysUser.getClass(),weChatUser.getClass(),false).copy(sysUser.getClass(),weChatUser.getClass(),null);
-        weChatUser.setToken(IdUtil.simpleUUID());
-        return weChatUser;
+        sysUser.setTokenId(IdUtil.simpleUUID());
+        // TODO 用户信息放入Redis
+        return sysUser;
     }
 
     public String getOpenId(String code) {

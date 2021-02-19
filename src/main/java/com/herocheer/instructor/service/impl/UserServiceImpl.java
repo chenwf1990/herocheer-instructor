@@ -14,7 +14,12 @@ import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.*;
+import com.herocheer.instructor.domain.vo.AreaPermissionVO;
+import com.herocheer.instructor.domain.vo.MemberVO;
+import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
@@ -32,7 +37,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -170,7 +179,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         if(StringUtils.isNotBlank(sysUserVO.getRoleId())){
             // 编辑时删除缓存
             String key = null;
-            if(sysUserVO.getId() != null || StringUtils.isNotBlank(sysUserVO.getId().toString())){
+            if(sysUserVO.getId() != null && StringUtils.isNotBlank(sysUserVO.getId().toString())){
                 key = StrUtil.format(CacheKeyConst.ROLEID, user.getPhone(), user.getId());
                 redisClient.delete(key);
             }
@@ -187,7 +196,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
             this.dao.insertBatchSysUserRole(list);
 
             // 编辑时重置缓存
-            if(sysUserVO.getId() != null || StringUtils.isNotBlank(sysUserVO.getId().toString())){
+            if(sysUserVO.getId() != null && StringUtils.isNotBlank(sysUserVO.getId().toString())){
                 redisClient.set(key,sysUserVO.getRoleId(),CacheKeyConst.EXPIRETIME);
             }
         }
@@ -216,6 +225,10 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public SysUserVO findUserById(Long id) {
         User user = this.get(id);
+        if(ObjectUtils.isEmpty(user)){
+            throw new CommonException("暂无此个人信息");
+        }
+
         SysUserVO sysUser = SysUserVO.builder().build();
         BeanCopier.create(user.getClass(),sysUser.getClass(),false).copy(user,sysUser,null);
 

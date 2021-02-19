@@ -8,7 +8,7 @@ package com.herocheer.instructor.enums;
  */
 public class CacheKeyConst {
 
-    public static final Long EXPIRETIME = 3600L;
+    public static final Long EXPIRETIME = 1L * 24L * 60L * 60L;
 
 
     /**
