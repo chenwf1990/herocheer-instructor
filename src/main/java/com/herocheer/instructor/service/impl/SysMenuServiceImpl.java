@@ -31,6 +31,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,7 +67,6 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         paramMap.put("status", false);
 
         List<SysMenu> sysMenus = null;
-        Set<Long> longSet = null;
         // 非超级管理员
         if(!UserTypeEnums.sysAdmin.getCode().equals(currentUser.getUserType())){
             paramMap.put("userId", currentUser.getId());
@@ -81,18 +81,31 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
                 paramMap.put("roleArray", roleArray);
             }else {
                 List<String> stringList= userService.findRoleId(currentUser.getId());
+                if(CollectionUtils.isEmpty(stringList)){
+                    throw new CommonException("请联系管理员，分配用户角色给您");
+                }
                 paramMap.put("roleArray", String.join(",", stringList));
             }
+
             sysMenus = this.dao.selectMenuTreeToRole(paramMap);
-
-            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
+            if(CollectionUtils.isEmpty(sysMenus)){
+                throw new CommonException("请联系管理员，分配菜单权限给您");
+            }
         }else {
-            sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().status(false).build());
-
-            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
+            sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().build());
         }
 
-        // 构建node列表
+        // 获取子节点的pid
+        Set<Long> longSet = new HashSet<>();
+        sysMenus.stream().map(menu -> {
+                if(!menu.getStatus()){
+                    longSet.add(menu.getPid());
+                }
+                    return longSet;
+            }
+        ).collect(Collectors.toSet());
+
+        // 封装node树
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
         Map<String, Object> hashMap = null;
         for (SysMenu sysMenu:sysMenus){

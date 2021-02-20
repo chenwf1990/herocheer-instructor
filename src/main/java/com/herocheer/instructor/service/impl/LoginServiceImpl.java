@@ -62,20 +62,4 @@ public class LoginServiceImpl implements LoginService {
         redisClient.set(token,JSONObject.toJSONString(userVO), CacheKeyConst.EXPIRETIME);
         return userVO;
     }
-
-    @Override
-    public void loginTest(String token, Long userId) {
-        JSONObject json = new JSONObject();
-        if(userId != null){
-            User user = userService.get(userId);
-            json = JSONObject.parseObject(JSONObject.toJSONString(user));
-        }else{
-            json.put("id",1);
-            json.put("userName","chenweifeng");
-            json.put("userType",1);
-            json.put("phone","13655080001");
-        }
-        redisClient.set(token,json.toJSONString());
-    }
-
 }
