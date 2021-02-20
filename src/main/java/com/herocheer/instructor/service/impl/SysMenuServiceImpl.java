@@ -15,7 +15,6 @@ import com.herocheer.instructor.dao.SysMenuDao;
 import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.vo.MetaVO;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
-import com.herocheer.instructor.domain.vo.SysMenuTmpVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
@@ -67,7 +66,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         paramMap.put("status", false);
 
         List<SysMenu> sysMenus = null;
-        Set<SysMenuTmpVO> longSet = null;
+        Set<Long> longSet = null;
         // 非超级管理员
         if(!UserTypeEnums.sysAdmin.getCode().equals(currentUser.getUserType())){
             paramMap.put("userId", currentUser.getId());
@@ -81,27 +80,16 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
                 String [] roleArray = roleStr.split(",");
                 paramMap.put("roleArray", roleArray);
             }else {
-                // TODO 用户没有角色信息时该怎么处理？
                 List<String> stringList= userService.findRoleId(currentUser.getId());
                 paramMap.put("roleArray", String.join(",", stringList));
             }
-
             sysMenus = this.dao.selectMenuTreeToRole(paramMap);
 
-            longSet =  sysMenus.stream().map(menu -> {
-                SysMenuTmpVO sysMenuTmp = SysMenuTmpVO.builder().build();
-                sysMenuTmp.setPid(menu.getPid());;
-                sysMenuTmp.setStatus(menu.getStatus());
-                return  sysMenuTmp;
-            }).collect(Collectors.toSet());
+            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
         }else {
             sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().status(false).build());
-            longSet =  sysMenus.stream().map(menu -> {
-                SysMenuTmpVO sysMenuTmp = SysMenuTmpVO.builder().build();
-                sysMenuTmp.setPid(menu.getPid());;
-                sysMenuTmp.setStatus(menu.getStatus());
-                return  sysMenuTmp;
-            }).collect(Collectors.toSet());
+
+            longSet =  sysMenus.stream().map(menu -> menu.getPid()).collect(Collectors.toSet());
         }
 
         // 构建node列表
@@ -111,7 +99,6 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
             hashMap = new HashMap();
             hashMap.put("path",sysMenu.getUrl());
             // 无子节点的节点
-            // TODO  处理方式 生产对象存入集合
             if (sysMenu.getPid().equals(9999L) && longSet.contains(sysMenu.getId())) {
                 hashMap.put("component", "layout/publics");
             } else {
