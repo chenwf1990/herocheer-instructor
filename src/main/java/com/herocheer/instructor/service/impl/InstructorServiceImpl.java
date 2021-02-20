@@ -1,5 +1,6 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
@@ -15,6 +16,7 @@ import com.herocheer.instructor.enums.*;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.instructor.utils.ExcelUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -140,7 +142,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         params.put("cardNo",instructor.getCardNo());
         int count = this.dao.count(params);
         if(count > 0){
-            throw new CommonException(errMsg+instructor.getCardNo()+"已存在该指导员数据");
+            throw new CommonException("{}{}已存在该指导员数据",errMsg,instructor.getCardNo());
         }
         instructor.setWorkUnit(dataList.get(3).toString());
         instructor.setChannel(ChannelEnums.imp.getType());
@@ -149,7 +151,11 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setCertificateGrade(dataList.get(6).toString());
         instructor.setGuideProject(dataList.get(7).toString());
         instructor.setGuideStation(dataList.get(8).toString());
-        instructor.setOpeningDate(((Date) dataList.get(9)).getTime());
+        Date date = DateUtil.isFormat(dataList.get(9),DateUtil.YYYY_MM_DD_1);
+        if(date == null){
+            throw new CommonException("{}发证日期格式错误：默认格式{}",errMsg,DateUtil.YYYY_MM_DD_1);
+        }
+        instructor.setOpeningDate(date.getTime());
         instructor.setAuditUnitName(dataList.get(10).toString());
         instructor.setAuditUnitType(AuditUnitEnums.getType(instructor.getAuditUnitName()));
         if(StringUtils.isEmpty(instructor.getAuditUnitType())){
@@ -181,7 +187,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     }
 
     private SysArea getAreaCode(List<SysArea> areas, Object areaName, String errMsg, SysArea sysArea) {
-        if(areaName != null){
+        if(ObjectUtil.isNotEmpty(areaName)){
             List<SysArea> list = areas.stream().filter(s -> s.getAreaName().equals(areaName)).collect(Collectors.toList());
             if(sysArea != null){
                 list = list.stream().filter(s -> s.getPid().equals(sysArea.getId())).collect(Collectors.toList());

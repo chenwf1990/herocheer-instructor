@@ -1,7 +1,10 @@
 package com.herocheer.instructor.utils;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,6 +27,7 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
     public static final String YYYYMMDDHHMM = "yyyyMMddHHmm";
     public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
     public static final String IMAGE_PARAENT = "yyyy/MM/dd";
+    public static final String YYYY_MM_DD_1 = "yyyy/MM/dd";
     public static final Long ONE_HOURS = 1 * 60 * 60 * 1000L;
     public static final Long TWO_HOURS = 2 * 60 * 60 * 1000L;
     /**
@@ -98,5 +102,28 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
      */
     public static String getNewTime(){
         return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+    }
+
+    /**
+     *  判断是否符合指定时间格式
+     * @param o
+     * @param format
+     * @return
+     */
+    public static Date isFormat(Object o, String format) {
+        if(ObjectUtil.isEmpty(o)){
+            return null;
+        }
+        if(o instanceof Date){
+            return (Date) o;
+        }
+        DateFormat formatter = new SimpleDateFormat(format);
+        formatter.setLenient(false);
+        try{
+            Date date = formatter.parse(o.toString());
+            return date;
+        }catch(Exception e){
+            return null;
+        }
     }
 }
