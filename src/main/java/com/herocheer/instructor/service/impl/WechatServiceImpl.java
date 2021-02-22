@@ -11,8 +11,10 @@ import com.herocheer.instructor.controller.SourceEnums;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
+import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.enums.WechatConst;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.IDSAPIClient;
 import com.herocheer.instructor.utils.IDSAPIEncryptUtil;
@@ -66,6 +68,9 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * @param code
@@ -226,22 +231,26 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         map.put("openid", openid);
         User user  = this.dao.selectSysUserOne(map);
 
-        if (user == null) {
+        // user.getIxmLoginStatus() == 0  或 false 非登入状态
+        if (user == null || user.getIxmLoginStatus() == null || !(user.getIxmLoginStatus())) {
             user = User.builder().build();
-            user.setOpenid(openid);
-            return user;
-        }
+            user.setUserType(UserTypeEnums.weChatUser.getCode());
 
-        // user.getIxmLoginStatus() == 0 登出
-        if (user.getIxmLoginStatus() == null || !(user.getIxmLoginStatus())) {
-            user = User.builder().build();
+            // TODO 是否要取微信用户昵称
+//            user.setNickName(jsonStr.getString("nickname"));
+//            user.setImgUrl(jsonStr.getString("headimgurl"));
+
+            user.setStatus(true);
             user.setOpenid(openid);
-            return user;
+            userService.insert(user);
         }
         user.setIxmToken("");
         session.setAttribute(WechatConst.SESSION_USER, user);
-        user.setTokenId(IdUtil.simpleUUID());
-        // TODO 用户信息放入Redis
+
+        String token = IdUtil.simpleUUID();
+        user.setTokenId(token);
+        // 用户信息放入Redis
+        redisClient.set(token,JSONObject.toJSONString(user), CacheKeyConst.EXPIRETIME);
         return user;
     }
 

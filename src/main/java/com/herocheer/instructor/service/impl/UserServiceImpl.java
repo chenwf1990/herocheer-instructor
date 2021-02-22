@@ -427,9 +427,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public User addUser(String name, String cardNo, Integer sex, String phone, Integer userType) {
-        // 判断身份证是否存在是否存在
+        // 判断phone是否存在是否存在
         Map<String, Object> params = new HashMap();
-        params.put("certificateNo", cardNo);
+        params.put("phone", phone);
         List<User> users = this.dao.findByLimit(params);
         User user = new User();
         if(!users.isEmpty()){
