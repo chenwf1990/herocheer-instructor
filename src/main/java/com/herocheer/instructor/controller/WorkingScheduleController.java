@@ -127,6 +127,7 @@ public class WorkingScheduleController extends BaseController{
     @PostMapping("/reservation")
     @ApiOperation("活动预约")
     public ResponseResult reservation(@RequestBody ActivityReservationVo reservationVo, HttpServletRequest request){
+        reqLimitByUserId(request,"ActivityReservation_reservation",1);
         Integer count=workingScheduleService.reservation(reservationVo,getUser(request));
         return ResponseResult.isSuccess(count);
     }
