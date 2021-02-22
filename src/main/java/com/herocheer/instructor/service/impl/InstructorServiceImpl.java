@@ -92,7 +92,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             }
             List<InstructorApply> applies = this.instructorApplyDao.findByCardNos(cardNoList);
             if(!applies.isEmpty()){
-                String cardNos = applies.stream().map(s ->s.getCardNo()).collect(Collectors.joining(","));
+                String cardNos = applies.stream().map(s ->s.getCardNo()).distinct().collect(Collectors.joining(","));
                 throw new CommonException("{}:已存在",cardNos);
             }
             for (int i = 0; i < read.size(); i++) {
