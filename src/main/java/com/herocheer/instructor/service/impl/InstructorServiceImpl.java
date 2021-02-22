@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -180,7 +179,8 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setAreaName(areaName);
         instructor.setCertificatePic(dataList.get(15).toString());
 
-        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(), instructor.getPhone(), UserTypeEnums.instructor.getCode());
+        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(),
+                instructor.getPhone(), UserTypeEnums.instructor.getCode(),areaName,instructor.getWorkUnit());
         instructor.setUserId(user.getId());
         instructor.setOpenId(user.getOpenid());
         return instructor;
@@ -252,7 +252,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                     throw new CommonException("指导员已存在：{}",apply.getCardNo());
                 }
                 BeanUtils.copyProperties(apply,instructor);
-                User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode());
+                User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode(), apply.getAreaName(), apply.getWorkUnit());
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
                 instructor.setAuditState(AuditStateEnums.to_pass.getState());

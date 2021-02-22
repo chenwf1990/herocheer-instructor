@@ -134,9 +134,11 @@ public interface UserService extends BaseService<User, Long> {
      * @param sex
      * @param phone
      * @param userType
+     * @param areaName
+     * @param workUnit
      * @return
      */
-    User addUser(String name, String cardNo, Integer sex, String phone, Integer userType);
+    User addUser(String name, String cardNo, Integer sex, String phone, Integer userType, String areaName, String workUnit);
 
     /**
      * 根据用户姓名查找用户信息

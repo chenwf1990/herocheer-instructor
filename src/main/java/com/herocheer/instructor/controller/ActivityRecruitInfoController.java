@@ -1,7 +1,9 @@
 package com.herocheer.instructor.controller;
 
+import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
@@ -31,6 +33,8 @@ import java.util.List;
 public class ActivityRecruitInfoController extends BaseController{
     @Resource
     private ActivityRecruitInfoService activityRecruitInfoService;
+    @Resource
+    private RedisClient redisClient;
 
     @PostMapping("/queryPage")
     @ApiOperation("招募信息查询")
@@ -54,7 +58,9 @@ public class ActivityRecruitInfoController extends BaseController{
 
     @PostMapping("/add")
     @ApiOperation("新增招募信息")
-    public ResponseResult add(@RequestBody ActivityRecruitInfoVo activityRecruitInfoVo){
+    public ResponseResult add(@RequestBody ActivityRecruitInfoVo activityRecruitInfoVo,
+                              HttpServletRequest request){
+        reqLimitByUserId(request,"ActivityRecruitInfo_add",1);
         Integer count=activityRecruitInfoService.addActivityRecruitInfo(activityRecruitInfoVo);
         return ResponseResult.isSuccess(count);
     }
@@ -80,7 +86,8 @@ public class ActivityRecruitInfoController extends BaseController{
 
     @PostMapping("/approval")
     @ApiOperation("招募信息审批")
-    public ResponseResult approval(@RequestBody ActivityRecruitApproval activityRecruitApproval){
+    public ResponseResult approval(HttpServletRequest request,@RequestBody ActivityRecruitApproval activityRecruitApproval){
+        reqLimitByUserId(request,"ActivityRecruitInfo_approval",1);
         Integer count=activityRecruitInfoService.approval(activityRecruitApproval);
         return ResponseResult.isSuccess(count);
     }

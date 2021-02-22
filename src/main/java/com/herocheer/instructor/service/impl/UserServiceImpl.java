@@ -426,7 +426,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User addUser(String name, String cardNo, Integer sex, String phone, Integer userType) {
+    public User addUser(String name, String cardNo, Integer sex, String phone, Integer userType, String areaName, String workUnit) {
         // 判断phone是否存在是否存在
         Map<String, Object> params = new HashMap();
         params.put("phone", phone);
@@ -437,6 +437,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
             if(user.getUserType().equals(UserTypeEnums.weChatUser.getCode())){
                 user.setUserType(UserTypeEnums.instructor.getCode());
             }
+            user.setPhone(phone);
+            user.setAddress(areaName);
+            //工作单位
+            user.setUserName(name);
+            user.setWorkUnit(workUnit);
+            this.dao.update(user);
             return user;
         }
         user.setCertificateNo(cardNo);
