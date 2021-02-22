@@ -71,7 +71,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         //PC端新增的时候id==指导员id，公众号的id为null，所以没有影响
         instructorApply.setInstructorId(instructorApply.getId());
         Map<String,Object> applyMap = new HashMap<>();
-        applyMap.put("cardNo",instructorApply.getCardNo());
+        applyMap.put("phone",instructorApply.getPhone());
         List<InstructorApply> applyList = this.dao.findByLimit(applyMap);
         if(!applyList.isEmpty()){
             //是否存在待审核数据
@@ -106,6 +106,9 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         InstructorApplyAuditLog log = new InstructorApplyAuditLog();
         BeanUtils.copyProperties(instructorApply,log);
         log.setApplyId(instructorApply.getId());
+        log.setCreatedBy(null);
+        log.setCreatedTime(null);
+        log.setCreatedId(null);
         instructorApplyAuditLogDao.insert(log);
     }
 
