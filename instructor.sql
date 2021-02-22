@@ -62,3 +62,8 @@ INSERT INTO `sys_menu` VALUES (63, 62, '课程审核', 'J100100', '/classManagem
 INSERT INTO `sys_menu` VALUES (64, 62, '课程查询', 'J100200', '/classManagement/classCheck', 34, NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, 0);
 INSERT INTO `sys_menu` VALUES (65, 62, '课程发布', 'J100300', '/classManagement/classIssue', 35, NULL, NULL, 0, NULL, NULL, 0, NULL, NULL, 0);
 INSERT INTO `sys_menu` VALUES (66, 62, '课程详情', 'J100400', '/classManagement/classDetail', 36, NULL, NULL, 1, NULL, NULL, 0, NULL, NULL, 0);
+
+
+-- 用户表添加工作单位字段 by gaorh 20210222
+Alter table `user` add column workUnit VARCHAR(255);
+ALTER TABLE `user` MODIFY COLUMN workUnit VARCHAR(255) COMMENT '工作单位';

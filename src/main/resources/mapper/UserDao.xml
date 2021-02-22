@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.UserDao">
 
     <sql id="table_field">
-      id, imgUrl, nickName, userName, account, password, sex, userType, age, email, phone, source, certificateNo, channel, birthday, address, postcode, openid, unionID, insuranceStatus, commitmentStatus, ixmUserId, ixmUserName, ixmRealNameLevel, ixmUserRealName, ixmLoginStatus, ixmToken, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime, guideProject, deptName, deptId      
+      id, imgUrl, nickName, userName, account, password, sex, userType, age, email, phone, source, certificateNo, channel, birthday, address, postcode, openid, unionID, insuranceStatus, commitmentStatus, ixmUserId, ixmUserName, ixmRealNameLevel, ixmUserRealName, ixmLoginStatus, ixmToken, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime, guideProject, deptName, deptId, workUnit
     </sql>
 
     <!--单表新增-->
@@ -101,6 +101,9 @@
             <if test="deptId != null">
                 deptId,
             </if>
+            <if test="workUnit != null">
+                workUnit,
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
         ) VALUES (
@@ -194,6 +197,9 @@
             </if>
             <if test="deptId != null">
                 #{deptId},
+            </if>
+            <if test="workUnit != null">
+                #{workUnit},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -298,6 +304,9 @@
             </if>
             <if test="deptId != null">
                 deptId = #{deptId},
+            </if>
+            <if test="workUnit != null">
+                workUnit = #{workUnit},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -408,6 +417,9 @@
             <if test="deptId != null">
                 and deptId = #{deptId}
             </if>
+            <if test="workUnit != null">
+                and workUnit = #{workUnit}
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         <choose>
@@ -513,6 +525,9 @@
             </if>
             <if test="deptId != null">
                 and deptId = #{deptId}
+            </if>
+            <if test="workUnit != null">
+                and workUnit = #{workUnit}
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
