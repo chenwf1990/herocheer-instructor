@@ -572,14 +572,11 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     @Transactional(rollbackFor = Exception.class)
     public Integer reservation(ActivityReservationVo reservationVo, UserEntity userEntity) {
         if (reservationVo.getReservationDate()==null||reservationVo.getRecruitDetailIds()==null){
-            throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,参数有误!");
-        }
-        if(userEntity.getUserType()!= UserTypeEnums.instructor.getCode()){
-            throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,未绑定指导员信息!");
+            throw new CommonException("预约失败,参数有误!");
         }
         Instructor instructor=instructorService.findInstructorByUserId(userEntity.getId());
         if(instructor==null){
-            throw new CommonException(ResponseCode.SERVER_ERROR,"获取指导员信息失败!");
+            throw new CommonException("预约失败,未绑定指导员信息!!");
         }
         String[] recruitDetailIds=reservationVo.getRecruitDetailIds().split(",");
         //活动招募详情
