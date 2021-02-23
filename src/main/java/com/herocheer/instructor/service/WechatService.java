@@ -57,7 +57,7 @@ public interface WechatService {
      */
     JSONObject getOauth2(String wecharCode);
 
-    User ixmUserIsLogin(HttpSession session, String code, String openid);
+    User ixmUserIsLogin(HttpSession session, String code);
 
     String ixmLoginUrl(String callBackUrl);
 

@@ -7,7 +7,10 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.*;
+import com.herocheer.instructor.domain.vo.AreaPermissionVO;
+import com.herocheer.instructor.domain.vo.MemberVO;
+import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
@@ -19,7 +22,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -115,45 +126,6 @@ public class UserController extends BaseController {
         return ResponseResult.ok(userInfoVo);
     }
 
-    /**
-     * 通过openId获取微信用户
-     *
-     * @param openId 开放id
-     * @return {@link ResponseResult<User>}
-     */
-    @AllowAnonymous
-    @GetMapping("/weChatUser/{openId:\\w+}")
-    @ApiOperation("获取微信用户信息(openid)")
-    public ResponseResult<User> fetchUserByOpenId(@ApiParam("用户ID") @PathVariable String openId){
-        return ResponseResult.ok(userService.findUserByOpenId(openId));
-    }
-
-    /**
-     * 通过电话获取用户
-     *
-     * @param phone 电话
-     * @return {@link ResponseResult<User>}
-     */
-    @AllowAnonymous
-    @GetMapping("/weChatUser/{phone:\\w+}")
-    @ApiOperation("获取微信用户信息(phone)")
-    public ResponseResult<User> fetchUserByPhone(@ApiParam("电话号码") @PathVariable String phone){
-        return ResponseResult.ok(userService.findUserByPhone(phone));
-    }
-
-
-    /**
-     * 编辑微信用户
-     *
-     * @param weChatUserVO VO
-     * @return {@link ResponseResult<User>}
-     */
-    @AllowAnonymous
-    @PutMapping("/weChatUser")
-    @ApiOperation("编辑微信用户")
-    public ResponseResult<User> editWeChatUser(@ApiParam("微信用户") @RequestBody WeChatUserVO weChatUserVO){
-        return ResponseResult.ok(userService.modifyWeChatUser(weChatUserVO));
-    }
     /**
      * 编辑用户信息
      *
