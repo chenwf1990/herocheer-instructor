@@ -2,7 +2,8 @@ package com.herocheer.instructor.enums;
 
 public enum ReserveStatusEnums {
     ALREADY_RESERVE(0,"已预约"),
-    CANCEL_RESERVE(1,"取消预约");
+    CANCEL_RESERVE(1,"取消预约"),
+    IN_END(2,"已关闭");
     ReserveStatusEnums(){
 
     }

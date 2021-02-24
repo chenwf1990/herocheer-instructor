@@ -37,7 +37,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         if(queryVo.getQueryType()!=null&&queryVo.getQueryType()==3){
             queryVo.setCreatedId(userId);
         }
-        List<CourseInfoVo> instructors = dao.queryList(queryVo);
+        List<CourseInfoVo> instructors = this.dao.queryList(queryVo);
         page.setDataList(instructors);
         return page;
     }
@@ -55,7 +55,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         CourseInfo courseInfo=new CourseInfo();
         courseInfo.setId(id);
         courseInfo.setState(CourseApprovalState.WITHDRAW.getState());
-        return dao.update(courseInfo);
+        return this.dao.update(courseInfo);
     }
 
     @Override
@@ -71,6 +71,11 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         if(ActivityApprovalStateEnums.OVERRULE.getState()==courseApproval.getApprovalStatus()){
             courseInfo.setState(CourseApprovalState.OVERRULE.getState());
         }
-        return dao.update(courseInfo);
+        return this.dao.update(courseInfo);
+    }
+
+    @Override
+    public CourseInfoVo getCourseInfo(Long id) {
+        return this.dao.getCourseInfo(id);
     }
 }

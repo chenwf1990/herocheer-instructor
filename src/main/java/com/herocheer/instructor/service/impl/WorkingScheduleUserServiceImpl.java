@@ -266,7 +266,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         if(queryVo.getType()!=null&&queryVo.getType()==3){
             queryVo.setUserId(userId);
         }
-        List<ReservationInfoVo> list=dao.findReservationInfo(queryVo);
+        List<ReservationInfoVo> list=this.dao.findReservationInfo(queryVo);
         page.setDataList(list);
         return page;
     }

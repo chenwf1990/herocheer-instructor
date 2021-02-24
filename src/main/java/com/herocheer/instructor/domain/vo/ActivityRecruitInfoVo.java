@@ -2,6 +2,7 @@ package com.herocheer.instructor.domain.vo;
 
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -14,5 +15,10 @@ import java.util.List;
  **/
 @Data
 public class ActivityRecruitInfoVo extends ActivityRecruitInfo {
+
+    @ApiModelProperty("招募详情)")
     private List<ActivityRecruitDetail> recruitDetails;
+
+    @ApiModelProperty("预约状态(0.已预约1.取消预约2.已关闭)")
+    private Integer reservationStatus;
 }

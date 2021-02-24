@@ -364,6 +364,11 @@
         </where>
     </select>
 
+    <select id="getCourseInfo" resultType="com.herocheer.instructor.domain.vo.CourseInfoVo"
+            parameterType="java.lang.Long">
+        select <include refid="table_field"/> from course_info where id=#{id}
+    </select>
+
     <select id="queryList" resultType="com.herocheer.instructor.domain.vo.CourseInfoVo"
             parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
         select <include refid="table_field"/> from course_info

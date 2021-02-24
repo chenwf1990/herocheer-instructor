@@ -4,6 +4,7 @@ import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,5 +17,7 @@ import java.util.List;
 public interface CourseInfoDao extends BaseDao<CourseInfo,Long>{
 
     List<CourseInfoVo> queryList(CourseInfoQueryVo queryVo);
+
+    CourseInfoVo getCourseInfo(@Param("id") Long id);
 
 }

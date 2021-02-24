@@ -19,10 +19,11 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
 
     Page<CourseInfoVo> queryPage(CourseInfoQueryVo queryVo, Long userId);
 
-
     List<CourseApproval> approvalRecord(Long id);
 
     Integer withdraw(Long id);
 
     Integer approval(CourseApproval courseApproval);
+
+    CourseInfoVo getCourseInfo(Long id);
 }
