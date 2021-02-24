@@ -18,6 +18,7 @@ swagger:
   license:
   licenseUrl:
   basePackage: com.herocheer.instructor.controller
+  host:
   enable: true #是否开始swagger
   contact:
     name: chenwf

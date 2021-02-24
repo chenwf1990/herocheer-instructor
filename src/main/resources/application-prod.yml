@@ -15,12 +15,12 @@ spring:
 file:
   upload:
     savePath: /root/dataExt/instructor/instructor-file/
-    visitPath: http://ijs.sports.xm.gov.cn/instructor-file/
+    visitPath: https://ijs.sports.xm.gov.cn/instructor-file/
 swagger:
   title: 社会指导员api文档
   description: 社会指导员api文档
   version: 1.0.0
-  termsOfServiceUrl: http://ijs.sports.xm.gov.cn/instructor-server/
+  termsOfServiceUrl: https://ijs.sports.xm.gov.cn/instructor-server/
   license:
   licenseUrl:
   basePackage: com.herocheer.instructor.controller
@@ -28,6 +28,6 @@ swagger:
   enable: true #是否开始swagger
   contact:
     name: chenwf
-    url: http://ijs.sports.xm.gov.cn/instructor-server/
+    url: https://ijs.sports.xm.gov.cn/instructor-server/
     email: 349830964@qq.com
 
