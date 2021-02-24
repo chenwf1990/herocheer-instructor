@@ -6,7 +6,6 @@ import com.herocheer.instructor.domain.entity.SysDict;
 import com.herocheer.instructor.domain.vo.SysDictVO;
 import com.herocheer.instructor.service.SysDictService;
 import com.herocheer.instructor.utils.PinYinUtil;
-import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,7 +49,6 @@ public class SysDictController extends BaseController {
      */
     @PostMapping
     @ApiOperation("新增字典")
-    @AllowAnonymous
     public ResponseResult<SysDict> createDict(@ApiParam("系统字典") @Valid @RequestBody SysDictVO sysDictVO, HttpServletRequest request){
         return ResponseResult.ok(sysDictService.addDict(sysDictVO));
     }
@@ -64,7 +62,6 @@ public class SysDictController extends BaseController {
      */
     @DeleteMapping("/{id:\\w+}")
     @ApiOperation("删除字典")
-    @AllowAnonymous
     public ResponseResult dropDictById(@ApiParam("字典ID") @PathVariable Long id, HttpServletRequest request){
         sysDictService.removeDictById(id);
         return ResponseResult.ok();
@@ -78,7 +75,6 @@ public class SysDictController extends BaseController {
      */
     @GetMapping("/{id:\\w+}")
     @ApiOperation("回显字典")
-    @AllowAnonymous
     public ResponseResult<SysDict> fecthDictById(@ApiParam("字典ID") @PathVariable Long id, HttpServletRequest request){
         return ResponseResult.ok(sysDictService.findDictById(id));
     }
@@ -91,7 +87,6 @@ public class SysDictController extends BaseController {
      */
     @PutMapping
     @ApiOperation("编辑字典")
-    @AllowAnonymous
     public ResponseResult<SysDict> editDict(@ApiParam("系统字典") @Valid @RequestBody SysDictVO sysDictVO, HttpServletRequest request){
         return ResponseResult.ok(sysDictService.modifyDict(sysDictVO));
     }
@@ -105,7 +100,6 @@ public class SysDictController extends BaseController {
      */
     @PostMapping("/page")
     @ApiOperation("字典列表")
-    @AllowAnonymous
     public ResponseResult<Page<SysDict>> fecthDictByPage(@ApiParam("系统字典") @RequestBody SysDictVO sysDictVO,HttpServletRequest request){
         return ResponseResult.ok(sysDictService.findDictByPage(sysDictVO));
     }
@@ -119,7 +113,6 @@ public class SysDictController extends BaseController {
      */
     @GetMapping("/name/{type}")
     @ApiOperation("字典名称")
-    @AllowAnonymous
     public ResponseResult<List<SysDict>> fetchDictByPid(@ApiParam("字典PID") @PathVariable String type, HttpServletRequest request){
         return ResponseResult.ok( sysDictService.findDictByPid(PinYinUtil.toFirstChar(type)));
     }
@@ -133,7 +126,6 @@ public class SysDictController extends BaseController {
      */
     @GetMapping("/name")
     @ApiOperation("模糊字典")
-    @AllowAnonymous
     public ResponseResult<List<SysDict>> fetchDictLikeDictName(@ApiParam("字典名称") @RequestParam String dictName,
                                                                @ApiParam("字典PID") @RequestParam String type,
                                                                HttpServletRequest request){
