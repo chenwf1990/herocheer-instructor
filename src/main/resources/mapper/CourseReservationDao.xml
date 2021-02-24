@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.CourseReservationDao">
+    <sql id="table_field">
+      id, courseId, userId, name, identityNumber, phoneNumber, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.CourseReservation">
+        insert into course_reservation (
+    <trim suffixOverrides=",">
+        <if test="courseId != null">
+            courseId,
+        </if>
+        <if test="userId != null">
+            userId,
+        </if>
+        <if test="name != null">
+            name,
+        </if>
+        <if test="identityNumber != null">
+            identityNumber,
+        </if>
+        <if test="phoneNumber != null">
+            phoneNumber,
+        </if>
+        <if test="status != null">
+            status,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="courseId != null">
+            #{courseId},
+        </if>
+        <if test="userId != null">
+            #{userId},
+        </if>
+        <if test="name != null">
+            #{name},
+        </if>
+        <if test="identityNumber != null">
+            #{identityNumber},
+        </if>
+        <if test="phoneNumber != null">
+            #{phoneNumber},
+        </if>
+        <if test="status != null">
+            #{status},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from course_reservation where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.CourseReservation">
+        update course_reservation
+        <set>
+            <if test="courseId != null">
+                courseId = #{courseId},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="identityNumber != null">
+                identityNumber = #{identityNumber},
+            </if>
+            <if test="phoneNumber != null">
+                phoneNumber = #{phoneNumber},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourseReservation">
+        select <include refid="table_field"/> from course_reservation where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.CourseReservation">
+        select <include refid="table_field"/> from course_reservation
+        <where>
+            <if test="courseId != null">
+                and courseId = #{courseId}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="identityNumber != null">
+                and identityNumber = #{identityNumber}
+            </if>
+            <if test="phoneNumber != null">
+                and phoneNumber = #{phoneNumber}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from course_reservation
+        <where>
+            <if test="courseId != null">
+                and courseId = #{courseId}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="identityNumber != null">
+                and identityNumber = #{identityNumber}
+            </if>
+            <if test="phoneNumber != null">
+                and phoneNumber = #{phoneNumber}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="queryList" resultType="com.herocheer.instructor.domain.vo.CourseInfoVo"
+            parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
+        SELECT i.*,CASE
+            WHEN i.`state` = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+            ELSE r.`status` END AS 'reservationStatus'
+        from course_info i LEFT JOIN course_reservation r on i.id=r.courseId
+        <where>
+            i.`state` = 1
+            <if test="createdId!=null">
+                and r.userId=#{createdId}
+            </if>
+            <if test="reservationState!=null and reservationState==1">
+                and r.`status`=0
+            </if>
+            <if test="reservationState!=null and reservationState==2">
+                and (r.`status`=1 or courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000)
+            </if>
+            order by r.createdTime desc
+        </where>
+    </select>
+</mapper>
