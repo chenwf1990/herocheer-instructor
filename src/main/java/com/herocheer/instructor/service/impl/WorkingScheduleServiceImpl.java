@@ -27,7 +27,6 @@ import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
-import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.*;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.instructor.utils.ExcelUtil;
@@ -80,6 +79,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     private ActivityRecruitDetailService activityRecruitDetailService;
     @Resource
     private WorkingReplaceCardService workingReplaceCardService;
+    @Resource
+    private ReservationService reservationService;
 
     /**
      * @param workingScheduleQueryVo
@@ -623,7 +624,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             Map<String,Object> workingMap=new HashMap<>();
             workingMap.put("activityId",activityRecruitInfo.getId());
             workingMap.put("activityDetailId",activityRecruitDetail.getId());
-            workingSchedules=dao.findByLimit(workingMap);
+            workingSchedules=this.dao.findByLimit(workingMap);
             Long workingScheduleId;
             if(workingSchedules.size()==0){
                 //保存排班信息
@@ -641,7 +642,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 workingSchedule.setServiceBeginTime(activityRecruitDetail.getServiceStartTime());
                 workingSchedule.setServiceEndTime(activityRecruitDetail.getServiceEndTime());
                 workingSchedule.setRemarks("活动预约记录");
-                dao.insert(workingSchedule);
+                this.dao.insert(workingSchedule);
                 workingScheduleId=workingSchedule.getId();
             }else {
                 workingScheduleId=workingSchedules.get(0).getId();
@@ -656,6 +657,21 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUser.setGuideProject(instructor.getGuideProject());
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
             count=count+workingScheduleUserService.insert(workingScheduleUser);
+            Reservation reservation=new Reservation();
+            reservation.setRelevanceId(activityRecruitInfo.getId());
+            reservation.setType(activityRecruitInfo.getRecruitType());
+            reservation.setWorkingId(workingScheduleUser.getId());
+            reservation.setTitle(activityRecruitInfo.getTitle());
+            reservation.setImage(activityRecruitInfo.getImage());
+            reservation.setStartTime(activityRecruitDetail.getServiceDate()+DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime()));
+            reservation.setEndTime(activityRecruitDetail.getServiceDate()+DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime()));
+            reservation.setAddress(activityRecruitInfo.getAddress());
+            reservation.setLongitude(activityRecruitInfo.getLongitude());
+            reservation.setLatitude(activityRecruitInfo.getLatitude());
+            reservation.setUserId(userEntity.getId());
+            reservation.setPhone(userEntity.getPhone());
+            reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            reservationService.insert(reservation);
             //已预约数加一
             activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()+1);
             activityRecruitDetailService.update(activityRecruitDetail);
@@ -675,7 +691,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         }
         WorkingSchedule workingSchedule=dao.get(workingScheduleUser.getWorkingScheduleId());
         if(workingSchedule==null || workingSchedule.getActivityDetailId()==null){
-            throw new CommonException(ResponseCode.SERVER_ERROR,"获取招募信息失败!");
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取排班信息失败!");
         }
         ActivityRecruitDetail activityRecruitDetail=activityRecruitDetailService.get(workingSchedule.getActivityDetailId());
         if(new Date().getTime()>activityRecruitDetail.getServiceDate()){
@@ -686,6 +702,14 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         activityRecruitDetailService.update(activityRecruitDetail);
         //设置状态取消预约
         workingScheduleUser.setReserveStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
+        Map<String,Object> map=new HashMap<>();
+        map.put("workingId",id);
+        List<Reservation> reservations=reservationService.findByLimit(map);
+        if(reservations!=null && reservations.size()>0){
+            Reservation reservation=reservations.get(0);
+            reservation.setStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
+            reservationService.update(reservation);
+        }
         return workingScheduleUserService.update(workingScheduleUser);
     }
 }

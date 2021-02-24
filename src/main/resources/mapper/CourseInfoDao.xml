@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.CourseInfoDao">
+    <sql id="table_field">
+      id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, state, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
+      CASE
+		WHEN `state` = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+		WHEN `state` = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+			AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1 THEN 3
+		WHEN `state` = 1 AND signStartTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+		WHEN `state` = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+			AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1 THEN 1
+        ELSE 0 END AS 'courseStatus'
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.CourseInfo">
+        insert into course_info (
+    <trim suffixOverrides=",">
+        <if test="title != null">
+            title,
+        </if>
+        <if test="type != null">
+            type,
+        </if>
+        <if test="lecturerTeacherId != null">
+            lecturerTeacherId,
+        </if>
+        <if test="lecturerTeacherName != null">
+            lecturerTeacherName,
+        </if>
+        <if test="courseStartTime != null">
+            courseStartTime,
+        </if>
+        <if test="courseEndTime != null">
+            courseEndTime,
+        </if>
+        <if test="address != null">
+            address,
+        </if>
+        <if test="longitude != null">
+            longitude,
+        </if>
+        <if test="latitude != null">
+            latitude,
+        </if>
+        <if test="limitNumber != null">
+            limitNumber,
+        </if>
+        <if test="signNumber != null">
+            signNumber,
+        </if>
+        <if test="signStartTime != null">
+            signStartTime,
+        </if>
+        <if test="signEndTime != null">
+            signEndTime,
+        </if>
+        <if test="description != null">
+            description,
+        </if>
+        <if test="image != null">
+            image,
+        </if>
+        <if test="approvalStatus != null">
+            approvalStatus,
+        </if>
+        <if test="approvalComments != null">
+            approvalComments,
+        </if>
+        <if test="showBanner != null">
+            showBanner,
+        </if>
+        <if test="placedTop != null">
+            placedTop,
+        </if>
+        <if test="state != null">
+            state,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="title != null">
+            #{title},
+        </if>
+        <if test="type != null">
+            #{type},
+        </if>
+        <if test="lecturerTeacherId != null">
+            #{lecturerTeacherId},
+        </if>
+        <if test="lecturerTeacherName != null">
+            #{lecturerTeacherName},
+        </if>
+        <if test="courseStartTime != null">
+            #{courseStartTime},
+        </if>
+        <if test="courseEndTime != null">
+            #{courseEndTime},
+        </if>
+        <if test="address != null">
+            #{address},
+        </if>
+        <if test="longitude != null">
+            #{longitude},
+        </if>
+        <if test="latitude != null">
+            #{latitude},
+        </if>
+        <if test="limitNumber != null">
+            #{limitNumber},
+        </if>
+        <if test="signNumber != null">
+            #{signNumber},
+        </if>
+        <if test="signStartTime != null">
+            #{signStartTime},
+        </if>
+        <if test="signEndTime != null">
+            #{signEndTime},
+        </if>
+        <if test="description != null">
+            #{description},
+        </if>
+        <if test="image != null">
+            #{image},
+        </if>
+        <if test="approvalStatus != null">
+            #{approvalStatus},
+        </if>
+        <if test="approvalComments != null">
+            #{approvalComments},
+        </if>
+        <if test="showBanner != null">
+            #{showBanner},
+        </if>
+        <if test="placedTop != null">
+            #{placedTop},
+        </if>
+        <if test="state != null">
+            #{state},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from course_info where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.CourseInfo">
+        update course_info
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="lecturerTeacherId != null">
+                lecturerTeacherId = #{lecturerTeacherId},
+            </if>
+            <if test="lecturerTeacherName != null">
+                lecturerTeacherName = #{lecturerTeacherName},
+            </if>
+            <if test="courseStartTime != null">
+                courseStartTime = #{courseStartTime},
+            </if>
+            <if test="courseEndTime != null">
+                courseEndTime = #{courseEndTime},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="limitNumber != null">
+                limitNumber = #{limitNumber},
+            </if>
+            <if test="signNumber != null">
+                signNumber = #{signNumber},
+            </if>
+            <if test="signStartTime != null">
+                signStartTime = #{signStartTime},
+            </if>
+            <if test="signEndTime != null">
+                signEndTime = #{signEndTime},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="approvalStatus != null">
+                approvalStatus = #{approvalStatus},
+            </if>
+            <if test="approvalComments != null">
+                approvalComments = #{approvalComments},
+            </if>
+            <if test="showBanner != null">
+                showBanner = #{showBanner},
+            </if>
+            <if test="placedTop != null">
+                placedTop = #{placedTop},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourseInfo">
+        select <include refid="table_field"/> from course_info where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.CourseInfo">
+        select <include refid="table_field"/> from course_info
+        <where>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="lecturerTeacherId != null">
+                and lecturerTeacherId = #{lecturerTeacherId}
+            </if>
+            <if test="lecturerTeacherName != null">
+                and lecturerTeacherName = #{lecturerTeacherName}
+            </if>
+            <if test="courseStartTime != null">
+                and courseStartTime = #{courseStartTime}
+            </if>
+            <if test="courseEndTime != null">
+                and courseEndTime = #{courseEndTime}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="limitNumber != null">
+                and limitNumber = #{limitNumber}
+            </if>
+            <if test="signNumber != null">
+                and signNumber = #{signNumber}
+            </if>
+            <if test="signStartTime != null">
+                and signStartTime = #{signStartTime}
+            </if>
+            <if test="signEndTime != null">
+                and signEndTime = #{signEndTime}
+            </if>
+            <if test="description != null">
+                and description = #{description}
+            </if>
+            <if test="image != null">
+                and image = #{image}
+            </if>
+            <if test="approvalStatus != null">
+                and approvalStatus = #{approvalStatus}
+            </if>
+            <if test="approvalComments != null">
+                and approvalComments = #{approvalComments}
+            </if>
+            <if test="showBanner != null">
+                and showBanner = #{showBanner}
+            </if>
+            <if test="placedTop != null">
+                and placedTop = #{placedTop}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from course_info
+        <where>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="lecturerTeacherId != null">
+                and lecturerTeacherId = #{lecturerTeacherId}
+            </if>
+            <if test="lecturerTeacherName != null">
+                and lecturerTeacherName = #{lecturerTeacherName}
+            </if>
+            <if test="courseStartTime != null">
+                and courseStartTime = #{courseStartTime}
+            </if>
+            <if test="courseEndTime != null">
+                and courseEndTime = #{courseEndTime}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="limitNumber != null">
+                and limitNumber = #{limitNumber}
+            </if>
+            <if test="signNumber != null">
+                and signNumber = #{signNumber}
+            </if>
+            <if test="signStartTime != null">
+                and signStartTime = #{signStartTime}
+            </if>
+            <if test="signEndTime != null">
+                and signEndTime = #{signEndTime}
+            </if>
+            <if test="description != null">
+                and description = #{description}
+            </if>
+            <if test="image != null">
+                and image = #{image}
+            </if>
+            <if test="approvalStatus != null">
+                and approvalStatus = #{approvalStatus}
+            </if>
+            <if test="approvalComments != null">
+                and approvalComments = #{approvalComments}
+            </if>
+            <if test="showBanner != null">
+                and showBanner = #{showBanner}
+            </if>
+            <if test="placedTop != null">
+                and placedTop = #{placedTop}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="getCourseInfo" resultType="com.herocheer.instructor.domain.vo.CourseInfoVo"
+            parameterType="java.lang.Long">
+        select <include refid="table_field"/> from course_info where id=#{id}
+    </select>
+
+    <select id="queryList" resultType="com.herocheer.instructor.domain.vo.CourseInfoVo"
+            parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
+        select <include refid="table_field"/> from course_info
+        <where>
+            <if test="title!=null and title!=''">
+                and title liek concat('%',#{title},'%')
+            </if>
+            <if test="type!=null">
+                and type=#{type}
+            </if>
+            <if test="createdBy!=null and createdBy!=''">
+                and createdBy like concat('%',#{createdBy},'%')
+            </if>
+            <if test="startTime!=null">
+                and createdTime <![CDATA[ > ]]> #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and createdTime <![CDATA[ < ]]> #{endTime}
+            </if>
+            <if test="state!=null">
+                and state=#{state}
+            </if>
+            <if test="courseState!=null and courseState==4">
+                AND `state` = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+            </if>
+            <if test="courseState!=null and courseState==3">
+                AND `state` = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1
+            </if>
+            <if test="courseState!=null and courseState==2">
+                AND `state` = 1 AND signStartTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND `state` = 1 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+            </if>
+            <if test="courseState!=null and courseState==1">
+                AND `state` = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1
+                AND `state` = 1 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+            </if>
+            <if test="courseState!=null and courseState==0">
+                AND (`state` != 1 OR signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000)
+            </if>
+            <if test="queryType!=null and queryType==1">
+                AND `state`=0
+            </if>
+            <if test="queryType!=null and queryType==2">
+                AND (`state`=1 or `state`=3)
+            </if>
+            <if test="queryType!=null and queryType==3 and createdId!=null">
+                AND createdId=#{createdId}
+            </if>
+            <if test="approvalStartTime!=null">
+                and updateTime <![CDATA[ > ]]> #{approvalStartTime}
+            </if>
+            <if test="approvalEndTime!=null">
+                and updateTime <![CDATA[ < ]]> #{approvalEndTime}
+            </if>
+        </where>
+        order by placedTop DESC,createdTime DESC
+    </select>
+</mapper>

@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +139,7 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
     @Override
     public Page<MatchSignRecordVo> queryMatchSignRecord(Integer pageNo, Integer pageSize, Long activityId, String userName) {
         Page page=Page.startPage(pageNo,pageSize);
-        List<MatchSignRecordVo> list=dao.findMatchSignRecord(activityId,userName);
+        List<MatchSignRecordVo> list=this.dao.findMatchSignRecord(activityId,userName);
         page.setDataList(list);
         return page;
     }

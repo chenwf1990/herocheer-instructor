@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * @program: herocheer-instructor
- * @description: 预约记录查询VO
+ * @description: 招募预约记录查询VO
  * @author: Linjf
  * @create date: 2021-01-28 18:51
  **/

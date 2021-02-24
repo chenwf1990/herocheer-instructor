@@ -54,14 +54,14 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         if (queryVo.getType()!=null&&queryVo.getType()==2){
             queryVo.setStatus(RecruitStateEnums.PENDING.getState());
         }
-        List<ActivityRecruitInfo> instructors = dao.findList(queryVo);
+        List<ActivityRecruitInfo> instructors = this.dao.findList(queryVo);
         page.setDataList(instructors);
         return page;
     }
 
     @Override
     public ActivityRecruitInfoVo getActivityRecruitInfo(Long id) {
-        ActivityRecruitInfoVo activityRecruitInfoVo= dao.getActivityRecruitInfo(id);
+        ActivityRecruitInfoVo activityRecruitInfoVo= this.dao.getActivityRecruitInfo(id);
         //获取赛事招募时段信息
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
             Map<String,Object> map=new HashMap<>();
@@ -79,17 +79,17 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         ActivityRecruitInfo activityRecruitInfo=new ActivityRecruitInfo();
         activityRecruitInfo.setId(id);
         activityRecruitInfo.setStatus(RecruitStateEnums.WITHDRAW.getState());
-        return  dao.update(activityRecruitInfo);
+        return  this.dao.update(activityRecruitInfo);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer addActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
         activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
+        Integer count=this.dao.insert(activityRecruitInfoVo);
         if(activityRecruitInfoVo.getRecruitEndDate()>activityRecruitInfoVo.getServiceStartDate()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间必须大于招募结束时间!");
         }
-        Integer count=dao.insert(activityRecruitInfoVo);
         //保存赛事招募明细
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
             if (activityRecruitInfoVo.getRecruitDetails()!=null){
@@ -118,7 +118,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                 activityRecruitInfoVo.getStatus()==RecruitStateEnums.OVERRULE.getState()){
             activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
         }
-        Integer count=dao.update(activityRecruitInfoVo);
+        Integer count=this.dao.update(activityRecruitInfoVo);
         //保存赛事招募明细
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
             if (activityRecruitInfoVo.getRecruitDetails()!=null){
@@ -138,13 +138,13 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
 
     @Override
     public Integer deleteActivityRecruitInfo(Long id) {
-        ActivityRecruitInfo activityRecruitInfo=dao.get(id);
+        ActivityRecruitInfo activityRecruitInfo=this.dao.get(id);
         if(activityRecruitInfo.getStatus()!= RecruitStateEnums.PENDING.getState()&&
                 activityRecruitInfo.getStatus()!=RecruitStateEnums.WITHDRAW.getState()&&
                 activityRecruitInfo.getStatus()!=RecruitStateEnums.OVERRULE.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法删除");
         }
-        Integer count=dao.delete(id);
+        Integer count=this.dao.delete(id);
         activityRecruitDetailService.deleteDetailByRecruitId(id);
         return count;
     }
@@ -157,7 +157,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer approval(ActivityRecruitApproval activityRecruitApproval) {
-        ActivityRecruitInfo activityRecruitInfo=dao.get(activityRecruitApproval.getRecruitId());
+        ActivityRecruitInfo activityRecruitInfo=this.dao.get(activityRecruitApproval.getRecruitId());
         if(activityRecruitInfo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募信息不存在!");
         }
@@ -176,7 +176,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         activityRecruitApprovalService.insert(activityRecruitApproval);
         activityRecruitInfo.setApprovalStatus(activityRecruitApproval.getApprovalStatus());
         activityRecruitInfo.setApprovalComments(activityRecruitApproval.getApprovalComments());
-        Integer count=dao.update(activityRecruitInfo);
+        Integer count=this.dao.update(activityRecruitInfo);
         //生成驿站招募明细
         if(activityRecruitInfo.getStatus()==RecruitStateEnums.TO_RECRUITED.getState()
             &&activityRecruitInfo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()
@@ -248,7 +248,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             map.put("updateId",userId);
             map.put("statusArray",statusArray);
         }
-        List<ApplicationListVo> list=dao.findApplicationList(map);
+        List<ApplicationListVo> list=this.dao.findApplicationList(map);
         page.setDataList(list);
         return page;
     }
@@ -265,7 +265,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             map.put("updateId",userId);
             map.put("statusArray",statusArray);
         }
-        Integer count=dao.getApplicationCount(map);
+        Integer count=this.dao.getApplicationCount(map);
         return count;
     }
 

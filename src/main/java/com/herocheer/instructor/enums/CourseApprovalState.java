@@ -1,17 +1,18 @@
 package com.herocheer.instructor.enums;
 
-public enum ReserveStatusEnums {
-    ALREADY_RESERVE(0,"已预约"),
-    CANCEL_RESERVE(1,"取消预约"),
-    IN_END(2,"已关闭");
-    ReserveStatusEnums(){
+public enum CourseApprovalState {
+    PENDING(0,"待审核"),
+    PASSED(1,"通过"),
+    WITHDRAW(2,"撤回"),
+    OVERRULE(3,"驳回");
+    CourseApprovalState(){
 
     }
 
     private int state;
     private String name;
 
-    ReserveStatusEnums(int state, String name) {
+    CourseApprovalState(int state, String name) {
         this.state = state;
         this.name = name;
     }
