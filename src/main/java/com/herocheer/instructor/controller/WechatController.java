@@ -1,8 +1,14 @@
 package com.herocheer.instructor.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.SmsCodeUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
@@ -13,9 +19,13 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +50,13 @@ public class WechatController extends BaseController {
     @Resource
     private WechatService wechatService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RedisClient redisClient;
+
+
 
     @GetMapping("/getWxInfo")
     @ApiOperation("获取微信信息")
@@ -54,7 +71,6 @@ public class WechatController extends BaseController {
      *
      * @param session 会话
      * @param code    代码
-     * @param openid  openid
      * @return {@link ResponseResult<User>}
      */
     @PostMapping("ixmLoginUserIsExist")
@@ -64,8 +80,8 @@ public class WechatController extends BaseController {
             @ApiImplicitParam(name = "code", value = "微信公众号code"),
             @ApiImplicitParam(name = "openid", value = "微信用户openid")
     })
-    public ResponseResult<User> ixmLoginUserIsExist(HttpSession session, String code, String openid) {
-        return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code, openid));
+    public ResponseResult<User> ixmLoginUserIsExist(HttpSession session, @NotBlank(message = "微信公众号授权码不为空")  String code) {
+        return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code));
     }
 
     /**
@@ -132,7 +148,6 @@ public class WechatController extends BaseController {
      */
     @GetMapping("/sms/binding")
     @ApiOperation(value = "手机绑定")
-    @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query"),
             @ApiImplicitParam(name = "code", value = "验证码", dataType = "String",paramType = "query")
@@ -141,10 +156,71 @@ public class WechatController extends BaseController {
                                          @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
         ResponseResult  result = SmsCodeUtil.verifySmsCode(phone, code);
         if("F".equals(result.getSuccess())){
-            return ResponseResult.fail();
+            return ResponseResult.fail(result.getMessage());
         }
-        // TODO 验证成功后 绑定手机和openid
 
+        // 验证成功后绑定手机和openid
+        User user = userService.findUserByPhone(phone);
+        if(ObjectUtils.isEmpty(user)){
+            // 后台无记录，请前往社会指导员认证或联系管理员。
+            throw new CommonException("绑定失败，查无此手机号用户");
+        }
+
+        // 获取当前用户的openid
+        UserEntity correntUser = getUser(request);
+        JSONObject JSONObj = JSONObject.parseObject(redisClient.get(correntUser.getToken()));
+        user.setOpenid(JSONObj.getString("openid"));
+
+        userService.update(user);
         return ResponseResult.ok();
     }
+
+    /**
+     * 通过openId获取微信用户
+     *
+     * @param openId 开放id
+     * @return {@link ResponseResult<User>}
+     */
+    @GetMapping("/{openId:\\w+}")
+    @ApiOperation("获取微信用户信息(openid)")
+    public ResponseResult<User> fetchUserByOpenId(@ApiParam("用户ID") @PathVariable String openId,HttpServletRequest request){
+        return ResponseResult.ok(userService.findUserByOpenId(openId));
+    }
+
+    /**
+     * 通过电话获取用户
+     *
+     * @param phone 电话
+     * @return {@link ResponseResult<User>}
+     */
+    @GetMapping("/phone/{phone:\\w+}")
+    @ApiOperation("获取微信用户信息(phone)")
+    public ResponseResult<User> fetchUserByPhone(@ApiParam("电话号码") @PathVariable String phone,HttpServletRequest request){
+        return ResponseResult.ok(userService.findUserByPhone(phone));
+    }
+
+
+    /**
+     * 通过用户ID获取当前用户信息
+     *
+     * @return {@link ResponseResult<User>}
+     */
+    @GetMapping("/correctUser")
+    @ApiOperation("我的资料")
+    public ResponseResult<User> fetchUserById(HttpServletRequest request){
+        return ResponseResult.ok(userService.get(getCurUserId(request)));
+    }
+
+    /**
+     * 编辑微信用户
+     *
+     * @param weChatUserVO VO
+     * @return {@link ResponseResult<User>}
+     */
+    @PostMapping("/weChatUser")
+    @ApiOperation("编辑信息")
+    public ResponseResult<User> editWeChatUser(@ApiParam("微信用户") @RequestBody WeChatUserVO weChatUserVO){
+        return ResponseResult.ok(userService.modifyWeChatUser(weChatUserVO));
+    }
+
 }

@@ -730,9 +730,4 @@
             </trim>
         </where>
     </select>
-
-    <!-- 重置openid-->
-    <update id="resetByOpenId" parameterType="String">
-        update `user` set openid = null where openid = #{openid}
-    </update>
 </mapper>

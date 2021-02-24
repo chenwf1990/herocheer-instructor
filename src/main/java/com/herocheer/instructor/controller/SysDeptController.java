@@ -9,7 +9,6 @@ import com.herocheer.instructor.domain.entity.SysDept;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysDeptVO;
 import com.herocheer.instructor.service.SysDeptService;
-import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,7 +49,6 @@ public class SysDeptController extends BaseController {
      */
     @PostMapping
     @ApiOperation("新增机构")
-    @AllowAnonymous
     public ResponseResult<SysDept> createDept(@ApiParam("系统机构") @RequestBody SysDeptVO sysDeptVO, HttpServletRequest request){
         return ResponseResult.ok(sysDeptService.addDept(sysDeptVO));
     }
@@ -63,7 +61,6 @@ public class SysDeptController extends BaseController {
      */
     @PostMapping("/{id:\\w+}")
     @ApiOperation("删除机构")
-    @AllowAnonymous
     public ResponseResult<SysDept> dropDeptById(@ApiParam("机构ID") @PathVariable Long id, HttpServletRequest request){
         sysDeptService.removeDeptById(id);
         return ResponseResult.ok();
@@ -77,7 +74,6 @@ public class SysDeptController extends BaseController {
      */
     @GetMapping("/{id:\\w+}")
     @ApiOperation("回显机构")
-    @AllowAnonymous
     public ResponseResult<SysDept> fecthDeptById(@ApiParam("机构ID") @PathVariable Long id, HttpServletRequest request){
         return ResponseResult.ok(sysDeptService.findDeptById(id));
     }
@@ -90,7 +86,6 @@ public class SysDeptController extends BaseController {
      */
     @PutMapping
     @ApiOperation("编辑机构")
-    @AllowAnonymous
     public ResponseResult<SysDept> editDept(@ApiParam("系统机构") @RequestBody SysDeptVO sysDeptVO, HttpServletRequest request){
         return ResponseResult.ok(sysDeptService.modifyDept(sysDeptVO));
     }
@@ -104,7 +99,6 @@ public class SysDeptController extends BaseController {
      */
     @PostMapping("/page")
     @ApiOperation("机构列表")
-    @AllowAnonymous
     public ResponseResult<Page<SysDept>> fecthDeptByPage(@ApiParam("系统机构") @RequestBody SysDeptVO sysDeptVO,HttpServletRequest request){
         return ResponseResult.ok(sysDeptService.findDeptByPage(sysDeptVO));
     }
@@ -117,7 +111,6 @@ public class SysDeptController extends BaseController {
      */
     @GetMapping("/name")
     @ApiOperation("机构名称")
-    @AllowAnonymous
     public ResponseResult<List<SysDept>> fetchDept(HttpServletRequest request){
         return ResponseResult.ok(sysDeptService.findDept());
     }
@@ -130,7 +123,6 @@ public class SysDeptController extends BaseController {
      */
     @GetMapping("/tree")
     @ApiOperation("组织机构树")
-    @AllowAnonymous
     public ResponseResult<List<Tree<Long>>> fetchDeptTree(HttpServletRequest request){
         return ResponseResult.ok(sysDeptService.findDeptTree());
     }
@@ -145,7 +137,6 @@ public class SysDeptController extends BaseController {
      */
     @PostMapping("/tree/page")
     @ApiOperation("根据id获取子机构")
-    @AllowAnonymous
     public ResponseResult<Page<SysDept>> fetchDeptById(@ApiParam("系统机构") @RequestBody SysDeptVO sysDeptVO, HttpServletRequest request){
         return ResponseResult.ok(sysDeptService.findDeptById(sysDeptVO));
     }

@@ -4,7 +4,6 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysOperation;
 import com.herocheer.instructor.domain.vo.SysOperationVO;
 import com.herocheer.instructor.service.SysOperationService;
-import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,7 +46,6 @@ public class SysOperationController extends BaseController {
      */
     @PostMapping
     @ApiOperation("新增操作")
-    @AllowAnonymous
     public ResponseResult<SysOperation> createOperation(@ApiParam("系统操作") @Valid @RequestBody SysOperationVO sysOperationVO, HttpServletRequest request){
         return ResponseResult.ok(sysOperationService.addOperation(sysOperationVO));
     }
@@ -61,7 +59,6 @@ public class SysOperationController extends BaseController {
      */
     @DeleteMapping("/{id:\\w+}")
     @ApiOperation("删除操作")
-    @AllowAnonymous
     public ResponseResult dropOperationById(@ApiParam("操作ID") @PathVariable Long id, HttpServletRequest request){
         sysOperationService.removeOperationById(id);
         return ResponseResult.ok();
@@ -75,7 +72,6 @@ public class SysOperationController extends BaseController {
      */
     @GetMapping("/{id:\\w+}")
     @ApiOperation("回显操作")
-    @AllowAnonymous
     public ResponseResult<SysOperation> fecthOperationById(@ApiParam("操作ID") @PathVariable Long id, HttpServletRequest request){
         return ResponseResult.ok(sysOperationService.findOperationById(id));
     }
@@ -88,7 +84,6 @@ public class SysOperationController extends BaseController {
      */
     @PutMapping
     @ApiOperation("编辑操作")
-    @AllowAnonymous
     public ResponseResult<SysOperation> editOperation(@ApiParam("系统操作") @Valid @RequestBody SysOperationVO sysOperationVO, HttpServletRequest request){
         return ResponseResult.ok(sysOperationService.modifyOperation(sysOperationVO));
     }
