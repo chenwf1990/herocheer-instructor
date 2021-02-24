@@ -1,16 +1,23 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.constants.ResponseCode;
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.CourierStationDao;
+import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
 import com.herocheer.instructor.domain.vo.CourierStationVo;
+import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -21,6 +28,9 @@ import java.util.List;
 @Service
 public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao, CourierStation,Long> implements CourierStationService {
 
+
+    @Resource
+    private ActivityRecruitInfoService activityRecruitInfoService;
     /**
      * @param courierStation
      * @return
@@ -47,5 +57,16 @@ public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao
         List<CourierStationVo> courierStations = this.dao.queryPageList(courierStationQueryVo);
         page.setDataList(courierStations);
         return page;
+    }
+
+    @Override
+    public Integer deleteCourierStation(Long id) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("courierStationId",id);
+        List<ActivityRecruitInfo> list=activityRecruitInfoService.findByLimit(map);
+        if (list!=null || list.size()>0){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "驿站有发布招募信息无法删除!");
+        }
+        return dao.delete(id);
     }
 }

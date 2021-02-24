@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ActivityRecruitInfoDao">
+
+
     <sql id="table_field">
       id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
         CASE
-        WHEN `status` = 1 AND recruitEndDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
-        WHEN `status` = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate THEN 4
+        WHEN `status` = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
+        WHEN `status` = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+        AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate+24*60*60*1000-1 THEN 4
         ELSE `status`
         END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
@@ -424,10 +427,10 @@
             </if>
             <if test="status!=null and status==4">
                 and status=1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate
+                AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate+24*60*60*1000-1
             </if>
             <if test="status!=null and status==5">
-                and `status` = 1 AND recruitEndDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                and `status` = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="userId!=null and type==1">
                 and createdId=#{userId}

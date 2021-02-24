@@ -30,4 +30,7 @@ public interface CourierStationService extends BaseService<CourierStation,Long> 
      * @return
      */
     Page<CourierStationVo> queryPageList(CourierStationQueryVo courierStationQueryVo);
+
+
+    Integer deleteCourierStation(Long id);
 }
