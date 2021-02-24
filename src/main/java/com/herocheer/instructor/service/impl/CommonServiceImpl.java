@@ -28,6 +28,8 @@ public class CommonServiceImpl implements CommonService {
     public int getPunchCardStatus(Long serviceBeginTime, Long serviceEndTime, Long signInTime, Long signOutTime) {
         Long curTime = System.currentTimeMillis();
         int signStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();//0.正常签到 1.异常签到 2.待完成
+        serviceBeginTime = serviceBeginTime + 59 * 1000;//准点准时打卡也算正常打卡
+        serviceEndTime = serviceEndTime + 59 * 1000;//准点准时打卡也算正常打卡
         if(signInTime != null && signOutTime != null){
             if(signInTime <= serviceBeginTime && signOutTime <= serviceEndTime + DateUtil.TWO_HOURS){
                 signStatus = SignStatusEnums.SIGN_NORMAL.getStatus();

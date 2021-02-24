@@ -76,8 +76,8 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
         if(workingUserVos.isEmpty()){
             throw new CommonException("没有该值班人员");
         }
-        Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
-        Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
+        Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime()) + 59 * 1000;
+        Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime()) + 59 * 1000;
         if(!DateUtil.betweenTime()){
             throw new CommonException("当天值班才能打卡");
         }
@@ -109,7 +109,7 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
             //判断早晚打卡是否有存在异常
             scheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
             if(workingUserVo.getSignInTime() != null && serviceBeginTime >= workingUserVo.getSignInTime()
-                    && serviceEndTime + DateUtil.TWO_HOURS <= workingSignRecord.getSignTime()){
+                    && serviceEndTime + DateUtil.TWO_HOURS >= workingSignRecord.getSignTime()){
                 //早晚打卡都是正常的，不需要审核
                 scheduleUser.setStatus(AuditStatusEnums.to_no_audit.getState());
             }
@@ -127,12 +127,14 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
     public int getSignStatus(WorkingUserVo workingUserVo) {
         Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
         Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
+        serviceBeginTime = serviceBeginTime + 59 * 1000;//准点准时打卡也算正常打卡
+        serviceEndTime = serviceEndTime + 59 * 1000;//准点准时打卡也算正常打卡
         //获取打卡状态
-        int signStatus = commonService.getPunchCardStatus(serviceBeginTime,serviceEndTime,workingUserVo.getSignInTime(),workingUserVo.getSignOutTime());
-        if(signStatus != SignStatusEnums.SIGN_ABNORMAL.getStatus()){
+        Long curTime = System.currentTimeMillis();
+        if(serviceBeginTime >= curTime || serviceEndTime + DateUtil.TWO_HOURS >= curTime){
             return SignStatusEnums.SIGN_NORMAL.getStatus();
         }
-        return signStatus;
+        return SignStatusEnums.SIGN_ABNORMAL.getStatus();
     }
 
     @Override

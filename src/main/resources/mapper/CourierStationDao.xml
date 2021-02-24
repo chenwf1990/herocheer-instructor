@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.CourierStationDao">
     
     <sql id="table_field">
-      id, areaCode, areaName, name, address, longitude, latitude, gradeName, scale, userId, userName, pics, openBeginTime, openEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, areaCode, areaName, name, address, longitude, latitude, gradeName, scale, userId, userName, pics, openBeginTime, openEndTime, signScope, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -48,6 +48,9 @@
         </if>
         <if test="openEndTime != null">
             openEndTime,
+        </if>
+        <if test="signScope != null">
+            signScope,
         </if>
         <if test="remarks != null">
             remarks,
@@ -94,6 +97,9 @@
         </if>
         <if test="openEndTime != null">
             #{openEndTime},
+        </if>
+        <if test="signScope != null">
+            #{signScope},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -150,6 +156,9 @@
             </if>
             <if test="openEndTime != null">
                 openEndTime = #{openEndTime},
+            </if>
+            <if test="signScope != null">
+                signScope = #{signScope},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -209,6 +218,70 @@
             <if test="openEndTime != null">
                 and openEndTime = #{openEndTime}
             </if>
+            <if test="signScope != null">
+                and signScope = #{signScope}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from courier_station
+        <where>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="gradeName != null">
+                and gradeName = #{gradeName}
+            </if>
+            <if test="scale != null">
+                and scale = #{scale}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="userName != null">
+                and userName = #{userName}
+            </if>
+            <if test="pics != null">
+                and pics = #{pics}
+            </if>
+            <if test="openBeginTime != null">
+                and openBeginTime = #{openBeginTime}
+            </if>
+            <if test="openEndTime != null">
+                and openEndTime = #{openEndTime}
+            </if>
+            <if test="signScope != null">
+                and signScope = #{signScope}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -221,7 +294,7 @@
         select
         a.*
         <if test="reqType != null">
-        ,(select count(1) from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.userId = #{userId}) as collectNum
+            ,(select count(1) from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.userId = #{userId}) as collectNum
         </if>
         from courier_station a
         <where>
