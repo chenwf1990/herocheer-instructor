@@ -7,6 +7,7 @@ import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorApplyService;
+import com.herocheer.web.annotation.AllowAnonymous;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +39,9 @@ public class InstructorApplyController extends BaseController{
 
     @PostMapping("/add")
     @ApiOperation("指导员申请")
-    public ResponseResult add(@RequestBody InstructorApply instructorApply,
-                              HttpServletRequest request){
-        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply,getCurUserId(request)));
+    @AllowAnonymous
+    public ResponseResult add(@RequestBody InstructorApply instructorApply){
+        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply));
     }
 
     @PostMapping("/update")
@@ -54,6 +55,13 @@ public class InstructorApplyController extends BaseController{
     @ApiOperation("删除指导员申请单")
     public ResponseResult delete(@ApiParam("指导员id") @RequestParam Long id){
         return ResponseResult.isSuccess(instructorApplyService.delete(id));
+    }
+
+    @GetMapping("/get")
+    @ApiOperation("根据申请单id查询指导员")
+    public ResponseResult<InstructorApply> get(@ApiParam("指导员申请单id") @RequestParam Long id){
+
+        return ResponseResult.ok(instructorApplyService.get(id));
     }
 
     @GetMapping("/approval")
@@ -76,9 +84,10 @@ public class InstructorApplyController extends BaseController{
 
     @GetMapping("/getAuthInfo")
     @ApiOperation("获取认证信息")
+    @AllowAnonymous
     public ResponseResult<List<InstructorApply>> getAuthInfo(@ApiParam("指导员id") @RequestParam(required = false) Long instructorId,
-                                                             HttpServletRequest request){
-        List<InstructorApply> applies = instructorApplyService.getAuthInfo(getCurUserId(request),instructorId);
+                                                             @ApiParam("openid") @RequestParam(required = false) String openId){
+        List<InstructorApply> applies = instructorApplyService.getAuthInfo(openId,instructorId);
         return ResponseResult.ok(applies);
     }
 }
