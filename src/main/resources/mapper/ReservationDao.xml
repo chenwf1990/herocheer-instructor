@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.ReservationDao">
+    <sql id="table_field">
+      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone,
+       CASE
+		WHEN  endTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+        ELSE `status` END AS 'status', createdId, createdBy, createdTime, updateId, updateBy, updateTime
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.Reservation">
+        insert into reservation (
+    <trim suffixOverrides=",">
+        <if test="type != null">
+            type,
+        </if>
+        <if test="workingId != null">
+            workingId,
+        </if>
+        <if test="title != null">
+            title,
+        </if>
+        <if test="image != null">
+            image,
+        </if>
+        <if test="startTime != null">
+            startTime,
+        </if>
+        <if test="endTime != null">
+            endTime,
+        </if>
+        <if test="address != null">
+            address,
+        </if>
+        <if test="longitude != null">
+            longitude,
+        </if>
+        <if test="latitude != null">
+            latitude,
+        </if>
+        <if test="userId != null">
+            userId,
+        </if>
+        <if test="name != null">
+            name,
+        </if>
+        <if test="identityNumber != null">
+            identityNumber,
+        </if>
+        <if test="phone != null">
+            phone,
+        </if>
+        <if test="status != null">
+            status,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="type != null">
+            #{type},
+        </if>
+        <if test="workingId != null">
+            #{workingId},
+        </if>
+        <if test="title != null">
+            #{title},
+        </if>
+        <if test="image != null">
+            #{image},
+        </if>
+        <if test="startTime != null">
+            #{startTime},
+        </if>
+        <if test="endTime != null">
+            #{endTime},
+        </if>
+        <if test="address != null">
+            #{address},
+        </if>
+        <if test="longitude != null">
+            #{longitude},
+        </if>
+        <if test="latitude != null">
+            #{latitude},
+        </if>
+        <if test="userId != null">
+            #{userId},
+        </if>
+        <if test="name != null">
+            #{name},
+        </if>
+        <if test="identityNumber != null">
+            #{identityNumber},
+        </if>
+        <if test="phone != null">
+            #{phone},
+        </if>
+        <if test="status != null">
+            #{status},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from reservation where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.Reservation">
+        update reservation
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="workingId != null">
+                workingId = #{workingId},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="startTime != null">
+                startTime = #{startTime},
+            </if>
+            <if test="endTime != null">
+                endTime = #{endTime},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="identityNumber != null">
+                identityNumber = #{identityNumber},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.Reservation">
+        select <include refid="table_field"/> from reservation where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.Reservation">
+        select <include refid="table_field"/> from reservation
+        <where>
+            <if test="relevanceId != null">
+                and relevanceId = #{relevanceId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="workingId != null">
+                and workingId = #{workingId}
+            </if>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="image != null">
+                and image = #{image}
+            </if>
+            <if test="startTime != null">
+                and startTime = #{startTime}
+            </if>
+            <if test="endTime != null">
+                and endTime = #{endTime}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="identityNumber != null">
+                and identityNumber = #{identityNumber}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from reservation
+        <where>
+            <if test="relevanceId != null">
+                and relevanceId = #{relevanceId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="workingId != null">
+                and workingId = #{workingId}
+            </if>
+            <if test="title != null">
+                and title = #{title}
+            </if>
+            <if test="image != null">
+                and image = #{image}
+            </if>
+            <if test="startTime != null">
+                and startTime = #{startTime}
+            </if>
+            <if test="endTime != null">
+                and endTime = #{endTime}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="identityNumber != null">
+                and identityNumber = #{identityNumber}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="findList" resultType="com.herocheer.instructor.domain.entity.Reservation"
+            parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
+        select <include refid="table_field"/> from reservation
+        <where>
+            <if test="type!=null">
+                and `type` = #{type}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="startTime!=null">
+                and createdTime <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and createdTime <![CDATA[ =< ]]> #{endTime}
+            </if>
+            <if test="relevanceId!=null">
+                and relevanceId=#{relevanceId}
+            </if>
+            <if test="userId!=null">
+                and userId = #{userId}
+            </if>
+        </where>
+    </select>
+</mapper>
