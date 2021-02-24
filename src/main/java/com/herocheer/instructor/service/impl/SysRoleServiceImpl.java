@@ -10,10 +10,13 @@ import com.herocheer.instructor.dao.SysRoleDao;
 import com.herocheer.instructor.domain.entity.SysRole;
 import com.herocheer.instructor.domain.entity.SysRoleArea;
 import com.herocheer.instructor.domain.entity.SysRoleMenu;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysRoleVO;
 import com.herocheer.instructor.enums.AuditUnitEnums;
 import com.herocheer.instructor.enums.OperationConst;
+import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.SysRoleService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.utils.PinYinUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,7 @@ import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +44,8 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
 
     @Autowired
     private SysRoleService sysRoleService;
+    @Resource
+    private UserService userService;
     /**
      * 添加角色
      *
@@ -216,6 +222,10 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
         String roleCode = AuditUnitEnums.getRoleCode(auditUnitType);
         if(StringUtils.isEmpty(roleCode)){
             throw new CommonException("审批编码异常");
+        }
+        User user = userService.get(curUserId);
+        if(user.getUserType().equals(UserTypeEnums.sysAdmin.getCode())){
+            return true;
         }
         int count = this.dao.checkIsAuditAuth(curUserId,roleCode);
         if(count > 0){

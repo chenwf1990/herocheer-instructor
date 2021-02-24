@@ -209,7 +209,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     @Transactional(rollbackFor = Exception.class)
     public int approval(Long workingScheduleUserId, int approvalType, String approvalIdea, UserEntity user, int actualServiceTime) {
         //判断是否审批负责人
-        WorkingUserVo workingUserVo = isHasApprovalAuth(workingScheduleUserId, user.getId());
+        WorkingUserVo workingUserVo = isHasApprovalAuth(workingScheduleUserId, user);
         WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
         int beginMinute = DateUtil.timeToSecond(workingUserVo.getServiceBeginTime());
         int endMinute = DateUtil.timeToSecond(workingUserVo.getServiceEndTime());
@@ -235,23 +235,25 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
 
 
     //判断是否审批负责人
-    private WorkingUserVo isHasApprovalAuth(Long workingScheduleUserId, Long userId) {
+    private WorkingUserVo isHasApprovalAuth(Long workingScheduleUserId, UserEntity user) {
         //查找当前的负责人
         Map<String,Object> params = new HashMap<>();
         params.put("workingScheduleUserId",workingScheduleUserId);
         List<WorkingUserVo> workingUserVos = this.workingScheduleDao.getUserWorkingList(params);
         WorkingUserVo workingUserVo = workingUserVos.get(0);
-        if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
-            //查询驿站
-            CourierStation courierStation = courierStationService.get(workingUserVo.getCourierStationId());
-            if(courierStation.getUserId() != userId) {
-                throw new CommonException("不是驿站负责人，不能审批");
-            }
-        }else if(workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()){
-            //查询活动
-            ActivityRecruitInfo activityRecruitInfo = activityRecruitInfoService.get(workingUserVo.getActivityId());
-            if(activityRecruitInfo.getMatchApproverId() != userId){
-                throw new CommonException("不是赛事负责人，不能审批");
+        if(user.getUserType() != UserTypeEnums.sysAdmin.getCode()) {
+            if (workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()) {
+                //查询驿站
+                CourierStation courierStation = courierStationService.get(workingUserVo.getCourierStationId());
+                if (courierStation.getUserId() != user.getId()) {
+                    throw new CommonException("不是驿站负责人，不能审批");
+                }
+            } else if (workingUserVo.getActivityType() == RecruitTypeEunms.STATION_RECRUIT.getType()) {
+                //查询活动
+                ActivityRecruitInfo activityRecruitInfo = activityRecruitInfoService.get(workingUserVo.getActivityId());
+                if (activityRecruitInfo.getMatchApproverId() != user.getId()) {
+                    throw new CommonException("不是赛事负责人，不能审批");
+                }
             }
         }
         return workingUserVo;

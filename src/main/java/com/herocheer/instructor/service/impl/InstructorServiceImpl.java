@@ -260,12 +260,15 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             }
         }else {
             Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
+            User user = userService.get(apply.getUserId());
+            user.setPhone(apply.getPhone());
+            user.setAddress(apply.getAreaName());
+            user.setUserName(apply.getName());
+            user.setWorkUnit(apply.getWorkUnit());
             if(cardInstructor == null){
                 BeanUtils.copyProperties(apply,instructor);
-                User user = userService.get(apply.getUserId());
                 if(user.getUserType().equals(UserTypeEnums.weChatUser.getCode())){
                     user.setUserType(UserTypeEnums.instructor.getCode());
-                    userService.updateUser(user);
                 }
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
@@ -274,7 +277,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             }else {
                 updateInstructor(cardInstructor,apply);
             }
-
+            userService.updateUser(user);
         }
         return instructor;
     }

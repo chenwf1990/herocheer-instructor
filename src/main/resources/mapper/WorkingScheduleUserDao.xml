@@ -454,6 +454,7 @@
         b.status,
         b.guideProject,
         b.certificateGrade,
+        b.createdTime,
         getPunchCartStatus(
         a.scheduleTime + time_to_sec(a.serviceBeginTime),
         a.scheduleTime + time_to_sec(a.serviceEndTime),

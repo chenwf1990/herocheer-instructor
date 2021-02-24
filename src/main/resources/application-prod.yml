@@ -1,0 +1,33 @@
+server:
+  port: 17071
+spring:
+  datasource:
+    url: jdbc:mysql://10.8.1.84:3306/herocheer_instructor?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: XZty#107110
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 192.168.147.134
+    database: 1
+    port: 6379
+    password: xz107110
+    timeout: 5000ms
+file:
+  upload:
+    savePath: /root/dataExt/instructor/instructor-file/
+    visitPath: http://ijs.sports.xm.gov.cn/instructor-file/
+swagger:
+  title: 社会指导员api文档
+  description: 社会指导员api文档
+  version: 1.0.0
+  termsOfServiceUrl: http://ijs.sports.xm.gov.cn/instructor-server/
+  license:
+  licenseUrl:
+  basePackage: com.herocheer.instructor.controller
+  host: ijs.sports.xm.gov.cn/instructor-server
+  enable: true #是否开始swagger
+  contact:
+    name: chenwf
+    url: http://ijs.sports.xm.gov.cn/instructor-server/
+    email: 349830964@qq.com
+

@@ -1,16 +1,15 @@
 package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WechaLoginVo;
 import com.herocheer.instructor.service.LoginService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -33,5 +32,17 @@ public class LoginController {
     public ResponseResult<UserInfoVo> wecharLogin(@RequestBody WechaLoginVo wechaLoginVo){
         UserInfoVo userVO = loginService.wechatLogin(wechaLoginVo);
         return ResponseResult.ok(userVO);
+    }
+
+    @PostMapping("/loginTest")
+    @ApiOperation("模拟测试登录")
+    @AllowAnonymous
+    public ResponseResult loginTest(@ApiParam("key值") @RequestParam String token,
+                                    @ApiParam("用户id") @RequestParam(required = false) Long userId){
+        if(StringUtils.isEmpty(token)){
+            token = "chenweifeng";
+        }
+        loginService.loginTest(token,userId);
+        return ResponseResult.ok().setMessage(token);
     }
 }
