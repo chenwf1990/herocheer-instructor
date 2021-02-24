@@ -94,6 +94,9 @@ public class WeChatUserVO{
     @ApiModelProperty("指导项目")
     private String guideProject;
 
+    @ApiModelProperty("工作单位")
+    private String workUnit;
+
     @ApiModelProperty("机构ID")
     private String deptId;
     @ApiModelProperty("机构名称")

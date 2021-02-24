@@ -61,6 +61,6 @@ public class CourierStationController extends BaseController{
     @DeleteMapping("/delete")
     @ApiOperation("删除驿站")
     public ResponseResult delete(@ApiParam("驿站id") @RequestParam Long id){
-        return ResponseResult.isSuccess(courierStationService.delete(id));
+        return ResponseResult.isSuccess(courierStationService.deleteCourierStation(id));
     }
 }
