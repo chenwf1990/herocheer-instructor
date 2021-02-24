@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author chenwf
@@ -122,9 +124,12 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
      */
     @Override
     public List<NewsNoticeLog> getApprovalLog(Long newsId) {
+        List<Integer> auditStates = Arrays.asList(1,2);
         Map<String,Object> params = new HashMap<>();
         params.put("newsNoticeId",newsId);
         params.put("orderBy","id desc");
-        return newsNoticeLogService.findByLimit(params);
+        List<NewsNoticeLog> list = newsNoticeLogService.findByLimit(params);
+        list = list.stream().filter(s -> auditStates.contains(s.getAuditState())).collect(Collectors.toList());
+        return list;
     }
 }

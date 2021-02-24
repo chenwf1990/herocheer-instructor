@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 驿站
- * @date 2021-02-24 20:09:37
+ * @date 2021-02-24 20:41:10
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -40,6 +40,8 @@ public class CourierStation extends BaseEntity {
     private String openEndTime;
     @ApiModelProperty("打卡范围")   
     private String signScope;
+    @ApiModelProperty("状态 0启用 1禁用")   
+    private Integer state;
     @ApiModelProperty("备注")   
     private String remarks;
 

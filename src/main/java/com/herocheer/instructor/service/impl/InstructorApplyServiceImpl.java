@@ -159,11 +159,15 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         apply.setAuditState(auditState);
         apply.setAuditIdea(auditIdea);
         apply.setAuditTime(System.currentTimeMillis());
+        //添加指导员数据
+        Instructor instructor = instructorService.saveInstructor(apply);
+        if(instructor != null){
+            apply.setInstructorId(instructor.getId());
+        }
         this.dao.update(apply);
         //写入日志
         insertLog(apply);
-        //添加指导员数据
-        instructorService.saveInstructor(apply);
+
     }
 
     /**

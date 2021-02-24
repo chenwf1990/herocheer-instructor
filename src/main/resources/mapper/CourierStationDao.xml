@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.CourierStationDao">
     
     <sql id="table_field">
-      id, areaCode, areaName, name, address, longitude, latitude, gradeName, scale, userId, userName, pics, openBeginTime, openEndTime, signScope, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, areaCode, areaName, name, address, longitude, latitude, gradeName, scale, userId, userName, pics, openBeginTime, openEndTime, signScope, state, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -51,6 +51,9 @@
         </if>
         <if test="signScope != null">
             signScope,
+        </if>
+        <if test="state != null">
+            state,
         </if>
         <if test="remarks != null">
             remarks,
@@ -100,6 +103,9 @@
         </if>
         <if test="signScope != null">
             #{signScope},
+        </if>
+        <if test="state != null">
+            #{state},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -159,6 +165,9 @@
             </if>
             <if test="signScope != null">
                 signScope = #{signScope},
+            </if>
+            <if test="state != null">
+                state = #{state},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -221,6 +230,9 @@
             <if test="signScope != null">
                 and signScope = #{signScope}
             </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -282,6 +294,9 @@
             <if test="signScope != null">
                 and signScope = #{signScope}
             </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -312,6 +327,9 @@
             </if>
             <if test="endTime != null">
                 and a.createdTime &lt;= #{endTime}
+            </if>
+            <if test="state != null">
+                and a.state = #{state}
             </if>
             <if test="reqType != null and reqType == 2">
                 and exists(select uc.id from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.userId = #{userId})

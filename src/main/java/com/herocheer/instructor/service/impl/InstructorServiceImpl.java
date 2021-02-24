@@ -247,7 +247,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 }
                 updateInstructor(instructor,apply);
             }else {
-                Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
+                Instructor cardInstructor = this.findByPhone(apply.getPhone());
                 if(cardInstructor != null){
                     throw new CommonException("指导员已存在：{}",apply.getCardNo());
                 }
@@ -259,7 +259,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 this.dao.insert(instructor);
             }
         }else {
-            Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
+            Instructor cardInstructor = this.findByPhone(apply.getPhone());
             User user = userService.get(apply.getUserId());
             user.setPhone(apply.getPhone());
             user.setAddress(apply.getAreaName());
@@ -275,6 +275,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 instructor.setAuditState(AuditStateEnums.to_pass.getState());
                 this.dao.insert(instructor);
             }else {
+                instructor = cardInstructor;
                 updateInstructor(cardInstructor,apply);
             }
             userService.updateUser(user);
@@ -298,6 +299,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             instructor.setAuditUnitName(apply.getAuditUnitName());
             instructor.setOtherAuditUnitName(apply.getOtherAuditUnitName());
             instructor.setAuditState(AuditStateEnums.to_pass.getState());
+            instructor.setCertificatePic(apply.getCertificatePic());
             this.dao.update(instructor);
         }else{//否则全部都可以修改
             Instructor update = new Instructor();
@@ -338,6 +340,16 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     public Instructor findByCardNo(String cardNo) {
         Map<String,Object> params = new HashMap<>();
         params.put("cardNo",cardNo);
+        List<Instructor> instructors = this.dao.findByLimit(params);
+        if(!instructors.isEmpty()){
+            return instructors.get(0);
+        }
+        return null;
+    }
+
+    public Instructor findByPhone(String phone) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("phone",phone);
         List<Instructor> instructors = this.dao.findByLimit(params);
         if(!instructors.isEmpty()){
             return instructors.get(0);

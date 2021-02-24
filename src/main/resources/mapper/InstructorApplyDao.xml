@@ -508,6 +508,9 @@
             <if test="phone != null">
                 and phone like concat('%',#{phone},'%')
             </if>
+            <if test="channel != null">
+                and channel = #{channel}
+            </if>
             <if test="guideProject != null">
                 and guideProject like concat('%',#{guideProject},'%')
             </if>

@@ -430,6 +430,9 @@
             <if test="endTime != null">
                 and createdTime &lt;= #{endTime}
             </if>
+            <if test="channel != null">
+                and channel = #{channel}
+            </if>
             <if test="auditStates != null">
                 and auditState in
                 <foreach item="auditState" index="index" collection="auditStates" open="(" separator="," close=")">
