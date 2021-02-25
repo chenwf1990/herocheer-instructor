@@ -17,7 +17,7 @@ public class ActivityRecruitInfo extends BaseEntity {
     @ApiModelProperty("标题")   
     private String title;
     @ApiModelProperty("招募内容")   
-    private Object content;
+    private String content;
     @ApiModelProperty("招募照片")   
     private String image;
     @ApiModelProperty("地址")   

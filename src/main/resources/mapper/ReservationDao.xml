@@ -289,7 +289,7 @@
                 and createdTime <![CDATA[ >= ]]> #{startTime}
             </if>
             <if test="endTime!=null">
-                and createdTime <![CDATA[ =< ]]> #{endTime}
+                and createdTime <![CDATA[ <= ]]> #{endTime}
             </if>
             <if test="relevanceId!=null">
                 and relevanceId=#{relevanceId}
