@@ -32,6 +32,9 @@ public class ReservationQueryVo implements Serializable {
     @ApiModelProperty("招募或课程id")
     private Long relevanceId;
 
+    @ApiModelProperty("标题(模糊查询)")
+    private String title;
+
     @ApiModelProperty("用户id")
     private Long userId;
 

@@ -27,6 +27,9 @@
         <if test="lecturerTeacherId != null">
             lecturerTeacherId,
         </if>
+        <if test="lecturerTeacherName != null">
+            lecturerTeacherName,
+        </if>
         <if test="courseStartTime != null">
             courseStartTime,
         </if>
@@ -93,6 +96,9 @@
         </if>
         <if test="lecturerTeacherId != null">
             #{lecturerTeacherId},
+        </if>
+        <if test="lecturerTeacherName != null">
+            #{lecturerTeacherName},
         </if>
         <if test="courseStartTime != null">
             #{courseStartTime},
@@ -170,6 +176,9 @@
             </if>
             <if test="lecturerTeacherId != null">
                 lecturerTeacherId = #{lecturerTeacherId},
+            </if>
+            <if test="lecturerTeacherName != null">
+                lecturerTeacherName = #{lecturerTeacherName},
             </if>
             <if test="courseStartTime != null">
                 courseStartTime = #{courseStartTime},

@@ -615,7 +615,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 if(activityRecruitInfo.getRecruitStartDate()>System.currentTimeMillis()){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募未开始!");
                 }
-                if(activityRecruitInfo.getRecruitEndDate()<System.currentTimeMillis()){
+                if(activityRecruitInfo.getRecruitEndDate()+24*60*60*1000-1<System.currentTimeMillis()){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,活动招募已结束!");
                 }
             }else {
