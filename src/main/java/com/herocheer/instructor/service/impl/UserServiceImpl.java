@@ -29,6 +29,7 @@ import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -459,17 +460,24 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
                 user.setOpenid(apply.getOpenId());
             }
             this.dao.update(user);
-            return user;
+        }else {
+            user.setCertificateNo(apply.getCardNo());
+            user.setUserName(apply.getName());
+            user.setPhone(apply.getPhone());
+            user.setUserType(userType);
+            user.setSex(apply.getSex());
+            user.setWorkUnit(apply.getWorkUnit());
+            user.setAddress(apply.getAreaName());
+            user.setOpenid(apply.getOpenId());
+            this.dao.insert(user);
         }
-        user.setCertificateNo(apply.getCardNo());
-        user.setUserName(apply.getName());
-        user.setPhone(apply.getPhone());
-        user.setUserType(userType);
-        user.setSex(apply.getSex());
-        user.setWorkUnit(apply.getWorkUnit());
-        user.setAddress(apply.getAreaName());
-        user.setOpenid(apply.getOpenId());
-        this.dao.insert(user);
+        if(StringUtils.isNotEmpty(apply.getToken())){
+            UserInfoVo userInfoVo = new UserInfoVo();
+            BeanUtils.copyProperties(user,userInfoVo);
+            userInfoVo.setTokenId(apply.getToken());
+            userInfoVo.setOtherId(apply.getOpenId());
+            redisClient.set(apply.getToken(),JSONObject.toJSONString(userInfoVo),24 * 60 * 60);
+        }
         return user;
     }
 
