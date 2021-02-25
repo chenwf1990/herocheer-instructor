@@ -115,7 +115,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 敏感信息不放Redis
         user.setPassword(null);
 
-        //  todo token:userInfo用户信息,存入redis并设置过期时间为30分钟
+        //  token:userInfo用户信息,存入redis并设置过期时间为30分钟
         redisClient.set(simpleUUID, JSONObject.toJSONString(user), CacheKeyConst.EXPIRETIME);
 
         // 统一异步处理
@@ -583,14 +583,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public UserInfoVo findUserInfo(UserEntity userEntity) {
         String userInfo = redisClient.get(userEntity.getToken());
-        JSONObject JSONObj = JSONObject.parseObject(userInfo);
-        UserInfoVo infoVo = new UserInfoVo();
-        infoVo.setNickName(JSONObj.getString("nickName"));
-        infoVo.setImgUrl(JSONObj.getString("imgUrl"));
-        infoVo.setSex(Integer.parseInt(JSONObj.getString("sex")));
-        infoVo.setUserType(Integer.parseInt(JSONObj.getString("userType")));
-        infoVo.setTokenId(JSONObj.getString("tokenId"));
-        infoVo.setOtherId(JSONObj.getString("otherId"));
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
         //查询是否是指导员
         boolean instructorFlag = true;
         if(infoVo.getUserType() != (UserTypeEnums.instructor.getCode())) {

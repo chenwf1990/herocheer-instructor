@@ -432,20 +432,15 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         }
 
         // 获取当前用户的openid
+        String userInfoStr = redisClient.get(correntUser.getToken());
+        JSONObject json = JSONObject.parseObject(userInfoStr);
         user.setOpenid(correntUser.getOtherId());
+        user.setNickName(json.getString("nickName"));
+        user.setSex(json.getInteger("sex"));
+        user.setImgUrl(json.getString("imgUrl"));
         userService.update(user);
 
-        UserInfoVo userInfo = new UserInfoVo();
-        String userInfoStr = redisClient.get(correntUser.getToken());
-        JSONObject JSONObj = JSONObject.parseObject(userInfoStr);
-
-        userInfo.setNickName(JSONObj.getString("nickName"));
-        userInfo.setImgUrl(JSONObj.getString("imgUrl"));
-        userInfo.setSex(Integer.parseInt(JSONObj.getString("sex")));
-        userInfo.setUserType(Integer.parseInt(JSONObj.getString("userType")));
-        userInfo.setTokenId(JSONObj.getString("tokenId"));
-        userInfo.setOtherId(JSONObj.getString("otherId"));
-
+        UserInfoVo userInfo = JSONObject.parseObject(userInfoStr,UserInfoVo.class);
         userInfo.setUserName(user.getUserName());
         userInfo.setId(user.getId());
         userInfo.setPhone(user.getPhone());

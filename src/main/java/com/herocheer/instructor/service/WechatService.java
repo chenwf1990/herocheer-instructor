@@ -73,4 +73,6 @@ public interface WechatService {
      * @return {@link UserInfoVo}
      */
     UserInfoVo bindingWeChat(UserEntity correntUser, String phone);
+
+    public String findJsapiTicket();
 }
