@@ -87,7 +87,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Transactional(rollbackFor = Exception.class)
     public Integer addActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
         activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
-        if(activityRecruitInfoVo.getRecruitStartDate()>System.currentTimeMillis()){
+        if(activityRecruitInfoVo.getRecruitStartDate()<System.currentTimeMillis()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募开始时间必须大于当前时间!");
         }
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
@@ -127,7 +127,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                 activityRecruitInfoVo.getStatus()!=RecruitStateEnums.OVERRULE.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法修改");
         }
-        if(activityRecruitInfoVo.getRecruitStartDate()>System.currentTimeMillis()){
+        if(activityRecruitInfoVo.getRecruitStartDate()<System.currentTimeMillis()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募开始时间必须大于当前时间!");
         }
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()) {
