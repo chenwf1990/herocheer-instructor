@@ -188,7 +188,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     @Override
     public List<InstructorApply> getAuthInfo(String openId, Long instructorId) {
         Map<String,Object> params = new HashMap<>();
-        if(instructorId == null){
+        if(StringUtils.isNotEmpty(openId)){
             params.put("openId", openId);
         }else {
             params.put("instructorId", instructorId);

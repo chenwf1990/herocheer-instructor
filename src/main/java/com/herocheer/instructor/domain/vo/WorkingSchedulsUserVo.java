@@ -38,4 +38,6 @@ public class WorkingSchedulsUserVo extends WorkingScheduleUser{
     private Long approveId;
     @ApiModelProperty("活动地址")
     private String activityAddress;
+    @ApiModelProperty("补卡状态 0待审核 1已审核")
+    private Integer replaceCardState;
 }
