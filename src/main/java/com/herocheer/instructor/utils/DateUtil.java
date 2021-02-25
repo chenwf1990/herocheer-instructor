@@ -1,7 +1,6 @@
 package com.herocheer.instructor.utils;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 
 import java.text.DateFormat;
@@ -124,6 +123,34 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
             return date;
         }catch(Exception e){
             return null;
+        }
+    }
+
+    /**
+     * 时间增加一分钟
+     * @param time
+     * @param gap
+     * @return
+     */
+    public static String addMin(String time, int gap){
+        try {
+            String[] s = time.split(":");
+            int min = Integer.parseInt(s[1]) + gap % 60;
+            int hour =  Integer.parseInt(s[0]) + (gap / 60) ;
+            if (min>=60){
+                hour+=1;
+                min -=60;
+            }
+            if (hour>=24){
+                hour =  hour % 24;
+            }
+            return ("0"+hour).substring(("0"+hour).length()-2,("0"+hour).length())+
+                    ":"+
+                    ("0"+min).substring(("0"+min).length()-2,(("0"+min).length()));
+
+        } catch (Exception e) {
+            System.out.println("addMin Error!" + e.toString());
+            return "";
         }
     }
 }
