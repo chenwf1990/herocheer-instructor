@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.ReservationDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.CourseInfo;
@@ -101,7 +102,9 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setUserId(userId);
         reservation.setName(courseReservationVo.getName());
         reservation.setIdentityNumber(courseReservationVo.getIdentityNumber());
-        reservation.setPhone(courseReservationVo.getPhone());
+        if(StringUtils.isNotEmpty(courseReservationVo.getPhone())){
+            reservation.setPhone(courseReservationVo.getPhone().replaceAll("(\\w{3})\\w*(\\w{4})", "$1****$2"));
+        }
         reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
         this.dao.insert(reservation);
         courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
