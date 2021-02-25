@@ -295,6 +295,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
         String token = IdUtil.simpleUUID();
         userInfo.setTokenId(token);
+        userInfo.setOtherId(openid);
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
         return userInfo;
