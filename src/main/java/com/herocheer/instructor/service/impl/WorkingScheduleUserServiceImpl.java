@@ -128,6 +128,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      */
     @Override
     public List<String> findWorkingUser(Map<String, Object> params) {
+        params.put("serviceBeginTime",DateUtil.addMin(String.valueOf(params.get("serviceBeginTime")),1));
         return this.dao.findWorkingUser(params);
     }
 
