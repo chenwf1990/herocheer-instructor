@@ -230,7 +230,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
 
     @Override
-    public User ixmUserIsLogin(HttpSession session, String code) {
+    public UserInfoVo ixmUserIsLogin(HttpSession session, String code) {
         JSONObject JSONObj = getOpenId(code);
 
         if (ObjectUtils.isEmpty(JSONObj) || StringUtils.isBlank(JSONObj.getString("openid"))) {
@@ -263,12 +263,14 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         UserInfoVo userInfo = new UserInfoVo();
         BeanCopier.create(user.getClass(),userInfo.getClass(),false).copy(user,userInfo,null);
         userInfo.setOtherId(openid);
+        userInfo.setUserType(user.getUserType());
 
         String token = IdUtil.simpleUUID();
+
         userInfo.setToken(token);
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
-        return user;
+        return userInfo;
     }
 
     @Override

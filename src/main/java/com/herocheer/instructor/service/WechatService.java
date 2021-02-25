@@ -3,6 +3,7 @@ package com.herocheer.instructor.service;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +59,7 @@ public interface WechatService {
      */
     JSONObject getOauth2(String wecharCode);
 
-    User ixmUserIsLogin(HttpSession session, String code);
+    UserInfoVo ixmUserIsLogin(HttpSession session, String code);
 
     String ixmLoginUrl(String callBackUrl);
 

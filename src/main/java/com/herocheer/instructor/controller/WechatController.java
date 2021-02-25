@@ -6,6 +6,7 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.service.UserService;
@@ -81,7 +82,7 @@ public class WechatController extends BaseController {
             @ApiImplicitParam(name = "code", value = "微信公众号code"),
             @ApiImplicitParam(name = "openid", value = "微信用户openid")
     })
-    public ResponseResult<User> ixmLoginUserIsExist(HttpSession session, @NotBlank(message = "微信公众号授权码不为空")  String code) {
+    public ResponseResult<UserInfoVo> ixmLoginUserIsExist(HttpSession session, @NotBlank(message = "微信公众号授权码不为空")  String code) {
         return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code));
     }
 
