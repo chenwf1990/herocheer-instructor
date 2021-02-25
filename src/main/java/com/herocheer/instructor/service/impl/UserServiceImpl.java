@@ -13,6 +13,7 @@ import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.Instructor;
+import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.AreaPermissionVO;
@@ -427,16 +428,22 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     }
 
     /**
-     * 添加用户信息
      *
+     * @param apply apply的phone是要更新的手机信息
+     * @param userType
+     * @param phone 可根据该字段查询用户信息
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User addUser(String name, String cardNo, Integer sex, String phone, Integer userType, String areaName, String workUnit) {
+    public User addUser(InstructorApply apply,Integer userType,String phone) {
         // 判断phone是否存在是否存在
         Map<String, Object> params = new HashMap();
-        params.put("phone", phone);
+        if(StringUtils.isNotEmpty(apply.getOpenId())){
+            params.put("openId", apply.getOpenId());
+        }else {
+            params.put("phone", phone);
+        }
         List<User> users = this.dao.findByLimit(params);
         User user = new User();
         if(!users.isEmpty()){
@@ -444,20 +451,24 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
             if(user.getUserType().equals(UserTypeEnums.weChatUser.getCode())){
                 user.setUserType(UserTypeEnums.instructor.getCode());
             }
-            user.setPhone(phone);
-            user.setAddress(areaName);
-            user.setUserName(name);
-            user.setWorkUnit(workUnit);
+            user.setPhone(apply.getPhone());
+            user.setAddress(apply.getAreaName());
+            user.setUserName(apply.getName());
+            user.setWorkUnit(apply.getWorkUnit());
+            if(StringUtils.isEmpty(user.getOpenid())){
+                user.setOpenid(apply.getOpenId());
+            }
             this.dao.update(user);
             return user;
         }
-        user.setCertificateNo(cardNo);
-        user.setUserName(name);
-        user.setPhone(phone);
+        user.setCertificateNo(apply.getCardNo());
+        user.setUserName(apply.getName());
+        user.setPhone(apply.getPhone());
         user.setUserType(userType);
-        user.setSex(sex);
-        user.setWorkUnit(workUnit);
-        user.setAddress(areaName);
+        user.setSex(apply.getSex());
+        user.setWorkUnit(apply.getWorkUnit());
+        user.setAddress(apply.getAreaName());
+        user.setOpenid(apply.getOpenId());
         this.dao.insert(user);
         return user;
     }
@@ -584,16 +595,17 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     public UserInfoVo findUserInfo(UserEntity userEntity) {
         String userInfo = redisClient.get(userEntity.getToken());
         JSONObject JSONObj = JSONObject.parseObject(userInfo);
+        log.debug("用户信息0：{}",JSONObj.toString());
         UserInfoVo infoVo = new UserInfoVo();
         infoVo.setNickName(JSONObj.getString("nickName"));
         infoVo.setImgUrl(JSONObj.getString("imgUrl"));
-        infoVo.setSex(Integer.parseInt(JSONObj.getString("sex")));
-        infoVo.setUserType(Integer.parseInt(JSONObj.getString("userType")));
+        infoVo.setSex(JSONObj.getInteger("sex"));
+        infoVo.setUserType(JSONObj.getInteger(JSONObj.getString("userType")));
         infoVo.setTokenId(JSONObj.getString("tokenId"));
         infoVo.setOtherId(JSONObj.getString("otherId"));
         //查询是否是指导员
         boolean instructorFlag = true;
-        if(infoVo.getUserType() != (UserTypeEnums.instructor.getCode())) {
+        if(infoVo.getUserType() != UserTypeEnums.instructor.getCode().intValue()) {
             Instructor instructor = instructorService.findInstructorByOpenId(userEntity.getOtherId());
             instructorFlag = instructor == null ? false : true;
         }

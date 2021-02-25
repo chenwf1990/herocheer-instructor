@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.AreaPermissionVO;
 import com.herocheer.instructor.domain.vo.MemberVO;
@@ -135,16 +136,12 @@ public interface UserService extends BaseService<User, Long> {
 
     /**
      * 添加用户信息
-     * @param name
-     * @param cardNo
-     * @param sex
-     * @param phone
+     * @param apply apply的phone是要更新的手机信息
      * @param userType
-     * @param areaName
-     * @param workUnit
+     * @param phone 可根据该字段查询用户信息
      * @return
      */
-    User addUser(String name, String cardNo, Integer sex, String phone, Integer userType, String areaName, String workUnit);
+    User addUser(InstructorApply apply, Integer userType, String phone);
 
     /**
      * 根据用户姓名查找用户信息
