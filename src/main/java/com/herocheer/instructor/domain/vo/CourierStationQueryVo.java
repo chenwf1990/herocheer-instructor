@@ -29,6 +29,8 @@ public class CourierStationQueryVo implements Serializable {
     private Long userId;
     @ApiModelProperty("状态 0启用 1禁用")
     private Integer state;
+    @ApiModelProperty("状态 0启用 1禁用")
+    private String openId;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")

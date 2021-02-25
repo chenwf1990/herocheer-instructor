@@ -309,7 +309,7 @@
         select
         a.*
         <if test="reqType != null">
-            ,(select count(1) from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.userId = #{userId}) as collectNum
+            ,(select count(1) from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.openId = #{openId}) as collectNum
         </if>
         from courier_station a
         <where>
@@ -332,7 +332,7 @@
                 and a.state = #{state}
             </if>
             <if test="reqType != null and reqType == 2">
-                and exists(select uc.id from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.userId = #{userId})
+                and exists(select uc.id from user_collect uc where uc.objectId = a.id and uc.type = 1 and uc.openId = #{openId})
             </if>
         </where>
         order by id desc

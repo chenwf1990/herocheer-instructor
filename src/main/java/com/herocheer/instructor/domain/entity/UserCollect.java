@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 用户收藏
- * @date 2021-01-26 11:24:26
+ * @date 2021-02-25 09:20:29
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -18,8 +18,10 @@ public class UserCollect extends BaseEntity {
     private String objectName;
     @ApiModelProperty("收藏类型 1驿站")   
     private Integer type;
-    @ApiModelProperty("用户id")   
+    @ApiModelProperty("用户id（暂时没用）")   
     private Long userId;
+    @ApiModelProperty("微信openId")   
+    private String openId;
     @ApiModelProperty("审批人")   
     private String remarks;
 

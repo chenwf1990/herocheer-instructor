@@ -439,7 +439,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
             }
             user.setPhone(phone);
             user.setAddress(areaName);
-            //工作单位
             user.setUserName(name);
             user.setWorkUnit(workUnit);
             this.dao.update(user);
@@ -450,6 +449,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         user.setPhone(phone);
         user.setUserType(userType);
         user.setSex(sex);
+        user.setWorkUnit(workUnit);
+        user.setAddress(areaName);
         this.dao.insert(user);
         return user;
     }

@@ -2,15 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ActivityRecruitInfoDao">
 
-
     <sql id="table_field">
-      id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
+        id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
         CASE
-        WHEN `status` = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
-        WHEN `status` = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-        AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate+24*60*60*1000-1 THEN 4
-        ELSE `status`
-        END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+            WHEN `status` = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
+            WHEN `status` = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate+24*60*60*1000-1 THEN 4
+            ELSE `status`
+            END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -83,6 +82,12 @@
         <if test="approvalComments != null">
             approvalComments,
         </if>
+        <if test="deptName != null">
+            deptName,
+        </if>
+        <if test="deptId != null">
+            deptId,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -152,6 +157,12 @@
         </if>
         <if test="approvalComments != null">
             #{approvalComments},
+        </if>
+        <if test="deptName != null">
+            #{deptName},
+        </if>
+        <if test="deptId != null">
+            #{deptId},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -232,6 +243,12 @@
             </if>
             <if test="approvalComments != null">
                 approvalComments = #{approvalComments},
+            </if>
+            <if test="deptName != null">
+                deptName = #{deptName},
+            </if>
+            <if test="deptId != null">
+                deptId = #{deptId},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -315,9 +332,22 @@
             <if test="approvalComments != null">
                 and approvalComments = #{approvalComments}
             </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
-        order by id DESC
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
     </select>
     
     <!--查询条数-->
@@ -390,9 +420,17 @@
             <if test="approvalComments != null">
                 and approvalComments = #{approvalComments}
             </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
+
     <select id="findList" parameterType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo"
             resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
         select <include refid="table_field"/> from activity_recruit_info
@@ -461,70 +499,70 @@
 
     <select id="findApplicationList" resultType="com.herocheer.instructor.domain.vo.ApplicationListVo">
         SELECT
-            *
+        *
         FROM
-            (
-            SELECT
-                a.id,
-                0 AS 'source',
-                recruitType AS 'type',
-                a.title,
-                a.content,
-                a.recruitStartDate,
-                a.recruitEndDate,
-                a.createdTime,
-                a.`status`,
-                a.updateId
-            FROM
-                activity_recruit_info a UNION
-            SELECT
-                n.id,
-                1 AS 'source',
-                n.type,
-                n.title,
-                n.content,
-                '' AS 'recruitStartDate',
-                '' AS 'recruitEndDate',
-                n.createdTime,
-                n.auditState AS 'status',
-                n.updateId
-            FROM
-                news_notice n
-            ) t
-            <where>
-                <if test="statusArray!=null">
-                    t.status in(
-                    <foreach collection="statusArray" item="status" index="index" separator=",">
-                        #{status}
-                    </foreach>
-                    )
-                </if>
-                <if test="updateId!=null">
-                    AND updateId=#{updateId}
-                </if>
-            </where>
+        (
+        SELECT
+        a.id,
+        0 AS 'source',
+        recruitType AS 'type',
+        a.title,
+        a.content,
+        a.recruitStartDate,
+        a.recruitEndDate,
+        a.createdTime,
+        a.`status`,
+        a.updateId
+        FROM
+        activity_recruit_info a UNION
+        SELECT
+        n.id,
+        1 AS 'source',
+        n.type,
+        n.title,
+        n.content,
+        '' AS 'recruitStartDate',
+        '' AS 'recruitEndDate',
+        n.createdTime,
+        n.auditState AS 'status',
+        n.updateId
+        FROM
+        news_notice n
+        ) t
+        <where>
+            <if test="statusArray!=null">
+                t.status in(
+                <foreach collection="statusArray" item="status" index="index" separator=",">
+                    #{status}
+                </foreach>
+                )
+            </if>
+            <if test="updateId!=null">
+                AND updateId=#{updateId}
+            </if>
+        </where>
         ORDER BY
-            t.createdTime DESC
+        t.createdTime DESC
     </select>
 
     <select id="getApplicationCount" resultType="java.lang.Integer">
         SELECT
-            count(*)
+        count(*)
         FROM
         (
         SELECT
-            a.id,
-            a.`status`,
-            a.updateId
+        a.id,
+        a.`status`,
+        a.updateId
         FROM
-            activity_recruit_info a
+        activity_recruit_info a
         UNION
         SELECT
-            n.id,
-            n.auditState AS 'status',
-            n.updateId
+        n.id,
+        n.auditState AS 'status',
+        n.updateId
         FROM
-            news_notice n
+        news_notice n
         ) t
         <where>
             <if test="statusArray!=null">

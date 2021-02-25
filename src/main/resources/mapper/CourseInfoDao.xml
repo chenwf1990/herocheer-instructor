@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.CourseInfoDao">
+
     <sql id="table_field">
-      id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, state, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-      CASE
-		WHEN `state` = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-		WHEN `state` = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-			AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1 THEN 3
-		WHEN `state` = 1 AND signStartTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-		WHEN `state` = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-			AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1 THEN 1
-        ELSE 0 END AS 'courseStatus'
+        id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, state, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
+        CASE
+            WHEN `state` = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+            WHEN `state` = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1 THEN 3
+            WHEN `state` = 1 AND signStartTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+            WHEN `state` = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1 THEN 1
+            ELSE 0 END AS 'courseStatus'
     </sql>
     
     <!--单表新增-->
@@ -25,9 +26,6 @@
         </if>
         <if test="lecturerTeacherId != null">
             lecturerTeacherId,
-        </if>
-        <if test="lecturerTeacherName != null">
-            lecturerTeacherName,
         </if>
         <if test="courseStartTime != null">
             courseStartTime,
@@ -74,6 +72,12 @@
         <if test="placedTop != null">
             placedTop,
         </if>
+        <if test="deptName != null">
+            deptName,
+        </if>
+        <if test="deptId != null">
+            deptId,
+        </if>
         <if test="state != null">
             state,
         </if>
@@ -89,9 +93,6 @@
         </if>
         <if test="lecturerTeacherId != null">
             #{lecturerTeacherId},
-        </if>
-        <if test="lecturerTeacherName != null">
-            #{lecturerTeacherName},
         </if>
         <if test="courseStartTime != null">
             #{courseStartTime},
@@ -138,6 +139,12 @@
         <if test="placedTop != null">
             #{placedTop},
         </if>
+        <if test="deptName != null">
+            #{deptName},
+        </if>
+        <if test="deptId != null">
+            #{deptId},
+        </if>
         <if test="state != null">
             #{state},
         </if>
@@ -163,9 +170,6 @@
             </if>
             <if test="lecturerTeacherId != null">
                 lecturerTeacherId = #{lecturerTeacherId},
-            </if>
-            <if test="lecturerTeacherName != null">
-                lecturerTeacherName = #{lecturerTeacherName},
             </if>
             <if test="courseStartTime != null">
                 courseStartTime = #{courseStartTime},
@@ -212,6 +216,12 @@
             <if test="placedTop != null">
                 placedTop = #{placedTop},
             </if>
+            <if test="deptName != null">
+                deptName = #{deptName},
+            </if>
+            <if test="deptId != null">
+                deptId = #{deptId},
+            </if>
             <if test="state != null">
                 state = #{state},
             </if>
@@ -240,9 +250,6 @@
             <if test="lecturerTeacherId != null">
                 and lecturerTeacherId = #{lecturerTeacherId}
             </if>
-            <if test="lecturerTeacherName != null">
-                and lecturerTeacherName = #{lecturerTeacherName}
-            </if>
             <if test="courseStartTime != null">
                 and courseStartTime = #{courseStartTime}
             </if>
@@ -288,12 +295,25 @@
             <if test="placedTop != null">
                 and placedTop = #{placedTop}
             </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
+            </if>
             <if test="state != null">
                 and state = #{state}
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
-        order by id DESC
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                order by ${orderBy}
+            </when>
+            <otherwise>
+                order by id DESC
+            </otherwise>
+        </choose> 
     </select>
     
     <!--查询条数-->
@@ -309,9 +329,6 @@
             <if test="lecturerTeacherId != null">
                 and lecturerTeacherId = #{lecturerTeacherId}
             </if>
-            <if test="lecturerTeacherName != null">
-                and lecturerTeacherName = #{lecturerTeacherName}
-            </if>
             <if test="courseStartTime != null">
                 and courseStartTime = #{courseStartTime}
             </if>
@@ -356,6 +373,12 @@
             </if>
             <if test="placedTop != null">
                 and placedTop = #{placedTop}
+            </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
             </if>
             <if test="state != null">
                 and state = #{state}

@@ -2,6 +2,7 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
 import com.herocheer.instructor.domain.vo.CourierStationVo;
@@ -33,7 +34,8 @@ public class CourierStationController extends BaseController{
     @ApiOperation("驿站列表列表查询")
     public ResponseResult<Page<CourierStationVo>> queryPageList(@RequestBody CourierStationQueryVo courierStationQueryVo,
                                                                 HttpServletRequest request){
-        courierStationQueryVo.setUserId(getCurUserId(request));
+        UserEntity entity = getUser(request);
+        courierStationQueryVo.setOpenId(entity.getOtherId());
         Page<CourierStationVo> page = courierStationService.queryPageList(courierStationQueryVo);
         return ResponseResult.ok(page);
     }

@@ -58,4 +58,11 @@ public interface InstructorService extends BaseService<Instructor,Long> {
      * @return
      */
     Instructor findByCardNo(String cardNo);
+
+    /**
+     * 根据phone获取指导员
+     * @param phone
+     * @return
+     */
+    Instructor findByPhone(String phone);
 }

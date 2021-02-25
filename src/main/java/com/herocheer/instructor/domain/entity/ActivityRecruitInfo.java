@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 招募信息主表
- * @date 2021-01-22 11:25:32
+ * @date 2021-02-25 09:30:41
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -42,7 +42,7 @@ public class ActivityRecruitInfo extends BaseEntity {
     private String serviceHours;
     @ApiModelProperty("驿站-招募人数")   
     private Integer recruitNumber;
-    @ApiModelProperty("状态 (0.待审核1.招募待启动 2.撤回3.驳回4.招募中5.招募结束)")
+    @ApiModelProperty("状态 (0.待审核1.撤回2.驳回3.招募待启动4.招募中5.招募结束)")   
     private Integer status;
     @ApiModelProperty("审批状态 (1.通过2.驳回)")   
     private Integer approvalStatus;
@@ -56,5 +56,9 @@ public class ActivityRecruitInfo extends BaseEntity {
     private Long recruitEndDate;
     @ApiModelProperty("审批意见")   
     private String approvalComments;
+    @ApiModelProperty("部门名称")   
+    private String deptName;
+    @ApiModelProperty("部门id")   
+    private Long deptId;
 
 }

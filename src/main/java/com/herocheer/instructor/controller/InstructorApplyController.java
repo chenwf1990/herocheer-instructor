@@ -2,10 +2,12 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorApplyService;
+import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +47,9 @@ public class InstructorApplyController extends BaseController{
     @PostMapping("/add")
     @ApiOperation("指导员申请")
     public ResponseResult add(@RequestBody InstructorApply instructorApply,HttpServletRequest request){
-        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply,getCurUserId(request)));
+        UserEntity entity = getUser(request);
+        String openId = entity.getOtherId();
+        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply,openId));
     }
 
     @PostMapping("/update")
@@ -88,9 +92,12 @@ public class InstructorApplyController extends BaseController{
 
     @GetMapping("/getAuthInfo")
     @ApiOperation("获取认证信息")
+    @AllowAnonymous
     public ResponseResult<List<InstructorApply>> getAuthInfo(@ApiParam("指导员id") @RequestParam(required = false) Long instructorId,
                                                              HttpServletRequest request){
-        List<InstructorApply> applies = instructorApplyService.getAuthInfo(getCurUserId(request),instructorId);
+        UserEntity entity = getUser(request);
+        String openId = entity.getOtherId();
+        List<InstructorApply> applies = instructorApplyService.getAuthInfo(openId,instructorId);
         return ResponseResult.ok(applies);
     }
 }

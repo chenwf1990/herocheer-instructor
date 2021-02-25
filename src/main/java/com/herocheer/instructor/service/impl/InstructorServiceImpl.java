@@ -260,16 +260,9 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             }
         }else {
             Instructor cardInstructor = this.findByPhone(apply.getPhone());
-            User user = userService.get(apply.getUserId());
-            user.setPhone(apply.getPhone());
-            user.setAddress(apply.getAreaName());
-            user.setUserName(apply.getName());
-            user.setWorkUnit(apply.getWorkUnit());
+            User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode(), apply.getAreaName(), apply.getWorkUnit());
             if(cardInstructor == null){
                 BeanUtils.copyProperties(apply,instructor);
-                if(user.getUserType().equals(UserTypeEnums.weChatUser.getCode())){
-                    user.setUserType(UserTypeEnums.instructor.getCode());
-                }
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
                 instructor.setAuditState(AuditStateEnums.to_pass.getState());
@@ -347,6 +340,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         return null;
     }
 
+    @Override
     public Instructor findByPhone(String phone) {
         Map<String,Object> params = new HashMap<>();
         params.put("phone",phone);

@@ -18,8 +18,8 @@ public class UserCollectVo extends BaseEntity {
     private String objectName;
     @ApiModelProperty("收藏类型 1驿站")   
     private Integer type;
-    @ApiModelProperty("用户id")   
-    private Long userId;
+    @ApiModelProperty("微信openId")
+    private String openId;
     @ApiModelProperty("1收藏 2取消")
     private Integer collectType;
 

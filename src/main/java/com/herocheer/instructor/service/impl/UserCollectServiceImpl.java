@@ -35,7 +35,7 @@ public class UserCollectServiceImpl extends BaseServiceImpl<UserCollectDao, User
         Map<String,Object> params = new HashMap<>();
         params.put("type", userCollectVo.getType());
         params.put("objectId", userCollectVo.getObjectId());
-        params.put("userId", userCollectVo.getUserId());
+        params.put("openId", userCollectVo.getOpenId());
         List<UserCollect> collects = this.dao.findByLimit(params);
         int count = 1;//0 失败 1成功
         if(userCollectVo.getCollectType() == 1){//收藏

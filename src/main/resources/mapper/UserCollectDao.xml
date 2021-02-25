@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.UserCollectDao">
     
     <sql id="table_field">
-      objectId, objectName, type, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, objectId, objectName, type, userId, openId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -21,6 +21,9 @@
         </if>
         <if test="userId != null">
             userId,
+        </if>
+        <if test="openId != null">
+            openId,
         </if>
         <if test="remarks != null">
             remarks,
@@ -40,6 +43,9 @@
         </if>
         <if test="userId != null">
             #{userId},
+        </if>
+        <if test="openId != null">
+            #{openId},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -69,6 +75,9 @@
             </if>
             <if test="userId != null">
                 userId = #{userId},
+            </if>
+            <if test="openId != null">
+                openId = #{openId},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -101,6 +110,9 @@
             <if test="userId != null">
                 and userId = #{userId}
             </if>
+            <if test="openId != null">
+                and openId = #{openId}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -132,16 +144,20 @@
             <if test="userId != null">
                 and userId = #{userId}
             </if>
+            <if test="openId != null">
+                and openId = #{openId}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
     <delete id="deleteByParams" parameterType="map">
         delete from user_collect
         where type = #{type}
-        and objectId = #{objectId}
-        and userId = #{userId}
+          and objectId = #{objectId}
+          and openId = #{openId}
     </delete>
 </mapper>

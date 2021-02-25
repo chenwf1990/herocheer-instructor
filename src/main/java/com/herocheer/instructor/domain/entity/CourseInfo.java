@@ -6,8 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author chenwf
- * @desc 课程信息主表
- * @date 2021-02-22 11:33:19
+ * @desc 课程信息 
+ * @date 2021-02-25 09:34:57
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -16,10 +16,8 @@ public class CourseInfo extends BaseEntity {
     private String title;
     @ApiModelProperty("课程类型 (1.实践指导动作2.理论课)")   
     private Integer type;
-    @ApiModelProperty("授课老师Id")   
+    @ApiModelProperty("授课老师")   
     private Long lecturerTeacherId;
-    @ApiModelProperty("授课老师姓名")   
-    private String lecturerTeacherName;
     @ApiModelProperty("课程开始时间")   
     private Long courseStartTime;
     @ApiModelProperty("课程结束时间")   
@@ -50,7 +48,11 @@ public class CourseInfo extends BaseEntity {
     private Integer showBanner;
     @ApiModelProperty("是否置顶 (0.否1.是)")   
     private Integer placedTop;
-    @ApiModelProperty("状态 (0.待审核1.审批通过2.撤回3.驳回)")
+    @ApiModelProperty("部门名称")   
+    private String deptName;
+    @ApiModelProperty("部门id")   
+    private Long deptId;
+    @ApiModelProperty("状态 (0.待审核1.撤回2.驳回3.待报名4.报名中5.报名结束)")   
     private Integer state;
 
 }

@@ -59,7 +59,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
 
     /**
      * @param instructorApply
-     * @param curUserId
+     * @param openId
      * @return
      * @author chenwf
      * @desc 指导员申请
@@ -67,7 +67,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int addInstructorApply(InstructorApply instructorApply, Long curUserId) {
+    public int addInstructorApply(InstructorApply instructorApply, String openId) {
         //PC端新增的时候id==指导员id，公众号的id为null，所以没有影响
         instructorApply.setInstructorId(instructorApply.getId());
         Map<String,Object> applyMap = new HashMap<>();
@@ -77,14 +77,14 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
             //是否存在待审核数据
             long applyCount = applyList.stream().filter(s ->s.getAuditState() != AuditStateEnums.to_pass.getState()).count();
             if(applyCount > 0){
-                throw new CommonException("已申请过，等待审核中");
+                throw new CommonException("您已申请，请等待平台审核");
             }
         }
         if(ChannelEnums.imp.getType() == instructorApply.getChannel()
                 || ChannelEnums.pc.getType() == instructorApply.getChannel()){
             instructorApply.setAuditState(AuditStateEnums.to_pass.getState());
         }else{
-            instructorApply.setUserId(curUserId);
+            instructorApply.setOpenId(openId);
             instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         }
         if(StringUtils.isEmpty(instructorApply.getAuditUnitName())){
@@ -173,15 +173,15 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     /**
      * 获取指导员认证信息
      *
-     * @param curUserId
+     * @param openId
      * @param instructorId
      * @return
      */
     @Override
-    public List<InstructorApply> getAuthInfo(Long curUserId, Long instructorId) {
+    public List<InstructorApply> getAuthInfo(String openId, Long instructorId) {
         Map<String,Object> params = new HashMap<>();
         if(instructorId == null){
-            params.put("userId",curUserId);
+            params.put("openId", openId);
         }else {
             params.put("instructorId", instructorId);
         }

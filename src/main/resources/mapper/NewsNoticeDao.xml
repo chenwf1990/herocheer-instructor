@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.NewsNoticeDao">
     
     <sql id="table_field">
-      id, type, pic, title, auditState, auditTime, auditIdea, content, top, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, type, pic, title, auditState, auditTime, auditIdea, content, top, deptName, deptId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -33,6 +33,12 @@
         </if>
         <if test="top != null">
             top,
+        </if>
+        <if test="deptName != null">
+            deptName,
+        </if>
+        <if test="deptId != null">
+            deptId,
         </if>
         <if test="remarks != null">
             remarks,
@@ -64,6 +70,12 @@
         </if>
         <if test="top != null">
             #{top},
+        </if>
+        <if test="deptName != null">
+            #{deptName},
+        </if>
+        <if test="deptId != null">
+            #{deptId},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -105,6 +117,12 @@
             </if>
             <if test="top != null">
                 top = #{top},
+            </if>
+            <if test="deptName != null">
+                deptName = #{deptName},
+            </if>
+            <if test="deptId != null">
+                deptId = #{deptId},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -149,6 +167,12 @@
             <if test="top != null">
                 and top = #{top}
             </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -191,6 +215,12 @@
             </if>
             <if test="top != null">
                 and top = #{top}
+            </if>
+            <if test="deptName != null">
+                and deptName = #{deptName}
+            </if>
+            <if test="deptId != null">
+                and deptId = #{deptId}
             </if>
             <if test="remarks != null">
                 and remarks = #{remarks}

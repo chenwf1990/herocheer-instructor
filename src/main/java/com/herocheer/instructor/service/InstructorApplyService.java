@@ -21,10 +21,10 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
      * @desc  指导员申请
      * @date 2021-01-29 08:50:36
      * @param instructorApply
-     * @param curUserId
+     * @param openId
      * @return
      */
-    int addInstructorApply(InstructorApply instructorApply, Long curUserId);
+    int addInstructorApply(InstructorApply instructorApply, String openId);
 
     /**
      * @author chenwf
@@ -55,11 +55,11 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
 
     /**
      * 获取指导员认证信息
-     * @param curUserId
+     * @param openId
      * @param instructorId
      * @return
      */
-    List<InstructorApply> getAuthInfo(Long curUserId, Long instructorId);
+    List<InstructorApply> getAuthInfo(String openId, Long instructorId);
 
     /**
      * 获取审批列表信息
