@@ -506,9 +506,9 @@
         INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
         and b.reserveStatus = 0
         and a.scheduleTime = #{scheduleTime}
-        and (a.serviceBeginTime between #{serviceBeginTime} and #{serviceEndTime}
+        and (a.serviceBeginTime between #{serviceBeginTime} and #{lessEndTime}
         or
-        a.serviceEndTime between #{serviceBeginTime} and #{serviceEndTime}
+        a.serviceEndTime between #{addBeginTime} and #{serviceEndTime}
         )
         <if test="userId != null">
             and b.userId = #{userId}

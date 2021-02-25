@@ -133,6 +133,9 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
      * @return
      */
     public static String addMin(String time, int gap){
+        if (time.equals("23:59")){
+            return time;
+        }
         try {
             String[] s = time.split(":");
             int min = Integer.parseInt(s[1]) + gap % 60;
@@ -141,6 +144,31 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
                 hour+=1;
                 min -=60;
             }
+            if (hour>=24){
+                hour =  hour % 24;
+            }
+            return ("0"+hour).substring(("0"+hour).length()-2,("0"+hour).length())+
+                    ":"+
+                    ("0"+min).substring(("0"+min).length()-2,(("0"+min).length()));
+
+        } catch (Exception e) {
+            System.out.println("addMin Error!" + e.toString());
+            return "";
+        }
+    }
+    public static String lessMin(String time, int gap){
+        if(time.equals("00:00")){
+            return time;
+        }
+        try {
+            String[] s = time.split(":");
+            int min = Integer.parseInt(s[1]);
+            int hour =  Integer.parseInt(s[0]) ;
+            if (min<1){
+                hour-=1;
+                min +=60;
+            }
+            min=min-1;
             if (hour>=24){
                 hour =  hour % 24;
             }
