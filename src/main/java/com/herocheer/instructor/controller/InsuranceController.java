@@ -50,7 +50,6 @@ public class InsuranceController extends BaseController {
 
     @GetMapping("/certificate")
     @ApiOperation("当前用户的身份证号码")
-    @AllowAnonymous
     public ResponseResult<String> fecthInsuranceInfoByCorrentUser(HttpServletRequest request){
         UserEntity correntUser = getUser(request);
         User user =  userService.findUserByOpenId(correntUser.getOtherId());
@@ -58,7 +57,7 @@ public class InsuranceController extends BaseController {
         if(ObjectUtils.isEmpty(user) || StringUtils.isEmpty(user.getCertificateNo())){
             throw new CommonException("您未购买保险,请返回首页购买保险");
         }
-        return ResponseResult.ok();
+        return ResponseResult.ok(user.getCertificateNo());
     }
 
     /**
