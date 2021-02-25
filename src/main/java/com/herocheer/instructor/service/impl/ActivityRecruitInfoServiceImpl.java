@@ -91,9 +91,6 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募开始时间必须大于当前时间!");
         }
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
-            if(activityRecruitInfoVo.getRecruitEndDate()>activityRecruitInfoVo.getServiceStartDate()){
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间必须大于招募结束时间!");
-            }
             if(activityRecruitInfoVo.getServiceStartDate()<System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间必须大于当前时间!");
             }
@@ -131,9 +128,6 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募开始时间必须大于当前时间!");
         }
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()) {
-            if (activityRecruitInfoVo.getRecruitEndDate() > activityRecruitInfoVo.getServiceStartDate()) {
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间必须大于招募结束时间!");
-            }
             if(activityRecruitInfoVo.getServiceStartDate()<System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间必须大于当前时间!");
             }
