@@ -22,6 +22,7 @@
 		</rollingPolicy>
 		<encoder>
 			<Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+			<charset class="java.nio.charset.Charset">UTF-8</charset>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.LevelFilter">
 			<level>ERROR</level>
