@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -39,10 +40,6 @@ import java.util.Map;
 @Validated
 public class InsuranceController extends BaseController {
 
-    public static final String KEY = "20157576992e4ee9904408ec266724e4";
-    public static final String BASE_URL = "http://tycd.herocheer.com/sports/wechat/api";
-
-
     /**
      * 我的保单
      *
@@ -54,12 +51,12 @@ public class InsuranceController extends BaseController {
     @ApiOperation("我的保单")
     @AllowAnonymous
     public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @PathVariable String certificateNo, HttpServletRequest request){
-        String sign = DigestUtils.md5DigestAsHex((certificateNo + KEY).getBytes());
+        String sign = DigestUtils.md5DigestAsHex((certificateNo + InsuranceConst.KEY).getBytes());
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
         paramMap.put("certificateNo", certificateNo);
-        String result= HttpUtil.post(BASE_URL+"/insurance/listInsurance", paramMap);
+        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/listInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj.getInteger("code") != 200){
@@ -106,7 +103,7 @@ public class InsuranceController extends BaseController {
         if(StringUtils.isNotBlank(insureType)){
             plain += insureType;
         }
-        String sign = DigestUtils.md5DigestAsHex((plain + KEY).getBytes());
+        String sign = DigestUtils.md5DigestAsHex((plain + InsuranceConst.KEY).getBytes());
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
@@ -130,7 +127,7 @@ public class InsuranceController extends BaseController {
             paramMap.put("endTime", endTime);
         }
 
-        String result= HttpUtil.post(BASE_URL+"/insurance/pageInsurance", paramMap);
+        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/pageInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
@@ -152,12 +149,12 @@ public class InsuranceController extends BaseController {
     @ApiImplicitParam(name = "id", value = "保险ID",dataType = "String",paramType = "query")
     @AllowAnonymous
     public ResponseResult<JSONObject> fecthInsuranceInfoById(@NotBlank(message = "ID不能为空") @RequestParam String id, HttpServletRequest request){
-        String sign = DigestUtils.md5DigestAsHex((id + KEY).getBytes());
+        String sign = DigestUtils.md5DigestAsHex((id + InsuranceConst.KEY).getBytes());
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
         paramMap.put("id",id);
-        String result= HttpUtil.post(BASE_URL+"/insurance/detailInsurance", paramMap);
+        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/detailInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj == null || JSONObj.getInteger("code") != 200){

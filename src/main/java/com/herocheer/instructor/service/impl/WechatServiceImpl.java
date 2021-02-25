@@ -180,8 +180,9 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     public WxInfoVO getWxInfo(String pageUrl) {
 
         //1、获取Ticket
-        String jsapi_ticket = getRedisWechatJsTicket();
-
+        String result = findJsapiTicket();
+        JSONObject json = JSONObject.parseObject(result);
+        String jsapi_ticket = json.getString("ticket");
         //2、时间戳和随机字符串
         String noncestr = UUID.randomUUID().toString().replace("-", "").substring(0, 16);//随机字符串
         String timestamp = String.valueOf(System.currentTimeMillis() / 1000);//时间戳
@@ -206,20 +207,20 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
      *
      * @return {@link String}
      */
-    public String findJsapiTicket(){
-        Long currentTime =System.currentTimeMillis();
+    private String findJsapiTicket(){
+        Long currentTime = System.currentTimeMillis();
         String sign = DigestUtils.md5DigestAsHex((currentTime + InsuranceConst.KEY).getBytes());
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
         paramMap.put("timestamp",currentTime);
-        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/getToken", paramMap);
+        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/getToken", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
             throw new CommonException("请求jsapi_ticket失败");
         }
-        return null;
+        return JSONObj.getString("result");
     }
 
 
