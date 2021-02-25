@@ -663,8 +663,10 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             reservation.setWorkingId(workingScheduleUser.getId());
             reservation.setTitle(activityRecruitInfo.getTitle());
             reservation.setImage(activityRecruitInfo.getImage());
-            reservation.setStartTime(activityRecruitDetail.getServiceDate()+DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime()));
-            reservation.setEndTime(activityRecruitDetail.getServiceDate()+DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime()));
+            reservation.setStartTime(activityRecruitDetail.getServiceDate()
+                    +DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime()));
+            reservation.setEndTime(activityRecruitDetail.getServiceDate()
+                    +DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime()));
             reservation.setAddress(activityRecruitInfo.getAddress());
             reservation.setLongitude(activityRecruitInfo.getLongitude());
             reservation.setLatitude(activityRecruitInfo.getLatitude());

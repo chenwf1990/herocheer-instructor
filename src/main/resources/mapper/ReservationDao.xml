@@ -12,6 +12,9 @@
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.Reservation">
         insert into reservation (
     <trim suffixOverrides=",">
+        <if test="relevanceId!=null">
+            relevanceId,
+        </if>
         <if test="type != null">
             type,
         </if>
@@ -58,6 +61,9 @@
     </trim>
     ) VALUES (
     <trim suffixOverrides=",">
+        <if test="relevanceId != null">
+            #{relevanceId},
+        </if>
         <if test="type != null">
             #{type},
         </if>
@@ -114,6 +120,9 @@
     <update id="update" parameterType="com.herocheer.instructor.domain.entity.Reservation">
         update reservation
         <set>
+            <if test="relevanceId != null">
+                relevanceId = #{relevanceId},
+            </if>
             <if test="type != null">
                 type = #{type},
             </if>
