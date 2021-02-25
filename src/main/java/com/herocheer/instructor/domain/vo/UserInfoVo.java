@@ -28,6 +28,4 @@ public class UserInfoVo extends UserEntity {
      */
     @ApiModelProperty("otherId")
     private String otherId;
-    @ApiModelProperty("tokenId")
-    private String tokenId;
 }
