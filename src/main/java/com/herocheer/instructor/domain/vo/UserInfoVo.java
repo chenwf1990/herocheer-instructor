@@ -25,4 +25,8 @@ public class UserInfoVo extends UserEntity {
 
     @ApiModelProperty("tokenId")
     private String tokenId;
+
+    @ApiModelProperty("登入状态")
+    private Boolean ixmLoginStatus;
+
 }

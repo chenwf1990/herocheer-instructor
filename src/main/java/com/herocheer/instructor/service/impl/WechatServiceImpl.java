@@ -8,7 +8,6 @@ import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
-import com.herocheer.instructor.enums.SourceEnums;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.User;
@@ -17,6 +16,7 @@ import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.InsuranceConst;
+import com.herocheer.instructor.enums.SourceEnums;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.enums.WechatConst;
 import com.herocheer.instructor.service.InstructorService;
@@ -269,6 +269,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         map.put("openid", openid);
         User user  = this.dao.selectSysUserOne(map);
 
+        UserInfoVo userInfo = new UserInfoVo();
+
         // 获取微信群众信息，方便统计用户及展示个人中心信息显示
         JSONObject jsonStr  = getWeChatUserInfo(JSONObj);
         if (user == null) {
@@ -280,16 +282,17 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             user.setSex(jsonStr.getInteger("sex"));
             user.setStatus(true);
             user.setOpenid(openid);
+            userInfo.setIxmLoginStatus(false);
         }else {
             if(StringUtils.isEmpty(user.getImgUrl())) {
                 user.setImgUrl(jsonStr.getString("headimgurl"));
                 this.userService.update(user);
             }
+            userInfo.setIxmLoginStatus(user.getIxmLoginStatus());
         }
         // 为I厦门那方便去用户数据
         session.setAttribute(WechatConst.SESSION_USER, user);
 
-        UserInfoVo userInfo = new UserInfoVo();
         BeanCopier.create(user.getClass(),userInfo.getClass(),false).copy(user,userInfo,null);
         userInfo.setOtherId(openid);
         userInfo.setUserType(user.getUserType());
@@ -298,6 +301,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         String token = IdUtil.simpleUUID();
         userInfo.setTokenId(token);
         userInfo.setOtherId(openid);
+
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
         return userInfo;
@@ -467,8 +471,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         sysUser.setIxmToken("");
         //用户信息存入session
         session.setAttribute(WechatConst.SESSION_USER, sysUser);
-        sysUser.setTokenId(IdUtil.simpleUUID());
-        // TODO 替换redis的值
         return sysUser;
     }
 
