@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,4 +74,12 @@ public interface WechatService {
      * @return {@link UserInfoVo}
      */
     UserInfoVo bindingWeChat(UserEntity correntUser, String phone);
+
+    /**
+     * 添加用户信息
+     *
+     * @param weChatUser 用户
+     * @return int
+     */
+    int addUserInfo(WeChatUserVO weChatUser);
 }

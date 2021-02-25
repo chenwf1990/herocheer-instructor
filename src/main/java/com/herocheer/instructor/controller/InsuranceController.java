@@ -5,8 +5,11 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.enums.InsuranceConst;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -15,7 +18,9 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +45,22 @@ import java.util.Map;
 @Validated
 public class InsuranceController extends BaseController {
 
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/certificate")
+    @ApiOperation("当前用户的身份证号码")
+    @AllowAnonymous
+    public ResponseResult<String> fecthInsuranceInfoByCorrentUser(HttpServletRequest request){
+        UserEntity correntUser = getUser(request);
+        User user =  userService.findUserByOpenId(correntUser.getOtherId());
+
+        if(ObjectUtils.isEmpty(user) || StringUtils.isEmpty(user.getCertificateNo())){
+            throw new CommonException("您未购买保险,请返回首页购买保险");
+        }
+        return ResponseResult.ok();
+    }
+
     /**
      * 我的保单
      *
@@ -52,7 +73,6 @@ public class InsuranceController extends BaseController {
     @AllowAnonymous
     public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @PathVariable String certificateNo, HttpServletRequest request){
         String sign = DigestUtils.md5DigestAsHex((certificateNo + InsuranceConst.KEY).getBytes());
-
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
         paramMap.put("certificateNo", certificateNo);
