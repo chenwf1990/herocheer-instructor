@@ -80,17 +80,17 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
             applyMap.put("phone", instructorApply.getPhone());
         }
         List<InstructorApply> applyList = this.dao.findByLimit(applyMap);
-//        if(!applyList.isEmpty()){
-//            //是否存在待审核数据
-//            long applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_audit.getState()).count();
-//            if(applyCount > 0){
-//                throw new CommonException("您已申请，请等待平台审核");
-//            }
-//            applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_reject.getState()).count();
-//            if(applyCount > 0){
-//                throw new CommonException("您的申请被驳回，请到个人-我的认证修改重新提交");
-//            }
-//        }
+        if(!applyList.isEmpty()){
+            //是否存在待审核数据
+            long applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_audit.getState()).count();
+            if(applyCount > 0){
+                throw new CommonException("您已申请，请等待平台审核");
+            }
+            applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_reject.getState()).count();
+            if(applyCount > 0){
+                throw new CommonException("您的申请被驳回，请到个人-我的认证修改重新提交");
+            }
+        }
         if(ChannelEnums.imp.getType() == instructorApply.getChannel()
                 || ChannelEnums.pc.getType() == instructorApply.getChannel()){
             instructorApply.setAuditState(AuditStateEnums.to_pass.getState());

@@ -218,7 +218,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             ActivityRecruitDetail detail=new ActivityRecruitDetail();
             detail.setRecruitId(activityRecruitInfo.getId());
             detail.setRecruitNumber(activityRecruitInfo.getRecruitNumber());
-            for(Long i=activityRecruitInfo.getServiceStartDate();i<activityRecruitInfo.getServiceEndDate();i=i+24*60*60*1000){
+            for(Long i=activityRecruitInfo.getServiceStartDate();i<=activityRecruitInfo.getServiceEndDate();i=i+24*60*60*1000){
                 for(String hours:serviceHours){
                     String[] time=hours.split("-");
                     detail.setServiceDate(i);
