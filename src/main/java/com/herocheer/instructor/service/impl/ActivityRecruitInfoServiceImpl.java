@@ -112,8 +112,10 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                 activityRecruitInfoVo.getStatus()!=RecruitStateEnums.OVERRULE.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法修改");
         }
-        if(activityRecruitInfoVo.getRecruitEndDate()>activityRecruitInfoVo.getServiceStartDate()){
-            throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间必须大于招募结束时间!");
+        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()) {
+            if (activityRecruitInfoVo.getRecruitEndDate() > activityRecruitInfoVo.getServiceStartDate()) {
+                throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间必须大于招募结束时间!");
+            }
         }
         //如果状态为撤回或者驳回,修改时将状态更改为待审核
         if(activityRecruitInfoVo.getStatus()==RecruitStateEnums.WITHDRAW.getState()||

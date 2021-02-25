@@ -52,7 +52,7 @@ public class CourseInfo extends BaseEntity {
     private String deptName;
     @ApiModelProperty("部门id")   
     private Long deptId;
-    @ApiModelProperty("状态 (0.待审核1.撤回2.驳回3.待报名4.报名中5.报名结束)")   
+    @ApiModelProperty("状态 (0.待审核1.审批通过2.撤回3.驳回)")
     private Integer state;
 
 }
