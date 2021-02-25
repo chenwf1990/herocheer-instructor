@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -215,6 +216,10 @@ public class WechatController extends BaseController {
     @GetMapping("/correctUser")
     @ApiOperation("我的资料")
     public ResponseResult<User> fetchUserById(HttpServletRequest request){
+        // TODO 这里一定要返回user
+        // 获取当前用户信息
+        /*String userInfo = redisClient.get(getUser(request).getToken());
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);*/
         return ResponseResult.ok(userService.get(getCurUserId(request)));
     }
 
@@ -230,4 +235,21 @@ public class WechatController extends BaseController {
         return ResponseResult.ok(userService.modifyWeChatUser(weChatUserVO));
     }
 
+    /**
+     * 插入用户信息
+     *
+     * @param weChatUser 聊天用户
+     * @param request    请求
+     * @return {@link ResponseResult}
+     */
+    @PostMapping("/ijianshen")
+    @ApiOperation("i健身用户")
+    @AllowAnonymous
+    public ResponseResult insertUserInfo(@Valid @RequestBody WeChatUserVO weChatUser, HttpServletRequest request){
+        int i = wechatService.addUserInfo(weChatUser);
+        if(i>0){
+            return ResponseResult.ok();
+        }
+        return ResponseResult.fail();
+    }
 }

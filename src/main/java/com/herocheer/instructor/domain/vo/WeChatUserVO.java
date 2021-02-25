@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 微信用户VO
  *
@@ -59,6 +61,8 @@ public class WeChatUserVO{
     private String phone;
     @ApiModelProperty("用户来源：1-从i厦门绑定的用户；2-后台系统录入的")
     private String source;
+
+    @NotBlank(message = "手机号不能为空")
     @ApiModelProperty("证件号码")
     private String certificateNo;
     @ApiModelProperty("小程序（miniWeChat）、公众号（publicWeChat）")
@@ -101,6 +105,9 @@ public class WeChatUserVO{
     private String deptId;
     @ApiModelProperty("机构名称")
     private String deptName;
+
+    @ApiModelProperty("签名")
+    private String sign;
 
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;

@@ -31,3 +31,21 @@ swagger:
     url: https://ijs.sports.xm.gov.cn/instructor-server/
     email: 349830964@qq.com
 
+#i厦门
+ixm:
+  url: https://www.ixiamen.org.cn
+  appName: XXCDSSFWGLXT
+  secret: g8y&9X6TLMUKoLd
+  redirectUrl: https://wechat.ixiamen.org.cn/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
+  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
+  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
+
+#微信公众号配置(I健身（prod）)
+wechat:
+  appid: wxde3b17e5dc138e40
+  secret: e100c92f71d23863d1e563339714356b
+  token: ijstoken001
+  tokenUrl: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s
+  accessTokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code
+  ticketUrl: https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi
+  menuUrl: https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s

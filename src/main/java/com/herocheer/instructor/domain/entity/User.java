@@ -1,6 +1,7 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -88,4 +89,25 @@ public class User extends BaseEntity {
 
     @ApiModelProperty("工作单位")
     private String workUnit;
+
+    public User(WeChatUserVO userPO) {
+        this.setId(userPO.getId());
+        this.setIxmUserId(userPO.getIxmUserId());
+        this.setIxmUserName(userPO.getIxmUserName());
+        this.setIxmRealNameLevel(userPO.getIxmRealNameLevel());
+        this.setIxmUserRealName(userPO.getIxmUserRealName());
+        this.setImgUrl(userPO.getImgUrl());
+        this.setUserName(userPO.getUserName());
+        this.setSex(userPO.getSex());
+        this.setCertificateNo(userPO.getCertificateNo());
+        this.setPhone(userPO.getPhone());
+        this.setEmail(userPO.getEmail());
+        this.setOpenid(userPO.getOpenid());
+        this.setSource(userPO.getSource());
+        this.setAge(userPO.getAge());
+        this.setInsuranceStatus(userPO.getInsuranceStatus());
+        this.setCommitmentStatus(userPO.getCommitmentStatus());
+        this.setIxmLoginStatus(userPO.getIxmLoginStatus());
+        this.setIxmToken(userPO.getIxmToken());
+    }
 }

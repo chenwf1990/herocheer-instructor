@@ -13,6 +13,7 @@ import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.InsuranceConst;
@@ -292,6 +293,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         BeanCopier.create(user.getClass(),userInfo.getClass(),false).copy(user,userInfo,null);
         userInfo.setOtherId(openid);
         userInfo.setUserType(user.getUserType());
+//        userInfo
 
         String token = IdUtil.simpleUUID();
         userInfo.setTokenId(token);
@@ -313,6 +315,30 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         } catch (Exception ex) {
             log.info("ixmLoginUrl Exception", ex);
             throw new CommonException("i厦门登录跳转异常");
+        }
+    }
+
+    /**
+     * 添加用户信息
+     */
+    @Override
+    public int addUserInfo(WeChatUserVO weChatUser) {
+        String sign2 = DigestUtils.md5DigestAsHex((weChatUser.getCertificateNo() + InsuranceConst.KEY).getBytes());
+        if(!StringUtils.equalsIgnoreCase(weChatUser.getSign(), sign2)){
+            throw new CommonException("签名错误");
+        }
+
+        Map map = new HashMap();
+        map.put("certificateNo", weChatUser.getCertificateNo());
+        User user  = this.dao.selectSysUserOne(map);
+
+        if(user == null){
+//            BeanCopier.create(weChatUser.getClass(),user.getClass(),false).copy(weChatUser,user,null);
+            return userService.insert(new User(weChatUser));
+        }else {
+            user.setOpenid(weChatUser.getOpenid());
+            user.setIxmLoginStatus(weChatUser.getIxmLoginStatus());
+            return userService.update(user);
         }
     }
 
@@ -379,6 +405,32 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setSource(SourceEnums.ixm.getCode().toString());
 
             this.insert(sysUser);
+
+            // 异步同步用户数据
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("ixmUserId",sysUser.getIxmUserId());
+            paramMap.put("ixmUserName",sysUser.getIxmUserName());
+            paramMap.put("ixmRealNameLevel",sysUser.getIxmRealNameLevel());
+            paramMap.put("ixmUserRealName",sysUser.getIxmUserRealName());
+            paramMap.put("imgUrl",sysUser.getImgUrl());
+            paramMap.put("name",sysUser.getUserName());
+            paramMap.put("sex",sysUser.getSex());
+            // 登入状态
+            paramMap.put("ixmLoginStatus","1");
+            paramMap.put("ixmToken","");
+            paramMap.put("certificateType",user.getString("certificateType"));
+            paramMap.put("certificateNo",sysUser.getCertificateNo());
+            paramMap.put("phoneNo",sysUser.getPhone());
+            paramMap.put("email",sysUser.getEmail());
+            paramMap.put("openid",sysUser.getOpenid());
+            paramMap.put("source",sysUser.getSource());
+            paramMap.put("age",sysUser.getAge());
+
+            String resultUser= HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser", paramMap);
+            JSONObject JSONObj = JSONObject.parseObject(resultUser);
+            if(JSONObj == null || JSONObj.getInteger("code") != 200){
+                throw new CommonException("请求保险信息详情失败");
+            }
 
         } else {
             User oldUser = User.builder().build();

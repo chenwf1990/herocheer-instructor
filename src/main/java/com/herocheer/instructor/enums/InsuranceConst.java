@@ -8,5 +8,9 @@ package com.herocheer.instructor.enums;
  */
 public class InsuranceConst {
     public static final String KEY = "20157576992e4ee9904408ec266724e4";
-    public static final String BASE_URL = "http://tycd.herocheer.com/sports/wechat/api";
+//    public static final String BASE_URL = "http://tycd.herocheer.com/sports/wechat/api";
+    public static final String BASE_URL = "http://ijs.sports.xm.gov.cn/sports/wechat/api";
+
+//    public static final String URL = "192.168.100.168:8280";
+
 }
