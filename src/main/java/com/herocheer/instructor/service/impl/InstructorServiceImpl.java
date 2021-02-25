@@ -12,7 +12,11 @@ import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
-import com.herocheer.instructor.enums.*;
+import com.herocheer.instructor.enums.AuditStateEnums;
+import com.herocheer.instructor.enums.AuditUnitEnums;
+import com.herocheer.instructor.enums.ChannelEnums;
+import com.herocheer.instructor.enums.SexEnums;
+import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
@@ -26,7 +30,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -211,6 +219,23 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     public Instructor findInstructorByUserId(Long userId) {
         Map<String,Object> param = new HashMap<>();
         param.put("userId",userId);
+        List<Instructor> instructors = this.dao.findByLimit(param);
+        if(!instructors.isEmpty()){
+            return instructors.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * 根据openid获取指导员
+     *
+     * @param openid openid
+     * @return {@link Instructor}
+     */
+    @Override
+    public Instructor findInstructorByOpenId(String openid) {
+        Map<String,Object> param = new HashMap<>();
+        param.put("openId",openid);
         List<Instructor> instructors = this.dao.findByLimit(param);
         if(!instructors.isEmpty()){
             return instructors.get(0);

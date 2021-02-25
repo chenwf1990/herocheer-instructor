@@ -2,9 +2,15 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.*;
+import com.herocheer.instructor.domain.vo.AreaPermissionVO;
+import com.herocheer.instructor.domain.vo.MemberVO;
+import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 
 import java.util.List;
 
@@ -202,9 +208,10 @@ public interface UserService extends BaseService<User, Long> {
     int removeSysUserById(Long id);
 
     /**
-     * 查找用户信息
-     * @param curUserId
-     * @return
+     * 查找当前用户信息
+     *
+     * @param userEntity 用户实体
+     * @return {@link UserInfoVo}
      */
-    UserInfoVo findUserInfo(Long curUserId);
+    UserInfoVo findUserInfo(UserEntity userEntity);
 }

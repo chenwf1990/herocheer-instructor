@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.aspect.SysLog;
@@ -27,7 +28,6 @@ import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -571,20 +571,17 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     /**
      * 查找用户信息
      *
-     * @param curUserId
+     * @param userEntity
      * @return
      */
     @Override
-    public UserInfoVo findUserInfo(Long curUserId) {
-        // TODO 应该根据openid在redis获取用户信息
-        User user = this.dao.get(curUserId);
-        UserInfoVo infoVo = new UserInfoVo();
-        BeanUtils.copyProperties(user,infoVo);
-
+    public UserInfoVo findUserInfo(UserEntity userEntity) {
+        String userInfo = redisClient.get(userEntity.getToken());
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
         //查询是否是指导员
         boolean instructorFlag = true;
-        if(!user.getUserType().equals(UserTypeEnums.instructor.getCode())) {
-            Instructor instructor = instructorService.findInstructorByUserId(curUserId);
+        if(infoVo.getUserType() != (UserTypeEnums.instructor.getCode())) {
+            Instructor instructor = instructorService.findInstructorByOpenId(userEntity.getOtherId());
             instructorFlag = instructor == null ? false : true;
         }
         infoVo.setInstructorFlag(instructorFlag);

@@ -122,7 +122,7 @@ public class UserController extends BaseController {
     @GetMapping("/userInfo")
     @ApiOperation("获取当前登录用户信息")
     public ResponseResult<UserInfoVo> findUserInfo(HttpServletRequest request){
-        UserInfoVo userInfoVo = userService.findUserInfo(getCurUserId(request));
+        UserInfoVo userInfoVo = userService.findUserInfo(getUser(request));
         return ResponseResult.ok(userInfoVo);
     }
 

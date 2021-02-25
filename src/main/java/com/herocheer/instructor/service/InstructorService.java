@@ -45,6 +45,14 @@ public interface InstructorService extends BaseService<Instructor,Long> {
     Instructor findInstructorByUserId(Long userId);
 
     /**
+     * 根据openid获取指导员
+     *
+     * @param openid openid
+     * @return {@link Instructor}
+     */
+    Instructor findInstructorByOpenId(String openid);
+
+    /**
      * 添加指导员
      * @param instructorApply
      */
