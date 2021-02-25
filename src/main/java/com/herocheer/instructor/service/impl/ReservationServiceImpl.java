@@ -153,8 +153,10 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     public Page<Reservation> queryPage(ReservationQueryVo queryVo, Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         queryVo.setUserId(userId);
-        if (queryVo.getQueryType()==3){
-            queryVo.setUserId(userId);
+        if(queryVo.getQueryType()!=null){
+            if (queryVo.getQueryType()==3){
+                queryVo.setUserId(userId);
+            }
         }
         List<Reservation> instructors = this.dao.findList(queryVo);
         page.setDataList(instructors);

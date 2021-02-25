@@ -186,9 +186,9 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setAreaCode(areaCode);
         instructor.setAreaName(areaName);
         instructor.setCertificatePic(dataList.get(15).toString());
-
-        User user = userService.addUser(instructor.getName(), instructor.getCardNo(), instructor.getSex(),
-                instructor.getPhone(), UserTypeEnums.instructor.getCode(),areaName,instructor.getWorkUnit());
+        InstructorApply apply = new InstructorApply();
+        BeanUtils.copyProperties(instructor,apply);
+        User user = userService.addUser(apply, UserTypeEnums.instructor.getCode(),apply.getPhone());
         instructor.setUserId(user.getId());
         instructor.setOpenId(user.getOpenid());
         return instructor;
@@ -277,26 +277,28 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                     throw new CommonException("指导员已存在：{}",apply.getCardNo());
                 }
                 BeanUtils.copyProperties(apply,instructor);
-                User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode(), apply.getAreaName(), apply.getWorkUnit());
+                User user = userService.addUser(apply, UserTypeEnums.instructor.getCode(),apply.getPhone());
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
                 instructor.setAuditState(AuditStateEnums.to_pass.getState());
                 this.dao.insert(instructor);
             }
         }else {
-            Instructor cardInstructor = this.findByPhone(apply.getPhone());
-            User user = userService.addUser(apply.getName(), apply.getCardNo(), apply.getSex(), apply.getPhone(), UserTypeEnums.instructor.getCode(), apply.getAreaName(), apply.getWorkUnit());
-            if(cardInstructor == null){
+            //根据openId获取用户是否存在社会指导员
+            Instructor instructorOpenId = this.findInstructorByOpenId(apply.getOpenId());
+            if(instructorOpenId != null){//存在社会指导员，走更新用户流程
+                //预防只是修改手机号码
+                userService.addUser(apply,UserTypeEnums.instructor.getCode(),instructorOpenId.getPhone());
+                instructor = instructorOpenId;
+                updateInstructor(instructor,apply);
+            }else{
+                User user = userService.addUser(apply, UserTypeEnums.instructor.getCode(),apply.getPhone());
                 BeanUtils.copyProperties(apply,instructor);
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
                 instructor.setAuditState(AuditStateEnums.to_pass.getState());
                 this.dao.insert(instructor);
-            }else {
-                instructor = cardInstructor;
-                updateInstructor(cardInstructor,apply);
             }
-            userService.updateUser(user);
         }
         return instructor;
     }

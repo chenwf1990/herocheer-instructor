@@ -268,17 +268,21 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         User user  = this.dao.selectSysUserOne(map);
 
         // 获取微信群众信息，方便统计用户及展示个人中心信息显示
+        JSONObject jsonStr  = getWeChatUserInfo(JSONObj);
         if (user == null) {
             user = User.builder().build();
             user.setUserType(UserTypeEnums.weChatUser.getCode());
-
-            JSONObject jsonStr  = getWeChatUserInfo(JSONObj);
             // 微信用户群众信息
             user.setNickName(jsonStr.getString("nickname"));
             user.setImgUrl(jsonStr.getString("headimgurl"));
             user.setSex(jsonStr.getInteger("sex"));
             user.setStatus(true);
             user.setOpenid(openid);
+        }else {
+            if(StringUtils.isEmpty(user.getImgUrl())) {
+                user.setImgUrl(jsonStr.getString("headimgurl"));
+                this.userService.update(user);
+            }
         }
         // 为I厦门那方便去用户数据
         session.setAttribute(WechatConst.SESSION_USER, user);

@@ -92,7 +92,6 @@ public class InstructorApplyController extends BaseController{
 
     @GetMapping("/getAuthInfo")
     @ApiOperation("获取认证信息")
-    @AllowAnonymous
     public ResponseResult<List<InstructorApply>> getAuthInfo(@ApiParam("指导员id") @RequestParam(required = false) Long instructorId,
                                                              HttpServletRequest request){
         UserEntity entity = getUser(request);
