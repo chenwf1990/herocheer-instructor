@@ -17,6 +17,4 @@ public interface LoginService {
      * @param wechaLoginVo
      */
     UserInfoVo wechatLogin(WechaLoginVo wechaLoginVo);
-
-    void loginTest(String token, Long userId);
 }

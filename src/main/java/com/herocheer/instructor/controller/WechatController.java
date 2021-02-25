@@ -175,10 +175,10 @@ public class WechatController extends BaseController {
 
         // 绑定功能
         UserEntity correntUser = getUser(request);
-        User user = wechatService.bindingWeChat(correntUser, phone);
+        UserInfoVo UserInfo = wechatService.bindingWeChat(correntUser, phone);
 
         // 绑定成功之后要替换当前用户信息
-        redisClient.set(correntUser.getToken(),JSONObject.toJSONString(user));
+        redisClient.set(correntUser.getToken(),JSONObject.toJSONString(UserInfo));
         return ResponseResult.ok("绑定成功");
     }
 

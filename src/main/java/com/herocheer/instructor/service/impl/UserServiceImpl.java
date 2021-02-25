@@ -154,6 +154,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(objectMap))){
             throw new CommonException("账号已存在");
         }
+
+        Map<String, Object> map = new HashMap();
+        map.put("phone", sysUserVO.getPhone());
+        if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(map))){
+            throw new CommonException("手机号已存在");
+        }
         User user = User.builder().userType(UserTypeEnums.sysUser.getCode()).build();
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
@@ -577,7 +583,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public UserInfoVo findUserInfo(UserEntity userEntity) {
         String userInfo = redisClient.get(userEntity.getToken());
-        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
+        JSONObject JSONObj = JSONObject.parseObject(userInfo);
+        UserInfoVo infoVo = new UserInfoVo();
+        infoVo.setNickName(JSONObj.getString("nickName"));
+        infoVo.setImgUrl(JSONObj.getString("imgUrl"));
+        infoVo.setSex(Integer.parseInt(JSONObj.getString("sex")));
+        infoVo.setUserType(Integer.parseInt(JSONObj.getString("userType")));
+        infoVo.setTokenId(JSONObj.getString("tokenId"));
+        infoVo.setOtherId(JSONObj.getString("otherId"));
         //查询是否是指导员
         boolean instructorFlag = true;
         if(infoVo.getUserType() != (UserTypeEnums.instructor.getCode())) {

@@ -70,7 +70,7 @@ public interface WechatService {
      *
      * @param correntUser 当前用户
      * @param phone       电话
-     * @return {@link User}
+     * @return {@link UserInfoVo}
      */
-    User bindingWeChat(UserEntity correntUser, String phone);
+    UserInfoVo bindingWeChat(UserEntity correntUser, String phone);
 }

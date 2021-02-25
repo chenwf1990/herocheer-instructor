@@ -15,6 +15,7 @@ import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
+import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.enums.WechatConst;
 import com.herocheer.instructor.service.InstructorService;
@@ -32,6 +33,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,7 +55,6 @@ import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD5;
 @Slf4j
 @Service
 public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> implements WechatService {
-
     @Value("${wechat.appid}")
     private String appid;
     @Value("${wechat.secret}")
@@ -199,6 +200,28 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         wxInfoVO.setTicket(jsapi_ticket);
         return wxInfoVO;
     }
+
+    /**
+     * 找到 jsapi_ticket
+     *
+     * @return {@link String}
+     */
+    public String findJsapiTicket(){
+        Long currentTime =System.currentTimeMillis();
+        String sign = DigestUtils.md5DigestAsHex((currentTime + InsuranceConst.KEY).getBytes());
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("sign", sign);
+        paramMap.put("timestamp",currentTime);
+        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/getToken", paramMap);
+
+        JSONObject JSONObj = JSONObject.parseObject(result);
+        if(JSONObj == null || JSONObj.getInteger("code") != 200){
+            throw new CommonException("请求jsapi_ticket失败");
+        }
+        return null;
+    }
+
 
     /**
      * @param wecharCode
@@ -396,11 +419,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
      *
      * @param correntUser 当前用户
      * @param phone       电话
-     * @return {@link User}
+     * @return {@link UserInfoVo}
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public User bindingWeChat(UserEntity correntUser, String phone) {
+    public UserInfoVo bindingWeChat(UserEntity correntUser, String phone) {
         // 验证成功后绑定手机和openid
         User user = userService.findUserByPhone(phone);
         if(ObjectUtils.isEmpty(user)){
@@ -409,9 +432,24 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         }
 
         // 获取当前用户的openid
-        BeanCopier.create(correntUser.getClass(),user.getClass(),false).copy(correntUser,user,null);
         user.setOpenid(correntUser.getOtherId());
         userService.update(user);
+
+        UserInfoVo userInfo = new UserInfoVo();
+        String userInfoStr = redisClient.get(correntUser.getToken());
+        JSONObject JSONObj = JSONObject.parseObject(userInfoStr);
+
+        userInfo.setNickName(JSONObj.getString("nickName"));
+        userInfo.setImgUrl(JSONObj.getString("imgUrl"));
+        userInfo.setSex(Integer.parseInt(JSONObj.getString("sex")));
+        userInfo.setUserType(Integer.parseInt(JSONObj.getString("userType")));
+        userInfo.setTokenId(JSONObj.getString("tokenId"));
+        userInfo.setOtherId(JSONObj.getString("otherId"));
+
+        userInfo.setUserName(user.getUserName());
+        userInfo.setId(user.getId());
+        userInfo.setPhone(user.getPhone());
+        userInfo.setUserType(user.getUserType());
 
         // 回填openid和userId给指导员记录
         Instructor instructor = instructorService.findByPhone(phone);
@@ -420,7 +458,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             instructor.setUserId(user.getId());
             instructorService.update(instructor);
         }
-        return user;
+        return userInfo;
     }
 
     public JSONObject getOpenId(String code) {
