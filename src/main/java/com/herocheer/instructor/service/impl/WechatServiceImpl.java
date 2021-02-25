@@ -190,7 +190,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
         //3、将参数排序并拼接字符串
         String str = "jsapi_ticket="+jsapi_ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+pageUrl;
-
+        log.info("获取微信信息：{}",str);
         //4、将字符串进行sha1加密
         String signature = SecureUtil.sha1(str);
 
