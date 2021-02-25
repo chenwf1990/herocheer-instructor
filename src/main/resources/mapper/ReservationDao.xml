@@ -279,6 +279,9 @@
             parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
         select <include refid="table_field"/> from reservation
         <where>
+            <if test="title!=null and title!=''">
+                and title liek concat('%',#{title},'%')
+            </if>
             <if test="type!=null">
                 and `type` = #{type}
             </if>

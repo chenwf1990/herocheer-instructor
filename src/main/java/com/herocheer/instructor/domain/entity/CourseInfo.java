@@ -18,6 +18,8 @@ public class CourseInfo extends BaseEntity {
     private Integer type;
     @ApiModelProperty("授课老师")   
     private Long lecturerTeacherId;
+    @ApiModelProperty("授课老师名")
+    private String lecturerTeacherName;
     @ApiModelProperty("课程开始时间")   
     private Long courseStartTime;
     @ApiModelProperty("课程结束时间")   
