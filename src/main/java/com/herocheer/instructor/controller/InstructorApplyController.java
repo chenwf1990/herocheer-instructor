@@ -2,17 +2,22 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorApplyService;
-import com.herocheer.web.annotation.AllowAnonymous;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -39,9 +44,8 @@ public class InstructorApplyController extends BaseController{
 
     @PostMapping("/add")
     @ApiOperation("指导员申请")
-    @AllowAnonymous
-    public ResponseResult add(@RequestBody InstructorApply instructorApply){
-        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply));
+    public ResponseResult add(@RequestBody InstructorApply instructorApply,HttpServletRequest request){
+        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply,getCurUserId(request)));
     }
 
     @PostMapping("/update")
@@ -84,10 +88,9 @@ public class InstructorApplyController extends BaseController{
 
     @GetMapping("/getAuthInfo")
     @ApiOperation("获取认证信息")
-    @AllowAnonymous
     public ResponseResult<List<InstructorApply>> getAuthInfo(@ApiParam("指导员id") @RequestParam(required = false) Long instructorId,
-                                                             @ApiParam("openid") @RequestParam(required = false) String openId){
-        List<InstructorApply> applies = instructorApplyService.getAuthInfo(openId,instructorId);
+                                                             HttpServletRequest request){
+        List<InstructorApply> applies = instructorApplyService.getAuthInfo(getCurUserId(request),instructorId);
         return ResponseResult.ok(applies);
     }
 }

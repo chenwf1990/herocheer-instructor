@@ -42,7 +42,7 @@ public class ActivityRecruitInfo extends BaseEntity {
     private String serviceHours;
     @ApiModelProperty("驿站-招募人数")   
     private Integer recruitNumber;
-    @ApiModelProperty("状态 (0.待审核1.撤回2.驳回3.招募待启动4.招募中5.招募结束)")   
+    @ApiModelProperty("状态 (0.待审核1.招募待启动 2.撤回3.驳回4.招募中5.招募结束)")
     private Integer status;
     @ApiModelProperty("审批状态 (1.通过2.驳回)")   
     private Integer approvalStatus;
