@@ -60,9 +60,6 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         List<WorkingSchedulsUserVo> dataList = this.dao.queryPageList(workingScheduleUserQueryVo);
         if(!dataList.isEmpty()){
             dataList.forEach(w ->{
-                if(w.getId().equals(199L)){
-                    System.out.println("adadasd");
-                }
                 long scheduleBeginTime = w.getScheduleTime() + DateUtil.timeToUnix(w.getServiceBeginTime());
                 if(w.getSignInTime() == null && System.currentTimeMillis() <= scheduleBeginTime){//服务开始时间大于当前时间不去设置状态
                     w.setSignStatus(-1);//前端打卡状态放空
@@ -82,6 +79,9 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                     //当天之前的都不做审核，前端审核状态放空 || 不是负责人不能审批
                     if(DateUtil.beginOfDay(new Date()).getTime() >= scheduleBeginTime || userId != w.getApproveId()){
                         w.setStatus(-1);//当天之前的都不做审核，前端审核状态放空
+                    }
+                    if(w.getReplaceCardState() > 0){
+                        w.setReplaceCardState(1);
                     }
                     //计算超出时长
                     long time = serviceEndTime - serviceBeginTime;

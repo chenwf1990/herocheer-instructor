@@ -1,8 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -24,7 +24,7 @@ public class InstructorApply extends BaseEntity {
     private Long auditTime;
     @ApiModelProperty("审核意见")   
     private String auditIdea;
-    @ApiModelProperty("身份证号")   
+    @ApiModelProperty("身份证号")
     private String cardNo;
     @ApiModelProperty("手机号")   
     private String phone;
@@ -38,13 +38,13 @@ public class InstructorApply extends BaseEntity {
     private String guideProject;
     @ApiModelProperty("指导站点")   
     private String guideStation;
-    @ApiModelProperty("证书编号")   
+    @ApiModelProperty("证书编号")
     private String certificateNo;
     @ApiModelProperty("证书等级")   
     private String certificateGrade;
     @ApiModelProperty("发证日期")   
     private Long openingDate;
-    @ApiModelProperty("审批单位类型")
+    @ApiModelProperty("审批单位类型 WLJ_OTHER其他 WLJ_HLQ湖里区文旅局WLJ_SMQ思明区文旅局WLJ_JMQ集美区文旅局WLJ_HCQ海沧文旅局WLJ_XAQ翔安文旅局WLJ_TAQ同安文旅局WLJ_TYJ体育局")   
     private String auditUnitType;
     @ApiModelProperty("审批单位名称")   
     private String auditUnitName;
@@ -58,6 +58,8 @@ public class InstructorApply extends BaseEntity {
     private String openId;
     @ApiModelProperty("用户id")   
     private Long userId;
+    @ApiModelProperty("token")   
+    private String token;
     @ApiModelProperty("备注")   
     private String remarks;
 

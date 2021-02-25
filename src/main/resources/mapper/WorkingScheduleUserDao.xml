@@ -456,6 +456,11 @@
         b.certificateGrade,
         b.createdTime,
         b.taskNo,
+        b.approvalType,
+        b.approvalIdea,
+        b.approvalTime,
+        (select u.userName from user u where u.id = b.approvalId) as approvalName,
+        (select count(1) from working_replace_card rc where rc.workingScheduleUserId = b.id and rc.approvalStatus = 0) as replaceCardState,
         getPunchCartStatus(
         a.scheduleTime + time_to_sec(a.serviceBeginTime),
         a.scheduleTime + time_to_sec(a.serviceEndTime),

@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
@@ -21,10 +22,10 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
      * @desc  指导员申请
      * @date 2021-01-29 08:50:36
      * @param instructorApply
-     * @param openId
+     * @param userEntity
      * @return
      */
-    int addInstructorApply(InstructorApply instructorApply, String openId);
+    int addInstructorApply(InstructorApply instructorApply, UserEntity userEntity);
 
     /**
      * @author chenwf

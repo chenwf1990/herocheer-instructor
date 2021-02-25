@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.InstructorApplyAuditLogDao;
@@ -17,6 +18,7 @@ import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
+@Slf4j
 public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyDao, InstructorApply,Long> implements InstructorApplyService {
     @Resource
     private InstructorApplyAuditLogDao instructorApplyAuditLogDao;
@@ -59,7 +62,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
 
     /**
      * @param instructorApply
-     * @param openId
+     * @param userEntity
      * @return
      * @author chenwf
      * @desc 指导员申请
@@ -67,12 +70,12 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int addInstructorApply(InstructorApply instructorApply, String openId) {
+    public int addInstructorApply(InstructorApply instructorApply, UserEntity userEntity) {
         //PC端新增的时候id==指导员id，公众号的id为null，所以没有影响
         instructorApply.setInstructorId(instructorApply.getId());
         Map<String,Object> applyMap = new HashMap<>();
-        if(StringUtils.isNotEmpty(openId)) {
-            applyMap.put("openId", openId);
+        if(StringUtils.isNotEmpty(userEntity.getOtherId())) {
+            applyMap.put("openId", userEntity.getOtherId());
         }else{
             applyMap.put("phone", instructorApply.getPhone());
         }
@@ -92,7 +95,8 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
                 || ChannelEnums.pc.getType() == instructorApply.getChannel()){
             instructorApply.setAuditState(AuditStateEnums.to_pass.getState());
         }else{
-            instructorApply.setOpenId(openId);
+            instructorApply.setToken(userEntity.getToken());
+            instructorApply.setOpenId(userEntity.getOtherId());
             instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         }
         if(StringUtils.isEmpty(instructorApply.getAuditUnitName())){
@@ -188,7 +192,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     @Override
     public List<InstructorApply> getAuthInfo(String openId, Long instructorId) {
         Map<String,Object> params = new HashMap<>();
-        if(instructorId == null){
+        if(StringUtils.isNotEmpty(openId)){
             params.put("openId", openId);
         }else {
             params.put("instructorId", instructorId);

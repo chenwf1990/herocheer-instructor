@@ -1,5 +1,6 @@
 package com.herocheer.instructor.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
@@ -7,11 +8,11 @@ import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.service.InstructorApplyService;
-import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/instructor/apply")
 @Api(tags = "指导员申请")
+@Slf4j
 public class InstructorApplyController extends BaseController{
     @Resource
     private InstructorApplyService instructorApplyService;
@@ -46,10 +48,9 @@ public class InstructorApplyController extends BaseController{
 
     @PostMapping("/add")
     @ApiOperation("指导员申请")
-    public ResponseResult add(@RequestBody InstructorApply instructorApply,HttpServletRequest request){
+    public ResponseResult add(@RequestBody InstructorApply instructorApply, HttpServletRequest request){
         UserEntity entity = getUser(request);
-        String openId = entity.getOtherId();
-        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply,openId));
+        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply,entity));
     }
 
     @PostMapping("/update")
@@ -96,6 +97,7 @@ public class InstructorApplyController extends BaseController{
                                                              HttpServletRequest request){
         UserEntity entity = getUser(request);
         String openId = entity.getOtherId();
+        log.info("指导员认证信息：{}", JSONObject.toJSONString(entity));
         List<InstructorApply> applies = instructorApplyService.getAuthInfo(openId,instructorId);
         return ResponseResult.ok(applies);
     }
