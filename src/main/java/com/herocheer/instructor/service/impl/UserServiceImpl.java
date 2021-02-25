@@ -440,7 +440,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 判断phone是否存在是否存在
         Map<String, Object> params = new HashMap();
         if(StringUtils.isNotEmpty(apply.getOpenId())){
-            params.put("openId", apply.getOpenId());
+            params.put("openid", apply.getOpenId());
         }else {
             params.put("phone", phone);
         }
@@ -598,9 +598,10 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         log.debug("用户信息0：{}",JSONObj.toString());
         UserInfoVo infoVo = new UserInfoVo();
         infoVo.setNickName(JSONObj.getString("nickName"));
+        infoVo.setUserName(JSONObj.getString("userName"));
         infoVo.setImgUrl(JSONObj.getString("imgUrl"));
         infoVo.setSex(JSONObj.getInteger("sex"));
-        infoVo.setUserType(JSONObj.getInteger(JSONObj.getString("userType")));
+        infoVo.setUserType(JSONObj.getInteger("userType"));
         infoVo.setTokenId(JSONObj.getString("tokenId"));
         infoVo.setOtherId(JSONObj.getString("otherId"));
         //查询是否是指导员
