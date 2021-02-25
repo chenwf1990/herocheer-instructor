@@ -37,7 +37,7 @@ public class SmsCodeUtil {
      */
     public static ResponseResult getSmsCode(String tel) {
         JSONObject params = new JSONObject();
-        params.put("name", "校园安全管理综合平台");
+        params.put("name", "厦门i健身");
         params.put("mobilePhoneNumber", tel);
 
         JSONObject result = HttpUtil.httpPost(SMS_CODE_URL, params, headers, 0);

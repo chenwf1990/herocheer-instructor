@@ -66,6 +66,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Resource
     private InstructorService instructorService;
 
+
     /**
      * 检查账号
      *
@@ -575,9 +576,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @Override
     public UserInfoVo findUserInfo(Long curUserId) {
+        // TODO 应该根据openid在redis获取用户信息
         User user = this.dao.get(curUserId);
         UserInfoVo infoVo = new UserInfoVo();
         BeanUtils.copyProperties(user,infoVo);
+
         //查询是否是指导员
         boolean instructorFlag = true;
         if(!user.getUserType().equals(UserTypeEnums.instructor.getCode())) {

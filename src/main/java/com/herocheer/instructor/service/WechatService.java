@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 
@@ -63,4 +64,12 @@ public interface WechatService {
 
     User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token);
 
+    /**
+     * 绑定用户
+     *
+     * @param correntUser 当前用户
+     * @param phone       电话
+     * @return {@link User}
+     */
+    User bindingWeChat(UserEntity correntUser, String phone);
 }

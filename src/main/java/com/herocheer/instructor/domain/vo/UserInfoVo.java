@@ -22,4 +22,10 @@ public class UserInfoVo extends UserEntity {
     private String nickName;
     @ApiModelProperty("是否是指导员 false不是 true是")
     private Boolean instructorFlag;
+
+    /**
+     * 其他的id,这里是被openid占用
+     */
+    @ApiModelProperty("otherId")
+    private String otherId;
 }

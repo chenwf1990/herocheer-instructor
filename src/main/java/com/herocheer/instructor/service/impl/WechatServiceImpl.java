@@ -5,14 +5,19 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.controller.SourceEnums;
 import com.herocheer.instructor.dao.UserDao;
+import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.enums.WechatConst;
+import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.IDSAPIClient;
@@ -22,9 +27,11 @@ import com.trs.idm.util.Base64Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -71,6 +78,9 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private InstructorService instructorService;
 
     /**
      * @param code
@@ -222,11 +232,12 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     @Override
     public User ixmUserIsLogin(HttpSession session, String code) {
         JSONObject JSONObj = getOpenId(code);
-        String openid = null;
+
         if (ObjectUtils.isEmpty(JSONObj) || StringUtils.isBlank(JSONObj.getString("openid"))) {
             throw new CommonException("openid未获取成功");
         }
-        openid = JSONObj.getString("openid");
+        String openid = JSONObj.getString("openid");
+//        String openid = "or6Q-wfzYsLqaHlof8Tglyvdf-Y8";
 
         // 根据openid获取用户信息
         Map map = new HashMap();
@@ -245,16 +256,18 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             user.setSex(jsonStr.getInteger("sex"));
             user.setStatus(true);
             user.setOpenid(openid);
-
-            userService.insert(user);
         }
-        user.setIxmToken("");
+        // 为I厦门那方便去用户数据
         session.setAttribute(WechatConst.SESSION_USER, user);
 
+        UserInfoVo userInfo = new UserInfoVo();
+        BeanCopier.create(user.getClass(),userInfo.getClass(),false).copy(user,userInfo,null);
+        userInfo.setOtherId(openid);
+
         String token = IdUtil.simpleUUID();
-        user.setTokenId(token);
+        userInfo.setToken(token);
         // 用户信息放入Redis
-        redisClient.set(token,JSONObject.toJSONString(user), CacheKeyConst.EXPIRETIME);
+        redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
         return user;
     }
 
@@ -308,7 +321,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
         String certificateNum = user.getString("certificateNum");
 
-        /*if (sysUser == null) {
+        if (sysUser == null) {
             sysUser = User.builder().build();
             sysUser.setIxmUserId(user.getString("uuid").replace("-", ""));
             sysUser.setIxmUserName(user.getString("userName"));
@@ -368,44 +381,45 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setOpenid(openid);
             sysUser.setIxmLoginStatus(true);
             sysUser.setUpdateTime(oldUser.getUpdateTime());
-        }*/
-
-        User oldUser = User.builder().build();
-        oldUser.setId(sysUser.getId());
-        oldUser.setCertificateNo(certificateNum);
-        oldUser.setUserName(user.getString("certificateName"));
-        oldUser.setPhone(user.getString("mobile"));
-        oldUser.setOpenid(openid);
-        oldUser.setIxmLoginStatus(true);
-        oldUser.setIxmToken(ssoSessionId);
-        if (certificateNum.length() == 18) {//判断证件类型
-            if (Integer.parseInt(certificateNum.substring(16).substring(0, 1)) % 2 == 0) {// 判断性别
-                sysUser.setSex(2);
-                oldUser.setSex(2);
-            } else {
-                sysUser.setSex(1);
-                oldUser.setSex(1);
-            }
-        } else {
-            sysUser.setSex(0);
-            oldUser.setSex(0);
         }
-        oldUser.setUpdateTime(System.currentTimeMillis());
-
-        this.update(oldUser);
-
-        sysUser.setCertificateNo(certificateNum);
-        sysUser.setUserName(user.getString("certificateName"));
-        sysUser.setPhone(user.getString("mobile"));
-        sysUser.setOpenid(openid);
-        sysUser.setIxmLoginStatus(true);
-        sysUser.setUpdateTime(oldUser.getUpdateTime());
-
         sysUser.setIxmToken("");
         //用户信息存入session
         session.setAttribute(WechatConst.SESSION_USER, sysUser);
         sysUser.setTokenId(IdUtil.simpleUUID());
+        // TODO 替换redis的值
         return sysUser;
+    }
+
+    /**
+     * 绑定用户
+     *
+     * @param correntUser 当前用户
+     * @param phone       电话
+     * @return {@link User}
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public User bindingWeChat(UserEntity correntUser, String phone) {
+        // 验证成功后绑定手机和openid
+        User user = userService.findUserByPhone(phone);
+        if(ObjectUtils.isEmpty(user)){
+            // 后台无记录，请前往社会指导员认证或联系管理员。
+            throw new CommonException("绑定失败，查无此手机号用户");
+        }
+
+        // 获取当前用户的openid
+        BeanCopier.create(correntUser.getClass(),user.getClass(),false).copy(correntUser,user,null);
+        user.setOpenid(correntUser.getOtherId());
+        userService.update(user);
+
+        // 回填openid和userId给指导员记录
+        Instructor instructor = instructorService.findByPhone(phone);
+        if(!ObjectUtils.isEmpty(instructor)){
+            instructor.setOpenId(correntUser.getOtherId());
+            instructor.setUserId(user.getId());
+            instructorService.update(instructor);
+        }
+        return user;
     }
 
     public JSONObject getOpenId(String code) {

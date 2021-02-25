@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -130,9 +131,20 @@ public class WechatController extends BaseController {
      */
     @GetMapping("/sms/code")
     @ApiOperation(value = "短信验证码")
-    @AllowAnonymous
     @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query")
     public ResponseResult fetchSmsCode(@NotBlank(message = "手机号不能为空") String phone,HttpServletRequest request) {
+        // 限制短信验证码的使用（很贵）
+        User user = userService.findUserByPhone(phone);
+        if(ObjectUtils.isEmpty(user)){
+            // 后台无记录，请前往社会指导员认证或联系管理员。
+            throw new CommonException("您未注册指导员，请联系管理员");
+        }
+
+        if(StringUtils.hasText(user.getOpenid())){
+            // 后台无记录，请前往社会指导员认证或联系管理员。
+            throw new CommonException("您已绑定过了");
+        }
+        // 发送短信验证码
         SmsCodeUtil.getSmsCode(phone);
         return ResponseResult.ok();
     }
@@ -154,25 +166,19 @@ public class WechatController extends BaseController {
     })
     public ResponseResult verifySmsCode(@NotBlank(message = "手机号不能为空") String phone,
                                          @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
+
         ResponseResult  result = SmsCodeUtil.verifySmsCode(phone, code);
         if("F".equals(result.getSuccess())){
             return ResponseResult.fail(result.getMessage());
         }
 
-        // 验证成功后绑定手机和openid
-        User user = userService.findUserByPhone(phone);
-        if(ObjectUtils.isEmpty(user)){
-            // 后台无记录，请前往社会指导员认证或联系管理员。
-            throw new CommonException("绑定失败，查无此手机号用户");
-        }
-
-        // 获取当前用户的openid
+        // 绑定功能
         UserEntity correntUser = getUser(request);
-        JSONObject JSONObj = JSONObject.parseObject(redisClient.get(correntUser.getToken()));
-        user.setOpenid(JSONObj.getString("openid"));
+        User user = wechatService.bindingWeChat(correntUser, phone);
 
-        userService.update(user);
-        return ResponseResult.ok();
+        // 绑定成功之后要替换当前用户信息
+        redisClient.set(correntUser.getToken(),JSONObject.toJSONString(user));
+        return ResponseResult.ok("绑定成功");
     }
 
     /**
