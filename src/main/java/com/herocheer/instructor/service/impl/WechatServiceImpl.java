@@ -8,7 +8,7 @@ import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
-import com.herocheer.instructor.controller.SourceEnums;
+import com.herocheer.instructor.enums.SourceEnums;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.User;

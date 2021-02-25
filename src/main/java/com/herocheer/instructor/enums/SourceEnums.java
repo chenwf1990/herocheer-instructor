@@ -1,4 +1,4 @@
-package com.herocheer.instructor.controller;
+package com.herocheer.instructor.enums;
 
 /**
  * 用户来源
