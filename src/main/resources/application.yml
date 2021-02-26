@@ -1,5 +1,5 @@
 server:
-  port: 17071
+  port: 8084
 spring:
   profiles:
     active: dev
@@ -47,7 +47,17 @@ ixm:
 #  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
 #  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
 
-#微信公众号配置
+#微信公众号配置(创智云校园)
+#wechat:
+#  appid: wxf6c55bc2f36ca69b
+#  secret: 0f7eceb412da0a68b533ad303774da89
+#  token: ijstoken001
+#  tokenUrl: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s
+#  accessTokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code
+#  ticketUrl: https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi
+#  menuUrl: https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s
+
+#微信公众号配置(熙信科技)
 wechat:
   appid: wx5e3449374c04489c
   secret: 82fdb32c5c4c461481545c42b93ffc46
@@ -57,3 +67,12 @@ wechat:
   ticketUrl: https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi
   menuUrl: https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s
 
+#微信公众号配置(I健身（prod）)
+#wechat:
+#  appid: wxde3b17e5dc138e40
+#  secret: e100c92f71d23863d1e563339714356b
+#  token: ijstoken001
+#  tokenUrl: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s
+#  accessTokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code
+#  ticketUrl: https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi
+#  menuUrl: https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s
