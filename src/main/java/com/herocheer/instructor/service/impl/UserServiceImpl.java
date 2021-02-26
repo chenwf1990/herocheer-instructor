@@ -440,11 +440,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     public User addUser(InstructorApply apply,Integer userType,String phone) {
         // 判断phone是否存在是否存在
         Map<String, Object> params = new HashMap();
-        if(StringUtils.isNotEmpty(apply.getOpenId())){
-            params.put("openid", apply.getOpenId());
-        }else {
-            params.put("phone", phone);
-        }
+        params.put("phone", phone);
         List<User> users = this.dao.findByLimit(params);
         User user = new User();
         if(!users.isEmpty()){

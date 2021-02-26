@@ -69,7 +69,7 @@ public class InsuranceController extends BaseController {
      */
     @GetMapping("/{certificateNo:\\w+}")
     @ApiOperation("我的保单")
-    public ResponseResult<JSONObject> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @PathVariable String certificateNo, HttpServletRequest request){
+    public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @PathVariable String certificateNo, HttpServletRequest request){
         String sign = DigestUtils.md5DigestAsHex((certificateNo + InsuranceConst.KEY).getBytes());
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
@@ -82,14 +82,14 @@ public class InsuranceController extends BaseController {
         }
 
         JSONArray array = JSONArray.parseArray(JSONObj.getString("result"));
-        JSONObject obj = new JSONObject();
+        JSONArray arr = new JSONArray();
         for(int i=0; i < array.size(); i++){
             if(array.getJSONObject(i).getString("status").equals("4")){
-                obj = array.getJSONObject(i);
+                arr.add(array.getJSONObject(i));
                 break;
             }
         }
-        return ResponseResult.ok(obj);
+        return ResponseResult.ok(arr);
     }
 
     /**
