@@ -508,6 +508,14 @@
         </foreach>
     </select>
 
+    <select id="findByPhones" parameterType="list" resultType="com.herocheer.instructor.domain.entity.InstructorApply">
+        select * from instructor_apply
+        where phone in
+        <foreach item="phone" index="index" collection="list" open="(" separator="," close=")">
+            #{phone}
+        </foreach>
+    </select>
+
     <!--指导员列表查询-->
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.InstructorQueryVo" resultType="com.herocheer.instructor.domain.entity.InstructorApply">
         select <include refid="table_field"/> from instructor_apply

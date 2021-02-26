@@ -30,4 +30,6 @@ public interface InstructorApplyDao extends BaseDao<InstructorApply,Long>{
      * @return
      */
     List<InstructorApply> queryPageList(InstructorQueryVo instructorQueryVo);
+
+    List<InstructorApply> findByPhones(List<String> phoneList);
 }
