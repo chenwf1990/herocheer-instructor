@@ -274,11 +274,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         UserInfoVo userInfo = new UserInfoVo();
 
         // 获取微信群众信息，方便统计用户及展示个人中心信息显示
-        JSONObject jsonStr  = getWeChatUserInfo(JSONObj);
         if (user == null) {
             user = User.builder().build();
             user.setUserType(UserTypeEnums.weChatUser.getCode());
             // 微信用户群众信息
+            JSONObject jsonStr  = getWeChatUserInfo(JSONObj);
             user.setNickName(jsonStr.getString("nickname"));
             user.setImgUrl(jsonStr.getString("headimgurl"));
             user.setSex(jsonStr.getInteger("sex"));
@@ -287,10 +287,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             userInfo.setIxmLoginStatus(false);
         }else {
             if(StringUtils.isEmpty(user.getImgUrl())) {
-                user.setImgUrl(jsonStr.getString("headimgurl"));
+                JSONObject json  = getWeChatUserInfo(JSONObj);
+                user.setImgUrl(json.getString("headimgurl"));
                 this.userService.update(user);
             }
-
             // 返回I厦门的登入状态
             userInfo.setIxmLoginStatus(user.getIxmLoginStatus());
         }
