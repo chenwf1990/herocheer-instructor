@@ -12,11 +12,7 @@ import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
-import com.herocheer.instructor.enums.AuditStateEnums;
-import com.herocheer.instructor.enums.AuditUnitEnums;
-import com.herocheer.instructor.enums.ChannelEnums;
-import com.herocheer.instructor.enums.SexEnums;
-import com.herocheer.instructor.enums.UserTypeEnums;
+import com.herocheer.instructor.enums.*;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
@@ -30,11 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -93,14 +85,14 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             //获取所有地区数据
             List<SysArea> areas = sysAreaService.findByLimit(new HashMap<>());
             //判断是否已经导入过
-            List<String> cardNoList = new ArrayList<>();
+            List<String> phoneList = new ArrayList<>();
             for (int i = 1; i < read.size(); i++) {
-                cardNoList.add(read.get(i).get(2).toString());//身份证
+                phoneList.add(read.get(i).get(4).toString());//手机号码
             }
-            List<InstructorApply> applies = this.instructorApplyDao.findByCardNos(cardNoList);
+            List<InstructorApply> applies = this.instructorApplyDao.findByPhones(phoneList);
             if(!applies.isEmpty()){
-                String cardNos = applies.stream().map(s ->s.getCardNo()).distinct().collect(Collectors.joining(","));
-                throw new CommonException("{}:已存在",cardNos);
+                String phones = applies.stream().map(s ->s.getPhone()).distinct().collect(Collectors.joining(","));
+                throw new CommonException("{}:已存在",phones);
             }
             for (int i = 0; i < read.size(); i++) {
                 if(i == 0){//标题行
@@ -146,10 +138,10 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         //是否存在该指导员信息
         instructor.setCardNo(dataList.get(2).toString());
         Map<String,Object> params = new HashMap<>();
-        params.put("cardNo",instructor.getCardNo());
+        params.put("phone",instructor.getPhone());
         int count = this.dao.count(params);
         if(count > 0){
-            throw new CommonException("{}{}已存在该指导员数据",errMsg,instructor.getCardNo());
+            throw new CommonException("{}{}已存在该指导员数据",errMsg,instructor.getPhone());
         }
         instructor.setWorkUnit(dataList.get(3).toString());
         instructor.setChannel(ChannelEnums.imp.getType());
