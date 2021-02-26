@@ -60,7 +60,7 @@ public interface WechatService {
      */
     JSONObject getOauth2(String wecharCode);
 
-    UserInfoVo ixmUserIsLogin(HttpSession session, String code);
+    UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid);
 
     String ixmLoginUrl(String callBackUrl);
 

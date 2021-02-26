@@ -255,13 +255,15 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
 
     @Override
-    public UserInfoVo ixmUserIsLogin(HttpSession session, String code) {
-        JSONObject JSONObj = getOpenId(code);
-
-        if (ObjectUtils.isEmpty(JSONObj) || StringUtils.isBlank(JSONObj.getString("openid"))) {
-            throw new CommonException("openid未获取成功");
+    public UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid) {
+        JSONObject JSONObj = null;
+        if (StringUtils.isBlank(openid)) {
+            JSONObj = getOpenId(code);
+            if (ObjectUtils.isEmpty(JSONObj) || StringUtils.isBlank(JSONObj.getString("openid"))) {
+                throw new CommonException("openid未获取成功");
+            }
+            openid = JSONObj.getString("openid");
         }
-        String openid = JSONObj.getString("openid");
 //        String openid = "or6Q-wfzYsLqaHlof8Tglyvdf-Y8";
 
         // 根据openid获取用户信息
@@ -288,6 +290,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
                 user.setImgUrl(jsonStr.getString("headimgurl"));
                 this.userService.update(user);
             }
+
+            // 返回I厦门的登入状态
             userInfo.setIxmLoginStatus(user.getIxmLoginStatus());
         }
         // 为I厦门那方便去用户数据
@@ -296,7 +300,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         BeanCopier.create(user.getClass(),userInfo.getClass(),false).copy(user,userInfo,null);
         userInfo.setOtherId(openid);
         userInfo.setUserType(user.getUserType());
-//        userInfo
 
         String token = IdUtil.simpleUUID();
         userInfo.setTokenId(token);
