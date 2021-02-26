@@ -137,15 +137,15 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setSex(SexEnums.getType(dataList.get(1).toString()));
         //是否存在该指导员信息
         instructor.setCardNo(dataList.get(2).toString());
+        instructor.setWorkUnit(dataList.get(3).toString());
+        instructor.setChannel(ChannelEnums.imp.getType());
+        instructor.setPhone(dataList.get(4).toString());
         Map<String,Object> params = new HashMap<>();
         params.put("phone",instructor.getPhone());
         int count = this.dao.count(params);
         if(count > 0){
             throw new CommonException("{}{}已存在该指导员数据",errMsg,instructor.getPhone());
         }
-        instructor.setWorkUnit(dataList.get(3).toString());
-        instructor.setChannel(ChannelEnums.imp.getType());
-        instructor.setPhone(dataList.get(4).toString());
         instructor.setCertificateNo(dataList.get(5).toString());
         instructor.setCertificateGrade(dataList.get(6).toString());
         instructor.setGuideProject(dataList.get(7).toString());
