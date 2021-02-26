@@ -40,10 +40,10 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @desc  值班人员列表查询
      * @date 2021-01-12 08:57:02
      * @param workingScheduleUserQueryVo
-     * @param userId
+     * @param userEntity
      * @return
      */
-    Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo, Long userId);
+    Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo, UserEntity userEntity);
 
     /**
      * @author chenwf
