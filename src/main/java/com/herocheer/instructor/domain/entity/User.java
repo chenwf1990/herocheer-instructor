@@ -1,6 +1,7 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
+import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -109,5 +110,17 @@ public class User extends BaseEntity {
         this.setCommitmentStatus(userPO.getCommitmentStatus());
         this.setIxmLoginStatus(userPO.getIxmLoginStatus());
         this.setIxmToken(userPO.getIxmToken());
+    }
+
+    public User(SysUserVO userPO) {
+        this.setDeptId(userPO.getDeptId());
+        this.setDeptName(userPO.getDeptName());
+        this.setAccount(userPO.getAccount());
+        this.setPassword(userPO.getPassword());
+        this.setUserName(userPO.getUserName());
+        this.setEmail(userPO.getEmail());
+        this.setPhone(userPO.getPhone());
+        this.setEmail(userPO.getEmail());
+        this.setGuideProject(userPO.getGuideProject());
     }
 }

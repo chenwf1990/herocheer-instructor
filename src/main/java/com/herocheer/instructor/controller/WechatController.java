@@ -83,7 +83,7 @@ public class WechatController extends BaseController {
             @ApiImplicitParam(name = "code", value = "微信公众号code"),
             @ApiImplicitParam(name = "openid", value = "微信用户openid")
     })
-    public ResponseResult<UserInfoVo> ixmLoginUserIsExist(HttpSession session, @NotBlank(message = "微信公众号授权码不为空")  String code, String openid) {
+    public ResponseResult<UserInfoVo> ixmLoginUserIsExist(HttpSession session, String code, String openid) {
         return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code,openid));
     }
 

@@ -159,9 +159,30 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
         Map<String, Object> map = new HashMap();
         map.put("phone", sysUserVO.getPhone());
-        if(!ObjectUtils.isEmpty(this.dao.selectSysUserOne(map))){
-            throw new CommonException("手机号已存在");
+        User u = this.dao.selectSysUserOne(map);
+
+        if(!ObjectUtils.isEmpty(u)){
+            // 手机存在且系统用户，不增加
+            if(u.getUserType().equals(UserTypeEnums.sysUser.getCode())){
+                throw new CommonException("手机号已存在");
+            }else{
+                // 手机存在且不是系统用户，修改原记录
+                Long id =u.getId();
+                u = new User(sysUserVO);
+                u.setUserType(UserTypeEnums.sysUser.getCode());
+                u.setId(id);
+                // 用户密码加密
+                u.setPassword(encoder.encode(sysUserVO.getPassword()));
+                // 更新
+                this.update(u);
+
+                // 批量插入中间表
+                this.batchSysUserRole(sysUserVO, u);
+                log.info("用户{}注册成功",u.getUserName());
+                return u;
+            }
         }
+
         User user = User.builder().userType(UserTypeEnums.sysUser.getCode()).build();
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
@@ -173,7 +194,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
         // 批量插入中间表
         this.batchSysUserRole(sysUserVO, user);
-
         log.info("用户{}注册成功",user.getUserName());
         return user;
     }
