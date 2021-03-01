@@ -22,6 +22,7 @@ import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,8 +82,11 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         List<Reservation> list=this.dao.findByLimit(map);
-        if(list!=null || list.size()>0){
+        if(list!=null && list.size()>0){
             throw new CommonException(ResponseCode.SERVER_ERROR,"您已预约该课程,无需重复预约!");
+        }
+        if(userId==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
         }
         User user=userService.get(userId);
         if (user==null){
@@ -179,11 +183,30 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if(activityRecruitInfoVo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取招募信息失败!");
         }
-        if(reservation.getStatus()==ReserveStatusEnums.ALREADY_RESERVE.getState()
-                && activityRecruitInfoVo.getServiceEndDate()<System.currentTimeMillis()){
-            activityRecruitInfoVo.setReservationStatus(ReserveStatusEnums.IN_END.getState());
+        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
+            if(reservation.getStatus()==ReserveStatusEnums.ALREADY_RESERVE.getState()
+                    && activityRecruitInfoVo.getServiceEndDate()<System.currentTimeMillis()){
+                activityRecruitInfoVo.setReservationStatus(ReserveStatusEnums.IN_END.getState());
+            }else {
+                activityRecruitInfoVo.setReservationStatus(reservation.getStatus());
+            }
         }else {
             activityRecruitInfoVo.setReservationStatus(reservation.getStatus());
+            WorkingScheduleUser workingScheduleUser=workingScheduleUserService.get(reservation.getWorkingId());
+            if(workingScheduleUser!=null){
+                WorkingSchedule workingSchedule=workingScheduleService.get(workingScheduleUser.getWorkingScheduleId());
+                if(workingSchedule!=null){
+                    ActivityRecruitDetail activityRecruitDetail=activityRecruitDetailService.get(workingSchedule.getActivityDetailId());
+                    if(activityRecruitDetail!=null
+                            && activityRecruitDetail.getServiceDate()!=null
+                            && activityRecruitDetail.getServiceEndTime()!=null){
+                        if(reservation.getStatus()==ReserveStatusEnums.ALREADY_RESERVE.getState()&&
+                                activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime())>System.currentTimeMillis()){
+                            activityRecruitInfoVo.setReservationStatus(ReserveStatusEnums.IN_END.getState());
+                        }
+                    }
+                }
+            }
         }
         return activityRecruitInfoVo;
     }
