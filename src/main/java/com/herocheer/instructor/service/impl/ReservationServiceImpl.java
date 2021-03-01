@@ -1,19 +1,17 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
-import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.ReservationDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
-import com.herocheer.instructor.domain.vo.CourseReservationVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
@@ -21,9 +19,9 @@ import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.CourseInfoService;
 import com.herocheer.instructor.service.ReservationService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
-import com.herocheer.instructor.utils.SmsCodeUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,14 +56,13 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
 
     @Resource
     private ActivityRecruitDetailService activityRecruitDetailService;
+
+    @Resource
+    private UserService userService;
+
     @Override
-    public Integer reservation(CourseReservationVo courseReservationVo, Long userId) {
-        ResponseResult responseResult= SmsCodeUtil.verifySmsCode(courseReservationVo.getPhone(),
-                courseReservationVo.getVerificationCode());
-        if(responseResult.getCode()!=200){
-            throw new CommonException(ResponseCode.SERVER_ERROR, responseResult.getMessage());
-        }
-        CourseInfo courseInfo=courseInfoService.get(courseReservationVo.getCourseId());
+    public Integer reservation(Long courseId, Long userId) {
+        CourseInfo courseInfo=courseInfoService.get(courseId);
         if(courseInfo!=null){
             if(courseInfo.getSignStartTime()>System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程报名未开始!");
@@ -80,12 +77,16 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约人数已满!");
         }
         Map<String,Object> map=new HashMap<>();
-        map.put("courseId",courseReservationVo.getCourseId());
-        map.put("userId",courseReservationVo.getUserId());
+        map.put("courseId",courseId);
+        map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         List<Reservation> list=this.dao.findByLimit(map);
         if(list!=null || list.size()>0){
             throw new CommonException(ResponseCode.SERVER_ERROR,"您已预约该课程,无需重复预约!");
+        }
+        User user=userService.get(userId);
+        if (user==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
         }
         Reservation reservation=new Reservation();
         //保存招募信息
@@ -100,11 +101,9 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setLatitude(courseInfo.getLatitude());
         //保存用户信息
         reservation.setUserId(userId);
-        reservation.setName(courseReservationVo.getName());
-        reservation.setIdentityNumber(courseReservationVo.getIdentityNumber());
-        if(StringUtils.isNotEmpty(courseReservationVo.getPhone())){
-            reservation.setPhone(courseReservationVo.getPhone().replaceAll("(\\w{3})\\w*(\\w{4})", "$1****$2"));
-        }
+        reservation.setName(user.getUserName());
+        reservation.setIdentityNumber(user.getCertificateNo());
+        reservation.setPhone(user.getPhone());
         reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
         this.dao.insert(reservation);
         courseInfo.setSignNumber(courseInfo.getSignNumber()+1);

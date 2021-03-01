@@ -35,10 +35,10 @@ public class ReservationController extends BaseController{
     @Resource
     private ReservationService reservationService;
 
-    @PostMapping("/add")
+    @GetMapping("/course")
     @ApiOperation("课程信息预约")
-    public ResponseResult reservation(@RequestBody CourseReservationVo courseReservationVo, HttpServletRequest request){
-        Integer count=reservationService.reservation(courseReservationVo,getCurUserId(request));
+    public ResponseResult reservation(@RequestBody @ApiParam("课程id") @RequestParam Long courseId, HttpServletRequest request){
+        Integer count=reservationService.reservation(courseId,getCurUserId(request));
         return ResponseResult.isSuccess(count);
     }
 
