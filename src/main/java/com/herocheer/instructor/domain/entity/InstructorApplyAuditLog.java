@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 指导员证书表
- * @date 2021-01-29 09:02:43
+ * @date 2021-03-01 15:24:13
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -16,7 +16,7 @@ public class InstructorApplyAuditLog extends BaseEntity {
     private Long applyId;
     @ApiModelProperty("姓名")   
     private String name;
-    @ApiModelProperty("性别：0-未知、1-男、2-女")
+    @ApiModelProperty("性别 0女1男2未知")   
     private Integer sex;
     @ApiModelProperty("审核状态 0待审核1审核通过2审核驳回")   
     private Integer auditState;
@@ -44,7 +44,7 @@ public class InstructorApplyAuditLog extends BaseEntity {
     private String certificateGrade;
     @ApiModelProperty("发证日期")   
     private Long openingDate;
-    @ApiModelProperty("审批单位类型")
+    @ApiModelProperty("审批单位类型 WLJ_OTHER其他 WLJ_HLQ湖里区文旅局WLJ_SMQ思明区文旅局WLJ_JMQ集美区文旅局WLJ_HCQ海沧文旅局WLJ_XAQ翔安文旅局WLJ_TAQ同安文旅局WLJ_TYJ体育局")   
     private String auditUnitType;
     @ApiModelProperty("审批单位名称")   
     private String auditUnitName;
@@ -58,6 +58,8 @@ public class InstructorApplyAuditLog extends BaseEntity {
     private String openId;
     @ApiModelProperty("用户id")   
     private Long userId;
+    @ApiModelProperty("头像")   
+    private String headPic;
     @ApiModelProperty("备注")   
     private String remarks;
 

@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.InstructorApplyDao">
     
     <sql id="table_field">
-      id, instructorId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, token, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, instructorId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, headPic, token, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -78,6 +78,9 @@
         </if>
         <if test="userId != null">
             userId,
+        </if>
+        <if test="headPic != null">
+            headPic,
         </if>
         <if test="token != null">
             token,
@@ -157,6 +160,9 @@
         </if>
         <if test="userId != null">
             #{userId},
+        </if>
+        <if test="headPic != null">
+            #{headPic},
         </if>
         <if test="token != null">
             #{token},
@@ -246,6 +252,9 @@
             </if>
             <if test="userId != null">
                 userId = #{userId},
+            </if>
+            <if test="headPic != null">
+                headPic = #{headPic},
             </if>
             <if test="token != null">
                 token = #{token},
@@ -338,6 +347,9 @@
             <if test="userId != null">
                 and userId = #{userId}
             </if>
+            <if test="headPic != null">
+                and headPic = #{headPic}
+            </if>
             <if test="token != null">
                 and token = #{token}
             </if>
@@ -429,6 +441,9 @@
             <if test="userId != null">
                 and userId = #{userId}
             </if>
+            <if test="headPic != null">
+                and headPic = #{headPic}
+            </if>
             <if test="token != null">
                 and token = #{token}
             </if>
@@ -438,6 +453,7 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
 
     <insert id ="batchInsert" parameterType="java.util.List" >
         insert into instructor_apply(
@@ -466,7 +482,8 @@
         userId,
         createdId,
         createdBy,
-        createdTime
+        createdTime,
+        headPic
         ) values
         <foreach collection="list" item="item" index="index" separator=",">
             (
@@ -495,7 +512,8 @@
             #{item.userId},
             #{item.createdId},
             #{item.createdBy},
-            #{item.createdTime}
+            #{item.createdTime},
+            #{item.headPic}
             )
         </foreach >
     </insert >
