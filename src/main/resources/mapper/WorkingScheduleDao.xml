@@ -285,6 +285,9 @@
 
     <select id="getTaskInfoList" parameterType="map" resultType="com.herocheer.instructor.domain.vo.WorkingUserVo">
         select
+        <if test="activityType == 1">
+        a.signScope,
+        </if>
         a.address,
         a.longitude,
         a.latitude,
