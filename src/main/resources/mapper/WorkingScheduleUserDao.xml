@@ -489,10 +489,21 @@
         <if test="taskNo != null">
             and b.taskNo like CONCAT('%',#{taskNo},'%')
         </if>
-        <if test="status != null">
-            and b.status = #{status}
-        </if>
+          <choose>
+              <when test="status != null and status == 1">
+                  and (
+                       (b.status = 1 and a.scheduleTime &lt; UNIX_TIMESTAMP() * 1000 - (24 * 60 * 60 * 1000))
+                        or
+                       exists(select rc.id from working_replace_card rc where rc.workingScheduleUserId = b.id and rc.approvalStatus = 0)
+                  )
+              </when>
+              <when test="status != null and status == 2">
+                  and b.status = 2
+                  and not exists(select rc.id from working_replace_card rc where rc.workingScheduleUserId = b.id and rc.approvalStatus = 0)
+              </when>
+          </choose>
         <if test="signStatus != null">
+            and a.scheduleTime &lt; UNIX_TIMESTAMP() * 1000 - (24 * 60 * 60 * 1000)
             and getPunchCartStatus(
             a.scheduleTime + time_to_sec(a.serviceBeginTime),
             a.scheduleTime + time_to_sec(a.serviceEndTime),

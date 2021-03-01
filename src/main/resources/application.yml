@@ -8,6 +8,9 @@ spring:
       enabled: true
       max-file-size: 10485760
       max-request-size: 10MB
+  integration:
+    jdbc:
+      schema:
 mybatis:
   mapperLocations: classpath*:mapper/**/*.xml
 swagger:
@@ -37,6 +40,10 @@ ixm:
   redirectUrl: https://wechat.ixiamen.org.cn/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
   userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
   userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
+
+#i健身保险(test)
+ijs:
+  baseUrl: http://tycd.herocheer.com/sports/wechat/api
 
 #测试i厦门
 #ixm:

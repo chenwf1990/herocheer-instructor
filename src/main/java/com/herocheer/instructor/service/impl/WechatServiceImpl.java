@@ -256,13 +256,15 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
     @Override
     public UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid) {
-        JSONObject JSONObj = null;
-        if (StringUtils.isBlank(openid)) {
-            JSONObj = getOpenId(code);
+        // 获取微信群众信息，方便统计用户及展示个人中心信息显示
+        JSONObject jsonStr = new JSONObject();
+        if (StringUtils.isNotEmpty(code)) {
+            JSONObject JSONObj = getOpenId(code);
             if (ObjectUtils.isEmpty(JSONObj) || StringUtils.isBlank(JSONObj.getString("openid"))) {
                 throw new CommonException("openid未获取成功");
             }
             openid = JSONObj.getString("openid");
+            jsonStr  = getWeChatUserInfo(JSONObj);
         }
 //        String openid = "or6Q-wfzYsLqaHlof8Tglyvdf-Y8";
 
@@ -272,9 +274,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         User user  = this.dao.selectSysUserOne(map);
 
         UserInfoVo userInfo = new UserInfoVo();
-
-        // 获取微信群众信息，方便统计用户及展示个人中心信息显示
-        JSONObject jsonStr  = getWeChatUserInfo(JSONObj);
         if (user == null) {
             user = User.builder().build();
             user.setUserType(UserTypeEnums.weChatUser.getCode());
@@ -286,7 +285,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             user.setOpenid(openid);
             userInfo.setIxmLoginStatus(false);
         }else {
-            if(StringUtils.isEmpty(user.getImgUrl())) {
+            if(StringUtils.isEmpty(user.getImgUrl()) && jsonStr != null && jsonStr.containsKey("headimgurl")) {
                 user.setImgUrl(jsonStr.getString("headimgurl"));
                 this.userService.update(user);
             }
@@ -377,9 +376,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         JSONObject user = JSONObject.parseObject(JSONObject.parseObject
                 (jsonObject.getString("data"), JSONObject.class).getString("user"), JSONObject.class);
 
-        //根据openid判断用户本地数据是否存在
+        //根据phone判断用户本地数据是否存在
         Map map = new HashMap();
-        map.put("openid",openid);
+        map.put("phone",user.getString("mobile"));
+
         User sysUser  = this.dao.selectSysUserOne(map);
 
         String certificateNum = user.getString("certificateNum");

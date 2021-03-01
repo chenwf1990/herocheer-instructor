@@ -338,7 +338,8 @@
         c.signInTime,
         c.signOutTime,
         c.serviceTime,
-        c.id as workingScheduleUserId
+        c.id as workingScheduleUserId,
+        c.status
         from working_schedule b
         INNER JOIN working_schedule_user c on c.workingScheduleId = b.id
         where c.reserveStatus = 0

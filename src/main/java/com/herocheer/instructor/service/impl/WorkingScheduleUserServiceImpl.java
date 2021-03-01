@@ -48,14 +48,14 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
 
     /**
      * @param workingScheduleUserQueryVo
-     * @param userId
+     * @param userEntity
      * @return
      * @author chenwf
      * @desc 值班人员列表查询
      * @date 2021-01-12 08:57:02
      */
     @Override
-    public Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo, Long userId) {
+    public Page<WorkingSchedulsUserVo> queryPageList(WorkingScheduleUserQueryVo workingScheduleUserQueryVo, UserEntity userEntity) {
         Page page = Page.startPage(workingScheduleUserQueryVo.getPageNo(),workingScheduleUserQueryVo.getPageSize());
         List<WorkingSchedulsUserVo> dataList = this.dao.queryPageList(workingScheduleUserQueryVo);
         if(!dataList.isEmpty()){
@@ -77,8 +77,14 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                         }
                     }
                     //当天之前的都不做审核，前端审核状态放空 || 不是负责人不能审批
-                    if(DateUtil.beginOfDay(new Date()).getTime() >= scheduleBeginTime || userId != w.getApproveId()){
-                        w.setStatus(-1);//当天之前的都不做审核，前端审核状态放空
+                    if(userEntity.getUserType() != UserTypeEnums.sysAdmin.getCode()){
+                        if(DateUtil.beginOfDay(new Date()).getTime() <= w.getScheduleTime() || userEntity.getId() != w.getApproveId()){
+                            w.setStatus(-1);
+                        }
+                    }else{
+                        if(DateUtil.beginOfDay(new Date()).getTime() <= w.getScheduleTime()){
+                            w.setStatus(-1);
+                        }
                     }
                     if(w.getReplaceCardState() > 0){
                         w.setReplaceCardState(1);
@@ -215,6 +221,9 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     public int approval(Long workingScheduleUserId, int approvalType, String approvalIdea, UserEntity user, int actualServiceTime) {
         //判断是否审批负责人
         WorkingUserVo workingUserVo = isHasApprovalAuth(workingScheduleUserId, user);
+        if(workingUserVo.getStatus() == AuditStatusEnums.to_pass.getState()){
+            throw new CommonException("已审核通过，请勿重复审核");
+        }
         WorkingScheduleUser scheduleUser = new WorkingScheduleUser();
         int beginMinute = DateUtil.timeToSecond(workingUserVo.getServiceBeginTime());
         int endMinute = DateUtil.timeToSecond(workingUserVo.getServiceEndTime());
