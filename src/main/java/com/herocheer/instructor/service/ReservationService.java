@@ -5,7 +5,6 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
-import com.herocheer.instructor.domain.vo.CourseReservationVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 
 /**
@@ -18,11 +17,11 @@ public interface ReservationService extends BaseService<Reservation,Long> {
 
     /**
      * 课程预约
-     * @param courseReservationVo
+     * @param courseId
      * @param userId
      * @return
      */
-    Integer reservation(CourseReservationVo courseReservationVo, Long userId);
+    Integer reservation(Long courseId, Long userId);
 
     /**
      * 取消预约
