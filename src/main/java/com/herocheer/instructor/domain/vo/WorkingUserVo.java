@@ -61,4 +61,6 @@ public class WorkingUserVo {
     private Integer signOutStatus;
     @ApiModelProperty("审核状态 0不需要审核 1待审核 2审核通过")
     private Integer status;
+    @ApiModelProperty("签到范围")
+    private Integer signScope;
 }

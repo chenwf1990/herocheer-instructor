@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.InstructorApplyAuditLogDao">
     
     <sql id="table_field">
-      applyId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, applyId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, headPic, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -78,6 +78,9 @@
         </if>
         <if test="userId != null">
             userId,
+        </if>
+        <if test="headPic != null">
+            headPic,
         </if>
         <if test="remarks != null">
             remarks,
@@ -154,6 +157,9 @@
         </if>
         <if test="userId != null">
             #{userId},
+        </if>
+        <if test="headPic != null">
+            #{headPic},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -240,6 +246,9 @@
             </if>
             <if test="userId != null">
                 userId = #{userId},
+            </if>
+            <if test="headPic != null">
+                headPic = #{headPic},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -329,6 +338,9 @@
             <if test="userId != null">
                 and userId = #{userId}
             </if>
+            <if test="headPic != null">
+                and headPic = #{headPic}
+            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -416,6 +428,9 @@
             </if>
             <if test="userId != null">
                 and userId = #{userId}
+            </if>
+            <if test="headPic != null">
+                and headPic = #{headPic}
             </if>
             <if test="remarks != null">
                 and remarks = #{remarks}

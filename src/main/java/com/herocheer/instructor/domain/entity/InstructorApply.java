@@ -1,22 +1,22 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author chenwf
  * @desc 指导员证书表
- * @date 2021-01-29 08:50:36
+ * @date 2021-03-01 15:24:13
  * @company 厦门熙重电子科技有限公司
  */
 @Data
 public class InstructorApply extends BaseEntity {
-    @ApiModelProperty("指导员id")
+    @ApiModelProperty("指导员id")   
     private Long instructorId;
     @ApiModelProperty("姓名")   
     private String name;
-    @ApiModelProperty("性别：0-未知、1-男、2-女")
+    @ApiModelProperty("性别 0女1男2未知")   
     private Integer sex;
     @ApiModelProperty("审核状态 0待审核1审核通过2审核驳回")   
     private Integer auditState;
@@ -24,7 +24,7 @@ public class InstructorApply extends BaseEntity {
     private Long auditTime;
     @ApiModelProperty("审核意见")   
     private String auditIdea;
-    @ApiModelProperty("身份证号")
+    @ApiModelProperty("身份证号")   
     private String cardNo;
     @ApiModelProperty("手机号")   
     private String phone;
@@ -38,7 +38,7 @@ public class InstructorApply extends BaseEntity {
     private String guideProject;
     @ApiModelProperty("指导站点")   
     private String guideStation;
-    @ApiModelProperty("证书编号")
+    @ApiModelProperty("证书编号")   
     private String certificateNo;
     @ApiModelProperty("证书等级")   
     private String certificateGrade;
@@ -52,12 +52,14 @@ public class InstructorApply extends BaseEntity {
     private String otherAuditUnitName;
     @ApiModelProperty("证书图片 （最多3张，多张逗号隔开）")   
     private String certificatePic;
-    @ApiModelProperty("渠道0pc 1H5 2小程序 3ios 4Android 5pc导入")
+    @ApiModelProperty("渠道0pc 1H5 2小程序 3ios 4Android")   
     private Integer channel;
     @ApiModelProperty("微信openId")   
     private String openId;
     @ApiModelProperty("用户id")   
     private Long userId;
+    @ApiModelProperty("头像")   
+    private String headPic;
     @ApiModelProperty("token")   
     private String token;
     @ApiModelProperty("备注")   

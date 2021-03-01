@@ -418,7 +418,7 @@
                 and createdTime <![CDATA[ > ]]> #{startTime}
             </if>
             <if test="endTime!=null">
-                and createdTime <![CDATA[ < ]]> #{endTime}
+                and createdTime <![CDATA[ < ]]> #{endTime}+24*60*60*1000-1
             </if>
             <if test="state!=null">
                 and state=#{state}

@@ -474,7 +474,7 @@
                 and createdId=#{userId}
             </if>
             <if test="type!=null and type==3">
-                `status` = 1
+                and `status` = 1
             </if>
         </where>
         <choose>
