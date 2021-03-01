@@ -33,26 +33,26 @@ file:
     visitPath: D:/images/
 
 #i厦门
-ixm:
-  url: https://www.ixiamen.org.cn
-  appName: XXCDSSFWGLXT
-  secret: g8y&9X6TLMUKoLd
-  redirectUrl: https://wechat.ixiamen.org.cn/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
-  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
-  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
+#ixm:
+#  url: https://www.ixiamen.org.cn
+#  appName: XXCDSSFWGLXT
+#  secret: g8y&9X6TLMUKoLd
+#  redirectUrl: https://wechat.ixiamen.org.cn/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
+#  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
+#  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
 
 #i健身保险(test)
 ijs:
   baseUrl: http://tycd.herocheer.com/sports/wechat/api
 
 #测试i厦门
-#ixm:
-#  url: https://test.ixiamen.org.cn
-#  appName: XXCDSSFWGLXT
-#  secret: g8y&9X6TLMUKoLd
-#  redirectUrl: ${ixm.url}/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
-#  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
-#  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
+ixm:
+  url: https://test.ixiamen.org.cn
+  appName: XXCDSSFWGLXT
+  secret: g8y&9X6TLMUKoLd
+  redirectUrl: ${ixm.url}/ixm-wechat/wxchat/api/proxy.jhtml?coAppName=${ixm.appName}&state=redirect&sUrl=%s&createTime=%s
+  userUrl: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=findUserBySSOID
+  userLogOut: ${ixm.url}/ids/service?idsServiceType=httpssoservice&serviceName=logout
 
 #微信公众号配置(创智云校园)
 wechat:
@@ -63,6 +63,7 @@ wechat:
   accessTokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code
   ticketUrl: https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi
   menuUrl: https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s
+
 
 #微信公众号配置(熙信科技)
 #wechat:
