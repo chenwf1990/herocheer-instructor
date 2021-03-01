@@ -5,7 +5,6 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
-import com.herocheer.instructor.domain.vo.CourseReservationVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.web.base.BaseController;
@@ -37,7 +36,7 @@ public class ReservationController extends BaseController{
 
     @GetMapping("/course")
     @ApiOperation("课程信息预约")
-    public ResponseResult reservation(@RequestBody @ApiParam("课程id") @RequestParam Long courseId, HttpServletRequest request){
+    public ResponseResult reservation( @ApiParam("课程id") @RequestParam Long courseId, HttpServletRequest request){
         Integer count=reservationService.reservation(courseId,getCurUserId(request));
         return ResponseResult.isSuccess(count);
     }
