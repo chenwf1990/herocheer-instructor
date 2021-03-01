@@ -376,9 +376,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         JSONObject user = JSONObject.parseObject(JSONObject.parseObject
                 (jsonObject.getString("data"), JSONObject.class).getString("user"), JSONObject.class);
 
-        //根据openid判断用户本地数据是否存在
+        //根据phone判断用户本地数据是否存在
         Map map = new HashMap();
-        map.put("openid",openid);
+        map.put("phone",user.getString("mobile"));
+
         User sysUser  = this.dao.selectSysUserOne(map);
 
         String certificateNum = user.getString("certificateNum");
