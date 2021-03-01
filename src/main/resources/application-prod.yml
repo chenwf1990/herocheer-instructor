@@ -49,3 +49,7 @@ wechat:
   accessTokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code
   ticketUrl: https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi
   menuUrl: https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s
+
+#i健身保险
+ijs:
+  baseUrl: http://192.168.147.133/sports/wechat/api
