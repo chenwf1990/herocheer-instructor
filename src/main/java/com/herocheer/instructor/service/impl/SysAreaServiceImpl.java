@@ -2,7 +2,6 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
-import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
@@ -11,12 +10,14 @@ import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysAreaDao;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
+import com.herocheer.instructor.domain.vo.AreaVO;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.awt.geom.Area;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,20 @@ public class SysAreaServiceImpl extends BaseServiceImpl<SysAreaDao, SysArea,Long
     @Override
     public List<String> findAreaNode(Long id) {
         return this.dao.selectedAreaNode(id);
+    }
+
+    /**
+     * 添加区域
+     *
+     * @param areaVO VO
+     * @return {@link Area}
+     */
+    @Override
+    public SysArea addArea(AreaVO areaVO) {
+        SysArea area = SysArea.builder().build();
+        BeanCopier.create(areaVO.getClass(),area.getClass(),false).copy(areaVO,area,null);
+        this.insert(area);
+        return area;
     }
 
     /**

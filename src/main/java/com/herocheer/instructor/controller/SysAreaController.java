@@ -6,6 +6,7 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
 import com.herocheer.instructor.domain.vo.AreaTreeVO;
+import com.herocheer.instructor.domain.vo.AreaVO;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -92,4 +93,17 @@ public class SysAreaController extends BaseController{
         return ResponseResult.ok(sysAreaService.findAreaById(areaQueryVo));
     }
 
+
+    /**
+     * 创建区域
+     *
+     * @param areaVO  VO
+     * @param request 请求
+     * @return {@link ResponseResult<SysArea>}
+     */
+    @PostMapping("/area")
+    @ApiOperation("添加区域")
+    public ResponseResult<SysArea> createArea(@ApiParam("区域VO") @RequestBody AreaVO areaVO, HttpServletRequest request){
+        return ResponseResult.ok(sysAreaService.addArea(areaVO));
+    }
 }

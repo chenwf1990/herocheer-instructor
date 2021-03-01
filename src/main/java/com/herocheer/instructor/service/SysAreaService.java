@@ -5,7 +5,9 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.vo.AreaQueryVo;
+import com.herocheer.instructor.domain.vo.AreaVO;
 
+import java.awt.geom.Area;
 import java.util.List;
 
 /**
@@ -57,4 +59,12 @@ public interface SysAreaService extends BaseService<SysArea,Long> {
      * @return {@link List<String>}
      */
     List<String> findAreaNode(Long id);
+
+    /**
+     * 添加区域
+     *
+     * @param areaVO VO
+     * @return {@link Area}
+     */
+    SysArea addArea(AreaVO areaVO);
 }
