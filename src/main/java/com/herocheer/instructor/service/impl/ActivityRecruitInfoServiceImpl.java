@@ -113,7 +113,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
             if(activityRecruitInfoVo.getMatchApproverId()!=null){
                 User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
-                if (user!=null){
+                if (user==null){
                     throw new CommonException(ResponseCode.SERVER_ERROR, "无效的时长审批负责人!");
                 }
                 activityRecruitInfoVo.setMatchApprover(user.getUserName());
@@ -172,7 +172,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
             if(activityRecruitInfoVo.getMatchApproverId()!=null){
                 User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
-                if (user!=null){
+                if (user==null){
                     throw new CommonException(ResponseCode.SERVER_ERROR, "无效的时长审批负责人!");
                 }
                 activityRecruitInfoVo.setMatchApprover(user.getUserName());
