@@ -2,7 +2,8 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
@@ -662,8 +663,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         String sign = DigestUtils.md5DigestAsHex(( sysUser.getCertificateNo()+ InsuranceConst.KEY).getBytes());
         paramMap.put("sign",sign);
 
-        String resultUser= HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser", paramMap);
+        String resultUser = HttpRequest.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser")
+                .header(Header.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                .form(paramMap)
+                .execute().body();
+
         JSONObject JSONObj = JSONObject.parseObject(resultUser);
+        log.debug("同步用户数据给I健身：{}",JSONObj);
+
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
             throw new CommonException("同步用户数据失败");
         }

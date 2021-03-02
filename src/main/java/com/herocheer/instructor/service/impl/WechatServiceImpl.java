@@ -183,6 +183,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             user.setOpenid(openid);
             userInfo.setIxmLoginStatus(false);
         }else {
+            // 退出第二次登入，个人头像没了
             if(StringUtils.isEmpty(user.getImgUrl()) && jsonStr != null && jsonStr.containsKey("headimgurl")) {
                 user.setImgUrl(jsonStr.getString("headimgurl"));
                 this.userService.update(user);
@@ -408,23 +409,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         } catch (Exception ex) {
             log.error("GetOpenId Exception : {}", ex);
             return null;
-        }
-    }
-
-    public static void main(String[] args) {
-        String sign2 = DigestUtils.md5DigestAsHex(( "350823198807174613"+ "20157576992e4ee9904408ec266724e4").getBytes());
-        // 异步同步用户数据
-        Map<String, Object> paramMap = new HashMap<>();
-        // 登入状态
-        paramMap.put("ixmLoginStatus","1");
-        paramMap.put("certificateNo","350823198807174613");
-        paramMap.put("phoneNo","13774517597");
-        paramMap.put("sign",sign2);
-
-        String resultUser= HttpUtil.post("http://ijs.sports.xm.gov.cn/sports/wechat/api/weChat/syncLoginUser", paramMap);
-        JSONObject JSONObj = JSONObject.parseObject(resultUser);
-        if(JSONObj == null || JSONObj.getInteger("code") != 200){
-            throw new CommonException("同步用户数据失败");
         }
     }
 }
