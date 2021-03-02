@@ -23,7 +23,7 @@ import javax.validation.constraints.NotBlank;
 public class SysDictVO {
     private Long id;
     @ApiModelProperty("父ID")
-    private String pid = "0";
+    private String pid;
     @NotBlank(message = "字典名称不能为空")
     @ApiModelProperty("字典名称")
     private String dictName;
