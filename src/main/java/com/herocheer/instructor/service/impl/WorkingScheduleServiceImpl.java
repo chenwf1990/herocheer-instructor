@@ -164,7 +164,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 .map(Map.Entry::getKey)                // 获得 entry 的键（重复元素）对应的 Stream
                 .collect(Collectors.toList());// 转化为 List
         if(!sameList.isEmpty()){//存在直接抛出异常
-            throw new CommonException(sameList.stream().collect(Collectors.joining("\n")) + "\n存在重复班次");
+            String userName = sameList.stream().collect(Collectors.joining("\n"));
+            throw new CommonException(userName.replace("|null","") + "\n存在重复班次");
         }
         return true;
     }
