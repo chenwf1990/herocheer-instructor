@@ -8,6 +8,7 @@ import com.herocheer.instructor.dao.ActivityRecruitInfoDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
@@ -18,6 +19,7 @@ import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.service.ActivityRecruitApprovalService;
 import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -48,6 +50,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
 
     @Resource
     private WorkingScheduleUserService workingScheduleUserService;
+
+    @Resource
+    private UserService userService;
 
     @Override
     public Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo,Long userId) {
@@ -106,6 +111,13 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         Integer count=this.dao.insert(activityRecruitInfoVo);
         //保存赛事招募明细
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
+            if(activityRecruitInfoVo.getMatchApproverId()!=null){
+                User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
+                if (user!=null){
+                    throw new CommonException(ResponseCode.SERVER_ERROR, "无效的时长审批负责人!");
+                }
+                activityRecruitInfoVo.setMatchApprover(user.getUserName());
+            }
             if (activityRecruitInfoVo.getRecruitDetails()!=null){
                 List<ActivityRecruitDetail> details=activityRecruitInfoVo.getRecruitDetails();
                 for (ActivityRecruitDetail activityRecruitDetail:details){
@@ -158,6 +170,13 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         Integer count=this.dao.update(activityRecruitInfoVo);
         //保存赛事招募明细
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
+            if(activityRecruitInfoVo.getMatchApproverId()!=null){
+                User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
+                if (user!=null){
+                    throw new CommonException(ResponseCode.SERVER_ERROR, "无效的时长审批负责人!");
+                }
+                activityRecruitInfoVo.setMatchApprover(user.getUserName());
+            }
             if (activityRecruitInfoVo.getRecruitDetails()!=null){
                 List<ActivityRecruitDetail> details=activityRecruitInfoVo.getRecruitDetails();
                 for (ActivityRecruitDetail activityRecruitDetail:details){
