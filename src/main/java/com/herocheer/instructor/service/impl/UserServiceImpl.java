@@ -2,6 +2,7 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
@@ -23,6 +24,7 @@ import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
+import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.InstructorService;
@@ -36,6 +38,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -627,5 +630,42 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         }
         infoVo.setInstructorFlag(instructorFlag);
         return infoVo;
+    }
+
+    /**
+     * 同步用户数据到I健身
+     *
+     * @param user    用户
+     * @param sysUser 系统用户
+     */
+    @Override
+    public void asynUserInfo2Ijianshen(JSONObject user, User sysUser) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ixmUserId",sysUser.getIxmUserId());
+        paramMap.put("ixmUserName",sysUser.getIxmUserName());
+        paramMap.put("ixmRealNameLevel",sysUser.getIxmRealNameLevel());
+        paramMap.put("ixmUserRealName",sysUser.getIxmUserRealName());
+        paramMap.put("imgUrl",sysUser.getImgUrl());
+        paramMap.put("name",sysUser.getUserName());
+        paramMap.put("sex",sysUser.getSex());
+        // 登入状态
+        paramMap.put("ixmLoginStatus","1");
+        paramMap.put("ixmToken","");
+        paramMap.put("certificateType",user.getString("certificateType"));
+        paramMap.put("certificateNo",sysUser.getCertificateNo());
+        paramMap.put("phoneNo",sysUser.getPhone());
+        paramMap.put("email",sysUser.getEmail());
+        paramMap.put("openid",sysUser.getOpenid());
+        paramMap.put("source",sysUser.getSource());
+        paramMap.put("age",sysUser.getAge());
+        // 签名
+        String sign = DigestUtils.md5DigestAsHex(( sysUser.getCertificateNo()+ InsuranceConst.KEY).getBytes());
+        paramMap.put("sign",sign);
+
+        String resultUser= HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser", paramMap);
+        JSONObject JSONObj = JSONObject.parseObject(resultUser);
+        if(JSONObj == null || JSONObj.getInteger("code") != 200){
+            throw new CommonException("同步用户数据失败");
+        }
     }
 }

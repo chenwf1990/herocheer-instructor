@@ -1,5 +1,6 @@
 package com.herocheer.instructor.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
@@ -211,4 +212,12 @@ public interface UserService extends BaseService<User, Long> {
      * @return {@link UserInfoVo}
      */
     UserInfoVo findUserInfo(UserEntity userEntity);
+
+    /**
+     * 同步用户数据到I健身
+     *
+     * @param user    用户
+     * @param sysUser 系统用户
+     */
+    void asynUserInfo2Ijianshen(JSONObject user, User sysUser);
 }

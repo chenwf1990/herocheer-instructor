@@ -414,30 +414,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             this.insert(sysUser);
 
             // 异步同步用户数据
-            Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put("ixmUserId",sysUser.getIxmUserId());
-            paramMap.put("ixmUserName",sysUser.getIxmUserName());
-            paramMap.put("ixmRealNameLevel",sysUser.getIxmRealNameLevel());
-            paramMap.put("ixmUserRealName",sysUser.getIxmUserRealName());
-            paramMap.put("imgUrl",sysUser.getImgUrl());
-            paramMap.put("name",sysUser.getUserName());
-            paramMap.put("sex",sysUser.getSex());
-            // 登入状态
-            paramMap.put("ixmLoginStatus","1");
-            paramMap.put("ixmToken","");
-            paramMap.put("certificateType",user.getString("certificateType"));
-            paramMap.put("certificateNo",sysUser.getCertificateNo());
-            paramMap.put("phoneNo",sysUser.getPhone());
-            paramMap.put("email",sysUser.getEmail());
-            paramMap.put("openid",sysUser.getOpenid());
-            paramMap.put("source",sysUser.getSource());
-            paramMap.put("age",sysUser.getAge());
-
-            String resultUser= HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser", paramMap);
-            JSONObject JSONObj = JSONObject.parseObject(resultUser);
-            if(JSONObj == null || JSONObj.getInteger("code") != 200){
-                throw new CommonException("请求保险信息详情失败");
-            }
+            userService.asynUserInfo2Ijianshen(user, sysUser);
 
         } else {
             User oldUser = User.builder().build();
@@ -533,6 +510,23 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         } catch (Exception ex) {
             log.error("GetOpenId Exception : {}", ex);
             return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        String sign2 = DigestUtils.md5DigestAsHex(( "350823198807174613"+ "20157576992e4ee9904408ec266724e4").getBytes());
+        // 异步同步用户数据
+        Map<String, Object> paramMap = new HashMap<>();
+        // 登入状态
+        paramMap.put("ixmLoginStatus","1");
+        paramMap.put("certificateNo","350823198807174613");
+        paramMap.put("phoneNo","13774517597");
+        paramMap.put("sign",sign2);
+
+        String resultUser= HttpUtil.post("http://ijs.sports.xm.gov.cn/sports/wechat/api/weChat/syncLoginUser", paramMap);
+        JSONObject JSONObj = JSONObject.parseObject(resultUser);
+        if(JSONObj == null || JSONObj.getInteger("code") != 200){
+            throw new CommonException("同步用户数据失败");
         }
     }
 }
