@@ -414,7 +414,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             this.insert(sysUser);
 
             // 异步同步用户数据
-            userService.asynUserInfo2Ijianshen(user, sysUser);
+//            userService.asynUserInfo2Ijianshen(user, sysUser);
 
         } else {
             User oldUser = User.builder().build();
