@@ -14,11 +14,7 @@ import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
-import com.herocheer.instructor.enums.CacheKeyConst;
-import com.herocheer.instructor.enums.InsuranceConst;
-import com.herocheer.instructor.enums.SourceEnums;
-import com.herocheer.instructor.enums.UserTypeEnums;
-import com.herocheer.instructor.enums.WechatConst;
+import com.herocheer.instructor.enums.*;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
@@ -84,85 +80,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     @Autowired
     private InstructorService instructorService;
 
-    /**
-     * @param code
-     * @return
-     * @author chenwf
-     * @desc 根据微信授权码获取accessToken
-     * @date 2021/1/26
-     */
-    @Override
-    public JSONObject getAccessTokenByCode(String code) {
-        Map<String, Object> param = new HashMap<>();
-        param = new HashMap<>();
-        param.put("appid", appid);
-        param.put("secret", secret);
-        param.put("js_code", code);
-        param.put("grant_type", "authorization_code");
-        String access_url = "https://api.weixin.qq.com/sns/jscode2session";
-        String result = HttpUtil.get(access_url, param);
-        log.info("获取微信access_token:code={},result={}", code, result);
-        JSONObject resultJson = JSONObject.parseObject(result);
-        validResult(resultJson);
-        return resultJson;
-    }
-
-    /**
-     * @return
-     * @author chenwf
-     * @desc 获取redis缓存的accessToken
-     * @date 2021/1/26
-     */
-    @Override
-    public String getRedisAccessToken() {
-        String key = "wechar_accessToken";
-        String accessToken = redisClient.get(key);
-        if(StringUtils.isEmpty(accessToken)){
-            JSONObject json = getAccessToken();
-            accessToken = json.getString("access_token");
-            redisClient.set(key,accessToken,6000);
-        }
-        return accessToken;
-    }
-
-    /**
-     * @return
-     * @author chenwf
-     * @desc 获取微信jsTicket
-     * @date 2021/1/26
-     */
-    @Override
-    public JSONObject getWechatJsTicket() {
-        String access_token = getRedisAccessToken();
-        String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+ access_token +"&type=jsapi";//这个url链接和参数不能变
-        String result = HttpUtil.get(url);
-        JSONObject resultJson = JSONObject.parseObject(result);
-        validResult(resultJson);
-        return resultJson;
-    }
-
-    @Override
-    public String getRedisWechatJsTicket() {
-        String key = "wechat_jsapi_ticket";
-        String ticket = redisClient.get(key);
-        if(StringUtils.isEmpty(ticket)){
-            JSONObject jsonObject = getWechatJsTicket();
-            ticket = jsonObject.getString("ticket");
-            redisClient.set(key,ticket,6000);
-        }
-        System.out.println("ticket:"+ticket);
-        return ticket;
-    }
-
-    //{"access_token":"ACCESS_TOKEN","expires_in":7200}
-    private JSONObject getAccessToken() {
-        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret;
-        String result = HttpUtil.get(url);
-        JSONObject resultJson = JSONObject.parseObject(result);
-        validResult(resultJson);
-        return resultJson;
-    }
-
     //验证微信交互是否正常
     private void validResult(JSONObject resultJson) {
         if (resultJson.containsKey("errcode") && !resultJson.getString("errcode").equals("0")) {
@@ -224,25 +141,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         return JSONObj.getString("result");
     }
 
-
-    /**
-     * @param wecharCode
-     * @return
-     */
-    @Override
-    public JSONObject getOauth2(String wecharCode) {
-        String codeUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+appid
-                + "&secret="+secret
-                + "&code="+wecharCode
-                + "&grant_type=authorization_code";
-        String result = HttpUtil.get(codeUrl);
-        log.info("codeUrl:{}",codeUrl);
-        JSONObject json = JSONObject.parseObject(result);
-        validResult(json);
-        JSONObject userJson = getWeChatUserInfo(json);
-        validResult(json);
-        return userJson;
-    }
 
     public JSONObject getWeChatUserInfo(JSONObject json) {
         String accessToken = json.getString("access_token");
