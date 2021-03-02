@@ -50,7 +50,8 @@ public class InstructorApplyController extends BaseController{
     @ApiOperation("指导员申请")
     public ResponseResult add(@RequestBody InstructorApply instructorApply, HttpServletRequest request){
         UserEntity entity = getUser(request);
-        return ResponseResult.isSuccess(instructorApplyService.addInstructorApply(instructorApply,entity));
+        instructorApplyService.addInstructorApply(instructorApply,entity);
+        return ResponseResult.ok();
     }
 
     @PostMapping("/update")

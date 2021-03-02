@@ -25,7 +25,7 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
      * @param userEntity
      * @return
      */
-    int addInstructorApply(InstructorApply instructorApply, UserEntity userEntity);
+    InstructorApply addInstructorApply(InstructorApply instructorApply, UserEntity userEntity);
 
     /**
      * @author chenwf

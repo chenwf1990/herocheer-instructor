@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -43,6 +44,7 @@ import java.util.Map;
 @RequestMapping("/insure")
 @Api(tags = "保险信息")
 @Validated
+@Slf4j
 public class InsuranceController extends BaseController {
 
     @Autowired
@@ -78,6 +80,7 @@ public class InsuranceController extends BaseController {
 
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj.getInteger("code") != 200){
+            log.error("请求保险信息详情失败:{}",JSONObj);
             throw new CommonException("请求保险信息详情失败");
         }
 
@@ -185,6 +188,7 @@ public class InsuranceController extends BaseController {
 
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
+            log.error("请求保险信息详情失败:{}",JSONObj);
             throw new CommonException("请求保险信息详情失败");
         }
         return ResponseResult.ok(JSONObject.parseObject(JSONObj.getString("result")));

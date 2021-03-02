@@ -13,6 +13,7 @@ import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.enums.*;
+import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysAreaService;
 import com.herocheer.instructor.service.UserService;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,6 +45,8 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     private UserService userService;
     @Resource
     private InstructorApplyDao instructorApplyDao;
+    @Resource
+    private InstructorApplyService instructorApplyService;
 
     /**
      * @param instructorQueryVo
@@ -72,64 +76,67 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void instructorImport(MultipartFile multipartFile, HttpServletRequest request) {
-        try {
-            String originalFilename = multipartFile.getOriginalFilename().toLowerCase();
-            if(!originalFilename.contains(".xls") && !originalFilename.contains(".xlsx")){
-                throw new CommonException("模板错误，数据导入失败");
-            }
-            List<Instructor> instructors = new ArrayList<>();
-            ExcelReader reader = ExcelUtil.getReader(multipartFile.getInputStream());
-            //第一行是标题，第二行是标
-            List<List<Object>> read = reader.read(1,1000);
-            List<Object> title = read.get(0);
-            //获取所有地区数据
-            List<SysArea> areas = sysAreaService.findByLimit(new HashMap<>());
-            //判断是否已经导入过
-            List<String> phoneList = new ArrayList<>();
-            for (int i = 1; i < read.size(); i++) {
-                phoneList.add(read.get(i).get(4).toString());//手机号码
-            }
-            List<InstructorApply> applies = this.instructorApplyDao.findByPhones(phoneList);
-            if(!applies.isEmpty()){
-                String phones = applies.stream().map(s ->s.getPhone()).distinct().collect(Collectors.joining(","));
-                throw new CommonException("{}:已存在",phones);
-            }
-            for (int i = 0; i < read.size(); i++) {
-                if(i == 0){//标题行
-                    continue;
-                }
-                List<Object> dataList = read.get(i);
-                for (int j = 0; j < dataList.size(); j++) {
-                    boolean required = ExcelUtil.isRequired(title.get(j), dataList.get(j));
-                    if(!required){
-                        throw new CommonException("第【"+(i+2)+"】行，第【"+(j+1)+"】列："+title.get(j)+"必填选项");
-                    }
-                }
-                String errMsg = "第【"+(i+2)+"】行，第【"+(i+1)+"】列：";
-                Instructor instructor = this.buildInstructor(dataList,errMsg,areas);
-                instructors.add(instructor);
-            }
-            if(!instructors.isEmpty()){
-                List<InstructorApply> applyList = new ArrayList<>();
-                for (Instructor instructor : instructors) {
-                    this.dao.insert(instructor);
-                    InstructorApply apply = new InstructorApply();
-                    BeanUtils.copyProperties(instructor,apply);
-                    apply.setInstructorId(instructor.getId());
-                    applyList.add(apply);
-                }
-                //批量插入申请单
-                this.instructorApplyDao.batchInsert(applyList);
-            }
-        } catch (CommonException e){
-            throw new CommonException(e.getMessage());
-        } catch (Exception e){
-            e.printStackTrace();
+        String originalFilename = multipartFile.getOriginalFilename().toLowerCase();
+        if(!originalFilename.contains(".xls") && !originalFilename.contains(".xlsx")){
             throw new CommonException("模板错误，数据导入失败");
+        }
+        List<InstructorApply> applyList = new ArrayList<>();
+        ExcelReader reader;
+        try {
+            reader = ExcelUtil.getReader(multipartFile.getInputStream());
+        } catch (IOException e) {
+            throw new CommonException("导入失败");
+        }
+        //第一行是标题，第二行是标
+        List<List<Object>> read = reader.read(1,1000);
+        List<Object> title = read.get(0);
+        //获取所有地区数据
+        List<SysArea> areas = sysAreaService.findByLimit(new HashMap<>());
+        List<String> phoneList = new ArrayList<>();
+        for (int i = 0; i < read.size(); i++) {
+            if(i == 0){//标题行
+                continue;
+            }
+            List<Object> dataList = read.get(i);
+            for (int j = 0; j < dataList.size(); j++) {
+                boolean required = ExcelUtil.isRequired(title.get(j), dataList.get(j));
+                if(!required){
+                    throw new CommonException("第【{}】行，第【{}】列：{}必填选项",i+2,i+1,title.get(j));
+                }
+            }
+            phoneList.add(dataList.get(4).toString());//手机号码
+        }
+        isExistDuplicatedData(phoneList);
+        for (int i = 0; i < read.size(); i++) {
+            if(i == 0){//标题行
+                continue;
+            }
+            List<Object> dataList = read.get(i);
+            String errMsg = "第【"+(i+2)+"】行，第【"+(i+1)+"】列：";
+            InstructorApply apply = this.buildInstructor(dataList,errMsg,areas);
+            applyList.add(apply);
+        }
+        if(!applyList.isEmpty()){
+            //批量插入申请单
+            this.instructorApplyDao.batchInsert(applyList);
         }
     }
 
-    private Instructor buildInstructor(List<Object> dataList, String errMsg, List<SysArea> areas) {
+    //判断导入是否存在相同的手机号码
+    private boolean isExistDuplicatedData(List<String> phoneList) {
+        List<String> sameList = phoneList.stream().collect(Collectors.toMap(e -> e, e -> 1, Integer::sum)) // 获得元素出现频率的 Map，键为元素，值为元素出现的次数
+                .entrySet()
+                .stream()                              // 所有 entry 对应的 Stream
+                .filter(e -> e.getValue() > 1)         // 过滤出元素出现次数大于 1 (重复元素）的 entry
+                .map(Map.Entry::getKey)                // 获得 entry 的键（重复元素）对应的 Stream
+                .collect(Collectors.toList());// 转化为 List
+        if(!sameList.isEmpty()){//存在直接抛出异常
+            throw new CommonException(sameList.stream().collect(Collectors.joining(",")) + ":存在重复手机号码");
+        }
+        return true;
+    }
+
+    private InstructorApply buildInstructor(List<Object> dataList, String errMsg, List<SysArea> areas) {
         Instructor instructor = new Instructor();
         instructor.setChannel(ChannelEnums.imp.getType());
         instructor.setAuditState(AuditStateEnums.to_pass.getState());
@@ -140,12 +147,6 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setWorkUnit(dataList.get(3).toString());
         instructor.setChannel(ChannelEnums.imp.getType());
         instructor.setPhone(dataList.get(4).toString());
-        Map<String,Object> params = new HashMap<>();
-        params.put("phone",instructor.getPhone());
-        int count = this.dao.count(params);
-        if(count > 0){
-            throw new CommonException("{}{}已存在该指导员数据",errMsg,instructor.getPhone());
-        }
         instructor.setCertificateNo(dataList.get(5).toString());
         instructor.setCertificateGrade(dataList.get(6).toString());
         instructor.setGuideProject(dataList.get(7).toString());
@@ -180,10 +181,8 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         instructor.setCertificatePic(dataList.get(15).toString());
         InstructorApply apply = new InstructorApply();
         BeanUtils.copyProperties(instructor,apply);
-        User user = userService.addUser(apply, UserTypeEnums.instructor.getCode(),apply.getPhone());
-        instructor.setUserId(user.getId());
-        instructor.setOpenId(user.getOpenid());
-        return instructor;
+        InstructorApply model = instructorApplyService.addInstructorApply(apply, null);
+        return model;
     }
 
     private SysArea getAreaCode(List<SysArea> areas, Object areaName, String errMsg, SysArea sysArea) {
@@ -197,7 +196,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             }
             return list.get(0);
         }
-        return sysArea;
+        return null;
     }
 
     /**
@@ -251,45 +250,27 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
                 return null;
             }
         }
-        Instructor instructor = new Instructor();
-        if(!apply.getChannel().equals(ChannelEnums.h5.getType())) {
-            if(apply.getInstructorId() != null){//走编辑流程
-                instructor = this.dao.get(apply.getInstructorId());//修改指导员数据
-                if(!instructor.getCardNo().equals(apply.getCardNo())){
-                    //未修改身份证，不必进行是否存在该身份证的指导员
-                    Instructor cardInstructor = this.findByCardNo(apply.getCardNo());
-                    if(cardInstructor != null){
-                        throw new CommonException("指导员已存在：{}",apply.getCardNo());
-                    }
-                }
-                updateInstructor(instructor,apply);
-            }else {
-                Instructor cardInstructor = this.findByPhone(apply.getPhone());
-                if(cardInstructor != null){
-                    throw new CommonException("指导员已存在：{}",apply.getCardNo());
-                }
+        //根据openId获取用户是否存在社会指导员
+        Instructor instructor = null;
+        if(StringUtils.isNotEmpty(apply.getOpenId())) {
+            instructor = this.findInstructorByOpenId(apply.getOpenId());
+        }
+        if(instructor != null){//存在社会指导员，走更新用户流程
+            //预防只是修改手机号码
+            userService.addUser(apply,UserTypeEnums.instructor.getCode(),instructor.getPhone());
+            updateInstructor(instructor,apply);
+        }else{
+            instructor = this.findByPhone(apply.getPhone());
+            User user = userService.addUser(apply, UserTypeEnums.instructor.getCode(),apply.getPhone());
+            if(instructor == null){
+                instructor = new Instructor();
                 BeanUtils.copyProperties(apply,instructor);
-                User user = userService.addUser(apply, UserTypeEnums.instructor.getCode(),apply.getPhone());
                 instructor.setUserId(user.getId());
                 instructor.setOpenId(user.getOpenid());
                 instructor.setAuditState(AuditStateEnums.to_pass.getState());
                 this.dao.insert(instructor);
-            }
-        }else {
-            //根据openId获取用户是否存在社会指导员
-            Instructor instructorOpenId = this.findInstructorByOpenId(apply.getOpenId());
-            if(instructorOpenId != null){//存在社会指导员，走更新用户流程
-                //预防只是修改手机号码
-                userService.addUser(apply,UserTypeEnums.instructor.getCode(),instructorOpenId.getPhone());
-                instructor = instructorOpenId;
-                updateInstructor(instructor,apply);
             }else{
-                User user = userService.addUser(apply, UserTypeEnums.instructor.getCode(),apply.getPhone());
-                BeanUtils.copyProperties(apply,instructor);
-                instructor.setUserId(user.getId());
-                instructor.setOpenId(user.getOpenid());
-                instructor.setAuditState(AuditStateEnums.to_pass.getState());
-                this.dao.insert(instructor);
+                updateInstructor(instructor,apply);
             }
         }
         return instructor;

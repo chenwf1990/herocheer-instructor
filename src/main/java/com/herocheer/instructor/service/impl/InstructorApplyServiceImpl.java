@@ -70,31 +70,32 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int addInstructorApply(InstructorApply instructorApply, UserEntity userEntity) {
+    public InstructorApply addInstructorApply(InstructorApply instructorApply, UserEntity userEntity) {
         //PC端新增的时候id==指导员id，公众号的id为null，所以没有影响
         instructorApply.setInstructorId(instructorApply.getId());
-        Map<String,Object> applyMap = new HashMap<>();
-        if(StringUtils.isNotEmpty(userEntity.getOtherId())) {
-            applyMap.put("openId", userEntity.getOtherId());
-        }else{
-            applyMap.put("phone", instructorApply.getPhone());
-        }
-        List<InstructorApply> applyList = this.dao.findByLimit(applyMap);
-        if(!applyList.isEmpty()){
-            //是否存在待审核数据
-            long applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_audit.getState()).count();
-            if(applyCount > 0){
-                throw new CommonException("您已申请，请等待平台审核");
-            }
-            applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_reject.getState()).count();
-            if(applyCount > 0){
-                throw new CommonException("您的申请被驳回，请到个人-我的认证修改重新提交");
-            }
-        }
         if(ChannelEnums.imp.getType() == instructorApply.getChannel()
                 || ChannelEnums.pc.getType() == instructorApply.getChannel()){
             instructorApply.setAuditState(AuditStateEnums.to_pass.getState());
+            instructorApply.setAuditTime(System.currentTimeMillis());
         }else{
+            Map<String,Object> applyMap = new HashMap<>();
+            if(StringUtils.isNotEmpty(userEntity.getOtherId())) {
+                applyMap.put("openId", userEntity.getOtherId());
+            }else{
+                applyMap.put("phone", instructorApply.getPhone());
+            }
+            List<InstructorApply> applyList = this.dao.findByLimit(applyMap);
+            if(!applyList.isEmpty()){
+                //是否存在待审核数据
+                long applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_audit.getState()).count();
+                if(applyCount > 0){
+                    throw new CommonException("您已申请，请等待平台审核");
+                }
+                applyCount = applyList.stream().filter(s ->s.getAuditState() == AuditStateEnums.to_reject.getState()).count();
+                if(applyCount > 0){
+                    throw new CommonException("您的申请被驳回，请到个人-我的认证修改重新提交");
+                }
+            }
             instructorApply.setToken(userEntity.getToken());
             instructorApply.setOpenId(userEntity.getOtherId());
             instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
@@ -108,8 +109,11 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
             instructorApply.setInstructorId(instructor.getId());
             instructorApply.setUserId(instructor.getUserId());
         }
-        int count = this.dao.insert(instructorApply);
-        return count;
+        //导入的进行批量插入操作
+        if(ChannelEnums.imp.getType() != instructorApply.getChannel()) {
+            this.dao.insert(instructorApply);
+        }
+        return instructorApply;
     }
 
     private void insertLog(InstructorApply instructorApply) {
