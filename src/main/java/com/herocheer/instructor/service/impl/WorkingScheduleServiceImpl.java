@@ -657,6 +657,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             workingScheduleUser.setCertificateGrade(instructor.getCertificateGrade());
             workingScheduleUser.setGuideProject(instructor.getGuideProject());
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            workingScheduleUser.setStatus(AuditStatusEnums.to_audit.getState());
             count=count+workingScheduleUserService.insert(workingScheduleUser);
             Reservation reservation=new Reservation();
             reservation.setRelevanceId(activityRecruitInfo.getId());
