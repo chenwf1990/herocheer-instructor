@@ -592,7 +592,7 @@
                 and s.activityId=#{activityId}
             </if>
             <if test="scheduleTime!=null">
-                and s.scheduleTime=#{scheduleTime,}
+                and s.scheduleTime=#{scheduleTime}
             </if>
             <if test="reserveStatus!=null">
                 and u.reserveStatus=#{reserveStatus}
