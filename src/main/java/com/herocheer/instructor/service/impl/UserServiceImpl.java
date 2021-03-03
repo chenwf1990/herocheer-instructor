@@ -422,25 +422,27 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
         this.update(user);
 
-        // 改过指导员信息
-        Instructor instructor = instructorService.findInstructorByUserId(user.getId());
-        if(!ObjectUtils.isEmpty(instructor)){
-            // 常驻地区
-            instructor.setAreaCode(weChatUserVO.getAddressCode());
-            instructor.setAreaName(weChatUserVO.getAddress());
-            // 工作单位
-            instructor.setWorkUnit(weChatUserVO.getWorkUnit());
-            instructorService.update(instructor);
+        InstructorApply instructorApply = instructorApplyService.findInstructorApplyByLastes(user.getId());
 
-            InstructorApply instructorApply = instructorApplyService.findInstructorApplyByLastes(instructor.getId());
-            if(!ObjectUtils.isEmpty(instructorApply)){
+
+        if(!ObjectUtils.isEmpty(instructorApply)){
+            // 常驻地区
+            instructorApply.setAreaCode(weChatUserVO.getAddressCode());
+            instructorApply.setAreaName(weChatUserVO.getAddress());
+            // 工作单位
+            instructorApply.setWorkUnit(weChatUserVO.getWorkUnit());
+            instructorApplyService.update(instructorApply);
+
+            // 改过指导员信息
+            Instructor instructor = instructorService.findInstructorByUserId(user.getId());
+            if(!ObjectUtils.isEmpty(instructor)){
 
                 //修改认证中的最新数据
-                instructorApply.setAreaCode(weChatUserVO.getAddressCode());
-                instructorApply.setAreaName(weChatUserVO.getAddress());
+                instructor.setAreaCode(weChatUserVO.getAddressCode());
+                instructor.setAreaName(weChatUserVO.getAddress());
                 // 工作单位
-                instructorApply.setWorkUnit(weChatUserVO.getWorkUnit());
-                instructorApplyService.update(instructorApply);
+                instructor.setWorkUnit(weChatUserVO.getWorkUnit());
+                instructorService.update(instructor);
             }
         }
         return user;

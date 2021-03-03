@@ -224,13 +224,13 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     /**
      * 找到最新的认证数据
      *
-     * @param instructorId 教练id
+     * @param userId 用户id
      * @return {@link InstructorApply}
      */
     @Override
-    public InstructorApply findInstructorApplyByLastes(Long instructorId) {
+    public InstructorApply findInstructorApplyByLastes(Long userId) {
         Map<String, Object> objectMap = new HashMap();
-        objectMap.put("instructorId", instructorId);
+        objectMap.put("userId", userId);
         return this.dao.selectInstructorApplyByLastes(objectMap);
     }
 }

@@ -584,6 +584,9 @@
                 <if test="instructorId != null">
                     and instructorId = #{instructorId}
                 </if>
+                <if test="userId != null">
+                    and userId = #{userId}
+                </if>
             </trim>
         </where>
         order by id desc
