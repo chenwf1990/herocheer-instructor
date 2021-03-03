@@ -293,6 +293,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
             instructor.setOtherAuditUnitName(apply.getOtherAuditUnitName());
             instructor.setAuditState(AuditStateEnums.to_pass.getState());
             instructor.setCertificatePic(apply.getCertificatePic());
+            instructor.setHeadPic(apply.getHeadPic());
             this.dao.update(instructor);
         }else{//否则全部都可以修改
             Instructor update = new Instructor();
