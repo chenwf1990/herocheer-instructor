@@ -7,10 +7,7 @@ import com.herocheer.web.annotation.AllowAnonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -29,7 +26,7 @@ public class LoginController {
     @Resource
     private LoginService loginService;
 
-    @PostMapping("/aes")
+    @GetMapping("/aes")
     @ApiOperation("AES加密/解密")
     @AllowAnonymous
     public ResponseResult add(@ApiParam("需要加密解密的文本") @RequestParam String text) {
