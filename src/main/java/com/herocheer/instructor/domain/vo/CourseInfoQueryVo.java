@@ -34,6 +34,12 @@ public class CourseInfoQueryVo implements Serializable {
     @ApiModelProperty("审批结束时间")
     private String approvalEndTime;
 
+    @ApiModelProperty("报名结束时间")
+    private String signStartTime;
+
+    @ApiModelProperty("报名结束时间")
+    private String signEndTime;
+
     @ApiModelProperty("状态 (0.待审核1.审批通过2.撤回3.驳回)")
     private Integer state;
 
