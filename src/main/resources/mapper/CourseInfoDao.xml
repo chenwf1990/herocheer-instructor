@@ -440,7 +440,8 @@
                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="courseState!=null and courseState==0">
-                AND (`state` != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000))
+                AND (`state` != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000))
             </if>
             <if test="queryType!=null and queryType==1">
                 AND `state`=0
@@ -455,7 +456,11 @@
                 and updateTime <![CDATA[ > ]]> #{approvalStartTime}
             </if>
             <if test="approvalEndTime!=null">
-                and updateTime <![CDATA[ < ]]> #{approvalEndTime}
+                and updateTime <![CDATA[ < ]]> #{approvalEndTime}+24*60*60*1000-1
+            </if>
+            <if test="signStartTime!=null and signEndTime!=null">
+                and (signStartTime between #{signStartTime} and #{signEndTime} or
+                     signEndTime between #{signStartTime} and #{signEndTime})
             </if>
         </where>
         order by placedTop DESC,createdTime DESC

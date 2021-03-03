@@ -95,7 +95,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     public Integer addActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
         activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
         //数据效验
-        this.verificationMatch(activityRecruitInfoVo);
+        this.verificationDate(activityRecruitInfoVo);
         Integer count=this.dao.insert(activityRecruitInfoVo);
         //保存赛事招募明细
         this.saveMatchDetail(activityRecruitInfoVo);
@@ -110,7 +110,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法修改");
         }
         //数据效验
-        this.verificationMatch(activityRecruitInfoVo);
+        this.verificationDate(activityRecruitInfoVo);
         //如果状态为撤回或者驳回,修改时将状态更改为待审核
         if(activityRecruitInfoVo.getStatus()==RecruitStateEnums.WITHDRAW.getState()||
                 activityRecruitInfoVo.getStatus()==RecruitStateEnums.OVERRULE.getState()){
@@ -122,7 +122,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         return count;
     }
 
-    public void verificationMatch(ActivityRecruitInfoVo activityRecruitInfoVo){
+    public void verificationDate(ActivityRecruitInfoVo activityRecruitInfoVo){
         if(activityRecruitInfoVo.getRecruitStartDate()<DateUtil.beginOfDay(new Date()).getTime()){
             throw new CommonException("招募开始时间{}不能小于当前日期!",
                     DateUtil.timeStamp2Date(activityRecruitInfoVo.getRecruitStartDate()));
@@ -143,16 +143,17 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                         DateUtil.timeStamp2Date(activityRecruitInfoVo.getRecruitEndDate()));
             }
         }
+        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()&&
+                activityRecruitInfoVo.getMatchApproverId()!=null){
+            User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
+            if (user==null){
+                throw new CommonException(ResponseCode.SERVER_ERROR, "无效的时长审批负责人!");
+            }
+            activityRecruitInfoVo.setMatchApprover(user.getUserName());
+        }
     }
     private void saveMatchDetail(ActivityRecruitInfoVo activityRecruitInfoVo){
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
-            if(activityRecruitInfoVo.getMatchApproverId()!=null){
-                User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
-                if (user==null){
-                    throw new CommonException(ResponseCode.SERVER_ERROR, "无效的时长审批负责人!");
-                }
-                activityRecruitInfoVo.setMatchApprover(user.getUserName());
-            }
             if (activityRecruitInfoVo.getRecruitDetails()!=null){
                 List<ActivityRecruitDetail> details=activityRecruitInfoVo.getRecruitDetails();
                 for (ActivityRecruitDetail activityRecruitDetail:details){
