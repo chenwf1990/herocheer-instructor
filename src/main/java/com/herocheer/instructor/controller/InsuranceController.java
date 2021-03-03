@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotBlank;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,6 +125,8 @@ public class InsuranceController extends BaseController {
     public ResponseResult<JSONObject> fecthInsuranceInfoByPage(@NotBlank(message = "签名不能为空") String pageNo,
                                                               @NotBlank(message = "页大小不能为空") String pageSize,
                                                               String idNo, String name,String insureType,String startTime,String endTime,HttpServletRequest request){
+
+
         String plain = "";
         if(StringUtils.isNotBlank(name)){
             plain += name;
@@ -150,15 +154,20 @@ public class InsuranceController extends BaseController {
         if(StringUtils.isNotBlank(insureType)){
             paramMap.put("insureType", insureType);
         }
+        // 时间戳处理
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if(StringUtils.isNotBlank(startTime)){
-            paramMap.put("startTime", startTime);
+            long start = Long.valueOf(startTime);
+            String startStr = sdf.format(new Date(start));
+            paramMap.put("startTime", startStr +" 00:00:00");
         }
         if(StringUtils.isNotBlank(endTime)){
-            paramMap.put("endTime", endTime);
+            long end = Long.valueOf(endTime);
+            String endStr = sdf.format(new Date(end));
+            paramMap.put("endTime", endStr + " 23:59:59");
         }
 
         String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/pageInsurance", paramMap);
-
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
             throw new CommonException("请求保险列表失败");
