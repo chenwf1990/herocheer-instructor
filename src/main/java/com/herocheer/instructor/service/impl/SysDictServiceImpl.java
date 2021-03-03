@@ -7,6 +7,7 @@ import com.herocheer.instructor.dao.SysDictDao;
 import com.herocheer.instructor.domain.entity.SysDict;
 import com.herocheer.instructor.domain.vo.SysDictVO;
 import com.herocheer.instructor.service.SysDictService;
+import com.herocheer.instructor.utils.PinYinUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanCopier;
@@ -36,6 +37,9 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
     public SysDict addDict(SysDictVO sysDictVO) {
         SysDict sysDict = SysDict.builder().build();
         BeanCopier.create(sysDictVO.getClass(),sysDict.getClass(),false).copy(sysDictVO,sysDict,null);
+        if(StringUtils.isBlank(sysDictVO.getDictCode())){
+            sysDict.setDictCode(PinYinUtil.toFirstChar(sysDictVO.getDictName()).toUpperCase());
+        }
         this.insert(sysDict);
         return sysDict;
     }
@@ -89,6 +93,7 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
     @Override
     public Page<SysDict> findDictByPage(SysDictVO sysDictVO) {
         Page page = Page.startPage(sysDictVO.getPageNo(), sysDictVO.getPageSize());
+        sysDictVO.setStatus(null);
         List<SysDict> sysDicts = this.dao.selectDictByPage(sysDictVO);
         page.setDataList(sysDicts);
         return page;

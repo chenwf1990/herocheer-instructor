@@ -28,6 +28,7 @@ import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
+import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -71,6 +72,10 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
     @Resource
     private InstructorService instructorService;
+
+    @Autowired
+    InstructorApplyService instructorApplyService;
+
 
 
     /**
@@ -416,6 +421,28 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         BeanCopier.create(weChatUserVO.getClass(),user.getClass(),false).copy(weChatUserVO,user,null);
 
         this.update(user);
+
+        // 改过指导员信息
+        Instructor instructor = instructorService.findInstructorByUserId(user.getId());
+        if(!ObjectUtils.isEmpty(instructor)){
+            // 常驻地区
+            instructor.setAreaCode(weChatUserVO.getAddressCode());
+            instructor.setAreaName(weChatUserVO.getAddress());
+            // 工作单位
+            instructor.setWorkUnit(weChatUserVO.getWorkUnit());
+            instructorService.update(instructor);
+
+            InstructorApply instructorApply = instructorApplyService.findInstructorApplyByLastes(instructor.getId());
+            if(!ObjectUtils.isEmpty(instructorApply)){
+
+                //修改认证中的最新数据
+                instructorApply.setAreaCode(weChatUserVO.getAddressCode());
+                instructorApply.setAreaName(weChatUserVO.getAddress());
+                // 工作单位
+                instructorApply.setWorkUnit(weChatUserVO.getWorkUnit());
+                instructorApplyService.update(instructorApply);
+            }
+        }
         return user;
     }
 
@@ -632,7 +659,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         }
         infoVo.setInstructorFlag(instructorFlag);
         // 指导员头像
-        infoVo.setHeadPic(instructor.getHeadPic());
+        infoVo.setHeadPic(instructor == null ? "" : instructor.getHeadPic());
         return infoVo;
     }
 

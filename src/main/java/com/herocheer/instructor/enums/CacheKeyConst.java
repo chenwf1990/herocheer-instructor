@@ -10,6 +10,9 @@ public class CacheKeyConst {
 
     public static final Long EXPIRETIME = 1L * 24L * 60L * 60L;
 
+    // 微信用户基础信息失效时间
+    public static final Long OPENID_EXPIRETIME = 30L * 24L * 60L * 60L;
+
 
     /**
      * role:phone:id

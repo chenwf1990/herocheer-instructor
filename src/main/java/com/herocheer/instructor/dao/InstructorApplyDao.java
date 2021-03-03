@@ -1,11 +1,11 @@
 package com.herocheer.instructor.dao;
 
-import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -32,4 +32,12 @@ public interface InstructorApplyDao extends BaseDao<InstructorApply,Long>{
     List<InstructorApply> queryPageList(InstructorQueryVo instructorQueryVo);
 
     List<InstructorApply> findByPhones(List<String> phoneList);
+
+    /**
+     * 找到最新的认证数据
+     *
+     * @param map 地图
+     * @return {@link InstructorApply}
+     */
+    InstructorApply selectInstructorApplyByLastes(Map<String, Object> map);
 }

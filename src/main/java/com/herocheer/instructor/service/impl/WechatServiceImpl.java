@@ -14,7 +14,11 @@ import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
-import com.herocheer.instructor.enums.*;
+import com.herocheer.instructor.enums.CacheKeyConst;
+import com.herocheer.instructor.enums.InsuranceConst;
+import com.herocheer.instructor.enums.SourceEnums;
+import com.herocheer.instructor.enums.UserTypeEnums;
+import com.herocheer.instructor.enums.WechatConst;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
@@ -163,8 +167,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             }
             openid = JSONObj.getString("openid");
             jsonStr  = getWeChatUserInfo(JSONObj);
+        }else {
+            // 用户出去后，再进来
+            String userInfo = redisClient.get(openid);
+            jsonStr = JSONObject.parseObject(userInfo);
         }
-//        String openid = "or6Q-wfzYsLqaHlof8Tglyvdf-Y8";
 
         // 根据openid获取用户信息
         Map map = new HashMap();
@@ -205,6 +212,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
+        // 用户信息放入缓存，以便于用户第二次进来后可以获取微信用户信息
+        redisClient.set(openid,JSONObject.toJSONString(userInfo), CacheKeyConst.OPENID_EXPIRETIME);
         return userInfo;
     }
 

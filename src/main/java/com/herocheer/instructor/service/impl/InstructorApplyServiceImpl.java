@@ -220,4 +220,17 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
 
         return instructorApplyAuditLogService.findByLimit(params);
     }
+
+    /**
+     * 找到最新的认证数据
+     *
+     * @param instructorId 教练id
+     * @return {@link InstructorApply}
+     */
+    @Override
+    public InstructorApply findInstructorApplyByLastes(Long instructorId) {
+        Map<String, Object> objectMap = new HashMap();
+        objectMap.put("instructorId", instructorId);
+        return this.dao.selectInstructorApplyByLastes(objectMap);
+    }
 }
