@@ -575,4 +575,18 @@
         </where>
         order by id desc
     </select>
+
+    <!--找到最新的认证数据 -->
+    <select id="selectInstructorApplyByLastes" parameterType="map" resultType="com.herocheer.instructor.domain.entity.InstructorApply">
+        select * from instructor_apply
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="instructorId != null">
+                    and instructorId = #{instructorId}
+                </if>
+            </trim>
+        </where>
+        order by id desc
+        limit 1
+    </select>
 </mapper>
