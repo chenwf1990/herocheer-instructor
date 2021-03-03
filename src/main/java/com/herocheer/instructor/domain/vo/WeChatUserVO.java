@@ -71,6 +71,9 @@ public class WeChatUserVO{
     private String birthday;
     @ApiModelProperty("住址")
     private String address;
+
+    @ApiModelProperty("住址编码")
+    private String addressCode;
     @ApiModelProperty("邮编")
     private String postcode;
     @ApiModelProperty("公众号UnionID")
