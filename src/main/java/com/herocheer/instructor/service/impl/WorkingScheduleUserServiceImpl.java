@@ -93,7 +93,9 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                     long time = serviceEndTime - serviceBeginTime;
                     long signInTime = w.getSignInTime() == null ? serviceBeginTime : w.getSignInTime();
                     long signOutTime = w.getSignOutTime() == null ? serviceEndTime : w.getSignOutTime();
-                    w.setExceedServiceTime((int) ((signOutTime - signInTime - time) / 60 /1000));
+                    if(signOutTime - signInTime > time) {
+                        w.setExceedServiceTime((int) ((signOutTime - signInTime - time) / 60 / 1000));
+                    }
                 }
             });
         }
