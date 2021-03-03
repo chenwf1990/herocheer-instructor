@@ -2,8 +2,8 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
-import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 
@@ -68,4 +68,13 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
      * @return
      */
     List<InstructorApplyAuditLog> getApprovalLog(Long applyId);
+
+
+    /**
+     * 找到最新的认证数据
+     *
+     * @param instructorId 教练id
+     * @return {@link InstructorApply}
+     */
+    InstructorApply findInstructorApplyByLastes(Long instructorId);
 }
