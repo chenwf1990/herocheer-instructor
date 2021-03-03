@@ -68,7 +68,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             if(courseInfo.getSignStartTime()>System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程报名未开始!");
             }
-            if(courseInfo.getSignEndTime()<System.currentTimeMillis()){
+            if(courseInfo.getSignEndTime()+24*60*60*1000-1<System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程报名已结束!");
             }
         }else {
