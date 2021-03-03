@@ -181,4 +181,30 @@ public class DateUtil extends cn.hutool.core.date.DateUtil {
             return "";
         }
     }
+    /**
+     * 时间戳转换成日期格式字符串
+     * @param seconds 精确到天的字符串
+     * @param
+     * @return
+     */
+    public static String timeStamp2Date(Long seconds) {
+        if(seconds == null){
+            return "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD);
+        return sdf.format(new Date(seconds));
+    }
+    /**
+     * 时间戳转换成日期格式字符串
+     * @param seconds 精确到秒的字符串
+     * @param
+     * @return
+     */
+    public static String timeStamp2DateTime(Long seconds) {
+        if(seconds == null){
+            return "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS);
+        return sdf.format(new Date(seconds));
+    }
 }

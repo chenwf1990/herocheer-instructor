@@ -625,11 +625,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
         //查询是否是指导员
         boolean instructorFlag = true;
+        Instructor instructor = new Instructor();
         if(infoVo.getUserType() != UserTypeEnums.instructor.getCode().intValue()) {
-            Instructor instructor = instructorService.findInstructorByOpenId(userEntity.getOtherId());
+            instructor = instructorService.findInstructorByOpenId(userEntity.getOtherId());
             instructorFlag = instructor == null ? false : true;
         }
         infoVo.setInstructorFlag(instructorFlag);
+        // 指导员头像
+        infoVo.setHeadPic(instructor.getHeadPic());
         return infoVo;
     }
 

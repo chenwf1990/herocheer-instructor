@@ -9,7 +9,7 @@
             WHEN `state` = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1 THEN 3
             WHEN `state` = 1 AND signEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-            WHEN `state` = 1 AND signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+            WHEN `state` = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1 THEN 1
             ELSE 0 END AS 'courseStatus'
     </sql>
@@ -428,16 +428,16 @@
             </if>
             <if test="courseState!=null and courseState==3">
                 AND `state` = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> courseEndTime+24*60*60*1000-1
             </if>
             <if test="courseState!=null and courseState==2">
-                AND `state` = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
-                AND `state` = 1 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND `state` = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1
+                AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="courseState!=null and courseState==1">
-                AND `state` = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND `state` = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> signStartTime
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1
-                AND `state` = 1 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="courseState!=null and courseState==0">
                 AND (`state` != 1 OR signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000)
