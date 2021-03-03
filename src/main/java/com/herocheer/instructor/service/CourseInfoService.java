@@ -26,4 +26,6 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
     Integer approval(CourseApproval courseApproval);
 
     CourseInfoVo getCourseInfo(Long id);
+
+    CourseInfo verificationDate(CourseInfo courseInfo);
 }

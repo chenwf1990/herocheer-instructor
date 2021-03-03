@@ -94,50 +94,11 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Transactional(rollbackFor = Exception.class)
     public Integer addActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
         activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
-        if(activityRecruitInfoVo.getRecruitStartDate()<DateUtil.beginOfDay(new Date()).getTime()){
-            throw new CommonException(ResponseCode.SERVER_ERROR, "招募开始时间不能小于当前日期!");
-        }
-        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
-            if(activityRecruitInfoVo.getServiceStartDate()<DateUtil.beginOfDay(new Date()).getTime()){
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于当前日期");
-            }
-            if(activityRecruitInfoVo.getServiceStartDate()<activityRecruitInfoVo.getRecruitStartDate()){
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于招募开始时间!");
-            }
-            if(activityRecruitInfoVo.getServiceEndDate()<activityRecruitInfoVo.getRecruitEndDate()){
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务结束时间不能小于招募结束时间!");
-            }
-        }
+        //数据效验
+        this.verificationMatch(activityRecruitInfoVo);
         Integer count=this.dao.insert(activityRecruitInfoVo);
         //保存赛事招募明细
-        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
-            if(activityRecruitInfoVo.getMatchApproverId()!=null){
-                User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
-                if (user==null){
-                    throw new CommonException(ResponseCode.SERVER_ERROR, "无效的时长审批负责人!");
-                }
-                activityRecruitInfoVo.setMatchApprover(user.getUserName());
-            }
-            if (activityRecruitInfoVo.getRecruitDetails()!=null){
-                List<ActivityRecruitDetail> details=activityRecruitInfoVo.getRecruitDetails();
-                for (ActivityRecruitDetail activityRecruitDetail:details){
-                    if(activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime())<
-                            DateUtil.beginOfDay(new Date()).getTime()){
-                        throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于当前日期!");
-                    }
-                    if(activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime())<
-                            activityRecruitInfoVo.getRecruitStartDate()){
-                        throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于招募开始时间!");
-                    }
-                    if(activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime())<
-                            activityRecruitInfoVo.getRecruitEndDate()){
-                        throw new CommonException(ResponseCode.SERVER_ERROR, "服务结束时间不能小于招募结束时间!");
-                    }
-                    activityRecruitDetail.setRecruitId(activityRecruitInfoVo.getId());
-                    activityRecruitDetailService.insert(activityRecruitDetail);
-                }
-            }
-        }
+        this.saveMatchDetail(activityRecruitInfoVo);
         return count;
     }
 
@@ -148,20 +109,8 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                 activityRecruitInfoVo.getStatus()!=RecruitStateEnums.OVERRULE.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法修改");
         }
-        if(activityRecruitInfoVo.getRecruitStartDate()<DateUtil.beginOfDay(new Date()).getTime()){
-            throw new CommonException(ResponseCode.SERVER_ERROR, "招募开始时间不能小于当前日期!");
-        }
-        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()) {
-            if(activityRecruitInfoVo.getServiceStartDate()<DateUtil.beginOfDay(new Date()).getTime()){
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于当前日期!");
-            }
-            if(activityRecruitInfoVo.getServiceStartDate()<activityRecruitInfoVo.getRecruitStartDate()){
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于招募开始时间!");
-            }
-            if(activityRecruitInfoVo.getServiceEndDate()<activityRecruitInfoVo.getRecruitEndDate()){
-                throw new CommonException(ResponseCode.SERVER_ERROR, "服务结束时间不能小于招募结束时间!");
-            }
-        }
+        //数据效验
+        this.verificationMatch(activityRecruitInfoVo);
         //如果状态为撤回或者驳回,修改时将状态更改为待审核
         if(activityRecruitInfoVo.getStatus()==RecruitStateEnums.WITHDRAW.getState()||
                 activityRecruitInfoVo.getStatus()==RecruitStateEnums.OVERRULE.getState()){
@@ -169,6 +118,33 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         }
         Integer count=this.dao.update(activityRecruitInfoVo);
         //保存赛事招募明细
+        this.saveMatchDetail(activityRecruitInfoVo);
+        return count;
+    }
+
+    public void verificationMatch(ActivityRecruitInfoVo activityRecruitInfoVo){
+        if(activityRecruitInfoVo.getRecruitStartDate()<DateUtil.beginOfDay(new Date()).getTime()){
+            throw new CommonException("招募开始时间{}不能小于当前日期!",
+                    DateUtil.timeStamp2Date(activityRecruitInfoVo.getRecruitStartDate()));
+        }
+        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
+            if(activityRecruitInfoVo.getServiceStartDate()<DateUtil.beginOfDay(new Date()).getTime()){
+                throw new CommonException("服务开始时间{}不能小于当前日期",
+                        DateUtil.timeStamp2Date(activityRecruitInfoVo.getServiceStartDate()));
+            }
+            if(activityRecruitInfoVo.getServiceStartDate()<activityRecruitInfoVo.getRecruitStartDate()){
+                throw new CommonException("服务开始时间{}不能小于招募开始时间{}!",
+                        DateUtil.timeStamp2Date(activityRecruitInfoVo.getServiceStartDate()),
+                        DateUtil.timeStamp2Date(activityRecruitInfoVo.getRecruitStartDate()));
+            }
+            if(activityRecruitInfoVo.getServiceEndDate()<activityRecruitInfoVo.getRecruitEndDate()){
+                throw new CommonException("服务结束时间{}不能小于招募结束时间{}!",
+                        DateUtil.timeStamp2Date(activityRecruitInfoVo.getServiceEndDate()),
+                        DateUtil.timeStamp2Date(activityRecruitInfoVo.getRecruitEndDate()));
+            }
+        }
+    }
+    private void saveMatchDetail(ActivityRecruitInfoVo activityRecruitInfoVo){
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
             if(activityRecruitInfoVo.getMatchApproverId()!=null){
                 User user=userService.get(activityRecruitInfoVo.getMatchApproverId());
@@ -180,17 +156,22 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             if (activityRecruitInfoVo.getRecruitDetails()!=null){
                 List<ActivityRecruitDetail> details=activityRecruitInfoVo.getRecruitDetails();
                 for (ActivityRecruitDetail activityRecruitDetail:details){
-                    if(activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime())<
+                    if(activityRecruitDetail.getServiceDate()+DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime())<
                             DateUtil.beginOfDay(new Date()).getTime()){
-                        throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于当前日期!");
+                        throw new CommonException("服务开始时间{}不能小于当前日期!",
+                                DateUtil.timeStamp2DateTime(activityRecruitDetail.getServiceDate()+DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime())));
                     }
                     if(activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime())<
                             activityRecruitInfoVo.getRecruitStartDate()){
-                        throw new CommonException(ResponseCode.SERVER_ERROR, "服务开始时间不能小于招募开始时间!");
+                        throw new CommonException("服务开始时间{}不能小于招募开始时间{}!",
+                                DateUtil.timeStamp2DateTime(activityRecruitDetail.getServiceDate()+DateUtil.timeToUnix(activityRecruitDetail.getServiceStartTime())),
+                                DateUtil.timeStamp2Date(activityRecruitInfoVo.getRecruitStartDate()));
                     }
                     if(activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime())<
-                            activityRecruitInfoVo.getRecruitEndDate()){
-                        throw new CommonException(ResponseCode.SERVER_ERROR, "服务结束时间不能小于招募结束时间!");
+                            activityRecruitInfoVo.getRecruitEndDate()+24*60*60*1000-1){
+                        throw new CommonException("服务结束时间不能小于招募结束时间!",
+                                DateUtil.timeStamp2DateTime(activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime())),
+                                DateUtil.timeStamp2Date(activityRecruitInfoVo.getRecruitEndDate()));
                     }
                     if(activityRecruitDetail.getId()!=null){
                         activityRecruitDetailService.update(activityRecruitDetail);
@@ -201,7 +182,6 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                 }
             }
         }
-        return count;
     }
 
     @Override
@@ -282,6 +262,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         List<ActivityRecruitDetailVo> details=activityRecruitDetailService.getRecruitHours(recruitId,dateTime,dateTime+24*60*60*1000-1);
         List<ActivityRecruitDetailVo> recruitDetails=new ArrayList<>();
         for (ActivityRecruitDetailVo detail:details){
+            detail.setStatus(0);
             if (detail.getRecruitNumber()<=detail.getHadRecruitNumber()){
                 detail.setStatus(1);
             }else{
@@ -294,9 +275,6 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                 if(userNames!=null && userNames.size()>0){
                     detail.setStatus(1);
                 }
-            }
-            if(detail.getStatus()!=null&&detail.getStatus()!=1){
-                detail.setStatus(0);
             }
             recruitDetails.add(detail);
         }

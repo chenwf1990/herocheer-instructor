@@ -66,7 +66,7 @@ public class CourseInfoController extends BaseController{
     @ApiOperation("新增课程信息")
     public ResponseResult add(@RequestBody CourseInfo courseInfo){
         courseInfo.setSignNumber(0);
-        courseInfo.setState(CourseApprovalState.PENDING.getState());
+        courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.insert(courseInfo);
         return ResponseResult.isSuccess(count);
     }
@@ -75,6 +75,7 @@ public class CourseInfoController extends BaseController{
     @ApiOperation("更新课程信息")
     public ResponseResult update(@RequestBody CourseInfo courseInfo){
         courseInfo.setState(CourseApprovalState.PENDING.getState());
+        courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.update(courseInfo);
         return ResponseResult.isSuccess(count);
     }

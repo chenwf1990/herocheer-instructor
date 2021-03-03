@@ -64,7 +64,7 @@ public class CourierStationServiceImpl extends BaseServiceImpl<CourierStationDao
         Map<String,Object> map=new HashMap<>();
         map.put("courierStationId",id);
         List<ActivityRecruitInfo> list=activityRecruitInfoService.findByLimit(map);
-        if (list!=null || list.size()>0){
+        if (!list.isEmpty()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "驿站有发布招募信息无法删除!");
         }
         return dao.delete(id);

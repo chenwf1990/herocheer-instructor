@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.CourseInfoDao;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
@@ -10,12 +11,14 @@ import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.CourseApprovalState;
 import com.herocheer.instructor.service.CourseApprovalService;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -77,5 +80,25 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     @Override
     public CourseInfoVo getCourseInfo(Long id) {
         return this.dao.getCourseInfo(id);
+    }
+
+    @Override
+    public CourseInfo verificationDate(CourseInfo courseInfo) {
+        if(courseInfo.getSignStartTime()< DateUtil.beginOfDay(new Date()).getTime()){
+            throw new CommonException("课程报名开始时间{}不能小于当前时间!",
+                    DateUtil.timeStamp2Date(courseInfo.getSignStartTime()));
+        }
+        if(courseInfo.getSignStartTime()>courseInfo.getCourseStartTime()){
+            throw new CommonException("课程开始时间{}不能小于课程开始报名时间{}!",
+                    DateUtil.timeStamp2Date(courseInfo.getSignStartTime()),
+                    DateUtil.timeStamp2Date(courseInfo.getCourseStartTime()));
+        }
+        if(courseInfo.getSignEndTime()>courseInfo.getCourseEndTime()){
+            throw new CommonException("课程结束时间{}不能小于课程结束报名时间{}!",
+                    DateUtil.timeStamp2Date(courseInfo.getSignEndTime()),
+                    DateUtil.timeStamp2Date(courseInfo.getCourseEndTime()));
+        }
+        courseInfo.setState(CourseApprovalState.PENDING.getState());
+        return courseInfo;
     }
 }
