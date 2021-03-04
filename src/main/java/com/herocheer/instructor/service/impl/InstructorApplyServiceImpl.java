@@ -109,8 +109,8 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
             instructorApply.setInstructorId(instructor.getId());
             instructorApply.setUserId(instructor.getUserId());
         }
-        //导入的进行批量插入操作
-        if(ChannelEnums.imp.getType() != instructorApply.getChannel()) {
+        //导入的进行批量插入操作,instructorApply.getId() != null意思是编辑的也需要插入数据
+        if(ChannelEnums.imp.getType() != instructorApply.getChannel() || instructorApply.getId() != null) {
             this.dao.insert(instructorApply);
         }
         return instructorApply;

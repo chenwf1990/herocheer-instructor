@@ -110,7 +110,7 @@ public class WorkingSignRecordServiceImpl extends BaseServiceImpl<WorkingSignRec
             if(workingUserVo.getSignInTime() != null && serviceBeginTime >= workingUserVo.getSignInTime()
                     && serviceEndTime + DateUtil.TWO_HOURS >= workingSignRecord.getSignTime()){
                 //早晚打卡都是正常的，不需要审核
-                scheduleUser.setStatus(AuditStatusEnums.to_no_audit.getState());
+                scheduleUser.setStatus(AuditStatusEnums.to_pass.getState());
             }
             workingScheduleUserService.update(scheduleUser);
         }
