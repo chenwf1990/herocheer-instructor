@@ -83,7 +83,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
         List<Reservation> list=this.dao.findByLimit(map);
-        if(list!=null && list.size()>0){
+        if(!list.isEmpty()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"您已预约该课程,无需重复预约!");
         }
         if(userId==null){
