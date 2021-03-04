@@ -8,16 +8,14 @@ import com.herocheer.instructor.dao.WorkingScheduleUserDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
 import com.herocheer.instructor.enums.*;
-import com.herocheer.instructor.service.ActivityRecruitInfoService;
-import com.herocheer.instructor.service.CommonService;
-import com.herocheer.instructor.service.CourierStationService;
-import com.herocheer.instructor.service.WorkingScheduleUserService;
+import com.herocheer.instructor.service.*;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
@@ -45,6 +43,8 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     private CommonService commonService;
     @Resource
     private CourierStationService courierStationService;
+    @Resource
+    private WorkingSignRecordService workingSignRecordService;
 
     /**
      * @param workingScheduleUserQueryVo
@@ -93,7 +93,9 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
                     long time = serviceEndTime - serviceBeginTime;
                     long signInTime = w.getSignInTime() == null ? serviceBeginTime : w.getSignInTime();
                     long signOutTime = w.getSignOutTime() == null ? serviceEndTime : w.getSignOutTime();
-                    w.setExceedServiceTime((int) ((signOutTime - signInTime - time) / 60 /1000));
+                    if(signOutTime - signInTime > time) {
+                        w.setExceedServiceTime((int) ((signOutTime - signInTime - time) / 60 / 1000));
+                    }
                 }
             });
         }
@@ -228,11 +230,22 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         int beginMinute = DateUtil.timeToSecond(workingUserVo.getServiceBeginTime());
         int endMinute = DateUtil.timeToSecond(workingUserVo.getServiceEndTime());
         if(approvalType == ApprovalTypeEnums.SIGN_TIME.getType()) {
-            if(workingUserVo.getSignInTime() != null && workingUserVo.getSignOutTime() != null){
-                actualServiceTime = (int) ((workingUserVo.getSignOutTime() - workingUserVo.getSignInTime()) / 60 /1000);
+            if(workingUserVo.getSignInTime() != null){
+                if(workingUserVo.getSignOutTime() != null) {
+                    actualServiceTime = (int) ((workingUserVo.getSignOutTime() - workingUserVo.getSignInTime()) / 60 / 1000);
+                }else{
+                    //获取最后一次签到时间
+                    Map<String,Object> signRecordMap = new HashMap<>();
+                    signRecordMap.put("workingScheduleUserId",workingScheduleUserId);
+                    signRecordMap.put("orderBy","signTime desc");
+                    List<WorkingSignRecord> signRecords = workingSignRecordService.findByLimit(signRecordMap);
+                    if(signRecords.isEmpty() || signRecords.size() <= 1){
+                        throw new CommonException("未完成2次打卡，不能按打卡时间统计");
+                    }
+                    actualServiceTime = (int) ((workingUserVo.getSignOutTime() - signRecords.get(0).getSignTime()) / 60 / 1000);
+                }
             }else{
-                approvalType = ApprovalTypeEnums.SERVICE_TIME.getType();
-                actualServiceTime = endMinute - beginMinute;
+                throw new CommonException("未完成2次打卡，不能按打卡时间统计");
             }
         }else if(approvalType == ApprovalTypeEnums.SERVICE_TIME.getType()) {
             actualServiceTime = endMinute - beginMinute;

@@ -158,6 +158,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
     @Override
     public UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid) {
+        log.debug("微信用户openid：{}",openid);
         // 获取微信群众信息，方便统计用户及展示个人中心信息显示
         JSONObject jsonStr = new JSONObject();
         if (StringUtils.isNotEmpty(code)) {
@@ -209,7 +210,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         String token = IdUtil.simpleUUID();
         userInfo.setTokenId(token);
         userInfo.setOtherId(openid);
-
+        log.debug("微信用户登入信息：{}",userInfo);
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
         // 用户信息放入缓存，以便于用户第二次进来后可以获取微信用户信息
@@ -322,7 +323,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             this.insert(sysUser);
 
             // 异步同步用户数据
-            userService.asynUserInfo2Ijianshen(user, sysUser);
+//            userService.asynUserInfo2Ijianshen(user, sysUser);
 
         } else {
             User oldUser = User.builder().build();

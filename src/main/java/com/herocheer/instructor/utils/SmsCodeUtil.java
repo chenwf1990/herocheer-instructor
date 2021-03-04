@@ -25,8 +25,8 @@ public class SmsCodeUtil {
     static Map<String, Object> headers = new HashMap<String, Object>();
 
     static {
-        headers.put("X-AVOSCloud-Application-Id", "1o6PCGzF6K6zscCXY3YXEQDH");
-        headers.put("X-AVOSCloud-Application-Key", "iJvMebaXDITWUskMAc1R8KKc");
+        headers.put("X-AVOSCloud-Application-Id", "FSqrwHcm6cPHXzYQbKCLL9XJ-gzGzoHsz");
+        headers.put("X-AVOSCloud-Application-Key", "XnH1p7EC5nke0XgbjC0k0Nbx");
         headers.put("Content-Type", "application/json");
     }
 
@@ -70,8 +70,8 @@ public class SmsCodeUtil {
 
     public static void main(String args[]) {
 
-        ResponseResult  result=verifySmsCode("13774517597", "173900");
-//        ResponseResult  result=SmsCodeUtil.getSmsCode("13774517597");
+//        ResponseResult  result = verifySmsCode("13774517597", "173900");
+        ResponseResult  result = SmsCodeUtil.getSmsCode("13774517597");
         System.out.println(JSON.toJSONString(result));
     }
 
