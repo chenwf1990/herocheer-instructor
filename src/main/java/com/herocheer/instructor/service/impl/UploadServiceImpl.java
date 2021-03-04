@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.entity.UploadFileVO;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.service.UploadService;
 import com.herocheer.instructor.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,9 +33,9 @@ public class UploadServiceImpl implements UploadService {
 
 
     private UploadFileVO uploadFile(MultipartFile file, String path) {
-        String fileName = file.getOriginalFilename();
+        String fileName = file.getContentType();
         long time = System.currentTimeMillis();
-        String newFileName = time + fileName.substring(fileName.lastIndexOf("."));
+        String newFileName = time + "." + fileName.substring(fileName.lastIndexOf("/") + 1);
         String dr = "instructor/" + DateUtil.format(new Date(), DateUtil.IMAGE_PARAENT);
         File tempFile = new File(path + dr);
         if (!tempFile.exists()) {
