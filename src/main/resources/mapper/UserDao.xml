@@ -603,6 +603,8 @@
                 </if>
             </trim>
         </where>
+        UNION all
+        select <include refid="table_field"/> from `user` where userType = 4
         order by createdTime desc
     </select>
 
