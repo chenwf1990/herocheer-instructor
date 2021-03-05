@@ -25,7 +25,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,9 +71,9 @@ public class InsuranceController extends BaseController {
      * @param request       请求
      * @return {@link ResponseResult<JSONArray>}
      */
-    @GetMapping("/{certificateNo}")
+    @GetMapping("/certificateNo")
     @ApiOperation("我的保单")
-    public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @PathVariable String certificateNo, HttpServletRequest request){
+    public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @RequestParam String certificateNo, HttpServletRequest request){
         String sign = DigestUtils.md5DigestAsHex((AesUtil.decrypt(certificateNo) + InsuranceConst.KEY).getBytes());
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
