@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -61,11 +60,6 @@ public class WechatController extends BaseController {
 
     @Autowired
     private RedisClient redisClient;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-
 
 
     @GetMapping("/getWxInfo")
@@ -259,6 +253,13 @@ public class WechatController extends BaseController {
         return ResponseResult.fail();
     }
 
+    /**
+     * 获取微信用户列表
+     *
+     * @param sysUserVO VO
+     * @param request   请求
+     * @return {@link ResponseResult}
+     */
     @PostMapping("list/page")
     @ApiOperation("微信用户列表")
     public ResponseResult queryWeChatUser(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){

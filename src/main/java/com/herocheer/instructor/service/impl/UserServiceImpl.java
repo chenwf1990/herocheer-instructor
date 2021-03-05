@@ -506,6 +506,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
             user.setPhone(apply.getPhone());
             user.setAddress(apply.getAreaName());
             user.setUserName(apply.getName());
+            user.setNickName(apply.getName());
             user.setWorkUnit(apply.getWorkUnit());
             if(StringUtils.isEmpty(user.getOpenid())){
                 user.setOpenid(apply.getOpenId());
@@ -514,6 +515,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         }else {
             user.setCertificateNo(apply.getCardNo());
             user.setUserName(apply.getName());
+            user.setNickName(apply.getName());
             user.setPhone(apply.getPhone());
             user.setUserType(userType);
             user.setSex(apply.getSex());
