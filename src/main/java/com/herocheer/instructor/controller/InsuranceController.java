@@ -72,13 +72,13 @@ public class InsuranceController extends BaseController {
      * @param request       请求
      * @return {@link ResponseResult<JSONArray>}
      */
-    @GetMapping("/{certificateNo:\\w+}")
+    @GetMapping("/{certificateNo}")
     @ApiOperation("我的保单")
     public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @PathVariable String certificateNo, HttpServletRequest request){
-        String sign = DigestUtils.md5DigestAsHex((certificateNo + InsuranceConst.KEY).getBytes());
+        String sign = DigestUtils.md5DigestAsHex((AesUtil.decrypt(certificateNo) + InsuranceConst.KEY).getBytes());
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
-        paramMap.put("certificateNo", AesUtil.encrypt(certificateNo));
+        paramMap.put("certificateNo", AesUtil.decrypt(certificateNo));
         String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/listInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);

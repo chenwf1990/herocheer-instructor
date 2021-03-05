@@ -12,6 +12,7 @@ import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.utils.AesUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import com.wf.captcha.SpecCaptcha;
@@ -169,7 +170,7 @@ public class UserController extends BaseController {
         // 获取用户信息
         UserEntity currentUser = this.getUser(request);
         // 修改密码
-        userService.modifyPassword(currentUser.getId(),oldPassword,newPassword);
+        userService.modifyPassword(currentUser.getId(), AesUtil.decrypt(oldPassword),AesUtil.decrypt(newPassword));
         return ResponseResult.ok();
     }
 

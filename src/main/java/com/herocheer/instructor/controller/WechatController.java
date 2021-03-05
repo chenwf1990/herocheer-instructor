@@ -149,7 +149,7 @@ public class WechatController extends BaseController {
             throw new CommonException("您已绑定过了");
         }
         // 发送短信验证码
-        SmsCodeUtil.getSmsCode(AesUtil.encrypt(phone));
+        SmsCodeUtil.getSmsCode(AesUtil.decrypt(phone));
         return ResponseResult.ok();
     }
 
@@ -171,7 +171,7 @@ public class WechatController extends BaseController {
     public ResponseResult verifySmsCode(@NotBlank(message = "手机号不能为空") String phone,
                                          @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
 
-        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.encrypt(phone), code);
+        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.decrypt(phone), code);
         if("F".equals(result.getSuccess())){
             return ResponseResult.fail(result.getMessage());
         }

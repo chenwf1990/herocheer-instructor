@@ -41,7 +41,7 @@ public class AesUtil {
             byte[] encrypted = cipher.doFinal(content.getBytes(ENCODE));
             return Base64Utils.encodeToString(encrypted);
         } catch (Exception e) {
-            log.error("解密异常 ",e);
+            log.error("加密异常 ",e);
             e.printStackTrace();
         }
         return null;
