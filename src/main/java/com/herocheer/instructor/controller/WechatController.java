@@ -13,6 +13,7 @@ import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
+import com.herocheer.instructor.utils.AesUtil;
 import com.herocheer.instructor.utils.SmsCodeUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
@@ -148,7 +149,7 @@ public class WechatController extends BaseController {
             throw new CommonException("您已绑定过了");
         }
         // 发送短信验证码
-        SmsCodeUtil.getSmsCode(phone);
+        SmsCodeUtil.getSmsCode(AesUtil.encrypt(phone));
         return ResponseResult.ok();
     }
 
@@ -170,7 +171,7 @@ public class WechatController extends BaseController {
     public ResponseResult verifySmsCode(@NotBlank(message = "手机号不能为空") String phone,
                                          @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
 
-        ResponseResult  result = SmsCodeUtil.verifySmsCode(phone, code);
+        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.encrypt(phone), code);
         if("F".equals(result.getSuccess())){
             return ResponseResult.fail(result.getMessage());
         }
