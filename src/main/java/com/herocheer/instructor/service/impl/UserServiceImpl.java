@@ -2,6 +2,7 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
@@ -34,18 +35,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -682,43 +676,37 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public void asynUserInfo2Ijianshen(JSONObject user, User sysUser) {
         //  封装参数，千万不要替换为Map与HashMap，否则参数无法传递
-        MultiValueMap<String, Object> paramMap= new LinkedMultiValueMap<String, Object>();
-        paramMap.add("ixmUserId",sysUser.getIxmUserId());
-        paramMap.add("ixmUserName",sysUser.getIxmUserName());
-        paramMap.add("ixmRealNameLevel",sysUser.getIxmRealNameLevel());
-        paramMap.add("ixmUserRealName",sysUser.getIxmUserRealName());
-        paramMap.add("imgUrl",sysUser.getImgUrl());
-        paramMap.add("name",sysUser.getUserName());
-        paramMap.add("sex",sysUser.getSex());
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("ixmUserId",sysUser.getIxmUserId());
+        paramMap.put("ixmUserName",sysUser.getIxmUserName());
+        paramMap.put("ixmRealNameLevel",sysUser.getIxmRealNameLevel());
+        paramMap.put("ixmUserRealName",sysUser.getIxmUserRealName());
+        paramMap.put("imgUrl",sysUser.getImgUrl());
+        paramMap.put("name",sysUser.getUserName());
+        paramMap.put("sex",sysUser.getSex());
         // 登入状态
-        paramMap.add("ixmLoginStatus","1");
-        paramMap.add("ixmToken","");
-        paramMap.add("certificateType",user.getString("certificateType"));
-        paramMap.add("certificateNo",sysUser.getCertificateNo());
-        paramMap.add("phoneNo",sysUser.getPhone());
-        paramMap.add("email",sysUser.getEmail());
-        paramMap.add("openid",sysUser.getOpenid());
-        paramMap.add("source",sysUser.getSource());
-        paramMap.add("age",sysUser.getAge());
+        paramMap.put("ixmLoginStatus","1");
+        paramMap.put("ixmToken","");
+        // 证件类型 :1-身份证；2-港澳台通行证
+        paramMap.put("certificateType","idcard".equals(user.getString("certificateType")) ? 1 : 2);
+        paramMap.put("certificateNo",sysUser.getCertificateNo());
+        paramMap.put("phoneNo",sysUser.getPhone());
+        paramMap.put("email",sysUser.getEmail());
+        paramMap.put("openid",sysUser.getOpenid());
+        paramMap.put("source",sysUser.getSource());
+        paramMap.put("age",sysUser.getAge());
         // 签名
         String sign = DigestUtils.md5DigestAsHex(( sysUser.getCertificateNo()+ InsuranceConst.KEY).getBytes());
-        paramMap.add("sign",sign);
+        paramMap.put("sign",sign);
 
-//        String resultUser = HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser",paramMap);
+        String resultUser = HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser",paramMap);
+
         /*String resultUser = HttpRequest.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser")
                 .header(Header.CONTENT_TYPE, "application/x-www-form-urlencoded")
                 .form(paramMap)
                 .execute().body();*/
 
-        HttpHeaders headers = new HttpHeaders();
-        //  请勿轻易改变此提交方式，大部分的情况下，提交方式都是表单提交
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        //  也支持中文
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<MultiValueMap<String, Object>>(paramMap, headers);
-        //  执行HTTP请求
-        ResponseEntity<String> response = restTemplate.exchange(InsuranceConst.BASE_URL+"/weChat/syncLoginUser", HttpMethod.POST, requestEntity, String.class);
-
-        JSONObject JSONObj = JSONObject.parseObject(response.getBody());
+        JSONObject JSONObj = JSONObject.parseObject(resultUser);
         log.debug("同步用户数据给I健身：{}",JSONObj);
 
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
