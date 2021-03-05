@@ -10,6 +10,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.utils.AesUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -77,7 +78,7 @@ public class InsuranceController extends BaseController {
         String sign = DigestUtils.md5DigestAsHex((certificateNo + InsuranceConst.KEY).getBytes());
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
-        paramMap.put("certificateNo", certificateNo);
+        paramMap.put("certificateNo", AesUtil.encrypt(certificateNo));
         String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/listInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
