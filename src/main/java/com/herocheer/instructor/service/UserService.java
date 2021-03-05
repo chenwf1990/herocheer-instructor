@@ -220,4 +220,5 @@ public interface UserService extends BaseService<User, Long> {
      * @param sysUser 系统用户
      */
     void asynUserInfo2Ijianshen(JSONObject user, User sysUser);
+
 }

@@ -119,4 +119,12 @@ public interface UserDao extends BaseDao<User, Long> {
      * @return {@link List<User>}
      */
     List<MemberVO> findUserByUserType(List<String> userType);
+
+    /**
+     * 微信用户列表
+     *
+     * @param sysUserVO 系统用户签证官
+     * @return {@link List<User>}
+     */
+    List<User> selectWeChatUserByPage(SysUserVO sysUserVO);
 }

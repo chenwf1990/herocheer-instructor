@@ -2,10 +2,12 @@ package com.herocheer.instructor.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
+import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
@@ -249,7 +251,6 @@ public class WechatController extends BaseController {
      */
     @PostMapping("/ijianshen")
     @ApiOperation("i健身用户")
-    @AllowAnonymous
     public ResponseResult insertUserInfo(@Valid @RequestBody WeChatUserVO weChatUser, HttpServletRequest request){
         int i = wechatService.addUserInfo(weChatUser);
         if(i>0){
@@ -257,4 +258,12 @@ public class WechatController extends BaseController {
         }
         return ResponseResult.fail();
     }
+
+    @PostMapping("list/page")
+    @ApiOperation("微信用户列表")
+    public ResponseResult queryWeChatUser(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){
+        Page<User> page = wechatService.findWeChatUserByPage(sysUserVO);
+        return ResponseResult.ok(page);
+    }
+
 }

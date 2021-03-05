@@ -5,12 +5,14 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
+import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
@@ -42,6 +44,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -257,6 +260,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         }
     }
 
+
     @Override
     public User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token) {
         String result = "";
@@ -420,5 +424,19 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             log.error("GetOpenId Exception : {}", ex);
             return null;
         }
+    }
+
+    /**
+     * 微信列表
+     *
+     * @param sysUserVO 系统用户签证官
+     * @return {@link Page <User>}
+     */
+    @Override
+    public Page<User> findWeChatUserByPage(SysUserVO sysUserVO) {
+        Page page = Page.startPage(sysUserVO.getPageNo(), sysUserVO.getPageSize());
+        List<User> sysUserList = this.dao.selectWeChatUserByPage(sysUserVO);;
+        page.setDataList(sysUserList);
+        return page;
     }
 }

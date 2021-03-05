@@ -1,8 +1,9 @@
 package com.herocheer.instructor.service;
 
-import com.alibaba.fastjson.JSONObject;
+import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
@@ -48,4 +49,12 @@ public interface WechatService {
      * @return int
      */
     int addUserInfo(WeChatUserVO weChatUser);
+
+    /**
+     * 微信列表
+     *
+     * @param sysUserVO 系统用户签证官
+     * @return {@link Page<User>}
+     */
+    Page<User> findWeChatUserByPage(SysUserVO sysUserVO);
 }

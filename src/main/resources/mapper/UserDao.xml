@@ -732,4 +732,39 @@
             </trim>
         </where>
     </select>
+
+    <!--后台用户列表-->
+    <select id="selectWeChatUserByPage" parameterType="com.herocheer.instructor.domain.vo.SysUserVO" resultType="com.herocheer.instructor.domain.entity.User">
+        select <include refid="table_field"/> from `user`
+        <where>
+            <trim prefixOverrides="AND | OR">
+                and openId != ""
+                <if test="userName != null">
+                    and userName like concat(#{userName},'%')
+                </if>
+                <if test="account != null">
+                    and account = #{account}
+                </if>
+                <if test="phone != null">
+                    and phone = #{phone}
+                </if>
+                <if test="email != null">
+                    and email = #{email}
+                </if>
+                <if test="userType != null">
+                    and userType = #{userType}
+                </if>
+                <if test="beginTime != null">
+                    and createdTime >= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    and createdTime &lt;= #{endTime}
+                </if>
+                <if test="status != null">
+                    and `status` = #{status}
+                </if>
+            </trim>
+        </where>
+        order by createdTime desc
+    </select>
 </mapper>
