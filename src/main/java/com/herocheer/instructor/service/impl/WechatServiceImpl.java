@@ -24,6 +24,7 @@ import com.herocheer.instructor.enums.WechatConst;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
+import com.herocheer.instructor.utils.AesUtil;
 import com.herocheer.instructor.utils.IDSAPIClient;
 import com.herocheer.instructor.utils.IDSAPIEncryptUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -311,7 +312,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             } else {
                 sysUser.setSex(0);
             }
-            sysUser.setCertificateNo(certificateNum);
+            // 身份证加密
+            sysUser.setCertificateNo(AesUtil.encrypt(certificateNum));
             sysUser.setIxmRealNameLevel(user.getString("realNameStatus"));
             sysUser.setIxmUserRealName(user.getString("certificateName"));
             sysUser.setPhone(user.getString("mobile"));
