@@ -146,4 +146,29 @@
             </trim>
         </where>
     </select>
+
+    <!--只返回一个字典信息-->
+    <select id="selectSysDictOne" parameterType="map" resultType="int">
+        select count(1) from sys_dict
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="dictName != null">
+                    and dictName = #{dictName}
+                </if>
+                <if test="dictCode != null">
+                    and dictCode = #{dictCode}
+                </if>
+                <if test="pid != null">
+                    and pid = #{pid}
+                </if>
+                <if test="remark != null">
+                    and remark = #{remark}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                limit 1
+            </trim>
+        </where>
+    </select>
 </mapper>

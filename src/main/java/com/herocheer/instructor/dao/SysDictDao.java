@@ -5,6 +5,7 @@ import com.herocheer.instructor.domain.vo.SysDictVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -22,4 +23,6 @@ public interface SysDictDao extends BaseDao<SysDict, Long> {
      */
     List<SysDict> selectDictByPage(SysDictVO sysDictVO);
 
+
+    int selectSysDictOne(Map<String, Object> map);
 }

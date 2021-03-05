@@ -14,7 +14,9 @@ import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -38,7 +40,22 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
         SysDict sysDict = SysDict.builder().build();
         BeanCopier.create(sysDictVO.getClass(),sysDict.getClass(),false).copy(sysDictVO,sysDict,null);
         if(StringUtils.isBlank(sysDictVO.getDictCode())){
-            sysDict.setDictCode(PinYinUtil.toFirstChar(sysDictVO.getDictName()).toUpperCase());
+            // 处理角色编码重复
+            Map<String, Object> codeMap = new HashMap();
+            // 角色编码取用角色名的拼首字母
+            String  oldCode  = PinYinUtil.toFirstChar(sysDictVO.getDictName()).toUpperCase();
+            codeMap.put("dictCode",oldCode);
+            int sum = 1;
+            String newCode = null;
+            if(this.dao.selectSysDictOne(codeMap) >= 1){
+                do{
+                    newCode = oldCode +"0" + sum++;
+                    codeMap.put("dictCode",newCode);
+                }while (this.dao.selectSysDictOne(codeMap) >= 1);
+                sysDict.setDictCode(newCode);
+            }else {
+                sysDict.setDictCode(oldCode);
+            }
         }
         this.insert(sysDict);
         return sysDict;
