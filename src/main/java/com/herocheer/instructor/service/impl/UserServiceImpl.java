@@ -121,7 +121,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         User user = this.dao.selectSysUserOne(objectMap);
 
         // 登入验证账号（只支持账号）同时登入和密码
-        this.checkAcount(user,password,null);
+        this.checkAcount(user,AesUtil.decrypt(password),null);
 
         // 生成的是不带-的字符串，类似于：b17f24ff026d40949c85a24f4f375d42
         String simpleUUID = IdUtil.simpleUUID();
@@ -199,7 +199,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
         // 用户密码加密
-        user.setPassword(encoder.encode(sysUserVO.getPassword()));
+        user.setPassword(encoder.encode(AesUtil.decrypt(sysUserVO.getPassword())));
 
         // 插入用户信息
         this.insert(user);
