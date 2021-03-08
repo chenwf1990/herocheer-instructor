@@ -43,6 +43,13 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
     public SysDict addDict(SysDictVO sysDictVO) {
         SysDict sysDict = SysDict.builder().build();
         BeanCopier.create(sysDictVO.getClass(),sysDict.getClass(),false).copy(sysDictVO,sysDict,null);
+
+        // 如果pid为空，设置默认值：0
+        if(StringUtils.isBlank(sysDictVO.getPid())){
+            sysDict.setPid("0");
+        }
+
+        // 如果code为空，设置默认值：中文拼音的首字母
         if(StringUtils.isBlank(sysDictVO.getDictCode())){
             // 处理角色编码重复
             Map<String, Object> codeMap = new HashMap();
