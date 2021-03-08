@@ -9,6 +9,7 @@ import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -72,4 +73,12 @@ public interface SysMenuService extends BaseService<SysMenu, Long> {
      * @return {@link Page<SysMenu>}
      */
     Page<SysMenu> findMenuByPage(SysMenuVO sysMenuVO);
+
+    /**
+     * 根据用户角色获取权限
+     *
+     * @param map 地图
+     * @return {@link List<SysMenu>}
+     */
+    List<SysMenu> findMenuTreeToRole(Map<String, Object> map);
 }

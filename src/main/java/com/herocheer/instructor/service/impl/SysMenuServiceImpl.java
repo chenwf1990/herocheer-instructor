@@ -84,7 +84,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
                 if(CollectionUtils.isEmpty(stringList)){
                     throw new CommonException("请联系管理员，分配用户角色给您");
                 }
-                paramMap.put("roleArray", String.join(",", stringList));
+                paramMap.put("roleArray", stringList);
             }
 
             sysMenus = this.dao.selectMenuTreeToRole(paramMap);
@@ -265,5 +265,16 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         List<SysMenu> sysUserList = this.dao.selectMenuByPage(sysMenuVO);
         page.setDataList(sysUserList);
         return page;
+    }
+
+    /**
+     * 根据用户角色获取权限
+     *
+     * @param map 地图
+     * @return {@link List<SysMenu>}
+     */
+    @Override
+    public List<SysMenu> findMenuTreeToRole(Map<String, Object> map) {
+        return this.dao.selectMenuTreeToRole(map);
     }
 }

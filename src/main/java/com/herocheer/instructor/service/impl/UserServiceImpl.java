@@ -15,6 +15,7 @@ import com.herocheer.instructor.aspect.SysLog;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorApply;
+import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.entity.SysUserRole;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.AreaPermissionVO;
@@ -29,6 +30,7 @@ import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.utils.AesUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -42,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -78,8 +79,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     InstructorApplyService instructorApplyService;
 
     @Autowired
-    private RestTemplate restTemplate;
-
+    private SysMenuService sysMenuService;
 
     /**
      * 检查账号
@@ -122,6 +122,24 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
         // 登入验证账号（只支持账号）同时登入和密码
         this.checkAcount(user,AesUtil.decrypt(password),null);
+
+        // 先判断是否存在菜单权限
+        if(!UserTypeEnums.sysAdmin.getCode().equals(user.getUserType())){
+            List<String> stringList= findRoleId(user.getId());
+            if(CollectionUtils.isEmpty(stringList)){
+                throw new CommonException("请联系管理员，分配用户角色给您");
+            }
+
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("status", false);
+            paramMap.put("userId", user.getId());
+            paramMap.put("roleArray", stringList);
+
+            List<SysMenu> sysMenus = sysMenuService.findMenuTreeToRole(paramMap);
+            if(CollectionUtils.isEmpty(sysMenus)){
+                throw new CommonException("请联系管理员，分配菜单权限给您");
+            }
+        }
 
         // 生成的是不带-的字符串，类似于：b17f24ff026d40949c85a24f4f375d42
         String simpleUUID = IdUtil.simpleUUID();
