@@ -1,5 +1,6 @@
 package com.herocheer.instructor.service;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysDict;
@@ -71,4 +72,11 @@ public interface SysDictService extends BaseService<SysDict, Long> {
      */
     List<SysDict> findDictLikeDictName(String pid,String dictName);
 
+
+    /**
+     * 通过pid找到dict树
+     *
+     * @return {@link List<Tree<Long>>}
+     */
+    List<Tree<Long>> findDictTreeByPid();
 }

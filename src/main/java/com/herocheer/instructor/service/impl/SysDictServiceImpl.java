@@ -1,5 +1,9 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNode;
+import cn.hutool.core.lang.tree.TreeUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
@@ -135,5 +139,25 @@ public class SysDictServiceImpl extends BaseServiceImpl<SysDictDao, SysDict, Lon
     @Override
     public List<SysDict> findDictLikeDictName(String pid,String dictName) {
         return this.dao.selectDictByPage( SysDictVO.builder().status(true).pid(pid).dictName(dictName).build());
+    }
+
+    /**
+     * 通过pid找到dict树
+     *
+     * @return {@link List< Tree <Long>>}
+     */
+    @Override
+    public List<Tree<Long>> findDictTreeByPid() {
+        List<SysDict>  sysDictList = findDictByPid("0");
+        List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
+        sysDictList.forEach((SysDict dict)->{
+            Map<String, Object> hashMap = new HashMap();
+            hashMap.put("label",dict.getDictName());
+            hashMap.put("code",dict.getDictCode());
+            TreeNode<Long> treeNode = new TreeNode<Long>(dict.getId(), Long.valueOf(dict.getPid()), dict.getDictName(), 5).setExtra(hashMap);
+            nodeList.add(treeNode);
+        });
+        List<Tree<Long>> treeList = TreeUtil.build(nodeList, 0L);
+        return treeList;
     }
 }

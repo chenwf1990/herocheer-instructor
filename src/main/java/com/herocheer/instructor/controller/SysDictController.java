@@ -1,5 +1,6 @@
 package com.herocheer.instructor.controller;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.SysDict;
@@ -130,5 +131,17 @@ public class SysDictController extends BaseController {
                                                                @ApiParam("字典PID") @RequestParam String type,
                                                                HttpServletRequest request){
         return ResponseResult.ok( sysDictService.findDictLikeDictName(type,dictName));
+    }
+
+    /**
+     * 根据字典类型查询字典树
+     *
+     * @param request 请求
+     * @return {@link ResponseResult<List<Tree<Long>>>}
+     */
+    @GetMapping("/name/tree")
+    @ApiOperation("字典树")
+    public ResponseResult<List<Tree<Long>>> fetchDictTreeByPid(HttpServletRequest request){
+        return ResponseResult.ok( sysDictService.findDictTreeByPid());
     }
 }
