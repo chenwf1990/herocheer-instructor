@@ -32,6 +32,8 @@ public class NewsNotice extends BaseEntity {
     private String deptName;
     @ApiModelProperty("部门id")   
     private Long deptId;
+    @ApiModelProperty("是否公开(0.公开 1.不公开)")
+    private Integer isPublic;
     @ApiModelProperty("备注")   
     private String remarks;
 

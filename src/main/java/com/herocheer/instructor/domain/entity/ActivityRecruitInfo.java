@@ -60,5 +60,13 @@ public class ActivityRecruitInfo extends BaseEntity {
     private String deptName;
     @ApiModelProperty("部门id")   
     private Long deptId;
+    @ApiModelProperty("是否公开(0.公开1.不公开)")
+    private Integer isPublic;
+    @ApiModelProperty("审批人名称")
+    private String approvalBy;
+    @ApiModelProperty("审批时间")
+    private Long approvalTime;
+    @ApiModelProperty("审批人id")
+    private Long approvalId;
 
 }

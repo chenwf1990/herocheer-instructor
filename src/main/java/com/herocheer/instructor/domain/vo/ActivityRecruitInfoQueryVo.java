@@ -40,6 +40,9 @@ public class ActivityRecruitInfoQueryVo implements Serializable {
     @ApiModelProperty("类型(0.全部1.我发布的2.我审批的3.已发布的)")
     private Integer type;
 
+    @ApiModelProperty("是否公开(0.公开1.不公开)")
+    private Integer isPublic;
+
     @ApiModelProperty("创建人-后台参数")
     private Long userId;
 

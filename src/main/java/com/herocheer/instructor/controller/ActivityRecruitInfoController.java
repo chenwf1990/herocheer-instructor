@@ -3,7 +3,6 @@ package com.herocheer.instructor.controller;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
@@ -12,11 +11,18 @@ import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.ApplicationListVo;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.web.annotation.AllowAnonymous;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -56,6 +62,13 @@ public class ActivityRecruitInfoController extends BaseController{
         return ResponseResult.ok(activityRecruitInfoService.withdraw(id));
     }
 
+    @GetMapping("/isPublic")
+    @ApiOperation("设置招募信息是否公开")
+    public ResponseResult isPublic(@ApiParam("招募信息id") @RequestParam Long id,
+                                   @ApiParam("是否公开(0.公开1.不公开)") @RequestParam Integer isPublic){
+        return ResponseResult.ok(activityRecruitInfoService.isPublic(id,isPublic));
+    }
+
     @PostMapping("/add")
     @ApiOperation("新增招募信息")
     public ResponseResult add(@RequestBody ActivityRecruitInfoVo activityRecruitInfoVo,
@@ -88,7 +101,7 @@ public class ActivityRecruitInfoController extends BaseController{
     @ApiOperation("招募信息审批")
     public ResponseResult approval(HttpServletRequest request,@RequestBody ActivityRecruitApproval activityRecruitApproval){
         reqLimitByUserId(request,"ActivityRecruitInfo_approval",1);
-        Integer count=activityRecruitInfoService.approval(activityRecruitApproval);
+        Integer count=activityRecruitInfoService.approval(activityRecruitApproval,getUser(request));
         return ResponseResult.isSuccess(count);
     }
 

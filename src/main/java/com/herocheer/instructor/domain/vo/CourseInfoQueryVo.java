@@ -55,6 +55,9 @@ public class CourseInfoQueryVo implements Serializable {
     @ApiModelProperty("课程状态(0.未开始1.报名中2.报名截止3.上课中4.已结课)")
     private Integer courseState;
 
+    @ApiModelProperty("是否公开(0.公开 1.不公开)")
+    private Integer isPublic;
+
     @ApiModelProperty("页码")
     private int pageNo;
 

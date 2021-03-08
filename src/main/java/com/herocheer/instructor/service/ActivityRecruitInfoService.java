@@ -1,10 +1,10 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
-import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
-import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
-import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
+import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
@@ -43,6 +43,13 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
     Integer withdraw(Long id);
 
     /**
+     * 设置是否公开
+     * @param id
+     * @return
+     */
+    Integer isPublic(Long id,Integer isPublic);
+
+    /**
      * 保存招募信息
      * @param activityRecruitInfoVo
      * @return
@@ -75,7 +82,7 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
      * @param activityRecruitApproval
      * @return
      */
-    Integer approval(ActivityRecruitApproval activityRecruitApproval);
+    Integer approval(ActivityRecruitApproval activityRecruitApproval,UserEntity userEntity);
 
     /**
      * 根据招募信息id获取招募信息列表
