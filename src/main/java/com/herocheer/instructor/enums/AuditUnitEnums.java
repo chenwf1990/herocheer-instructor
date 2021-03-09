@@ -14,7 +14,9 @@ public enum AuditUnitEnums {
     HCQ("WLJ_HCQ", "海沧区文旅局","WLJ_HCQ"),
     XAQ("WLJ_XAQ", "翔安区文旅局","WLJ_XAQ"),
     TAQ("WLJ_TAQ", "同安区文旅局","WLJ_TAQ"),
-    TYJ("WLJ_TYJ", "体育局","WLJ_TYJ"),
+    TYJ("WLJ_TYJ", "厦门市体育局","WLJ_TYJ"),
+    FJS_TYJ("WLJ_FJSTYJ", "福建省体育局","WLJ_FJSTYJ"),
+    GJ_TYJ("WLJ_GJTYZJ", "国家体育总局","WLJ_GJTYZJ"),
     NEWS_AUDIT("NEWS_AUDIT", "新闻审批","NEWS_AUDIT");
 
     private String code;
