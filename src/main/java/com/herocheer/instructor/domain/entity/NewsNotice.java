@@ -18,7 +18,7 @@ public class NewsNotice extends BaseEntity {
     private String pic;
     @ApiModelProperty("标题")   
     private String title;
-    @ApiModelProperty("审核状态 0待审核1通过2驳回3撤回4已发布")   
+    @ApiModelProperty("审核状态 0待审核1通过2驳回3撤回4草稿")
     private Integer auditState;
     @ApiModelProperty("审核时间")   
     private Long auditTime;
