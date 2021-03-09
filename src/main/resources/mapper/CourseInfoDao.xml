@@ -3,7 +3,8 @@
 <mapper namespace="com.herocheer.instructor.dao.CourseInfoDao">
 
     <sql id="table_field">
-        id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, state, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
+        id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, state, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,isPublic,
+        approvalId,approvalBy,approvalTime,
         CASE
             WHEN `state` = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
             WHEN `state` = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
@@ -84,6 +85,18 @@
         <if test="state != null">
             state,
         </if>
+        <if test="isPublic != null">
+            isPublic,
+        </if>
+        <if test="approvalId != null">
+            approvalId,
+        </if>
+        <if test="approvalBy != null">
+            approvalBy,
+        </if>
+        <if test="approvalTime != null">
+            approvalTime,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -153,6 +166,18 @@
         </if>
         <if test="state != null">
             #{state},
+        </if>
+        <if test="isPublic != null">
+            #{isPublic},
+        </if>
+        <if test="approvalId != null">
+            #{approvalId},
+        </if>
+        <if test="approvalBy != null">
+            #{approvalBy},
+        </if>
+        <if test="approvalTime != null">
+            #{approvalTime},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -234,6 +259,18 @@
             <if test="state != null">
                 state = #{state},
             </if>
+            <if test="isPublic != null">
+                isPublic = #{isPublic},
+            </if>
+            <if test="approvalId != null">
+                approvalId = #{approvalId},
+            </if>
+            <if test="approvalBy != null">
+                approvalBy = #{approvalBy},
+            </if>
+            <if test="approvalTime != null">
+                approvalTime = #{approvalTime},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
         where id = #{id}
@@ -312,6 +349,18 @@
             </if>
             <if test="state != null">
                 and state = #{state}
+            </if>
+            <if test="isPublic != null">
+                and isPublic = #{isPublic}
+            </if>
+            <if test="approvalId != null">
+                and approvalId = #{approvalId},
+            </if>
+            <if test="approvalBy != null">
+                and approvalBy = #{approvalBy},
+            </if>
+            <if test="approvalTime != null">
+                and approvalTime = #{approvalTime},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
@@ -392,6 +441,18 @@
             <if test="state != null">
                 and state = #{state}
             </if>
+            <if test="isPublic != null">
+                and isPublic = #{isPublic}
+            </if>
+            <if test="approvalId != null">
+                and approvalId = #{approvalId},
+            </if>
+            <if test="approvalBy != null">
+                and approvalBy = #{approvalBy},
+            </if>
+            <if test="approvalTime != null">
+                and approvalTime = #{approvalTime},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
@@ -461,6 +522,9 @@
             <if test="signStartTime!=null and signEndTime!=null">
                 and (signStartTime between #{signStartTime} and #{signEndTime} or
                      signEndTime between #{signStartTime} and #{signEndTime})
+            </if>
+            <if test="isPublic != null">
+                and isPublic = #{isPublic}
             </if>
         </where>
         order by placedTop DESC,createdTime DESC

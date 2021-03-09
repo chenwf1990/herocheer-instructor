@@ -56,5 +56,13 @@ public class CourseInfo extends BaseEntity {
     private Long deptId;
     @ApiModelProperty("状态 (0.待审核1.审批通过2.撤回3.驳回)")
     private Integer state;
+    @ApiModelProperty("是否公开(0.公开 1.不公开)")
+    private Integer isPublic;
+    @ApiModelProperty("审批人名称")
+    private String approvalBy;
+    @ApiModelProperty("审批时间")
+    private Long approvalTime;
+    @ApiModelProperty("审批人id")
+    private Long approvalId;
 
 }

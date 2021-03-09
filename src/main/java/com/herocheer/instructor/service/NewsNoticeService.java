@@ -46,6 +46,13 @@ public interface NewsNoticeService extends BaseService<NewsNotice,Long> {
     long approval(Long id, int auditState, String auditIdea, Long curUserId);
 
     /**
+     * 设置是否公开
+     * @param id
+     * @return
+     */
+    Integer isPublic(Long id,Integer isPublic);
+
+    /**
      * @author chenwf
      * @desc  添加新闻活动
      * @date 2021-01-04 17:26:18

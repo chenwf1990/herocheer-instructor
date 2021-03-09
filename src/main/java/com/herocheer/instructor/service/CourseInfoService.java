@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
@@ -17,15 +18,53 @@ import java.util.List;
  */
 public interface CourseInfoService extends BaseService<CourseInfo,Long> {
 
+    /**
+     * 分页查询
+     * @param queryVo
+     * @param userId
+     * @return
+     */
     Page<CourseInfoVo> queryPage(CourseInfoQueryVo queryVo, Long userId);
 
+    /**
+     * 获取审批记录
+     * @param id
+     * @return
+     */
     List<CourseApproval> approvalRecord(Long id);
 
+    /**
+     * 设置是否公开
+     * @param id
+     * @return
+     */
+    Integer isPublic(Long id,Integer isPublic);
+
+    /**
+     * 撤回
+     * @param id
+     * @return
+     */
     Integer withdraw(Long id);
 
-    Integer approval(CourseApproval courseApproval);
+    /**
+     * 审批
+     * @param courseApproval
+     * @return
+     */
+    Integer approval(CourseApproval courseApproval,UserEntity userEntity);
 
+    /**
+     * 根据id获取详情
+     * @param id
+     * @return
+     */
     CourseInfoVo getCourseInfo(Long id);
 
+    /**
+     * 课程时间验证
+     * @param courseInfo
+     * @return
+     */
     CourseInfo verificationDate(CourseInfo courseInfo);
 }

@@ -4,14 +4,19 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
-import com.herocheer.instructor.domain.vo.InstructorQueryVo;
 import com.herocheer.instructor.domain.vo.NewsQueryVo;
 import com.herocheer.instructor.service.NewsNoticeService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +47,13 @@ public class NewsNoticeController extends BaseController{
     public ResponseResult<NewsNotice> get(@ApiParam("新闻id") @RequestParam Long id){
 
         return ResponseResult.ok(newsNoticeService.get(id));
+    }
+
+    @GetMapping("/isPublic")
+    @ApiOperation("设置是否公开")
+    public ResponseResult isPublic(@ApiParam("招募信息id") @RequestParam Long id,
+                                   @ApiParam("是否公开(0.公开1.不公开)") @RequestParam Integer isPublic){
+        return ResponseResult.ok(newsNoticeService.isPublic(id,isPublic));
     }
 
     @PostMapping("/add")

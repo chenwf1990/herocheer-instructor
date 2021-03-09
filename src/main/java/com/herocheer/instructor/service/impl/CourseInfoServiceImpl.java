@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.CourseInfoDao;
 import com.herocheer.instructor.domain.entity.CourseApproval;
@@ -54,6 +55,14 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     }
 
     @Override
+    public Integer isPublic(Long id, Integer isPublic) {
+        CourseInfoVo courseInfoVo=new CourseInfoVo();
+        courseInfoVo.setId(id);
+        courseInfoVo.setIsPublic(isPublic);
+        return this.dao.update(courseInfoVo);
+    }
+
+    @Override
     public Integer withdraw(Long id) {
         CourseInfo courseInfo=new CourseInfo();
         courseInfo.setId(id);
@@ -62,7 +71,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     }
 
     @Override
-    public Integer approval(CourseApproval courseApproval) {
+    public Integer approval(CourseApproval courseApproval,UserEntity userEntity) {
         courseApprovalService.insert(courseApproval);
         CourseInfo courseInfo=new CourseInfo();
         courseInfo.setId(courseApproval.getCourseId());
@@ -74,6 +83,9 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         if(ActivityApprovalStateEnums.OVERRULE.getState()==courseApproval.getApprovalStatus()){
             courseInfo.setState(CourseApprovalState.OVERRULE.getState());
         }
+        courseInfo.setApprovalId(userEntity.getId());
+        courseInfo.setApprovalBy(userEntity.getUserName());
+        courseInfo.setApprovalTime(System.currentTimeMillis());
         return this.dao.update(courseInfo);
     }
 

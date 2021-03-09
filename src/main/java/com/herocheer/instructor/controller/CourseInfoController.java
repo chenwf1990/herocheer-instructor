@@ -50,6 +50,13 @@ public class CourseInfoController extends BaseController{
         return ResponseResult.ok(courseInfoService.withdraw(id));
     }
 
+    @GetMapping("/isPublic")
+    @ApiOperation("设置是否公开")
+    public ResponseResult isPublic(@ApiParam("招募信息id") @RequestParam Long id,
+                                   @ApiParam("是否公开(0.公开1.不公开)") @RequestParam Integer isPublic){
+        return ResponseResult.ok(courseInfoService.isPublic(id,isPublic));
+    }
+
     @GetMapping("/get")
     @ApiOperation("根据id查询课程详情")
     public ResponseResult<CourseInfo> get(@ApiParam("招募信息id") @RequestParam Long id){
@@ -81,8 +88,8 @@ public class CourseInfoController extends BaseController{
     }
     @PostMapping("/approval")
     @ApiOperation("课程审批")
-    public ResponseResult approval(@RequestBody CourseApproval courseApproval){
-        Integer count=courseInfoService.approval(courseApproval);
+    public ResponseResult approval(@RequestBody CourseApproval courseApproval,HttpServletRequest request){
+        Integer count=courseInfoService.approval(courseApproval,getUser(request));
         return ResponseResult.isSuccess(count);
     }
 

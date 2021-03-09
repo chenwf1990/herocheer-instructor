@@ -1,6 +1,7 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
@@ -89,6 +90,14 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         return  this.dao.update(activityRecruitInfo);
     }
 
+    @Override
+    public Integer isPublic(Long id, Integer isPublic) {
+        ActivityRecruitInfo activityRecruitInfo=new ActivityRecruitInfo();
+        activityRecruitInfo.setId(id);
+        activityRecruitInfo.setIsPublic(isPublic);
+        return this.dao.update(activityRecruitInfo);
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -152,6 +161,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             activityRecruitInfoVo.setMatchApprover(user.getUserName());
         }
     }
+
     private void saveMatchDetail(ActivityRecruitInfoVo activityRecruitInfoVo){
         if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.MATCH_RECRUIT.getType()){
             if (activityRecruitInfoVo.getRecruitDetails()!=null){
@@ -205,7 +215,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer approval(ActivityRecruitApproval activityRecruitApproval) {
+    public Integer approval(ActivityRecruitApproval activityRecruitApproval,UserEntity userEntity) {
         ActivityRecruitInfo activityRecruitInfo=this.dao.get(activityRecruitApproval.getRecruitId());
         if(activityRecruitInfo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募信息不存在!");
@@ -225,6 +235,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         activityRecruitApprovalService.insert(activityRecruitApproval);
         activityRecruitInfo.setApprovalStatus(activityRecruitApproval.getApprovalStatus());
         activityRecruitInfo.setApprovalComments(activityRecruitApproval.getApprovalComments());
+        activityRecruitInfo.setApprovalId(userEntity.getId());
+        activityRecruitInfo.setApprovalBy(userEntity.getUserName());
+        activityRecruitInfo.setApprovalTime(System.currentTimeMillis());
         Integer count=this.dao.update(activityRecruitInfo);
         //生成驿站招募明细
         if(activityRecruitInfo.getStatus()==RecruitStateEnums.TO_RECRUITED.getState()

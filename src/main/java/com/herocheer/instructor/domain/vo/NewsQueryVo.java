@@ -26,6 +26,8 @@ public class NewsQueryVo implements Serializable {
     private Long beginTime;
     @ApiModelProperty("创建时间(结束时间)")
     private Long endTime;
+    @ApiModelProperty("是否公开(0.公开 1.不公开)")
+    private Integer isPublic;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")
