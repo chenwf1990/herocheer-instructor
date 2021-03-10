@@ -3,9 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.ReservationDao">
     <sql id="table_field">
       id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone,
-       CASE
-		WHEN  endTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-        ELSE `status` END AS 'status', createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      `status`, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
