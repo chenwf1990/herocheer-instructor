@@ -78,7 +78,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约人数已满!");
         }
         Map<String,Object> map=new HashMap<>();
-        map.put("courseId",courseId);
+        map.put("relevanceId",courseId);
         map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
