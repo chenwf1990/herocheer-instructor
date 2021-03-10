@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 50720
  Source Host           : localhost:3336
- Source Schema         : herocheer_instructor_1
+ Source Schema         : herocheer_instructor
 
  Target Server Type    : MySQL
  Target Server Version : 50720

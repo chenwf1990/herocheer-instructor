@@ -435,7 +435,7 @@
                 and auditState = #{auditState}
             </if>
             <if test="phone != null">
-                and phone like concat('%',#{phone},'%')
+                and phone = #{phone}
             </if>
             <if test="guideProject != null">
                 and guideProject like concat('%',#{guideProject},'%')

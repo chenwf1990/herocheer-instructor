@@ -23,7 +23,7 @@ public class InstructorQueryVo implements Serializable {
     private String areaCode;
     @ApiModelProperty("姓名(支持前后模糊查询)")
     private String name;
-    @ApiModelProperty("手机号码(支持前后模糊查询)")
+    @ApiModelProperty("手机号码")
     private String phone;
     @ApiModelProperty("指导项目(支持前后模糊查询)")
     private String guideProject;
