@@ -63,7 +63,7 @@ public class NewsNoticeController extends BaseController{
         return ResponseResult.ok();
     }
 
-    @PostMapping("/cancelNews")
+    @GetMapping("/cancelNews")
     @ApiOperation("取消新闻")
     public ResponseResult cancelNews(@ApiParam("新闻id") @RequestParam Long id){
         NewsNotice newsNotice = new NewsNotice();
