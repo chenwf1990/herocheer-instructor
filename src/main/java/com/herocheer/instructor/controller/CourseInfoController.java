@@ -5,7 +5,6 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
-import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.enums.CourseApprovalState;
 import com.herocheer.instructor.service.CourseInfoService;
 import com.herocheer.web.base.BaseController;
@@ -39,8 +38,8 @@ public class CourseInfoController extends BaseController{
 
     @PostMapping("/queryPage")
     @ApiOperation("课程信息列表查询")
-    public ResponseResult<Page<CourseInfoVo>> queryPageList(@RequestBody CourseInfoQueryVo queryVo, HttpServletRequest request){
-        Page<CourseInfoVo> page = courseInfoService.queryPage(queryVo,getCurUserId(request));
+    public ResponseResult<Page<CourseInfo>> queryPageList(@RequestBody CourseInfoQueryVo queryVo, HttpServletRequest request){
+        Page<CourseInfo> page = courseInfoService.queryPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
 
@@ -49,12 +48,10 @@ public class CourseInfoController extends BaseController{
     public ResponseResult withdraw(@ApiParam("课程id") @RequestParam Long id){
         return ResponseResult.ok(courseInfoService.withdraw(id));
     }
-
-    @GetMapping("/isPublic")
-    @ApiOperation("设置是否公开")
-    public ResponseResult isPublic(@ApiParam("招募信息id") @RequestParam Long id,
-                                   @ApiParam("是否公开(0.公开1.不公开)") @RequestParam Integer isPublic){
-        return ResponseResult.ok(courseInfoService.isPublic(id,isPublic));
+    @GetMapping("/revoke")
+    @ApiOperation("取消课程")
+    public ResponseResult revoke(@ApiParam("招募信息id") @RequestParam Long id){
+        return ResponseResult.ok(courseInfoService.revoke(id));
     }
 
     @GetMapping("/get")

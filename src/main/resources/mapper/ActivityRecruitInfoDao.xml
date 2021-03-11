@@ -6,13 +6,26 @@
         id, recruitType, title, content, image, address, longitude, latitude, matchApproverId, matchApprover, courierStationId, courierStation, serviceStartDate, serviceEndDate, serviceHours, recruitNumber,
         approvalId,approvalBy,approvalTime,
         CASE
-            WHEN `status` = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
-            WHEN `status` = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+            WHEN approvalStatus = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
+            WHEN approvalStatus = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate+24*60*60*1000-1 THEN 4
             ELSE `status`
-            END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, deptName, deptId,isPublic, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+            END AS 'status', approvalStatus, showBanner, placedTop, recruitStartDate, recruitEndDate, approvalComments, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
-    
+    <sql id="table_field_join">
+        i.id, i.recruitType, i.title, i.content, i.image, i.address, i.longitude, i.latitude, i.matchApproverId, i.matchApprover,
+        i.courierStationId, i.courierStation, i.serviceStartDate, i.serviceEndDate, i.serviceHours, i.recruitNumber,
+        i.approvalId,i.approvalBy,i.approvalTime, i.approvalStatus, i.showBanner, i.placedTop, i.recruitStartDate, i.recruitEndDate,
+        i.approvalComments, i.deptName, i.deptId,i.createdId, i.createdBy, i.createdTime, i.updateId, i.updateBy, i.updateTime,
+        CASE
+            WHEN i.approvalStatus != 1 THEN null
+            WHEN i.approvalStatus = 1 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 3
+            WHEN i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+            WHEN i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1 THEN 1
+            ELSE i.`status`
+            END AS 'status'
+    </sql>
     <!--单表新增-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
         insert into activity_recruit_info (
@@ -88,12 +101,6 @@
         </if>
         <if test="deptId != null">
             deptId,
-        </if>
-        <if test="isPublic != null">
-            isPublic,
-        </if>
-        <if test="isPublic != null">
-            isPublic,
         </if>
         <if test="approvalId != null">
             approvalId,
@@ -179,9 +186,6 @@
         </if>
         <if test="deptId != null">
             #{deptId},
-        </if>
-        <if test="isPublic != null">
-            #{isPublic},
         </if>
         <if test="approvalId != null">
             #{approvalId},
@@ -277,9 +281,6 @@
             </if>
             <if test="deptId != null">
                 deptId = #{deptId},
-            </if>
-            <if test="isPublic != null">
-                isPublic = #{isPublic},
             </if>
             <if test="approvalId != null">
                 approvalId = #{approvalId},
@@ -378,9 +379,6 @@
             <if test="deptId != null">
                 and deptId = #{deptId}
             </if>
-            <if test="isPublic != null">
-                and isPublic = #{isPublic}
-            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         <choose>
@@ -469,9 +467,6 @@
             <if test="deptId != null">
                 and deptId = #{deptId}
             </if>
-            <if test="isPublic != null">
-                and isPublic = #{isPublic}
-            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
@@ -479,64 +474,76 @@
 
     <select id="findList" parameterType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo"
             resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
-        select <include refid="table_field"/> from activity_recruit_info
+        select <include refid="table_field_join"/> from activity_recruit_info i
+        LEFT JOIN activity_recruit_detail d on i.id=d.recruitId
         <where>
             <if test="title!=null and title!=''">
-                and title like concat('%',#{title},'%')
+                and i.title like concat('%',#{title},'%')
             </if>
             <if test="recruitType!=null">
-                and recruitType=#{recruitType}
+                and i.recruitType=#{recruitType}
             </if>
             <if test="createdBy!=null">
-                and createdBy like concat('%',#{createdBy},'%')
+                and i.createdBy like concat('%',#{createdBy},'%')
             </if>
             <if test="recruitStartDate!=null">
-                and recruitStartDate <![CDATA[ >= ]]> #{recruitStartDate}
+                and i.recruitStartDate <![CDATA[ >= ]]> #{recruitStartDate}
             </if>
             <if test="recruitEndDate!=null">
-                and recruitEndDate <![CDATA[ <= ]]> #{recruitEndDate}
+                and i.recruitEndDate <![CDATA[ <= ]]> #{recruitEndDate}
             </if>
             <if test="beginTime!=null">
-                and createdTime <![CDATA[ >= ]]> #{beginTime}
+                and i.createdTime <![CDATA[ >= ]]> #{beginTime}
             </if>
             <if test="endTime!=null">
-                and createdTime <![CDATA[ <= ]]> #{endTime}
+                and i.createdTime <![CDATA[ <= ]]> #{endTime}
             </if>
-            <if test="status!=null and status!=4 and status!=5 and status!=1">
-                and status=#{status}
+            <if test="approvalStatus!=null">
+                and i.approvalStatus=#{approvalStatus}
+            </if>
+            <if test="status!=null and status!=3 and status!=2 and status!=1">
+                and i.status=#{status}
+            </if>
+            <if test="status!=null and status==0">
+                and i.approvalStatus = 1
+                and i.recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==1">
-                and `status`=1
-                and recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
+                and i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1
             </if>
-            <if test="status!=null and status==4">
-                and `status`=1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate+24*60*60*1000-1
+            <if test="status!=null and status==2">
+                and i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
-            <if test="status!=null and status==5">
-                and `status` = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+            <if test="status!=null and status==3">
+                and i.approvalStatus = 1
             </if>
             <if test="userId!=null and type==1">
-                and createdId=#{userId}
+                and i.createdId=#{userId}
             </if>
             <if test="type!=null and type==3">
-                and `status` = 1
-            </if>
-            <if test="isPublic!=null ">
-                and isPublic = #{isPublic}
+                and i.approvalStatus = 1
             </if>
         </where>
+        GROUP BY i.id
+        <if test="status!=null and status==2">
+            HAVING max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
+        </if>
+        <if test="status!=null and status==3">
+            HAVING max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime))<![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+        </if>
         <choose>
             <when test="type!=null and type==3">
                 order by  CASE
-                WHEN `status` = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
-                WHEN `status` = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> recruitEndDate+24*60*60*1000-1 THEN 0
+                WHEN i.approvalStatus = 1 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime))<![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+                WHEN i.approvalStatus = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
+                WHEN i.approvalStatus = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1 THEN 0
                 ELSE `status`
-                END  ASC,placedTop DESC,createdTime DESC
+                END  ASC,i.placedTop DESC,i.createdTime DESC
             </when>
             <otherwise>
-                order by placedTop DESC,createdTime DESC
+                order by i.placedTop DESC,i.createdTime DESC
             </otherwise>
         </choose>
     </select>

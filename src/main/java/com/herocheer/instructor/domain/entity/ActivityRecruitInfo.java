@@ -42,9 +42,9 @@ public class ActivityRecruitInfo extends BaseEntity {
     private String serviceHours;
     @ApiModelProperty("驿站-招募人数")   
     private Integer recruitNumber;
-    @ApiModelProperty("状态 (0.待审核1.撤回2.驳回3.招募待启动4.招募中5.招募结束)")   
+    @ApiModelProperty("状态 (0.招募待启动 1.招募中 2.招募结束 3.已结项 4.活动取消)")
     private Integer status;
-    @ApiModelProperty("审批状态 (1.通过2.驳回)")   
+    @ApiModelProperty("审批状态(0.待审核 1.审核通过 2.驳回 3.撤回 4.草稿)")
     private Integer approvalStatus;
     @ApiModelProperty("是否在banner显示(0.否1.是)")   
     private Integer showBanner;
@@ -60,8 +60,6 @@ public class ActivityRecruitInfo extends BaseEntity {
     private String deptName;
     @ApiModelProperty("部门id")   
     private Long deptId;
-    @ApiModelProperty("是否公开(0.公开1.不公开)")
-    private Integer isPublic;
     @ApiModelProperty("审批人名称")
     private String approvalBy;
     @ApiModelProperty("审批时间")

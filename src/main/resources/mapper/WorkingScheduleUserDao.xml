@@ -608,4 +608,14 @@
         </where>
         order by u.createdTime desc
     </select>
+
+    <update id="updateReserveStatus">
+        update working_schedule_user set reserveStatus=#{reserveStatus} where
+        workingScheduleId in(select id from working_schedule where activityId=#{activityId})
+    </update>
+
+    <select id="findSignRecord" resultType="java.lang.String">
+        SELECT u.taskNo from working_schedule_user u left join working_schedule s on s.id=u.workingScheduleId
+        where s.activityId=#{activityId} and (signInTime is not null or signOutTime is not null)
+    </select>
 </mapper>

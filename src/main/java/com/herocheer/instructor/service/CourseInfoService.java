@@ -24,7 +24,7 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
      * @param userId
      * @return
      */
-    Page<CourseInfoVo> queryPage(CourseInfoQueryVo queryVo, Long userId);
+    Page<CourseInfo> queryPage(CourseInfoQueryVo queryVo, Long userId);
 
     /**
      * 获取审批记录
@@ -33,12 +33,6 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
      */
     List<CourseApproval> approvalRecord(Long id);
 
-    /**
-     * 设置是否公开
-     * @param id
-     * @return
-     */
-    Integer isPublic(Long id,Integer isPublic);
 
     /**
      * 撤回
@@ -46,6 +40,13 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
      * @return
      */
     Integer withdraw(Long id);
+
+    /**
+     * 取消课程
+     * @param id
+     * @return
+     */
+    Integer revoke(Long id);
 
     /**
      * 审批

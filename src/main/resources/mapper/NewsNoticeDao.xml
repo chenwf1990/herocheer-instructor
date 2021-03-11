@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.NewsNoticeDao">
     
     <sql id="table_field">
-      id, type, pic, title, auditState, auditTime, auditIdea, content, top, deptName, deptId,isPublic, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, type, pic, title, auditState, auditTime, auditIdea, content, top, deptName, deptId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -39,9 +39,6 @@
         </if>
         <if test="deptId != null">
             deptId,
-        </if>
-        <if test="isPublic != null">
-            isPublic,
         </if>
         <if test="remarks != null">
             remarks,
@@ -79,9 +76,6 @@
         </if>
         <if test="deptId != null">
             #{deptId},
-        </if>
-        <if test="isPublic != null">
-            #{isPublic},
         </if>
         <if test="remarks != null">
             #{remarks},
@@ -129,9 +123,6 @@
             </if>
             <if test="deptId != null">
                 deptId = #{deptId},
-            </if>
-            <if test="isPublic != null">
-                isPublic = #{isPublic},
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
@@ -182,9 +173,6 @@
             <if test="deptId != null">
                 and deptId = #{deptId}
             </if>
-            <if test="isPublic != null">
-                and isPublic = #{isPublic}
-            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -234,9 +222,6 @@
             <if test="deptId != null">
                 and deptId = #{deptId}
             </if>
-            <if test="isPublic != null">
-                and isPublic = #{isPublic}
-            </if>
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
@@ -268,9 +253,6 @@
                 <foreach item="auditState" index="index" collection="auditStates" open="(" separator="," close=")">
                     #{auditState}
                 </foreach>
-            </if>
-            <if test="isPublic != null">
-                and isPublic = #{isPublic}
             </if>
         </where>
         order by top desc,updateTime desc

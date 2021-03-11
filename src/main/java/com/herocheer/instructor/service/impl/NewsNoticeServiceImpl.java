@@ -100,13 +100,6 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
         return count;
     }
 
-    @Override
-    public Integer isPublic(Long id, Integer isPublic) {
-        NewsNotice newsNotice=new NewsNotice();
-        newsNotice.setId(id);
-        newsNotice.setIsPublic(isPublic);
-        return this.dao.update(newsNotice);
-    }
 
     /**
      * @param newsNotice

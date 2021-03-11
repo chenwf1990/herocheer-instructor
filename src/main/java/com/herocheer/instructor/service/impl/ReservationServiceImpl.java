@@ -22,13 +22,11 @@ import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
-import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +130,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
                 throw new CommonException(ResponseCode.SERVER_ERROR,"获取排班信息失败!");
             }
             ActivityRecruitDetail activityRecruitDetail=activityRecruitDetailService.get(workingSchedule.getActivityDetailId());
-            if(new Date().getTime()>activityRecruitDetail.getServiceDate()){
+            if(System.currentTimeMillis()>activityRecruitDetail.getServiceDate()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"活动当天不能取消预约!");
             }
             //已预约数减一
@@ -183,31 +181,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if(activityRecruitInfoVo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取招募信息失败!");
         }
-        if(activityRecruitInfoVo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()){
-            if(reservation.getStatus()==ReserveStatusEnums.ALREADY_RESERVE.getState()
-                    && activityRecruitInfoVo.getServiceEndDate()<System.currentTimeMillis()){
-                activityRecruitInfoVo.setReservationStatus(ReserveStatusEnums.IN_END.getState());
-            }else {
-                activityRecruitInfoVo.setReservationStatus(reservation.getStatus());
-            }
-        }else {
-            activityRecruitInfoVo.setReservationStatus(reservation.getStatus());
-            WorkingScheduleUser workingScheduleUser=workingScheduleUserService.get(reservation.getWorkingId());
-            if(workingScheduleUser!=null){
-                WorkingSchedule workingSchedule=workingScheduleService.get(workingScheduleUser.getWorkingScheduleId());
-                if(workingSchedule!=null){
-                    ActivityRecruitDetail activityRecruitDetail=activityRecruitDetailService.get(workingSchedule.getActivityDetailId());
-                    if(activityRecruitDetail!=null
-                            && activityRecruitDetail.getServiceDate()!=null
-                            && activityRecruitDetail.getServiceEndTime()!=null){
-                        if(reservation.getStatus()==ReserveStatusEnums.ALREADY_RESERVE.getState()&&
-                                activityRecruitDetail.getServiceDate()+ DateUtil.timeToUnix(activityRecruitDetail.getServiceEndTime())>System.currentTimeMillis()){
-                            activityRecruitInfoVo.setReservationStatus(ReserveStatusEnums.IN_END.getState());
-                        }
-                    }
-                }
-            }
-        }
+        activityRecruitInfoVo.setReservationStatus(reservation.getStatus());
         return activityRecruitInfoVo;
     }
 
@@ -221,12 +195,12 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if(courseInfoVo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取招募信息失败!");
         }
-        if(reservation.getStatus()==ReserveStatusEnums.ALREADY_RESERVE.getState()
-                && courseInfoVo.getCourseEndTime()<System.currentTimeMillis()){
-            courseInfoVo.setReservationStatus(ReserveStatusEnums.IN_END.getState());
-        }else {
-            courseInfoVo.setReservationStatus(reservation.getStatus());
-        }
+        courseInfoVo.setReservationStatus(reservation.getStatus());
         return courseInfoVo;
+    }
+
+    @Override
+    public Integer updateReservationStatus(Integer status, Long relevanceId, Integer type) {
+        return this.dao.updateReservationStatus(status,relevanceId,type);
     }
 }

@@ -51,4 +51,13 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @return
      */
     CourseInfoVo getCourse(Long id);
+
+    /**
+     * 批量修改预约状态
+     * @param status
+     * @param relevanceId
+     * @param type
+     * @return
+     */
+    Integer updateReservationStatus(Integer status,Long relevanceId,Integer type);
 }

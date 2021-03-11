@@ -40,8 +40,8 @@ public class CourseInfoQueryVo implements Serializable {
     @ApiModelProperty("报名结束时间")
     private String signEndTime;
 
-    @ApiModelProperty("状态 (0.待审核1.审批通过2.撤回3.驳回)")
-    private Integer state;
+    @ApiModelProperty("审批(0.待审核 1.审批通过 2.驳回 3.撤回 4.草稿)")
+    private Integer approvalStatus;
 
     @ApiModelProperty("查询类型(1.待审核 2.已审核 3.我发布的)")
     private Integer queryType;
@@ -52,11 +52,8 @@ public class CourseInfoQueryVo implements Serializable {
     @ApiModelProperty("创建人人id")
     private Long createdId;
 
-    @ApiModelProperty("课程状态(0.未开始1.报名中2.报名截止3.上课中4.已结课)")
-    private Integer courseState;
-
-    @ApiModelProperty("是否公开(0.公开 1.不公开)")
-    private Integer isPublic;
+    @ApiModelProperty("课程状态(0.未开始1.报名中2.报名截止3.上课中4.已结课5.课程取消)")
+    private Integer state;
 
     @ApiModelProperty("页码")
     private int pageNo;

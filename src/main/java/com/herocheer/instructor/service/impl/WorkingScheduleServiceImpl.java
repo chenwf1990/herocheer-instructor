@@ -698,7 +698,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取排班信息失败!");
         }
         ActivityRecruitDetail activityRecruitDetail=activityRecruitDetailService.get(workingSchedule.getActivityDetailId());
-        if(new Date().getTime()>activityRecruitDetail.getServiceDate()){
+        if(System.currentTimeMillis()>activityRecruitDetail.getServiceDate()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"活动当天不能取消预约!");
         }
         //已预约数减一

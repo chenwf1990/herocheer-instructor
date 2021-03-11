@@ -5,15 +5,14 @@ package com.herocheer.instructor.enums;
  * @desc 招募信息状态枚举
  * @date 2021/1/7
  * @company 厦门熙重电子科技有限公司
- * 0.待审核1.撤回2.驳回3.招募待启动4.招募中5.招募结束
  */
 public enum RecruitStateEnums {
-    PENDING(0,"待审核"),
-    TO_RECRUITED(1,"招募待启动"),
-    OVERRULE(2,"驳回"),
-    WITHDRAW(3,"撤回"),
-    RECRUITMENT(4,"招募中"),
-    END_RECRUITED(5,"招募结束");
+    TO_RECRUITED(0,"待启动"),
+    RECRUITMENT(1,"招募中"),
+    END_RECRUITED(2,"招募结束"),
+    ACTIVITY_ENDS(3,"已结项"),
+    EVENT_CANCELED(4,"活动取消");
+
     RecruitStateEnums(){
 
     }

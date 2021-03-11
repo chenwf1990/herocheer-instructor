@@ -42,22 +42,20 @@ public class CourseInfo extends BaseEntity {
     private Object description;
     @ApiModelProperty("课程照片")   
     private String image;
-    @ApiModelProperty("审批状态")   
+    @ApiModelProperty("审批(0.待审核 1.审批通过 2.驳回 3.撤回 4.草稿)")
     private Integer approvalStatus;
     @ApiModelProperty("审批意见")   
     private String approvalComments;
-    @ApiModelProperty("是否在banner显示 (0.否1.是)")   
+    @ApiModelProperty("是否在banner显示 (0.否 1.是)")
     private Integer showBanner;
-    @ApiModelProperty("是否置顶 (0.否1.是)")   
+    @ApiModelProperty("是否置顶 (0.否 1.是)")
     private Integer placedTop;
     @ApiModelProperty("部门名称")   
     private String deptName;
     @ApiModelProperty("部门id")   
     private Long deptId;
-    @ApiModelProperty("状态 (0.待审核1.审批通过2.撤回3.驳回)")
+    @ApiModelProperty("课程状态(0.未开始1.报名中2.报名截止3.上课中4.已结课5.课程取消)")
     private Integer state;
-    @ApiModelProperty("是否公开(0.公开 1.不公开)")
-    private Integer isPublic;
     @ApiModelProperty("审批人名称")
     private String approvalBy;
     @ApiModelProperty("审批时间")

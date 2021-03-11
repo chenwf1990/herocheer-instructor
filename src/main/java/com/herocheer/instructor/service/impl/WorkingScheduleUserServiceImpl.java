@@ -299,4 +299,14 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         page.setDataList(list);
         return page;
     }
+
+    @Override
+    public Integer updateReserveStatus(Integer reserveStatus, Long activityId) {
+        return this.dao.updateReserveStatus(reserveStatus,activityId);
+    }
+
+    @Override
+    public List<String> findSignRecord(Long activityId) {
+        return this.dao.findSignRecord(activityId);
+    }
 }
