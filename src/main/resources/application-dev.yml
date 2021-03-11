@@ -1,15 +1,33 @@
 server:
-  port: 17071
+  port: 6004
 spring:
   datasource:
-    url: jdbc:mysql://192.168.100.10:3306/herocheer_instructor?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://xyaq.herocheer.com:6002/herocheer_instructor?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
-    password: 123456
+    password: xz107110
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
-    host: 192.168.100.10
-    database: 4
-    port: 6379
-    password:
+    host: xyaq.herocheer.com
+    database: 0
+    port: 6001
+    password: xz107110
     timeout: 5000ms
+swagger:
+  title: 社会指导员api文档
+  description: 社会指导员api文档
+  version: 1.0.0
+  termsOfServiceUrl: http://xyaq.herocheer.com:6003/instructor-server/
+  license:
+  licenseUrl:
+  basePackage: com.herocheer.instructor.controller
+  host: xyaq.herocheer.com:6003/instructor-server
+  enable: true #是否开始swagger
+  contact:
+    name: chenwf
+    url: http://xyaq.herocheer.com:6003/instructor-server/
+    email: 349830964@qq.com
+file:
+  upload:
+    savePath: /home/instructor/instructor-file/
+    visitPath: http://xyaq.herocheer.com:6003/instructor-file/
 
