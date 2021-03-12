@@ -7,18 +7,18 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 新闻公告
- * @date 2021-02-25 09:27:08
+ * @date 2021-03-12 10:47:47
  * @company 厦门熙重电子科技有限公司
  */
 @Data
 public class NewsNotice extends BaseEntity {
-    @ApiModelProperty("类型 1新闻2活动")   
+    @ApiModelProperty("类型 1新闻2活动3公告")   
     private Integer type;
     @ApiModelProperty("新闻图片")   
     private String pic;
     @ApiModelProperty("标题")   
     private String title;
-    @ApiModelProperty("审核状态 0待审核1通过2驳回3撤回4已发布")   
+    @ApiModelProperty("审核状态 0待审核1通过2驳回3撤回4草稿")   
     private Integer auditState;
     @ApiModelProperty("审核时间")   
     private Long auditTime;
@@ -34,5 +34,7 @@ public class NewsNotice extends BaseEntity {
     private Long deptId;
     @ApiModelProperty("备注")   
     private String remarks;
+    @ApiModelProperty("是否上架(0.上架1.下架)")
+    private Integer isPublic;
 
 }
