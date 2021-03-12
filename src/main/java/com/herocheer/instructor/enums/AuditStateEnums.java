@@ -10,7 +10,8 @@ public enum AuditStateEnums {
     to_audit(0,"待审核"),
     to_pass(1,"审核通过"),
     to_reject(2,"审核驳回"),
-    to_backout(3,"撤销");
+    to_backout(3,"撤销"),
+    to_draft(4,"草稿");
 
     private int state;
     private String name;

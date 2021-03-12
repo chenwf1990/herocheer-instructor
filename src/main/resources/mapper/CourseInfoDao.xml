@@ -473,23 +473,23 @@
                 and state=#{state}
             </if>
             <if test="state!=null and state==4">
-                AND approvalStatus = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND state!=5 AND approvalStatus = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="state!=null and state==3">
-                AND approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND state!=5 AND approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1
             </if>
             <if test="state!=null and state==2">
-                AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> signEndTime+24*60*60*1000-1
+                AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> signEndTime+24*60*60*1000-1
                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="state!=null and state==1">
-                AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> signStartTime
+                AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> signStartTime
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1
                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="state!=null and state==0">
-                AND (approvalStatus != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND state!=5 AND (approvalStatus != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000))
             </if>
             <if test="queryType!=null and queryType==1">
@@ -499,6 +499,9 @@
                 AND (approvalStatus=1 or approvalStatus=3)
             </if>
             <if test="queryType!=null and queryType==3 and createdId!=null">
+                AND approvalStatus=1 AND state!=5
+            </if>
+            <if test="queryType!=null and queryType==4">
                 AND createdId=#{createdId}
             </if>
             <if test="approvalStartTime!=null">

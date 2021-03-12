@@ -505,24 +505,28 @@
                 and i.status=#{status}
             </if>
             <if test="status!=null and status==0">
-                and i.approvalStatus = 1
+                i.status != 4 and i.approvalStatus = 1
                 and i.recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==1">
-                and i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                i.status != 4 and i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1
             </if>
             <if test="status!=null and status==2">
-                and i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                i.status != 4 and i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==3">
-                and i.approvalStatus = 1
+                i.status != 4 and i.approvalStatus = 1
             </if>
             <if test="userId!=null and type==1">
                 and i.createdId=#{userId}
             </if>
             <if test="type!=null and type==3">
                 and i.approvalStatus = 1 and i.status != 4
+            </if>
+            <if test="type!=null and type==4">
+                AND i.approvalStatus = 1 and i.status != 4
+                AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
         </where>
         GROUP BY i.id
