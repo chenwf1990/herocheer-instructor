@@ -18,8 +18,10 @@ public class NewsQueryVo implements Serializable {
     private String title;
     @ApiModelProperty("类型1新闻 2活动 3公告")
     private Integer type;
-    @ApiModelProperty("审核状态(集合) 0待审核1通过2驳回3撤回")
+    @ApiModelProperty("审核状态(集合) 0待审核1通过2驳回3撤回4草稿")
     private List<Integer> auditStates;
+    @ApiModelProperty("新闻状态 0已发布 1已下架 2未发布")
+    private Integer publicState;
     @ApiModelProperty("创建人(支持模糊查询)")
     private String createdBy;
     @ApiModelProperty("创建时间(开始时间)")

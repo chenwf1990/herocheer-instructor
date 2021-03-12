@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.NewsNoticeDao">
     
     <sql id="table_field">
-      id, type, pic, title, auditState, auditTime, auditIdea, content, top, deptName, deptId, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, type, pic, title, auditState, auditTime, auditIdea, content, top, deptName, deptId, remarks, isPublic, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -43,6 +43,9 @@
         <if test="remarks != null">
             remarks,
         </if>
+        <if test="isPublic != null">
+            isPublic,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -79,6 +82,9 @@
         </if>
         <if test="remarks != null">
             #{remarks},
+        </if>
+        <if test="isPublic != null">
+            #{isPublic},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -126,6 +132,9 @@
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
+            </if>
+            <if test="isPublic != null">
+                isPublic = #{isPublic},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -176,6 +185,9 @@
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
+            <if test="isPublic != null">
+                and isPublic = #{isPublic}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         <choose>
@@ -225,6 +237,9 @@
             <if test="remarks != null">
                 and remarks = #{remarks}
             </if>
+            <if test="isPublic != null">
+                and isPublic = #{isPublic}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
@@ -254,6 +269,20 @@
                     #{auditState}
                 </foreach>
             </if>
+            <choose>
+                <when test="publicState != null and publicState == 0">
+                    and isPublic = 0
+                    and auditState = 1
+                </when>
+                <when test="publicState != null and publicState == 1">
+                    and isPublic = 1
+                    and auditState = 1
+                </when>
+                <when test="publicState != null and publicState == 2">
+                    and isPublic = 2
+                    and auditState in (2,3,4)
+                </when>
+            </choose>
         </where>
         order by top desc,updateTime desc
     </select>
