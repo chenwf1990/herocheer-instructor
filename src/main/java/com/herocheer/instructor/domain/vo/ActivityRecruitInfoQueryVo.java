@@ -40,7 +40,7 @@ public class ActivityRecruitInfoQueryVo implements Serializable {
     @ApiModelProperty("状态 (0.招募待启动 1.招募中 2.招募结束 3.已结项 4.活动取消)")
     private Integer status;
 
-    @ApiModelProperty("类型(0.全部1.我发布的2.我审批的3.已发布的)")
+    @ApiModelProperty("类型(0.全部 1.我发布的 2.我审批的 3.已发布的 4.招募已结束)")
     private Integer type;
 
     @ApiModelProperty("创建人-后台参数")
