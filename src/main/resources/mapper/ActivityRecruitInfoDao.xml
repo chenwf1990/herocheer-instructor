@@ -501,7 +501,7 @@
             <if test="approvalStatus!=null">
                 and i.approvalStatus=#{approvalStatus}
             </if>
-            <if test="status!=null and status!=3 and status!=2 and status!=1">
+            <if test="status!=null and status!=3 and status!=2 and status!=1 and status!=0">
                 and i.status=#{status}
             </if>
             <if test="status!=null and status==0">
@@ -522,10 +522,13 @@
                 and i.createdId=#{userId}
             </if>
             <if test="type!=null and type==3">
-                and i.approvalStatus = 1
+                and i.approvalStatus = 1 and i.status != 4
             </if>
         </where>
         GROUP BY i.id
+        <if test="status!=null and status==1">
+            HAVING max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
+        </if>
         <if test="status!=null and status==2">
             HAVING max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
         </if>

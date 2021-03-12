@@ -165,6 +165,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         log.debug("微信用户openid：{}",openid);
         // 获取微信群众信息，方便统计用户及展示个人中心信息显示
         JSONObject jsonStr = new JSONObject();
+        UserInfoVo userInfo = new UserInfoVo();
+        String token = IdUtil.simpleUUID();
         if (StringUtils.isNotEmpty(code)) {
             JSONObject JSONObj = getOpenId(code);
             if (ObjectUtils.isEmpty(JSONObj) || StringUtils.isBlank(JSONObj.getString("openid"))) {
@@ -174,8 +176,17 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             jsonStr  = getWeChatUserInfo(JSONObj);
         }else {
             // 用户出去后，再进来
-            String userInfo = redisClient.get(openid);
-            jsonStr = JSONObject.parseObject(userInfo);
+            String userInfoStr = redisClient.get(openid);
+            jsonStr = JSONObject.parseObject(userInfoStr);
+            // 之前未给过code情况
+            if(ObjectUtils.isEmpty(jsonStr)){
+                userInfo.setOtherId(openid);
+                userInfo.setCodeFlag(false);
+                userInfo.setTokenId(token);
+                // 用户信息放入Redis
+                redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
+                return userInfo;
+            }
         }
 
         // 根据openid获取用户信息
@@ -183,7 +194,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         map.put("openid", openid);
         User user  = this.dao.selectSysUserOne(map);
 
-        UserInfoVo userInfo = new UserInfoVo();
         if (user == null) {
             user = User.builder().build();
             user.setUserType(UserTypeEnums.weChatUser.getCode());
@@ -211,7 +221,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         userInfo.setOtherId(openid);
         userInfo.setUserType(user.getUserType());
 
-        String token = IdUtil.simpleUUID();
         userInfo.setTokenId(token);
         userInfo.setOtherId(openid);
         log.debug("微信用户登入信息：{}",userInfo);

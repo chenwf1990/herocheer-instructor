@@ -711,7 +711,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 证件类型 :1-身份证；2-港澳台通行证
         paramMap.put("certificateType","idcard".equals(user.getString("certificateType")) ? 1 : 2);
         paramMap.put("certificateNo", AesUtil.decrypt(sysUser.getCertificateNo()));
-        paramMap.put("phoneNo",sysUser.getPhone());
+        paramMap.put("phoneNo",AesUtil.decrypt(sysUser.getPhone()));
         paramMap.put("email",sysUser.getEmail());
         paramMap.put("openid",sysUser.getOpenid());
         paramMap.put("source",sysUser.getSource());
