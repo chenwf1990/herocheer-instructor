@@ -264,7 +264,6 @@ public class UserController extends BaseController {
      */
     @GetMapping("/user/name")
     @ApiOperation("用户名称")
-    @AllowAnonymous
     public ResponseResult<List<MemberVO>> fetchUser(HttpServletRequest request){
         return ResponseResult.ok( userService.findUser());
     }
@@ -277,7 +276,6 @@ public class UserController extends BaseController {
      */
     @GetMapping("/user/name/{userType}")
     @ApiOperation("根据userType返回用户")
-    @AllowAnonymous
     public ResponseResult<List<MemberVO>> fetchUserByuserType(@ApiParam("用户类型") @PathVariable String userType,HttpServletRequest request){
         return ResponseResult.ok(userService.findUserByUserType(userType));
     }
@@ -290,7 +288,6 @@ public class UserController extends BaseController {
      */
     @GetMapping("/data/permission")
     @ApiOperation("当前用户获取数据权限")
-    @AllowAnonymous
     public ResponseResult<AreaPermissionVO> fetchAreaByCurrentUser(HttpServletRequest request){
         return ResponseResult.ok(userService.findAreaByCurrentUser(this.getUser(request).getId()));
     }

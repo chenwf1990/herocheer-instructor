@@ -34,12 +34,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -62,6 +65,8 @@ public class WechatController extends BaseController {
     @Autowired
     private RedisClient redisClient;
 
+    @Autowired
+    RestTemplate restTemplate;
 
     @GetMapping("/getWxInfo")
     @ApiOperation("获取微信信息")
@@ -266,6 +271,27 @@ public class WechatController extends BaseController {
     public ResponseResult queryWeChatUser(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){
         Page<User> page = wechatService.findWeChatUserByPage(sysUserVO);
         return ResponseResult.ok(page);
+    }
+
+    @GetMapping("/test")
+    @ApiOperation("公众号消息")
+    @AllowAnonymous
+    public ResponseResult test(HttpServletRequest request) {
+
+        // 熙信科技公众号
+        /*String appid = "wx5e3449374c04489c";
+        String secret = "82fdb32c5c4c461481545c42b93ffc46";
+
+        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
+        JSONObject JSONObj = JSONObject.parseObject(result);
+        String accessToken = JSONObj.getString("access_token");
+        String accessToken = "43_9WO3_DZt_t3ftpdMc5u8pmrHExJWP2-WC61-tm119q4tEfOYQUFidkaf3_1e6GXyTkonJAQbOgs3vhgMLYeCDM7k1jYAjh62TtMy0l_UkqoJ4GPA-4kqGNWDRVcbhLd-l1rzmX-3eEfBdtiGKSTeAIATBC";*/
+
+        List<String> userList = new ArrayList<>();
+        userList.add("or6Q-wfzYsLqaHlof8Tglyvdf-Y8");
+//        userList.add("or6Q-weNX5DMSkaIUYWALZINjWnI");
+        wechatService.sendWechatMessages(userList);
+        return ResponseResult.ok();
     }
 
 }
