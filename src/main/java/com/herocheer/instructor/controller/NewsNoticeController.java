@@ -65,10 +65,11 @@ public class NewsNoticeController extends BaseController{
 
     @GetMapping("/cancelNews")
     @ApiOperation("取消新闻")
-    public ResponseResult cancelNews(@ApiParam("新闻id") @RequestParam Long id){
+    public ResponseResult cancelNews(@ApiParam("新闻id") @RequestParam Long id,
+                                     @ApiParam("上下架状态0上架 1下架") @RequestParam Integer isPublic){
         NewsNotice newsNotice = new NewsNotice();
         newsNotice.setId(id);
-        newsNotice.setAuditState(5);
+        newsNotice.setIsPublic(isPublic);
         return ResponseResult.isSuccess(newsNoticeService.update(newsNotice));
     }
 
