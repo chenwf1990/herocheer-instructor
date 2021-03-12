@@ -717,7 +717,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         paramMap.put("source",sysUser.getSource());
         paramMap.put("age",sysUser.getAge());
         // 签名
-        String sign = DigestUtils.md5DigestAsHex(( sysUser.getCertificateNo()+ InsuranceConst.KEY).getBytes());
+        String sign = DigestUtils.md5DigestAsHex(AesUtil.decrypt(sysUser.getCertificateNo()+ InsuranceConst.KEY).getBytes());
         paramMap.put("sign",sign);
 
         String resultUser = HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser",paramMap);

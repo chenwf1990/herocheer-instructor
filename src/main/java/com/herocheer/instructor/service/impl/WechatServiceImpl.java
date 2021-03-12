@@ -1,5 +1,6 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
@@ -33,8 +34,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.beans.BeanCopier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -325,7 +330,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setCertificateNo(AesUtil.encrypt(certificateNum));
             sysUser.setIxmRealNameLevel(user.getString("realNameStatus"));
             sysUser.setIxmUserRealName(user.getString("certificateName"));
-            sysUser.setPhone(user.getString("mobile"));
+            sysUser.setPhone(AesUtil.encrypt(user.getString("mobile")));
             sysUser.setInsuranceStatus(0);
             sysUser.setCommitmentStatus(false);
             sysUser.setSource("1");
@@ -343,9 +348,9 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         } else {
             User oldUser = User.builder().build();
             oldUser.setId(sysUser.getId());
-            oldUser.setCertificateNo(certificateNum);
+            oldUser.setCertificateNo(AesUtil.encrypt(certificateNum));
             oldUser.setUserName(user.getString("certificateName"));
-            oldUser.setPhone(user.getString("mobile"));
+            oldUser.setPhone(AesUtil.encrypt(user.getString("mobile")));
             oldUser.setOpenid(openid);
             oldUser.setIxmLoginStatus(true);
             oldUser.setIxmToken(ssoSessionId);
@@ -449,5 +454,63 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         List<User> sysUserList = this.dao.selectWeChatUserByPage(sysUserVO);;
         page.setDataList(sysUserList);
         return page;
+    }
+
+    /**
+     * 发送微信消息
+     *
+     * @param userList 订阅课程的用户名单
+     * @return {@link Page<User>}
+     */
+    @Async
+    @Override
+    public void sendWechatMessages(List<String> userList) {
+        // 异步批量发送
+        // 获取I健身的access_token（正式环境）
+//        String result = findJsapiTicket();
+//        JSONObject json = JSONObject.parseObject(result);
+//        String accessToken = json.getString("token");
+
+        // 熙信科技公众号(测试环境)
+        String appid = "wx5e3449374c04489c";
+        String secret = "82fdb32c5c4c461481545c42b93ffc46";
+        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
+        JSONObject JSONObj = JSONObject.parseObject(result);
+        String accessToken = JSONObj.getString("access_token");
+
+        JSONObject sendData = null;
+        for (String openid : userList){
+            sendData = new JSONObject();
+            // 报名某课程的用户
+            sendData.put("touser", openid);
+            // 固定的tempelteId
+            sendData.put("template_id", "403SUrqcDVJF5ICyxExtmEWWK13p0jhKJhPqeBnFdBs");
+
+            JSONObject content = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", "您好，您之前报名的”招募/课程标题“已取消，给你造成不便，敬请谅解！");
+            content.put("first", first);
+
+            JSONObject keyword1 = new JSONObject();
+            // 当前时间
+            keyword1.put("value", DateUtil.now());
+            content.put("keyword1", keyword1);
+
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", "熙重电子");
+            content.put("keyword2", keyword2);
+
+            JSONObject remark = new JSONObject();
+            remark.put("value", "");
+            content.put("remark", remark);
+
+            sendData.put("data",content);
+            log.info("课程下架消息内容:{}",JSONObject.toJSONString(sendData));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<JSONObject> entity = new HttpEntity<>(sendData, headers);
+            ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ accessToken, entity, JSONObject.class);
+        }
     }
 }
