@@ -106,11 +106,10 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
 
     /**
      * 修改预约状态
-     * @param reserveStatus
-     * @param activityId
+     * @param map
      * @return
      */
-    Integer updateReserveStatus(Integer reserveStatus,Long activityId);
+    Integer updateReserveStatus(Map<String,Object> map);
 
     /**
      * 获取招募活动的打卡记录

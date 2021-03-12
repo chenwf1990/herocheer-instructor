@@ -301,8 +301,8 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     }
 
     @Override
-    public Integer updateReserveStatus(Integer reserveStatus, Long activityId) {
-        return this.dao.updateReserveStatus(reserveStatus,activityId);
+    public Integer updateReserveStatus(Map<String,Object> map) {
+        return this.dao.updateReserveStatus(map);
     }
 
     @Override

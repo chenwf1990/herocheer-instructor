@@ -106,8 +106,10 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         }
         reservationService.updateReservationStatus(ReserveStatusEnums.EVENT_CANCELED.getState(),
                 activityRecruitInfo.getId(),activityRecruitInfo.getRecruitType());
-        workingScheduleUserService.updateReserveStatus(
-                ReserveStatusEnums.EVENT_CANCELED.getState(), activityRecruitInfo.getId());
+        Map<String,Object> map=new HashMap<>();
+        map.put("reserveStatus",ReserveStatusEnums.EVENT_CANCELED.getState());
+        map.put("activityId",activityRecruitInfo.getId());
+        workingScheduleUserService.updateReserveStatus(map);
         activityRecruitInfo.setStatus(RecruitStateEnums.EVENT_CANCELED.getState());
         return this.dao.update(activityRecruitInfo);
     }

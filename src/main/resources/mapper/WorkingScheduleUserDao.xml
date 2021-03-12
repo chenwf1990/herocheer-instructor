@@ -609,7 +609,7 @@
         order by u.createdTime desc
     </select>
 
-    <update id="updateReserveStatus">
+    <update id="updateReserveStatus" parameterType="map">
         update working_schedule_user set reserveStatus=#{reserveStatus} where
         workingScheduleId in(select id from working_schedule where activityId=#{activityId})
     </update>
