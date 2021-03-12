@@ -280,7 +280,7 @@
                 </when>
                 <when test="publicState != null and publicState == 2">
                     and isPublic = 2
-                    and auditState in (2,3,4)
+                    and auditState in (0,2,3,4)
                 </when>
             </choose>
         </where>

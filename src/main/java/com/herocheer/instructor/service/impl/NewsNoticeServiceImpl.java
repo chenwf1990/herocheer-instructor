@@ -46,6 +46,11 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     public Page<NewsNotice> queryPageList(NewsQueryVo newsQueryVo) {
         Page page = Page.startPage(newsQueryVo.getPageNo(),newsQueryVo.getPageSize());
         List<NewsNotice> newsNotices = this.dao.queryPageList(newsQueryVo);
+        for (NewsNotice newsNotice : newsNotices) {
+            if(newsNotice.getAuditState() != AuditStateEnums.to_pass.getState()){
+                newsNotice.setIsPublic(2);
+            }
+        }
         page.setDataList(newsNotices);
         return page;
     }
