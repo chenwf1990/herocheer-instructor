@@ -32,4 +32,7 @@ public class UserInfoVo extends UserEntity {
     @ApiModelProperty("登入状态")
     private Boolean ixmLoginStatus;
 
+    @ApiModelProperty("之前是否给过微信授权码")
+    private Boolean codeFlag = true;
+
 }
