@@ -16,6 +16,7 @@ import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.service.CourseApprovalService;
 import com.herocheer.instructor.service.CourseInfoService;
 import com.herocheer.instructor.service.ReservationService;
+import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.apache.commons.collections.map.HashedMap;
@@ -41,6 +42,8 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     private CourseApprovalService courseApprovalService;
     @Resource
     private ReservationService reservationService;
+    @Resource
+    private WechatService wechatService;
     @Override
     public Page<CourseInfo> queryPage(CourseInfoQueryVo queryVo, Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
@@ -79,6 +82,9 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
                 courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
         //设置课程状态 5=课程取消
         courseInfo.setState(5);
+        List<String> openids=reservationService.findReservationOpenid(courseInfo.getId(),
+                RecruitTypeEunms.COURIER_RECRUIT.getType());
+        wechatService.sendWechatMessages(openids,courseInfo.getTitle());
         return this.dao.update(courseInfo);
     }
 

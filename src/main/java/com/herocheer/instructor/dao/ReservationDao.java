@@ -23,4 +23,7 @@ public interface ReservationDao extends BaseDao<Reservation,Long>{
 
     Integer updateReservationStatus(@Param("status")Integer status,@Param("relevanceId")Long relevanceId,
                                     @Param("type")Integer type);
+
+    List<String> findReservationOpenid(@Param("relevanceId")Long relevanceId,
+                                       @Param("type") Integer type);
 }
