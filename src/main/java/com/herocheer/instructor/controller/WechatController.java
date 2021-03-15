@@ -279,18 +279,19 @@ public class WechatController extends BaseController {
     public ResponseResult test(HttpServletRequest request) {
 
         // 熙信科技公众号
-        /*String appid = "wx5e3449374c04489c";
-        String secret = "82fdb32c5c4c461481545c42b93ffc46";
-
-        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
-        JSONObject JSONObj = JSONObject.parseObject(result);
-        String accessToken = JSONObj.getString("access_token");
-        String accessToken = "43_9WO3_DZt_t3ftpdMc5u8pmrHExJWP2-WC61-tm119q4tEfOYQUFidkaf3_1e6GXyTkonJAQbOgs3vhgMLYeCDM7k1jYAjh62TtMy0l_UkqoJ4GPA-4kqGNWDRVcbhLd-l1rzmX-3eEfBdtiGKSTeAIATBC";*/
+//        String appid = "wx5e3449374c04489c";
+//        String secret = "82fdb32c5c4c461481545c42b93ffc46";
+//
+//        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
+//        JSONObject JSONObj = JSONObject.parseObject(result);
+//        String accessToken = JSONObj.getString("access_token");
+        String accessToken = "43_dm4vPos_lK52usBfDCSTJEHpTLdkpHwr8DJlML06ufEinWjFY1lebR2JR_UswjVTiXyZykb2lgshL1pp0TfBS_IMWDEKQ5f-UvNZdvE1qPDQnQyGX_XICCva_ljyz8ltKDZ73JTT9N2ZJ3PNRZAdAEAJRS";
 
         List<String> userList = new ArrayList<>();
         userList.add("or6Q-wfzYsLqaHlof8Tglyvdf-Y8");
 //        userList.add("or6Q-weNX5DMSkaIUYWALZINjWnI");
-        wechatService.sendWechatMessages(userList);
+        String title = "某某课程";
+        wechatService.sendWechatMessages(userList,title);
         return ResponseResult.ok();
     }
 

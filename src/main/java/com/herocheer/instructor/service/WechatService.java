@@ -63,7 +63,7 @@ public interface WechatService {
      * 发送微信消息
      *
      * @param userList 订阅课程的用户名单
-     * @return {@link Page<User>}
+     * @param title    标题
      */
-    void sendWechatMessages(List<String> userList);
+    void sendWechatMessages(List<String> userList,String title);
 }

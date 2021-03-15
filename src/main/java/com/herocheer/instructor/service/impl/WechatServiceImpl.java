@@ -2,6 +2,7 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -306,7 +307,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
         //根据phone判断用户本地数据是否存在
         Map map = new HashMap();
-        map.put("phone",user.getString("mobile"));
+        map.put("phone",AesUtil.encrypt(user.getString("mobile")));
 
         User sysUser  = this.dao.selectSysUserOne(map);
 
@@ -460,11 +461,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
      * 发送微信消息
      *
      * @param userList 订阅课程的用户名单
-     * @return {@link Page<User>}
+     * @param title    标题
      */
     @Async
     @Override
-    public void sendWechatMessages(List<String> userList) {
+    public void sendWechatMessages(List<String> userList,String title) {
         // 异步批量发送
         // 获取I健身的access_token（正式环境）
 //        String result = findJsapiTicket();
@@ -488,7 +489,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
             JSONObject content = new JSONObject();
             JSONObject first = new JSONObject();
-            first.put("value", "您好，您之前报名的”招募/课程标题“已取消，给你造成不便，敬请谅解！");
+            first.put("value", StrUtil.format("您好，您之前报名的”{}“已取消，给你造成不便，敬请谅解！",title));
             content.put("first", first);
 
             JSONObject keyword1 = new JSONObject();
