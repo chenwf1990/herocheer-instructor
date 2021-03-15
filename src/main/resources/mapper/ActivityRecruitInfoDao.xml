@@ -575,22 +575,10 @@
         a.recruitStartDate,
         a.recruitEndDate,
         a.createdTime,
-        a.`status`,
+        a.approvalStatus AS 'status',
         a.updateId
         FROM
         activity_recruit_info a
-        <where>
-            <if test="statusArray!=null">
-                a.approvalStatus in(
-                <foreach collection="statusArray" item="status" index="index" separator=",">
-                    #{status}
-                </foreach>
-                )
-            </if>
-            <if test="updateId!=null">
-                AND updateId=#{updateId}
-            </if>
-        </where>
         UNION
         SELECT
         n.id,
@@ -605,9 +593,10 @@
         n.updateId
         FROM
         news_notice n
+        ) t
         <where>
             <if test="statusArray!=null">
-                n.status in(
+                t.status in(
                 <foreach collection="statusArray" item="status" index="index" separator=",">
                     #{status}
                 </foreach>
@@ -617,7 +606,6 @@
                 AND updateId=#{updateId}
             </if>
         </where>
-        ) t
         ORDER BY
         t.createdTime DESC
     </select>
@@ -629,7 +617,7 @@
         (
         SELECT
         a.id,
-        a.`status`,
+        a.approvalStatus AS 'status',
         a.updateId
         FROM
         activity_recruit_info a
