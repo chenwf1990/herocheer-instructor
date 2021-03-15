@@ -263,7 +263,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         }
 
         Map map = new HashMap();
-        map.put("certificateNo", weChatUser.getCertificateNo());
+        map.put("certificateNo", AesUtil.encrypt(weChatUser.getCertificateNo()));
         User user  = this.dao.selectSysUserOne(map);
 
         if(user == null){

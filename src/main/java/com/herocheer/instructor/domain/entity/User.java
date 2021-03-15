@@ -3,6 +3,7 @@ package com.herocheer.instructor.domain.entity;
 import com.herocheer.common.base.entity.BaseEntity;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
+import com.herocheer.instructor.utils.AesUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -100,8 +101,8 @@ public class User extends BaseEntity {
         this.setImgUrl(userPO.getImgUrl());
         this.setUserName(userPO.getUserName());
         this.setSex(userPO.getSex());
-        this.setCertificateNo(userPO.getCertificateNo());
-        this.setPhone(userPO.getPhone());
+        this.setCertificateNo(AesUtil.encrypt(userPO.getCertificateNo()));
+        this.setPhone(AesUtil.encrypt(userPO.getPhone()));
         this.setEmail(userPO.getEmail());
         this.setOpenid(userPO.getOpenid());
         this.setSource(userPO.getSource());
