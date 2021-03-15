@@ -299,7 +299,9 @@
        
     <!--主键id单表查询-->
     <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
-        select <include refid="table_field"/> from activity_recruit_info where id = #{id}
+        select <include refid="table_field_join"/> from activity_recruit_info i
+        LEFT JOIN activity_recruit_detail d on i.id=d.recruitId
+        where i.id = #{id} GROUP BY i.id
     </select>
     
     
@@ -506,7 +508,7 @@
                 and i.status=#{status}
             </if>
             <if test="status!=null and status==0">
-                i.status != 4 and i.approvalStatus = 1
+                AND i.status != 4 and i.approvalStatus = 1
                 and i.recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==1">

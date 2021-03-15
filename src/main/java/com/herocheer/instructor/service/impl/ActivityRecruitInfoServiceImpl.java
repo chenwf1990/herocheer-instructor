@@ -95,7 +95,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     public Integer withdraw(Long id) {
         ActivityRecruitInfo activityRecruitInfo=new ActivityRecruitInfo();
         activityRecruitInfo.setId(id);
-        activityRecruitInfo.setStatus(ActivityApprovalStateEnums.WITHDRAW.getState());
+        activityRecruitInfo.setApprovalStatus(ActivityApprovalStateEnums.WITHDRAW.getState());
         return  this.dao.update(activityRecruitInfo);
     }
 
