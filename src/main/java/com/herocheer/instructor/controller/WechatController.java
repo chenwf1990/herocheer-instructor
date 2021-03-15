@@ -285,8 +285,11 @@ public class WechatController extends BaseController {
 //        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
 //        JSONObject JSONObj = JSONObject.parseObject(result);
 //        String accessToken = JSONObj.getString("access_token");
-        String accessToken = "43_dm4vPos_lK52usBfDCSTJEHpTLdkpHwr8DJlML06ufEinWjFY1lebR2JR_UswjVTiXyZykb2lgshL1pp0TfBS_IMWDEKQ5f-UvNZdvE1qPDQnQyGX_XICCva_ljyz8ltKDZ73JTT9N2ZJ3PNRZAdAEAJRS";
+//        String accessToken = "43_ALKzXZK1lb8xORyXyMqpcrALQhIPMjKX-rwrji26Bh6_CvDGnBumDaBsp49JlFiPHwQZiN1PeBQUq403kNoBs9xID2T1U5zh90FoTf3FRhw9SHOIUrqjTrxMaZdvfAuqav6wX9s6vI3QQsGTOFCcAJAHYV";
 
+//        String ticket = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
+//        String ticketStr = "kgt8ON7yVITDhtdwci0qedR-T-YYTdByyuzKfEfkreL91wELUAtfYMwcFXMF8_w2ZGCbcNQL2P4iPf2B1WrzPA";
+//        System.out.println(ticket);
         List<String> userList = new ArrayList<>();
         userList.add("or6Q-wfzYsLqaHlof8Tglyvdf-Y8");
 //        userList.add("or6Q-weNX5DMSkaIUYWALZINjWnI");
