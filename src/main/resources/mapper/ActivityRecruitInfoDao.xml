@@ -19,9 +19,10 @@
         i.approvalComments, i.deptName, i.deptId,i.createdId, i.createdBy, i.createdTime, i.updateId, i.updateBy, i.updateTime,
         CASE
             WHEN i.approvalStatus != 1 THEN null
-            WHEN i.approvalStatus = 1 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 3
-            WHEN i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-            WHEN i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+            WHEN i.`status`!=0 THEN i.`status`
+            WHEN i.approvalStatus = 1 AND i.`status`=0 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 3
+            WHEN i.approvalStatus = 1 AND i.`status`=0 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+            WHEN i.approvalStatus = 1 AND i.`status`=0 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1 THEN 1
             ELSE i.`status`
             END AS 'status'
@@ -574,22 +575,10 @@
         a.recruitStartDate,
         a.recruitEndDate,
         a.createdTime,
-        a.`status`,
+        a.approvalStatus AS 'status',
         a.updateId
         FROM
         activity_recruit_info a
-        <where>
-            <if test="statusArray!=null">
-                a.approvalStatus in(
-                <foreach collection="statusArray" item="status" index="index" separator=",">
-                    #{status}
-                </foreach>
-                )
-            </if>
-            <if test="updateId!=null">
-                AND updateId=#{updateId}
-            </if>
-        </where>
         UNION
         SELECT
         n.id,
@@ -604,9 +593,10 @@
         n.updateId
         FROM
         news_notice n
+        ) t
         <where>
             <if test="statusArray!=null">
-                n.status in(
+                t.status in(
                 <foreach collection="statusArray" item="status" index="index" separator=",">
                     #{status}
                 </foreach>
@@ -616,7 +606,6 @@
                 AND updateId=#{updateId}
             </if>
         </where>
-        ) t
         ORDER BY
         t.createdTime DESC
     </select>
@@ -628,7 +617,7 @@
         (
         SELECT
         a.id,
-        a.`status`,
+        a.approvalStatus AS 'status',
         a.updateId
         FROM
         activity_recruit_info a

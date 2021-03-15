@@ -247,7 +247,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         if(activityRecruitInfo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募信息不存在!");
         }
-        if(activityRecruitInfo.getStatus()!=ActivityApprovalStateEnums.PENDING.getState()){
+        if(activityRecruitInfo.getApprovalStatus()!=ActivityApprovalStateEnums.PENDING.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该招募信息非待审核状态!");
         }
         if (activityRecruitApproval.getApprovalStatus()== ActivityApprovalStateEnums.PASSED.getState()){
