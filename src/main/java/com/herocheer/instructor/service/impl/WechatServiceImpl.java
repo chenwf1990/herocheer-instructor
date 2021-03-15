@@ -292,7 +292,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
         //根据phone判断用户本地数据是否存在
         Map map = new HashMap();
-        map.put("phone",user.getString("mobile"));
+        map.put("phone",AesUtil.encrypt(user.getString("mobile")));
 
         User sysUser  = this.dao.selectSysUserOne(map);
 
