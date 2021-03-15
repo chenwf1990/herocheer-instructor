@@ -64,7 +64,7 @@ public class ActivityRecruitInfoController extends BaseController{
     }
 
     @GetMapping("/revoke")
-    @ApiOperation("招募信息撤销")
+    @ApiOperation("招募信息取消")
     public ResponseResult revoke(@ApiParam("招募信息id") @RequestParam Long id){
         return ResponseResult.ok(activityRecruitInfoService.revoke(id));
     }

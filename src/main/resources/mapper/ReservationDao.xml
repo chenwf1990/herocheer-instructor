@@ -314,4 +314,9 @@
         update reservation set status=#{status}
         where relevanceId=#{relevanceId} and `type` = #{type} and status=0
     </update>
+
+    <select id="findReservationOpenid" resultType="java.lang.String">
+        SELECT u.openid FROM `reservation` r LEFT JOIN `user` u on r.userId=u.id where r.relevanceId=#{relevanceId}
+        and r.status=0 and r.type=#{type}
+    </select>
 </mapper>

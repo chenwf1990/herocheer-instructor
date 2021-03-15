@@ -23,6 +23,7 @@ import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -56,8 +57,12 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
 
     @Resource
     private UserService userService;
+
     @Resource
     private ReservationService reservationService;
+
+    @Resource
+    private WechatService wechatService;
 
     @Override
     public Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo,Long userId) {
@@ -110,6 +115,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         map.put("reserveStatus",ReserveStatusEnums.EVENT_CANCELED.getState());
         map.put("activityId",activityRecruitInfo.getId());
         workingScheduleUserService.updateReserveStatus(map);
+        List<String> openids=reservationService.findReservationOpenid(activityRecruitInfo.getId(),
+                activityRecruitInfo.getRecruitType());
+        wechatService.sendWechatMessages(openids,activityRecruitInfo.getTitle());
         activityRecruitInfo.setStatus(RecruitStateEnums.EVENT_CANCELED.getState());
         return this.dao.update(activityRecruitInfo);
     }

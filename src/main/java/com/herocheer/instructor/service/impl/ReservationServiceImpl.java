@@ -203,4 +203,9 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     public Integer updateReservationStatus(Integer status, Long relevanceId, Integer type) {
         return this.dao.updateReservationStatus(status,relevanceId,type);
     }
+
+    @Override
+    public List<String> findReservationOpenid(Long relevanceId,Integer type) {
+        return this.dao.findReservationOpenid(relevanceId,type);
+    }
 }

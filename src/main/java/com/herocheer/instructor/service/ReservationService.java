@@ -7,6 +7,8 @@ import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 
+import java.util.List;
+
 /**
  * @author makejava
  * @desc  预约记录(Reservation)表服务接口
@@ -60,4 +62,11 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @return
      */
     Integer updateReservationStatus(Integer status,Long relevanceId,Integer type);
+
+    /**
+     * 获取预约人员的
+     * @param relevanceId
+     * @return
+     */
+    List<String> findReservationOpenid(Long relevanceId,Integer type);
 }
