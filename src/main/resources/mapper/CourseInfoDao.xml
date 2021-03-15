@@ -6,6 +6,8 @@
         id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
         approvalId,approvalBy,approvalTime,
         CASE
+            WHEN approvalStatus != 1 THEN null
+            WHEN `state`!=0 THEN `state`
             WHEN approvalStatus = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
             WHEN approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1 THEN 3
