@@ -545,11 +545,13 @@
         <choose>
             <when test="type!=null and type==3">
                 order by  CASE
-                WHEN i.approvalStatus = 1 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime))<![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-                WHEN i.approvalStatus = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
-                WHEN i.approvalStatus = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1 THEN 0
-                ELSE `status`
+                WHEN i.approvalStatus != 1 THEN null
+                WHEN i.`status`!=0 THEN i.`status`
+                WHEN i.approvalStatus = 1 AND i.`status`=0 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 3
+                WHEN i.approvalStatus = 1 AND i.`status`=0 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                WHEN i.approvalStatus = 1 AND i.`status`=0 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1 THEN 1
+                ELSE i.`status`
                 END  ASC,i.placedTop DESC,i.createdTime DESC
             </when>
             <otherwise>
