@@ -299,11 +299,10 @@
        
     <!--主键id单表查询-->
     <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
-        select <include refid="table_field_join"/> from activity_recruit_info i
-        LEFT JOIN activity_recruit_detail d on i.id=d.recruitId
-        where i.id = #{id} GROUP BY i.id
+        select <include refid="table_field"/> from activity_recruit_info
+        where id = #{id}
     </select>
-    
+
     
     
     <!--查询指定行数据-->
@@ -562,7 +561,9 @@
 
     <select id="getActivityRecruitInfo" parameterType="java.lang.Long"
             resultType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo">
-        select <include refid="table_field"/> from activity_recruit_info where id=#{id}
+        select <include refid="table_field_join"/> from activity_recruit_info i
+        LEFT JOIN activity_recruit_detail d on i.id=d.recruitId
+        where i.id = #{id} GROUP BY i.id
     </select>
 
     <select id="findApplicationList" resultType="com.herocheer.instructor.domain.vo.ApplicationListVo">
