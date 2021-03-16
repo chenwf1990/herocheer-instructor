@@ -550,7 +550,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             //签到是否异常：Ex 8-18  时间 >8 || 时间 > 18+2 都属于异常打卡
             Integer signInStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
             Integer signOutStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
-            if(v.getStatus() != AuditStatusEnums.to_audit.getState()){
+            if(v.getStatus() == AuditStatusEnums.to_audit.getState()){
                 Long serviceBeginTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceBeginTime());
                 Long serviceEndTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceEndTime()) + DateUtil.TWO_HOURS;
                 if((v.getSignInTime() == null && System.currentTimeMillis() > serviceBeginTime)
