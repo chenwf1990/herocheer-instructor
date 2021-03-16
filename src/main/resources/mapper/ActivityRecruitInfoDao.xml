@@ -299,11 +299,10 @@
        
     <!--主键id单表查询-->
     <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.ActivityRecruitInfo">
-        select <include refid="table_field_join"/> from activity_recruit_info i
-        LEFT JOIN activity_recruit_detail d on i.id=d.recruitId
-        where i.id = #{id} GROUP BY i.id
+        select <include refid="table_field"/> from activity_recruit_info
+        where id = #{id}
     </select>
-    
+
     
     
     <!--查询指定行数据-->
@@ -512,14 +511,14 @@
                 and i.recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==1">
-                i.status != 4 and i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND i.status != 4 and i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1
             </if>
             <if test="status!=null and status==2">
-                i.status != 4 and i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND i.status != 4 and i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==3">
-                i.status != 4 and i.approvalStatus = 1
+                AND i.status != 4 and i.approvalStatus = 1
             </if>
             <if test="userId!=null and type==1">
                 and i.createdId=#{userId}
@@ -545,11 +544,13 @@
         <choose>
             <when test="type!=null and type==3">
                 order by  CASE
-                WHEN i.approvalStatus = 1 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime))<![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-                WHEN i.approvalStatus = 1 AND recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 5
-                WHEN i.approvalStatus = 1 AND recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1 THEN 0
-                ELSE `status`
+                WHEN i.approvalStatus != 1 THEN null
+                WHEN i.`status`!=0 THEN i.`status`
+                WHEN i.approvalStatus = 1 AND i.`status`=0 AND max(d.serviceDate+TIME_TO_SEC(d.serviceEndTime)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 3
+                WHEN i.approvalStatus = 1 AND i.`status`=0 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                WHEN i.approvalStatus = 1 AND i.`status`=0 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1 THEN 1
+                ELSE i.`status`
                 END  ASC,i.placedTop DESC,i.createdTime DESC
             </when>
             <otherwise>
@@ -560,7 +561,9 @@
 
     <select id="getActivityRecruitInfo" parameterType="java.lang.Long"
             resultType="com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo">
-        select <include refid="table_field"/> from activity_recruit_info where id=#{id}
+        select <include refid="table_field_join"/> from activity_recruit_info i
+        LEFT JOIN activity_recruit_detail d on i.id=d.recruitId
+        where i.id = #{id} GROUP BY i.id
     </select>
 
     <select id="findApplicationList" resultType="com.herocheer.instructor.domain.vo.ApplicationListVo">

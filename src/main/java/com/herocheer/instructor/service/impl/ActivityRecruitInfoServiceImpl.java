@@ -141,11 +141,6 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
 
     @Override
     public Integer updateActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
-        if(activityRecruitInfoVo.getStatus()!= ActivityApprovalStateEnums.PENDING.getState()&&
-                activityRecruitInfoVo.getStatus()!=ActivityApprovalStateEnums.WITHDRAW.getState()&&
-                activityRecruitInfoVo.getStatus()!=ActivityApprovalStateEnums.OVERRULE.getState()){
-            throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法修改");
-        }
         //数据效验
         this.verificationDate(activityRecruitInfoVo);
         //状态为空,设置状态为待审核

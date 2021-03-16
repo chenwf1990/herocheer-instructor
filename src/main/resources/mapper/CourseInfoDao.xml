@@ -501,10 +501,10 @@
                 AND (approvalStatus=1 or approvalStatus=3)
             </if>
             <if test="queryType!=null and queryType==3 and createdId!=null">
-                AND approvalStatus=1 AND state!=5
+                AND createdId=#{createdId}
             </if>
             <if test="queryType!=null and queryType==4">
-                AND createdId=#{createdId}
+                AND approvalStatus=1 AND state!=5
             </if>
             <if test="approvalStartTime!=null">
                 and updateTime <![CDATA[ > ]]> #{approvalStartTime}
