@@ -466,18 +466,26 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     @Async
     @Override
     public void sendWechatMessages(List<String> userList,String title) {
-        // 异步批量发送
-        // 获取I健身的access_token（正式环境）
-//        String result = findJsapiTicket();
-//        JSONObject json = JSONObject.parseObject(result);
-//        String accessToken = json.getString("token");
+        // 每日access_token次数有限：每日限额：2000次
+        String key = StrUtil.format(CacheKeyConst.ACCESSTOKEN, appid, secret);
+        String accessToken = null;
+        if (!redisClient.hasKey(key)) {
+            // 获取I健身的access_token（正式环境）
+//            String result = findJsapiTicket();
+//            JSONObject json = JSONObject.parseObject(result);
+//            accessToken = json.getString("token");
 
-        // 熙信科技公众号(测试环境)
-        String appid = "wx5e3449374c04489c";
-        String secret = "82fdb32c5c4c461481545c42b93ffc46";
-        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
-        JSONObject JSONObj = JSONObject.parseObject(result);
-        String accessToken = JSONObj.getString("access_token");
+            // 熙信科技公众号(测试环境)
+            String appid = "wx5e3449374c04489c";
+            String secret = "82fdb32c5c4c461481545c42b93ffc46";
+            String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
+            JSONObject JSONObj = JSONObject.parseObject(result);
+            accessToken = JSONObj.getString("access_token");
+            // 失效时间为2个小时
+            redisClient.set(key,accessToken,CacheKeyConst.ACCESSTOKEN_EXPIRETIME);
+        }else {
+            accessToken  = redisClient.get(key);
+        }
 
         JSONObject sendData = null;
         for (String openid : userList){

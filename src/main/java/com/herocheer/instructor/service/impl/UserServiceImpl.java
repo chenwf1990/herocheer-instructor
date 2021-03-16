@@ -722,17 +722,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         paramMap.put("sign",sign);
 
         String resultUser = HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser",paramMap);
-
-        /*String resultUser = HttpRequest.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser")
-                .header(Header.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .form(paramMap)
-                .execute().body();*/
-
         JSONObject JSONObj = JSONObject.parseObject(resultUser);
         log.debug("同步用户数据给I健身：{}",JSONObj);
 
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
-            throw new CommonException("同步用户数据失败");
+            log.error("同步用户数据失败");
         }
     }
 }
