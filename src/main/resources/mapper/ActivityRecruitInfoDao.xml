@@ -511,14 +511,14 @@
                 and i.recruitStartDate <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==1">
-                i.status != 4 and i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND i.status != 4 and i.approvalStatus = 1 AND i.recruitStartDate <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND  UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> i.recruitEndDate+24*60*60*1000-1
             </if>
             <if test="status!=null and status==2">
-                i.status != 4 and i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND i.status != 4 and i.approvalStatus = 1 AND i.recruitEndDate+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="status!=null and status==3">
-                i.status != 4 and i.approvalStatus = 1
+                AND i.status != 4 and i.approvalStatus = 1
             </if>
             <if test="userId!=null and type==1">
                 and i.createdId=#{userId}
