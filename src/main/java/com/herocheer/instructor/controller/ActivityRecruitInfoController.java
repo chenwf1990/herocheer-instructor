@@ -44,7 +44,8 @@ public class ActivityRecruitInfoController extends BaseController{
 
     @PostMapping("/queryPage")
     @ApiOperation("招募信息查询")
-    public ResponseResult<Page<ActivityRecruitInfo>> queryPageList(@RequestBody ActivityRecruitInfoQueryVo queryVo,HttpServletRequest request){
+    public ResponseResult<Page<ActivityRecruitInfo>> queryPageList(@RequestBody ActivityRecruitInfoQueryVo queryVo,
+                                                                   HttpServletRequest request){
         Page<ActivityRecruitInfo> page = activityRecruitInfoService.queryPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
@@ -62,11 +63,10 @@ public class ActivityRecruitInfoController extends BaseController{
         return ResponseResult.ok(activityRecruitInfoService.withdraw(id));
     }
 
-    @GetMapping("/isPublic")
-    @ApiOperation("设置招募信息是否公开")
-    public ResponseResult isPublic(@ApiParam("招募信息id") @RequestParam Long id,
-                                   @ApiParam("是否公开(0.公开1.不公开)") @RequestParam Integer isPublic){
-        return ResponseResult.ok(activityRecruitInfoService.isPublic(id,isPublic));
+    @GetMapping("/revoke")
+    @ApiOperation("招募信息取消")
+    public ResponseResult revoke(@ApiParam("招募信息id") @RequestParam Long id){
+        return ResponseResult.ok(activityRecruitInfoService.revoke(id));
     }
 
     @PostMapping("/add")

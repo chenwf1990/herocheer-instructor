@@ -15,9 +15,20 @@ public class InsuranceConst {
 
     public static String BASE_URL;
 
+    /**
+     * 消息模板id
+     */
+    public static String TEMPLATE_ID;
+
     @Value("${ijs.baseUrl}")
     public void setBaseUrl(String baseUrl) {
         BASE_URL = baseUrl;
+    }
+
+
+    @Value("${ijs.templateId}")
+    public void setTemplateId(String templateId) {
+        TEMPLATE_ID = templateId;
     }
     //  public static final String BASE_URL = "http://192.168.147.133/sports/wechat/api";
     //  public static final String URL = "192.168.100.168:8280";

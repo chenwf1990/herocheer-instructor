@@ -2,6 +2,7 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
+import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.CourseInfoDao;
 import com.herocheer.instructor.domain.entity.CourseApproval;
@@ -10,8 +11,12 @@ import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.CourseApprovalState;
+import com.herocheer.instructor.enums.RecruitTypeEunms;
+import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.service.CourseApprovalService;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.service.ReservationService;
+import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.apache.commons.collections.map.HashedMap;
@@ -35,13 +40,17 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
     @Resource
     private CourseApprovalService courseApprovalService;
+    @Resource
+    private ReservationService reservationService;
+    @Resource
+    private WechatService wechatService;
     @Override
-    public Page<CourseInfoVo> queryPage(CourseInfoQueryVo queryVo, Long userId) {
+    public Page<CourseInfo> queryPage(CourseInfoQueryVo queryVo, Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         if(queryVo.getQueryType()!=null&&queryVo.getQueryType()==3){
             queryVo.setCreatedId(userId);
         }
-        List<CourseInfoVo> instructors = this.dao.queryList(queryVo);
+        List<CourseInfo> instructors = this.dao.queryList(queryVo);
         page.setDataList(instructors);
         return page;
     }
@@ -54,19 +63,28 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         return list;
     }
 
-    @Override
-    public Integer isPublic(Long id, Integer isPublic) {
-        CourseInfoVo courseInfoVo=new CourseInfoVo();
-        courseInfoVo.setId(id);
-        courseInfoVo.setIsPublic(isPublic);
-        return this.dao.update(courseInfoVo);
-    }
 
     @Override
     public Integer withdraw(Long id) {
         CourseInfo courseInfo=new CourseInfo();
         courseInfo.setId(id);
-        courseInfo.setState(CourseApprovalState.WITHDRAW.getState());
+        courseInfo.setApprovalStatus(CourseApprovalState.WITHDRAW.getState());
+        return this.dao.update(courseInfo);
+    }
+
+    @Override
+    public Integer revoke(Long id) {
+        CourseInfo courseInfo=this.dao.getCourseInfo(id);
+        if(courseInfo==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取课程信息失败!");
+        }
+        reservationService.updateReservationStatus(ReserveStatusEnums.EVENT_CANCELED.getState(),
+                courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
+        //设置课程状态 5=课程取消
+        courseInfo.setState(5);
+        List<String> openids=reservationService.findReservationOpenid(courseInfo.getId(),
+                RecruitTypeEunms.COURIER_RECRUIT.getType());
+        wechatService.sendWechatMessages(openids,courseInfo.getTitle());
         return this.dao.update(courseInfo);
     }
 
@@ -78,10 +96,12 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         courseInfo.setApprovalStatus(courseApproval.getApprovalStatus());
         courseInfo.setApprovalComments(courseApproval.getApprovalComments());
         if(ActivityApprovalStateEnums.PASSED.getState()==courseApproval.getApprovalStatus()){
-            courseInfo.setState(CourseApprovalState.PASSED.getState());
+            courseInfo.setApprovalStatus(CourseApprovalState.PASSED.getState());
+            //设置活动状态待启动
+            courseInfo.setState(0);
         }
         if(ActivityApprovalStateEnums.OVERRULE.getState()==courseApproval.getApprovalStatus()){
-            courseInfo.setState(CourseApprovalState.OVERRULE.getState());
+            courseInfo.setApprovalStatus(CourseApprovalState.OVERRULE.getState());
         }
         courseInfo.setApprovalId(userEntity.getId());
         courseInfo.setApprovalBy(userEntity.getUserName());
@@ -110,7 +130,9 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
                     DateUtil.timeStamp2Date(courseInfo.getSignEndTime()),
                     DateUtil.timeStamp2Date(courseInfo.getCourseEndTime()));
         }
-        courseInfo.setState(CourseApprovalState.PENDING.getState());
+        if(courseInfo.getApprovalStatus()==null){
+            courseInfo.setApprovalStatus(CourseApprovalState.PENDING.getState());
+        }
         return courseInfo;
     }
 }

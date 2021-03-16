@@ -8,6 +8,7 @@ import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -73,4 +74,18 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return
      */
     List<ReservationInfoVo> findReservationInfo(ReservationInfoQueryVo queryVo);
+
+    /**
+     * 修改预约状态
+     * @param map
+     * @return
+     */
+    Integer updateReserveStatus(Map<String,Object> map);
+
+    /**
+     * 获取招募活动的打卡记录
+     * @param activityId
+     * @return
+     */
+    List<String> findSignRecord(@Param("activityId")Long activityId);
 }

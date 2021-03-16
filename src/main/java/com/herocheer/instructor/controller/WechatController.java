@@ -1,5 +1,6 @@
 package com.herocheer.instructor.controller;
 
+import cn.hutool.core.util.URLUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
@@ -34,12 +35,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -62,6 +66,8 @@ public class WechatController extends BaseController {
     @Autowired
     private RedisClient redisClient;
 
+    @Autowired
+    RestTemplate restTemplate;
 
     @GetMapping("/getWxInfo")
     @ApiOperation("获取微信信息")
@@ -138,7 +144,7 @@ public class WechatController extends BaseController {
     @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query")
     public ResponseResult fetchSmsCode(@NotBlank(message = "手机号不能为空") String phone,HttpServletRequest request) {
         // 限制短信验证码的使用（很贵）
-        User user = userService.findUserByPhone(phone);
+        User user = userService.findUserByPhone(AesUtil.decrypt(URLUtil.decode(phone)));
         if(ObjectUtils.isEmpty(user)){
             // 后台无记录，请前往社会指导员认证或联系管理员。
             throw new CommonException("您未注册指导员，请联系管理员");
@@ -171,7 +177,7 @@ public class WechatController extends BaseController {
     public ResponseResult verifySmsCode(@NotBlank(message = "手机号不能为空") String phone,
                                          @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
 
-        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.decrypt(phone), code);
+        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.decrypt(URLUtil.decode(phone)), code);
         if("F".equals(result.getSuccess())){
             return ResponseResult.fail(result.getMessage());
         }
@@ -266,6 +272,31 @@ public class WechatController extends BaseController {
     public ResponseResult queryWeChatUser(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){
         Page<User> page = wechatService.findWeChatUserByPage(sysUserVO);
         return ResponseResult.ok(page);
+    }
+
+    @GetMapping("/test")
+    @ApiOperation("公众号消息")
+    @AllowAnonymous
+    public ResponseResult test(HttpServletRequest request) {
+
+        // 熙信科技公众号
+//        String appid = "wx5e3449374c04489c";
+//        String secret = "82fdb32c5c4c461481545c42b93ffc46";
+//
+//        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
+//        JSONObject JSONObj = JSONObject.parseObject(result);
+//        String accessToken = JSONObj.getString("access_token");
+//        String accessToken = "43_ALKzXZK1lb8xORyXyMqpcrALQhIPMjKX-rwrji26Bh6_CvDGnBumDaBsp49JlFiPHwQZiN1PeBQUq403kNoBs9xID2T1U5zh90FoTf3FRhw9SHOIUrqjTrxMaZdvfAuqav6wX9s6vI3QQsGTOFCcAJAHYV";
+
+//        String ticket = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
+//        String ticketStr = "kgt8ON7yVITDhtdwci0qedR-T-YYTdByyuzKfEfkreL91wELUAtfYMwcFXMF8_w2ZGCbcNQL2P4iPf2B1WrzPA";
+//        System.out.println(ticket);
+        List<String> userList = new ArrayList<>();
+        userList.add("obOp1s11wNrrTTi4OOqevC-0MhBU");
+//        userList.add("obOp1s-Sj22VggP-wBYff1KBvnvo");
+        String title = "某某课程";
+        wechatService.sendWechatMessages(userList,title);
+        return ResponseResult.ok();
     }
 
 }

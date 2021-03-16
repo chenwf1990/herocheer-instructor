@@ -10,6 +10,7 @@ import com.herocheer.instructor.domain.vo.WxInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -57,4 +58,12 @@ public interface WechatService {
      * @return {@link Page<User>}
      */
     Page<User> findWeChatUserByPage(SysUserVO sysUserVO);
+
+    /**
+     * 发送微信消息
+     *
+     * @param userList 订阅课程的用户名单
+     * @param title    标题
+     */
+    void sendWechatMessages(List<String> userList,String title);
 }

@@ -47,7 +47,7 @@ public interface ActivityRecruitInfoService extends BaseService<ActivityRecruitI
      * @param id
      * @return
      */
-    Integer isPublic(Long id,Integer isPublic);
+    Integer revoke(Long id);
 
     /**
      * 保存招募信息

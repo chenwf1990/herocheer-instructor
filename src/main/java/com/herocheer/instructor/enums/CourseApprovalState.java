@@ -3,8 +3,8 @@ package com.herocheer.instructor.enums;
 public enum CourseApprovalState {
     PENDING(0,"待审核"),
     PASSED(1,"通过"),
-    WITHDRAW(2,"撤回"),
-    OVERRULE(3,"驳回");
+    OVERRULE(2,"驳回"),
+    WITHDRAW(3,"撤回");
     CourseApprovalState(){
 
     }

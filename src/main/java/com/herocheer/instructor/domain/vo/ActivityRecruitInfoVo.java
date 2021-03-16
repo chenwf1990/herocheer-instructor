@@ -19,6 +19,6 @@ public class ActivityRecruitInfoVo extends ActivityRecruitInfo {
     @ApiModelProperty("招募详情)")
     private List<ActivityRecruitDetail> recruitDetails;
 
-    @ApiModelProperty("预约状态(0.已预约1.取消预约2.已关闭)")
+    @ApiModelProperty("预约状态(0.已预约 1.取消预约 2.活动下架)")
     private Integer reservationStatus;
 }

@@ -1,6 +1,8 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -33,8 +35,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.beans.BeanCopier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -89,6 +95,27 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     private InstructorService instructorService;
 
     //验证微信交互是否正常
+    /**
+     * 找到 jsapi_ticket
+     *
+     * @return {@link String}
+     */
+    private String findJsapiTicket(){
+        Long currentTime = System.currentTimeMillis();
+        String sign = DigestUtils.md5DigestAsHex((currentTime + InsuranceConst.KEY).getBytes());
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("sign", sign);
+        paramMap.put("timestamp",currentTime);
+        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/getToken", paramMap);
+
+        JSONObject JSONObj = JSONObject.parseObject(result);
+        if(JSONObj == null || JSONObj.getInteger("code") != 200){
+            throw new CommonException("请求jsapi_ticket失败");
+        }
+        return JSONObj.getString("result");
+    }
+
     private void validResult(JSONObject resultJson) {
         if (resultJson.containsKey("errcode") && !resultJson.getString("errcode").equals("0")) {
             throw new CommonException("系统错误:"+resultJson.getString("errmsg"));
@@ -128,27 +155,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         return wxInfoVO;
     }
 
-    /**
-     * 找到 jsapi_ticket
-     *
-     * @return {@link String}
-     */
-    private String findJsapiTicket(){
-        Long currentTime = System.currentTimeMillis();
-        String sign = DigestUtils.md5DigestAsHex((currentTime + InsuranceConst.KEY).getBytes());
-
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("sign", sign);
-        paramMap.put("timestamp",currentTime);
-        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/getToken", paramMap);
-
-        JSONObject JSONObj = JSONObject.parseObject(result);
-        if(JSONObj == null || JSONObj.getInteger("code") != 200){
-            throw new CommonException("请求jsapi_ticket失败");
-        }
-        return JSONObj.getString("result");
-    }
-
 
     public JSONObject getWeChatUserInfo(JSONObject json) {
         String accessToken = json.getString("access_token");
@@ -165,6 +171,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         log.debug("微信用户openid：{}",openid);
         // 获取微信群众信息，方便统计用户及展示个人中心信息显示
         JSONObject jsonStr = new JSONObject();
+        UserInfoVo userInfo = new UserInfoVo();
+        String token = IdUtil.simpleUUID();
         if (StringUtils.isNotEmpty(code)) {
             JSONObject JSONObj = getOpenId(code);
             if (ObjectUtils.isEmpty(JSONObj) || StringUtils.isBlank(JSONObj.getString("openid"))) {
@@ -174,8 +182,17 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             jsonStr  = getWeChatUserInfo(JSONObj);
         }else {
             // 用户出去后，再进来
-            String userInfo = redisClient.get(openid);
-            jsonStr = JSONObject.parseObject(userInfo);
+            String userInfoStr = redisClient.get(openid);
+            jsonStr = JSONObject.parseObject(userInfoStr);
+            // 之前未给过code情况
+            if(ObjectUtils.isEmpty(jsonStr)){
+                userInfo.setOtherId(openid);
+                userInfo.setCodeFlag(false);
+                userInfo.setTokenId(token);
+                // 用户信息放入Redis
+                redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
+                return userInfo;
+            }
         }
 
         // 根据openid获取用户信息
@@ -183,7 +200,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         map.put("openid", openid);
         User user  = this.dao.selectSysUserOne(map);
 
-        UserInfoVo userInfo = new UserInfoVo();
         if (user == null) {
             user = User.builder().build();
             user.setUserType(UserTypeEnums.weChatUser.getCode());
@@ -211,7 +227,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         userInfo.setOtherId(openid);
         userInfo.setUserType(user.getUserType());
 
-        String token = IdUtil.simpleUUID();
         userInfo.setTokenId(token);
         userInfo.setOtherId(openid);
         log.debug("微信用户登入信息：{}",userInfo);
@@ -248,7 +263,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         }
 
         Map map = new HashMap();
-        map.put("certificateNo", weChatUser.getCertificateNo());
+        map.put("certificateNo", AesUtil.encrypt(weChatUser.getCertificateNo()));
         User user  = this.dao.selectSysUserOne(map);
 
         if(user == null){
@@ -440,5 +455,80 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         List<User> sysUserList = this.dao.selectWeChatUserByPage(sysUserVO);;
         page.setDataList(sysUserList);
         return page;
+    }
+
+    /**
+     * 发送微信消息
+     *
+     * @param userList 订阅课程的用户名单
+     * @param title    标题
+     */
+    @Async
+    @Override
+    public void sendWechatMessages(List<String> userList,String title) {
+        // 每日access_token次数有限：每日限额：2000次
+        String key = StrUtil.format(CacheKeyConst.ACCESSTOKEN, appid, secret);
+        String accessToken = null;
+        if (!redisClient.hasKey(key)) {
+//             获取I健身的access_token（正式环境）
+            String result = findJsapiTicket();
+            JSONObject json = JSONObject.parseObject(result);
+            accessToken = json.getString("token");
+
+            // 微信公众号配置(测试环境)
+//            String appid = "wxf6c55bc2f36ca69b";
+//            String secret = "0f7eceb412da0a68b533ad303774da89";
+//            String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
+//            JSONObject JSONObj = JSONObject.parseObject(result);
+//            accessToken = JSONObj.getString("access_token");
+
+            if(StringUtils.isBlank(accessToken)){
+                throw new CommonException("获取公众号accessToken失败");
+            }
+            // 失效时间为2个小时
+            redisClient.set(key,accessToken,CacheKeyConst.ACCESSTOKEN_EXPIRETIME);
+        }else {
+            accessToken  = redisClient.get(key);
+        }
+
+        JSONObject sendData = null;
+        for (String openid : userList){
+            sendData = new JSONObject();
+            // 报名某课程的用户
+            sendData.put("touser", openid);
+            // 固定的tempelteId
+//            sendData.put("template_id", "403SUrqcDVJF5ICyxExtmEWWK13p0jhKJhPqeBnFdBs");
+            sendData.put("template_id", InsuranceConst.TEMPLATE_ID);
+            JSONObject content = new JSONObject();
+            JSONObject first = new JSONObject();
+            first.put("value", StrUtil.format("您好，您之前报名的”{}“已取消，给你造成不便，敬请谅解！",title));
+            content.put("first", first);
+
+            JSONObject keyword1 = new JSONObject();
+            // 当前时间
+            keyword1.put("value", DateUtil.now());
+            content.put("keyword1", keyword1);
+
+            JSONObject keyword2 = new JSONObject();
+            keyword2.put("value", "熙重电子");
+            content.put("keyword2", keyword2);
+
+            JSONObject remark = new JSONObject();
+            remark.put("value", "");
+            content.put("remark", remark);
+            sendData.put("data",content);
+
+            log.info("课程下架消息内容:{}",JSONObject.toJSONString(sendData));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<JSONObject> entity = new HttpEntity<>(sendData, headers);
+            ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ accessToken, entity, JSONObject.class);
+            // 发送失败时要提醒
+            JSONObject jsonObject = responseEntity.getBody();
+            if (!"ok".equals(jsonObject.getString("errmsg"))) {
+                throw new CommonException("消息发送失败：{}",jsonObject);
+            }
+        }
     }
 }

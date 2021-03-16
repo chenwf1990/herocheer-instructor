@@ -1,6 +1,7 @@
 package com.herocheer.instructor.controller;
 
 
+import cn.hutool.core.util.URLUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -74,7 +75,7 @@ public class InsuranceController extends BaseController {
     @GetMapping("/certificateNo")
     @ApiOperation("我的保单")
     public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @RequestParam String certificateNo, HttpServletRequest request){
-        String sign = DigestUtils.md5DigestAsHex((AesUtil.decrypt(certificateNo) + InsuranceConst.KEY).getBytes());
+        String sign = DigestUtils.md5DigestAsHex((AesUtil.decrypt(URLUtil.decode(certificateNo)) + InsuranceConst.KEY).getBytes());
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
         paramMap.put("certificateNo", AesUtil.decrypt(certificateNo));

@@ -2,8 +2,8 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
-import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
@@ -103,4 +103,18 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return
      */
     Page<ReservationInfoVo> findReservationInfoPage(ReservationInfoQueryVo queryVo,Long userId);
+
+    /**
+     * 修改预约状态
+     * @param map
+     * @return
+     */
+    Integer updateReserveStatus(Map<String,Object> map);
+
+    /**
+     * 获取招募活动的打卡记录
+     * @param activityId
+     * @return
+     */
+    List<String> findSignRecord(Long activityId);
 }

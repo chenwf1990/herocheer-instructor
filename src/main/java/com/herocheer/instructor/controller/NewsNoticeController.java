@@ -49,12 +49,6 @@ public class NewsNoticeController extends BaseController{
         return ResponseResult.ok(newsNoticeService.get(id));
     }
 
-    @GetMapping("/isPublic")
-    @ApiOperation("设置是否公开")
-    public ResponseResult isPublic(@ApiParam("招募信息id") @RequestParam Long id,
-                                   @ApiParam("是否公开(0.公开1.不公开)") @RequestParam Integer isPublic){
-        return ResponseResult.ok(newsNoticeService.isPublic(id,isPublic));
-    }
 
     @PostMapping("/add")
     @ApiOperation("新增新闻活动")
@@ -67,6 +61,16 @@ public class NewsNoticeController extends BaseController{
     public ResponseResult update(@RequestBody NewsNotice newsNotice){
         newsNoticeService.updateNewsNotice(newsNotice);
         return ResponseResult.ok();
+    }
+
+    @GetMapping("/cancelNews")
+    @ApiOperation("取消新闻")
+    public ResponseResult cancelNews(@ApiParam("新闻id") @RequestParam Long id,
+                                     @ApiParam("上下架状态0上架 1下架") @RequestParam Integer isPublic){
+        NewsNotice newsNotice = new NewsNotice();
+        newsNotice.setId(id);
+        newsNotice.setIsPublic(isPublic);
+        return ResponseResult.isSuccess(newsNoticeService.update(newsNotice));
     }
 
 

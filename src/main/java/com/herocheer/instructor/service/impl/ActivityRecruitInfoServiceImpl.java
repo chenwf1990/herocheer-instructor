@@ -17,10 +17,13 @@ import com.herocheer.instructor.domain.vo.ApplicationListVo;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.RecruitStateEnums;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
+import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.service.ActivityRecruitApprovalService;
 import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
+import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -55,12 +58,18 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Resource
     private UserService userService;
 
+    @Resource
+    private ReservationService reservationService;
+
+    @Resource
+    private WechatService wechatService;
+
     @Override
     public Page<ActivityRecruitInfo> queryPage(ActivityRecruitInfoQueryVo queryVo,Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         queryVo.setUserId(userId);
         if (queryVo.getType()!=null&&queryVo.getType()==2){
-            queryVo.setStatus(RecruitStateEnums.PENDING.getState());
+            queryVo.setApprovalStatus(ActivityApprovalStateEnums.PENDING.getState());
         }
         List<ActivityRecruitInfo> instructors = this.dao.findList(queryVo);
         page.setDataList(instructors);
@@ -86,15 +95,30 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     public Integer withdraw(Long id) {
         ActivityRecruitInfo activityRecruitInfo=new ActivityRecruitInfo();
         activityRecruitInfo.setId(id);
-        activityRecruitInfo.setStatus(RecruitStateEnums.WITHDRAW.getState());
+        activityRecruitInfo.setApprovalStatus(ActivityApprovalStateEnums.WITHDRAW.getState());
         return  this.dao.update(activityRecruitInfo);
     }
 
     @Override
-    public Integer isPublic(Long id, Integer isPublic) {
-        ActivityRecruitInfo activityRecruitInfo=new ActivityRecruitInfo();
-        activityRecruitInfo.setId(id);
-        activityRecruitInfo.setIsPublic(isPublic);
+    public Integer revoke(Long id) {
+        List<String> signList=workingScheduleUserService.findSignRecord(id);
+        if (!signList.isEmpty()){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "该招募信息已有打卡记录,无法取消!");
+        }
+        ActivityRecruitInfo activityRecruitInfo=this.dao.get(id);
+        if(activityRecruitInfo==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取招募信息失败!");
+        }
+        reservationService.updateReservationStatus(ReserveStatusEnums.EVENT_CANCELED.getState(),
+                activityRecruitInfo.getId(),activityRecruitInfo.getRecruitType());
+        Map<String,Object> map=new HashMap<>();
+        map.put("reserveStatus",ReserveStatusEnums.EVENT_CANCELED.getState());
+        map.put("activityId",activityRecruitInfo.getId());
+        workingScheduleUserService.updateReserveStatus(map);
+        List<String> openids=reservationService.findReservationOpenid(activityRecruitInfo.getId(),
+                activityRecruitInfo.getRecruitType());
+        wechatService.sendWechatMessages(openids,activityRecruitInfo.getTitle());
+        activityRecruitInfo.setStatus(RecruitStateEnums.EVENT_CANCELED.getState());
         return this.dao.update(activityRecruitInfo);
     }
 
@@ -102,9 +126,13 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer addActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
-        activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
+        activityRecruitInfoVo.setStatus(ActivityApprovalStateEnums.PENDING.getState());
         //数据效验
         this.verificationDate(activityRecruitInfoVo);
+        //状态为空,设置状态为待审核
+        if(activityRecruitInfoVo.getApprovalStatus()==null){
+            activityRecruitInfoVo.setApprovalStatus(ActivityApprovalStateEnums.PENDING.getState());
+        }
         Integer count=this.dao.insert(activityRecruitInfoVo);
         //保存赛事招募明细
         this.saveMatchDetail(activityRecruitInfoVo);
@@ -113,17 +141,11 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
 
     @Override
     public Integer updateActivityRecruitInfo(ActivityRecruitInfoVo activityRecruitInfoVo) {
-        if(activityRecruitInfoVo.getStatus()!= RecruitStateEnums.PENDING.getState()&&
-                activityRecruitInfoVo.getStatus()!=RecruitStateEnums.WITHDRAW.getState()&&
-                activityRecruitInfoVo.getStatus()!=RecruitStateEnums.OVERRULE.getState()){
-            throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法修改");
-        }
         //数据效验
         this.verificationDate(activityRecruitInfoVo);
-        //如果状态为撤回或者驳回,修改时将状态更改为待审核
-        if(activityRecruitInfoVo.getStatus()==RecruitStateEnums.WITHDRAW.getState()||
-                activityRecruitInfoVo.getStatus()==RecruitStateEnums.OVERRULE.getState()){
-            activityRecruitInfoVo.setStatus(RecruitStateEnums.PENDING.getState());
+        //状态为空,设置状态为待审核
+        if(activityRecruitInfoVo.getApprovalStatus()==null){
+            activityRecruitInfoVo.setApprovalStatus(ActivityApprovalStateEnums.PENDING.getState());
         }
         Integer count=this.dao.update(activityRecruitInfoVo);
         //保存赛事招募明细
@@ -198,9 +220,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Override
     public Integer deleteActivityRecruitInfo(Long id) {
         ActivityRecruitInfo activityRecruitInfo=this.dao.get(id);
-        if(activityRecruitInfo.getStatus()!= RecruitStateEnums.PENDING.getState()&&
-                activityRecruitInfo.getStatus()!=RecruitStateEnums.WITHDRAW.getState()&&
-                activityRecruitInfo.getStatus()!=RecruitStateEnums.OVERRULE.getState()){
+        if(activityRecruitInfo.getStatus()!= ActivityApprovalStateEnums.PENDING.getState()&&
+                activityRecruitInfo.getStatus()!=ActivityApprovalStateEnums.WITHDRAW.getState()&&
+                activityRecruitInfo.getStatus()!=ActivityApprovalStateEnums.OVERRULE.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该状态下无法删除");
         }
         Integer count=this.dao.delete(id);
@@ -220,15 +242,16 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         if(activityRecruitInfo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募信息不存在!");
         }
-        if(activityRecruitInfo.getStatus()!=RecruitStateEnums.PENDING.getState()){
+        if(activityRecruitInfo.getApprovalStatus()!=ActivityApprovalStateEnums.PENDING.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该招募信息非待审核状态!");
         }
         if (activityRecruitApproval.getApprovalStatus()== ActivityApprovalStateEnums.PASSED.getState()){
             //审核通过
+            activityRecruitInfo.setApprovalStatus(ActivityApprovalStateEnums.PASSED.getState());
             activityRecruitInfo.setStatus(RecruitStateEnums.TO_RECRUITED.getState());
         }else if(activityRecruitApproval.getApprovalStatus()== ActivityApprovalStateEnums.OVERRULE.getState()){
             //审核驳回
-            activityRecruitInfo.setStatus(RecruitStateEnums.OVERRULE.getState());
+            activityRecruitInfo.setApprovalStatus(ActivityApprovalStateEnums.OVERRULE.getState());
         }else {
             throw new CommonException(ResponseCode.SERVER_ERROR, "审核状态无效!");
         }
@@ -240,7 +263,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         activityRecruitInfo.setApprovalTime(System.currentTimeMillis());
         Integer count=this.dao.update(activityRecruitInfo);
         //生成驿站招募明细
-        if(activityRecruitInfo.getStatus()==RecruitStateEnums.TO_RECRUITED.getState()
+        if(activityRecruitInfo.getApprovalStatus()==ActivityApprovalStateEnums.PASSED.getState()
             &&activityRecruitInfo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()
             && StringUtils.isNotBlank(activityRecruitInfo.getServiceHours())){
             String[] serviceHours=activityRecruitInfo.getServiceHours().split(",");
@@ -300,11 +323,12 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         Page page = Page.startPage(pageNo,pageSize);
         Map<String,Object> map=new HashMap<>();
         if(type==1){//待审批,需要验证是否有审批权限
-            int[] statusArray={RecruitStateEnums.PENDING.getState()};
+            int[] statusArray={ActivityApprovalStateEnums.PENDING.getState()};
             map.put("statusArray",statusArray);
         }
         if(type==2){//已审批
-            int[] statusArray={RecruitStateEnums.OVERRULE.getState(),RecruitStateEnums.TO_RECRUITED.getState()};
+            int[] statusArray={ActivityApprovalStateEnums.OVERRULE.getState(),
+                    ActivityApprovalStateEnums.PASSED.getState()};
             map.put("updateId",userId);
             map.put("statusArray",statusArray);
         }
@@ -317,11 +341,12 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     public Integer getApplicationCount(Integer type, Long userId) {
         Map<String,Object> map=new HashMap<>();
         if(type==1){//待审批,需要验证是否有审批权限
-            int[] statusArray={RecruitStateEnums.PENDING.getState()};
+            int[] statusArray={ActivityApprovalStateEnums.PENDING.getState()};
             map.put("statusArray",statusArray);
         }
         if(type==2){//已审批
-            int[] statusArray={RecruitStateEnums.OVERRULE.getState(),RecruitStateEnums.TO_RECRUITED.getState()};
+            int[] statusArray={ActivityApprovalStateEnums.OVERRULE.getState(),
+                    ActivityApprovalStateEnums.PASSED.getState()};
             map.put("updateId",userId);
             map.put("statusArray",statusArray);
         }

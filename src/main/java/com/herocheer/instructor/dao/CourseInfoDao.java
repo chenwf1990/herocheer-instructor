@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface CourseInfoDao extends BaseDao<CourseInfo,Long>{
 
-    List<CourseInfoVo> queryList(CourseInfoQueryVo queryVo);
+    List<CourseInfo> queryList(CourseInfoQueryVo queryVo);
 
     CourseInfoVo getCourseInfo(@Param("id") Long id);
 

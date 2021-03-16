@@ -550,18 +550,16 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             //签到是否异常：Ex 8-18  时间 >8 || 时间 > 18+2 都属于异常打卡
             Integer signInStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
             Integer signOutStatus = SignStatusEnums.SIGN_NORMAL.getStatus();
-            if(v.getStatus() != AuditStatusEnums.to_audit.getState()){
-                Long serviceBeginTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceBeginTime());
-                Long serviceEndTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceEndTime()) + DateUtil.TWO_HOURS;
-                if((v.getSignInTime() == null && System.currentTimeMillis() > serviceBeginTime)
-                        || (v.getSignInTime() != null && v.getSignInTime() > serviceBeginTime)){
-                    signInStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();
-                }
+            Long serviceBeginTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceBeginTime());
+            Long serviceEndTime = v.getScheduleTime() + DateUtil.timeToUnix(v.getServiceEndTime()) + DateUtil.TWO_HOURS;
+            if((v.getSignInTime() == null && System.currentTimeMillis() > serviceBeginTime)
+                    || (v.getSignInTime() != null && v.getSignInTime() > serviceBeginTime)){
+                signInStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();
+            }
 
-                if((v.getSignOutTime() == null && System.currentTimeMillis() > serviceEndTime)
-                        || (v.getSignOutTime() != null && v.getSignOutTime() > serviceEndTime)){
-                    signOutStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();
-                }
+            if((v.getSignOutTime() == null && System.currentTimeMillis() > serviceEndTime)
+                    || (v.getSignOutTime() != null && v.getSignOutTime() > serviceEndTime)){
+                signOutStatus = SignStatusEnums.SIGN_ABNORMAL.getStatus();
             }
             v.setSignInStatus(signInStatus);
             v.setSignOutStatus(signOutStatus);
@@ -698,7 +696,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取排班信息失败!");
         }
         ActivityRecruitDetail activityRecruitDetail=activityRecruitDetailService.get(workingSchedule.getActivityDetailId());
-        if(new Date().getTime()>activityRecruitDetail.getServiceDate()){
+        if(System.currentTimeMillis()>activityRecruitDetail.getServiceDate()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"活动当天不能取消预约!");
         }
         //已预约数减一

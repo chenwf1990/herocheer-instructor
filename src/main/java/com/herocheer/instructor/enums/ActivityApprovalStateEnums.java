@@ -6,7 +6,9 @@ package com.herocheer.instructor.enums;
 public enum ActivityApprovalStateEnums {
     PENDING(0,"待审核"),
     PASSED(1,"通过"),
-    OVERRULE(2,"驳回");
+    OVERRULE(2,"驳回"),
+    WITHDRAW(3,"撤回"),
+    DRAFT(4,"草稿");
     ActivityApprovalStateEnums(){
 
     }

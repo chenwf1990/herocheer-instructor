@@ -7,12 +7,12 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 新闻公告
- * @date 2021-02-25 09:27:08
+ * @date 2021-03-12 10:47:47
  * @company 厦门熙重电子科技有限公司
  */
 @Data
 public class NewsNotice extends BaseEntity {
-    @ApiModelProperty("类型 1新闻2活动")   
+    @ApiModelProperty("类型 1新闻2活动3公告")
     private Integer type;
     @ApiModelProperty("新闻图片")   
     private String pic;
@@ -32,9 +32,9 @@ public class NewsNotice extends BaseEntity {
     private String deptName;
     @ApiModelProperty("部门id")   
     private Long deptId;
-    @ApiModelProperty("是否公开(0.公开 1.不公开)")
-    private Integer isPublic;
     @ApiModelProperty("备注")   
     private String remarks;
+    @ApiModelProperty("是否上架(0.上架1.下架)")
+    private Integer isPublic;
 
 }

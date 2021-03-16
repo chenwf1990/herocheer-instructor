@@ -46,6 +46,11 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     public Page<NewsNotice> queryPageList(NewsQueryVo newsQueryVo) {
         Page page = Page.startPage(newsQueryVo.getPageNo(),newsQueryVo.getPageSize());
         List<NewsNotice> newsNotices = this.dao.queryPageList(newsQueryVo);
+        for (NewsNotice newsNotice : newsNotices) {
+            if(newsNotice.getAuditState() != AuditStateEnums.to_pass.getState()){
+                newsNotice.setIsPublic(2);
+            }
+        }
         page.setDataList(newsNotices);
         return page;
     }
@@ -65,8 +70,9 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
             throw new CommonException("审核通过不能修改");
         }
         //修改成功设置为待审核
-        newsNotice.setAuditState(AuditStateEnums.to_audit.getState());
-        newsNoticeLogService.addLog(newsNotice.getId(),newsNotice.getAuditState(),newsNotice.getAuditIdea(),"修改");
+        if(newsNotice.getAuditState() == null) {
+            newsNotice.setAuditState(AuditStateEnums.to_audit.getState());
+        }
         return this.dao.update(newsNotice);
     }
 
@@ -100,13 +106,6 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
         return count;
     }
 
-    @Override
-    public Integer isPublic(Long id, Integer isPublic) {
-        NewsNotice newsNotice=new NewsNotice();
-        newsNotice.setId(id);
-        newsNotice.setIsPublic(isPublic);
-        return this.dao.update(newsNotice);
-    }
 
     /**
      * @param newsNotice
@@ -119,7 +118,6 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     @Transactional(rollbackFor = Exception.class)
     public long addNews(NewsNotice newsNotice) {
         long count = this.dao.insert(newsNotice);
-        newsNoticeLogService.addLog(newsNotice.getId(),newsNotice.getAuditState(),newsNotice.getAuditIdea(),"新增");
         return count;
     }
 

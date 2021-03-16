@@ -5,7 +5,7 @@
       id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone,
       `status`, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
-    
+
     <!--单表新增-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.Reservation">
         insert into reservation (
@@ -308,5 +308,16 @@
                 and userId = #{userId}
             </if>
         </where>
+        order by startTime desc,endTime desc
+    </select>
+
+    <update id="updateReservationStatus">
+        update reservation set status=#{status}
+        where relevanceId=#{relevanceId} and `type` = #{type} and status=0
+    </update>
+
+    <select id="findReservationOpenid" resultType="java.lang.String">
+        SELECT u.openid FROM `reservation` r LEFT JOIN `user` u on r.userId=u.id where r.relevanceId=#{relevanceId}
+        and r.status=0 and r.type=#{type}
     </select>
 </mapper>

@@ -711,27 +711,22 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 证件类型 :1-身份证；2-港澳台通行证
         paramMap.put("certificateType","idcard".equals(user.getString("certificateType")) ? 1 : 2);
         paramMap.put("certificateNo", AesUtil.decrypt(sysUser.getCertificateNo()));
-        paramMap.put("phoneNo",sysUser.getPhone());
+        paramMap.put("phoneNo",AesUtil.decrypt(sysUser.getPhone()));
         paramMap.put("email",sysUser.getEmail());
         paramMap.put("openid",sysUser.getOpenid());
         paramMap.put("source",sysUser.getSource());
         paramMap.put("age",sysUser.getAge());
         // 签名
-        String sign = DigestUtils.md5DigestAsHex(( sysUser.getCertificateNo()+ InsuranceConst.KEY).getBytes());
+        log.debug("同步身份证:{}",AesUtil.decrypt(sysUser.getCertificateNo()));
+        String sign = DigestUtils.md5DigestAsHex(( AesUtil.decrypt(sysUser.getCertificateNo()) + InsuranceConst.KEY).getBytes());
         paramMap.put("sign",sign);
 
         String resultUser = HttpUtil.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser",paramMap);
-
-        /*String resultUser = HttpRequest.post(InsuranceConst.BASE_URL+"/weChat/syncLoginUser")
-                .header(Header.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .form(paramMap)
-                .execute().body();*/
-
         JSONObject JSONObj = JSONObject.parseObject(resultUser);
         log.debug("同步用户数据给I健身：{}",JSONObj);
 
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
-            throw new CommonException("同步用户数据失败");
+            log.error("同步用户数据失败");
         }
     }
 }
