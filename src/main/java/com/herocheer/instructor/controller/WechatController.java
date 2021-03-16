@@ -144,7 +144,7 @@ public class WechatController extends BaseController {
     @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query")
     public ResponseResult fetchSmsCode(@NotBlank(message = "手机号不能为空") String phone,HttpServletRequest request) {
         // 限制短信验证码的使用（很贵）
-        User user = userService.findUserByPhone(AesUtil.decrypt(URLUtil.decode(phone)));
+        User user = userService.findUserByPhone(URLUtil.decode(phone));
         if(ObjectUtils.isEmpty(user)){
             // 后台无记录，请前往社会指导员认证或联系管理员。
             throw new CommonException("您未注册指导员，请联系管理员");
@@ -155,7 +155,7 @@ public class WechatController extends BaseController {
             throw new CommonException("您已绑定过了");
         }
         // 发送短信验证码
-        SmsCodeUtil.getSmsCode(AesUtil.decrypt(phone));
+        SmsCodeUtil.getSmsCode(AesUtil.decrypt(URLUtil.decode(phone)));
         return ResponseResult.ok();
     }
 
@@ -184,7 +184,7 @@ public class WechatController extends BaseController {
 
         // 绑定功能
         UserEntity correntUser = getUser(request);
-        UserInfoVo UserInfo = wechatService.bindingWeChat(correntUser, phone);
+        UserInfoVo UserInfo = wechatService.bindingWeChat(correntUser, URLUtil.decode(phone));
 
         // 绑定成功之后要替换当前用户信息
         redisClient.set(correntUser.getToken(),JSONObject.toJSONString(UserInfo));
