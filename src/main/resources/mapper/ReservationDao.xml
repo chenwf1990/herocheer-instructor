@@ -308,6 +308,7 @@
                 and userId = #{userId}
             </if>
         </where>
+        order by startTime desc,endTime desc
     </select>
 
     <update id="updateReservationStatus">
