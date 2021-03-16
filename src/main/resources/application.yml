@@ -1,8 +1,8 @@
 server:
-  port: 17071
+  port: 6004
 spring:
   profiles:
-    active: dev
+    active: grh
   servlet: # 设置上传文件的大小
     multipart:
       enabled: true
@@ -44,6 +44,7 @@ file:
 #i健身保险(test)
 ijs:
   baseUrl: http://tycd.herocheer.com/sports/wechat/api
+  templateId: 2b8LbGUFPSCgLvbUyjaJ7HggjBh4Uc6dmp8-zBEQERI
 
 #测试i厦门
 ixm:

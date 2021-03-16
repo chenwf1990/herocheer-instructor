@@ -1,5 +1,6 @@
 package com.herocheer.instructor.controller;
 
+import cn.hutool.core.util.URLUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
@@ -143,7 +144,7 @@ public class WechatController extends BaseController {
     @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query")
     public ResponseResult fetchSmsCode(@NotBlank(message = "手机号不能为空") String phone,HttpServletRequest request) {
         // 限制短信验证码的使用（很贵）
-        User user = userService.findUserByPhone(phone);
+        User user = userService.findUserByPhone(AesUtil.decrypt(URLUtil.decode(phone)));
         if(ObjectUtils.isEmpty(user)){
             // 后台无记录，请前往社会指导员认证或联系管理员。
             throw new CommonException("您未注册指导员，请联系管理员");
@@ -176,7 +177,7 @@ public class WechatController extends BaseController {
     public ResponseResult verifySmsCode(@NotBlank(message = "手机号不能为空") String phone,
                                          @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
 
-        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.decrypt(phone), code);
+        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.decrypt(URLUtil.decode(phone)), code);
         if("F".equals(result.getSuccess())){
             return ResponseResult.fail(result.getMessage());
         }
@@ -291,8 +292,8 @@ public class WechatController extends BaseController {
 //        String ticketStr = "kgt8ON7yVITDhtdwci0qedR-T-YYTdByyuzKfEfkreL91wELUAtfYMwcFXMF8_w2ZGCbcNQL2P4iPf2B1WrzPA";
 //        System.out.println(ticket);
         List<String> userList = new ArrayList<>();
-        userList.add("or6Q-wfzYsLqaHlof8Tglyvdf-Y8");
-//        userList.add("or6Q-weNX5DMSkaIUYWALZINjWnI");
+        userList.add("obOp1s11wNrrTTi4OOqevC-0MhBU");
+//        userList.add("obOp1s-Sj22VggP-wBYff1KBvnvo");
         String title = "某某课程";
         wechatService.sendWechatMessages(userList,title);
         return ResponseResult.ok();
