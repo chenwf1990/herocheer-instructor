@@ -32,7 +32,7 @@ public interface WechatService {
 
     String ixmLoginUrl(String callBackUrl);
 
-    User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token);
+    User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token,UserInfoVo currentUser);
 
     /**
      * 绑定用户

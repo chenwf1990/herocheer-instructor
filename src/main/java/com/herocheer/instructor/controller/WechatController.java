@@ -129,7 +129,10 @@ public class WechatController extends BaseController {
     })
     public ResponseResult<User> ixmLogin(HttpServletRequest request, HttpSession session, @NotBlank(message = "微信用户openid不能为空") String openid,
                                                @NotBlank(message = "i厦门token不能为空") String token) {
-        return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token));
+        // 获取当前用户信息
+        String userInfo = redisClient.get(getCurTokenId(request));
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
+        return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token,infoVo));
     }
 
     /**
@@ -216,10 +219,7 @@ public class WechatController extends BaseController {
     @GetMapping("/correctUser")
     @ApiOperation("我的资料")
     public ResponseResult<User> fetchUserById(HttpServletRequest request){
-        // TODO 这里一定要返回user
         // 获取当前用户信息
-        /*String userInfo = redisClient.get(getUser(request).getToken());
-        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);*/
         return ResponseResult.ok(userService.get(getCurUserId(request)));
     }
 
