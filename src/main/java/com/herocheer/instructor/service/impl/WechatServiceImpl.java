@@ -362,7 +362,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             currentUser.setId(sysUser.getId());
             currentUser.setIxmLoginStatus(true);
             log.debug("在I厦门登入后重置当前用户信息：{}",currentUser);
-            redisClient.set(currentUser.getToken(),JSONObject.toJSONString(currentUser), CacheKeyConst.EXPIRETIME);
+            log.debug("在I厦门登入后重置当前用户信息ID：{}",sysUser.getId());
+            redisClient.set(currentUser.getTokenId(),JSONObject.toJSONString(currentUser), CacheKeyConst.EXPIRETIME);
 
             // 异步同步用户数据
             userService.asynUserInfo2Ijianshen(user, sysUser);
