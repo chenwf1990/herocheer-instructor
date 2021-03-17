@@ -64,4 +64,10 @@ public class BannerController extends BaseController{
         banner.setIsPublic(isPublic);
         return ResponseResult.ok(bannerService.update(banner));
     }
+
+    @PostMapping("/add")
+    @ApiOperation("新增banner")
+    public ResponseResult add(@RequestBody Banner banner){
+        return ResponseResult.isSuccess(bannerService.insert(banner));
+    }
 }
