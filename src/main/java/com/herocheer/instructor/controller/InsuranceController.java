@@ -86,6 +86,7 @@ public class InsuranceController extends BaseController {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
         paramMap.put("certificateNo", certificateNo);
+        log.debug("请求保险信息参数：{}",paramMap);
         String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/listInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
