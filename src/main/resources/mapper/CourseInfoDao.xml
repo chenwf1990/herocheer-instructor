@@ -503,8 +503,8 @@
             <if test="queryType!=null and queryType==3 and createdId!=null">
                 AND createdId=#{createdId}
             </if>
-            <if test="queryType!=null and queryType==4">
-                AND approvalStatus=1 AND state!=5
+            <if test="queryType!=null and queryType==4 and state!=4">
+                AND approvalStatus=1 AND state!=5 AND courseEndTime+24*60*60*1000-1 <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="approvalStartTime!=null">
                 and updateTime <![CDATA[ > ]]> #{approvalStartTime}
