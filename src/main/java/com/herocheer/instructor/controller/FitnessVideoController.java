@@ -66,4 +66,10 @@ public class FitnessVideoController extends BaseController{
         return ResponseResult.ok(fitnessVideoService.update(fitnessVideo));
     }
 
+    @PostMapping("/add")
+    @ApiOperation("新增健身视频")
+    public ResponseResult add(@RequestBody FitnessVideo fitnessVideo){
+        return ResponseResult.isSuccess(fitnessVideoService.insert(fitnessVideo));
+    }
+
 }
