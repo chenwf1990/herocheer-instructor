@@ -2,12 +2,12 @@ server:
   port: 6004
 spring:
   profiles:
-    active: grh
+    active: dev
   servlet: # 设置上传文件的大小
     multipart:
       enabled: true
-      max-file-size: 10485760
-      max-request-size: 10MB
+      max-file-size: 31457280
+      max-request-size: 300MB
   integration:
     jdbc:
       schema:
