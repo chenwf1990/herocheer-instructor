@@ -65,12 +65,6 @@ public class InsuranceController extends BaseController {
         return ResponseResult.ok(user.getCertificateNo());
     }
 
-    public static void main(String[] args) {
-        String certificateNo = "2zSu%2BNyaWl2eR%2FYdMeIqlNMdo4t29%2BU7Zjnb6Wp6fmc%3D";
-        String a = AesUtil.decrypt(URLUtil.decode(certificateNo));
-        System.out.println(a);
-    }
-
     /**
      * 我的保单
      *
@@ -87,6 +81,7 @@ public class InsuranceController extends BaseController {
         paramMap.put("sign", sign);
         paramMap.put("certificateNo", certificateNo);
         log.debug("请求保险信息参数：{}",paramMap);
+        log.debug("请求保险信息地址：{}",InsuranceConst.BASE_URL+"/insurance/listInsurance");
         String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/listInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
