@@ -82,12 +82,12 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @author chenwf
      * @desc  获取当前用户月份排班信息
      * @date 2021-01-19 09:47:02
-     * @param monthData
+     * @param reqType
      * @param activityType
      * @param userId
      * @return
      */
-    List<WorkingUserInfoVo> getTaskInfoList(String monthData, int activityType, Long userId);
+    List<WorkingUserVo> getTaskInfoList(int reqType, int activityType, Long userId);
 
     /**
      * @author chenwf
