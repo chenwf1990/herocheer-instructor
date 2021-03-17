@@ -16,7 +16,7 @@ public class UserCollect extends BaseEntity {
     private Long objectId;
     @ApiModelProperty("关联记录名称")   
     private String objectName;
-    @ApiModelProperty("收藏类型 1驿站")   
+    @ApiModelProperty("收藏类型 1驿站 2健身视频")
     private Integer type;
     @ApiModelProperty("用户id（暂时没用）")   
     private Long userId;
