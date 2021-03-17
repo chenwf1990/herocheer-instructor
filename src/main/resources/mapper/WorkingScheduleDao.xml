@@ -293,7 +293,6 @@
         a.latitude,
         b.id,
         b.scheduleTime,
-        FROM_UNIXTIME(b.scheduleTime/1000,'%Y-%m-%d') as scheduleTimeText,
         b.serviceBeginTime,
         b.serviceEndTime,
         b.courierStationId,
@@ -324,6 +323,14 @@
         <if test="workingScheduleUserId != null">
             and c.id = #{workingScheduleUserId}
         </if>
+        <choose>
+            <when test="reqType != null and reqType == 1">
+                and b.scheduleTime >= unix_timestamp(cast(sysdate()as date)) * 1000
+            </when>
+            <when test="reqType != null and reqType == 2">
+                and b.scheduleTime &lt; unix_timestamp(cast(sysdate()as date)) * 1000
+            </when>
+        </choose>
         ORDER BY b.scheduleTime,b.serviceBeginTime
     </select>
 
