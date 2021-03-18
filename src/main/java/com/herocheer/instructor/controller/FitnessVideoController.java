@@ -49,7 +49,7 @@ public class FitnessVideoController extends BaseController{
         return ResponseResult.isSuccess(fitnessVideoService.delete(id));
     }
 
-    @GetMapping("/update")
+    @PostMapping("/update")
     @ApiOperation("更新健身视频")
     public ResponseResult get(@RequestBody FitnessVideo fitnessVideo){
 

@@ -5,12 +5,9 @@ spring:
     active: dev
   servlet: # 设置上传文件的大小
     multipart:
-      enabled: true
+      enabled: false
       max-file-size: 31457280
-      max-request-size: 300MB
-  integration:
-    jdbc:
-      schema:
+      max-request-size: 500MB
 mybatis:
   mapperLocations: classpath*:mapper/**/*.xml
 swagger:

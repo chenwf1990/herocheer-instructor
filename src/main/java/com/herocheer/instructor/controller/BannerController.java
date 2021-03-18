@@ -48,7 +48,7 @@ public class BannerController extends BaseController{
         return ResponseResult.isSuccess(bannerService.delete(id));
     }
 
-    @GetMapping("/update")
+    @PostMapping("/update")
     @ApiOperation("更新banner")
     public ResponseResult get(@RequestBody Banner banner){
 
