@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.BannerDao">
     
     <sql id="table_field">
-      name, position, sort, pic, isPublic, publicBeginTime, publicEndTime, linkType, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, name, position, sort, pic, isPublic, publicBeginTime, publicEndTime, linkType, linkValue, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -34,6 +34,9 @@
         <if test="linkType != null">
             linkType,
         </if>
+        <if test="linkValue != null">
+            linkValue,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -61,6 +64,9 @@
         </if>
         <if test="linkType != null">
             #{linkType},
+        </if>
+        <if test="linkValue != null">
+            #{linkValue},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -99,6 +105,9 @@
             </if>
             <if test="linkType != null">
                 linkType = #{linkType},
+            </if>
+            <if test="linkValue != null">
+                linkValue = #{linkValue},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -140,6 +149,9 @@
             <if test="linkType != null">
                 and linkType = #{linkType}
             </if>
+            <if test="linkValue != null">
+                and linkValue = #{linkValue}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         <choose>
@@ -179,6 +191,9 @@
             </if>
             <if test="linkType != null">
                 and linkType = #{linkType}
+            </if>
+            <if test="linkValue != null">
+                and linkValue = #{linkValue}
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>

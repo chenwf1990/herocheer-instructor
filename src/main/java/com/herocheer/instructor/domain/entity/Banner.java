@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc banner管理
- * @date 2021-03-17 10:38:35
+ * @date 2021-03-18 14:17:06
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -28,5 +28,7 @@ public class Banner extends BaseEntity {
     private Long publicEndTime;
     @ApiModelProperty("链接方式 1url 2课程 3驿站招募 4赛事招募 5新闻")   
     private Integer linkType;
+    @ApiModelProperty("链接值")   
+    private String linkValue;
 
 }

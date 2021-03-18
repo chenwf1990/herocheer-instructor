@@ -196,8 +196,8 @@ public class UploadController {
                 os.flush();
             }
 
-            fileVO.setRelativeFilePath("/" + dr + name);
-            fileVO.setFilePath(visitPath + dr + name);
+            fileVO.setRelativeFilePath("/" + dr + "/" + name);
+            fileVO.setFilePath(visitPath + dr + "/" + name);
         } catch (FileUploadException e) {
             e.printStackTrace();
         } catch (Exception e) {
