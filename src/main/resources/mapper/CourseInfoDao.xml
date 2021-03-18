@@ -8,12 +8,12 @@
         CASE
             WHEN approvalStatus != 1 THEN null
             WHEN `state`!=0 THEN `state`
-            WHEN approvalStatus = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+            WHEN approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
             WHEN approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1 THEN 3
-            WHEN approvalStatus = 1 AND signEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime THEN 3
+            WHEN approvalStatus = 1 AND signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
             WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1 THEN 1
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 1
             ELSE `state` END AS 'state'
     </sql>
     
@@ -475,19 +475,19 @@
                 and state=#{state}
             </if>
             <if test="state!=null and state==4">
-                AND state!=5 AND approvalStatus = 1 AND courseEndTime+24*60*60*1000-1 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND state!=5 AND approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="state!=null and state==3">
                 AND state!=5 AND approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime+24*60*60*1000-1
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime
             </if>
             <if test="state!=null and state==2">
-                AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> signEndTime+24*60*60*1000-1
+                AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> signEndTime
                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="state!=null and state==1">
                 AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> signStartTime
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime+24*60*60*1000-1
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime
                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="state!=null and state==0">
@@ -504,7 +504,7 @@
                 AND createdId=#{createdId}
             </if>
             <if test="queryType!=null and queryType==4 and state!=4">
-                AND approvalStatus=1 AND state!=5 AND courseEndTime+24*60*60*1000-1 <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND approvalStatus=1 AND state!=5 AND courseEndTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="approvalStartTime!=null">
                 and updateTime <![CDATA[ > ]]> #{approvalStartTime}
