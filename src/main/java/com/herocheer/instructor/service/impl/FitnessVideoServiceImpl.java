@@ -34,4 +34,15 @@ public class FitnessVideoServiceImpl extends BaseServiceImpl<FitnessVideoDao, Fi
         page.setDataList(fitnessVideoVos);
         return page;
     }
+
+    /**
+     * 增加浏览数量
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public int addBrowseNum(Long id) {
+        return this.dao.addBrowseNum(id);
+    }
 }

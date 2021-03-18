@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.FitnessVideoDao">
     
     <sql id="table_field">
-      id, title, content, sort, pic, videoUrl, state, deptId, deptName, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, title, content, sort, pic, videoUrl, state, deptId, deptName, browseNum, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -34,6 +34,9 @@
         <if test="deptName != null">
             deptName,
         </if>
+        <if test="browseNum != null">
+            browseNum,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -61,6 +64,9 @@
         </if>
         <if test="deptName != null">
             #{deptName},
+        </if>
+        <if test="browseNum != null">
+            #{browseNum},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -99,6 +105,9 @@
             </if>
             <if test="deptName != null">
                 deptName = #{deptName},
+            </if>
+            <if test="browseNum != null">
+                browseNum = #{browseNum},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -140,6 +149,9 @@
             <if test="deptName != null">
                 and deptName = #{deptName}
             </if>
+            <if test="browseNum != null">
+                and browseNum = #{browseNum}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         <choose>
@@ -180,6 +192,9 @@
             <if test="deptName != null">
                 and deptName = #{deptName}
             </if>
+            <if test="browseNum != null">
+                and browseNum = #{browseNum}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
@@ -217,4 +232,10 @@
         </where>
         order by sort,id desc
     </select>
+
+    <!-- 更新浏览数量 -->
+    <update id="addBrowseNum" parameterType="int">
+        update fitness_video set browseNum = browseNum + 1
+        where id = #{id}
+    </update>
 </mapper>

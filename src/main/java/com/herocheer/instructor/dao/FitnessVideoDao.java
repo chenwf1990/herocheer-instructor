@@ -16,4 +16,11 @@ import java.util.List;
 public interface FitnessVideoDao extends BaseDao<FitnessVideo,Long>{
 
     List<FitnessVideoVo> queryPageList(VideoQueryVo videoQueryVo);
+
+    /**
+     * 增加浏览数量
+     * @param id
+     * @return
+     */
+    int addBrowseNum(Long id);
 }

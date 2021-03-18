@@ -20,4 +20,11 @@ public interface FitnessVideoService extends BaseService<FitnessVideo,Long> {
      * @company 厦门熙重电子科技有限公司
      */
     Page<FitnessVideoVo> queryPageList(VideoQueryVo videoQueryVo);
+
+    /**
+     * 增加浏览数量
+     * @param id
+     * @return
+     */
+    int addBrowseNum(Long id);
 }

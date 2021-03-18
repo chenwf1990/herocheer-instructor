@@ -41,7 +41,7 @@ public class FitnessVideoController extends BaseController{
 
     @GetMapping("/get")
     @ApiOperation("根据id查询健身视频")
-    public ResponseResult<FitnessVideo> get(@ApiParam("bannerId") @RequestParam Long id){
+    public ResponseResult<FitnessVideo> get(@ApiParam("健身视频id") @RequestParam Long id){
 
         return ResponseResult.ok(fitnessVideoService.get(id));
     }
@@ -49,7 +49,7 @@ public class FitnessVideoController extends BaseController{
 
     @DeleteMapping("/delete")
     @ApiOperation("删除健身视频")
-    public ResponseResult delete(@ApiParam("bannerId") @RequestParam Long id){
+    public ResponseResult delete(@ApiParam("健身视频id") @RequestParam Long id){
 
         return ResponseResult.isSuccess(fitnessVideoService.delete(id));
     }
@@ -63,7 +63,7 @@ public class FitnessVideoController extends BaseController{
 
     @GetMapping("/updateState")
     @ApiOperation("启用/禁用")
-    public ResponseResult updateState(@ApiParam("bannerId") @RequestParam Long id,
+    public ResponseResult updateState(@ApiParam("健身视频id") @RequestParam Long id,
                                       @ApiParam("状态 0上架 1下架") @RequestParam int state){
         FitnessVideo fitnessVideo = new FitnessVideo();
         fitnessVideo.setId(id);
@@ -75,6 +75,12 @@ public class FitnessVideoController extends BaseController{
     @ApiOperation("新增健身视频")
     public ResponseResult add(@RequestBody FitnessVideo fitnessVideo){
         return ResponseResult.isSuccess(fitnessVideoService.insert(fitnessVideo));
+    }
+
+    @GetMapping("/addBrowseNum")
+    @ApiOperation("添加浏览数量")
+    public ResponseResult addBrowseNum(@ApiParam("健身视频id") @RequestParam Long id){
+        return ResponseResult.isSuccess(fitnessVideoService.addBrowseNum(id));
     }
 
 }
