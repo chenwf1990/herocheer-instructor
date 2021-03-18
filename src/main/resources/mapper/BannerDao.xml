@@ -212,6 +212,16 @@
             <if test="isPublic != null">
                 and isPublic = #{isPublic}
             </if>
+            <choose>
+                <when test="isPublic != null and isPublic == 0">
+                    and isPublic = 0
+                    and publicBeginTime &lt;= UNIX_TIMESTAMP() * 1000
+                    and publicEndTime >= UNIX_TIMESTAMP() * 1000
+                </when>
+                <when test="isPublic != null and isPublic == 1">
+                    and isPublic = 1
+                </when>
+            </choose>
         </where>
         order by sort,id desc
     </select>

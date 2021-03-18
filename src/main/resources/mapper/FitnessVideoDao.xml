@@ -211,6 +211,9 @@
             <if test="endTime != null">
                 and createdTime &lt; #{endTime}
             </if>
+            <if test="reqType != null and reqType == 2">
+                and exists (select uc.id from user_collect uc where uc.objectId = a.id and uc.type = 2 and uc.openId = #{openId})
+            </if>
         </where>
         order by sort,id desc
     </select>

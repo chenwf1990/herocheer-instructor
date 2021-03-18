@@ -2,6 +2,7 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.FitnessVideo;
 import com.herocheer.instructor.domain.vo.FitnessVideoVo;
 import com.herocheer.instructor.domain.vo.VideoQueryVo;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author chenwf
@@ -29,7 +31,10 @@ public class FitnessVideoController extends BaseController{
 
     @PostMapping("/queryPageList")
     @ApiOperation("健身视频列表查询")
-    public ResponseResult<Page<FitnessVideoVo>> queryPageList(@RequestBody VideoQueryVo videoQueryVo){
+    public ResponseResult<Page<FitnessVideoVo>> queryPageList(@RequestBody VideoQueryVo videoQueryVo,
+                                                              HttpServletRequest request){
+        UserEntity user = getUser(request);
+        videoQueryVo.setOpenId(user.getOtherId());
         Page<FitnessVideoVo> page = fitnessVideoService.queryPageList(videoQueryVo);
         return ResponseResult.ok(page);
     }
