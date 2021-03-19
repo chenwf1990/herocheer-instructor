@@ -202,29 +202,29 @@
     <!-- 分页查询 -->
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.VideoQueryVo" resultType="com.herocheer.instructor.domain.vo.FitnessVideoVo">
         select
-        *
+        a.*
         <if test="reqType != null and reqType == 1">
             ,(select count(1) from user_collect uc where uc.objectId = a.id and uc.type = 2 and uc.openId = #{openId}) as collectNum
         </if>
-        from fitness_video
+        from fitness_video a
         <where>
             <if test="title != null">
-                and title like concat('%',#{title},'%')
+                and a.title like concat('%',#{title},'%')
             </if>
             <if test="content != null">
-                and content like concat('%',#{content},'%')
+                and a.content like concat('%',#{content},'%')
             </if>
             <if test="createdBy != null">
-                and createdBy like concat('%',#{createdBy},'%')
+                and a.createdBy like concat('%',#{createdBy},'%')
             </if>
             <if test="state != null">
-                and state = #{state}
+                and a.state = #{state}
             </if>
             <if test="beginTime != null">
-                and createdTime >= #{beginTime}
+                and a.createdTime >= #{beginTime}
             </if>
             <if test="endTime != null">
-                and createdTime &lt; #{endTime}
+                and a.createdTime &lt; #{endTime}
             </if>
             <if test="reqType != null and reqType == 2">
                 and exists (select uc.id from user_collect uc where uc.objectId = a.id and uc.type = 2 and uc.openId = #{openId})
