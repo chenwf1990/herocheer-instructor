@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.BannerDao">
     
     <sql id="table_field">
-      id, name, position, sort, pic, isPublic, publicBeginTime, publicEndTime, linkType, linkValue, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, name, position, sort, pic, isPublic, linkType, linkValue, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -24,12 +24,6 @@
         </if>
         <if test="isPublic != null">
             isPublic,
-        </if>
-        <if test="publicBeginTime != null">
-            publicBeginTime,
-        </if>
-        <if test="publicEndTime != null">
-            publicEndTime,
         </if>
         <if test="linkType != null">
             linkType,
@@ -55,12 +49,6 @@
         </if>
         <if test="isPublic != null">
             #{isPublic},
-        </if>
-        <if test="publicBeginTime != null">
-            #{publicBeginTime},
-        </if>
-        <if test="publicEndTime != null">
-            #{publicEndTime},
         </if>
         <if test="linkType != null">
             #{linkType},
@@ -96,12 +84,6 @@
             </if>
             <if test="isPublic != null">
                 isPublic = #{isPublic},
-            </if>
-            <if test="publicBeginTime != null">
-                publicBeginTime = #{publicBeginTime},
-            </if>
-            <if test="publicEndTime != null">
-                publicEndTime = #{publicEndTime},
             </if>
             <if test="linkType != null">
                 linkType = #{linkType},
@@ -140,12 +122,6 @@
             <if test="isPublic != null">
                 and isPublic = #{isPublic}
             </if>
-            <if test="publicBeginTime != null">
-                and publicBeginTime = #{publicBeginTime}
-            </if>
-            <if test="publicEndTime != null">
-                and publicEndTime = #{publicEndTime}
-            </if>
             <if test="linkType != null">
                 and linkType = #{linkType}
             </if>
@@ -183,12 +159,6 @@
             <if test="isPublic != null">
                 and isPublic = #{isPublic}
             </if>
-            <if test="publicBeginTime != null">
-                and publicBeginTime = #{publicBeginTime}
-            </if>
-            <if test="publicEndTime != null">
-                and publicEndTime = #{publicEndTime}
-            </if>
             <if test="linkType != null">
                 and linkType = #{linkType}
             </if>
@@ -212,16 +182,6 @@
             <if test="isPublic != null">
                 and isPublic = #{isPublic}
             </if>
-            <choose>
-                <when test="isPublic != null and isPublic == 0">
-                    and isPublic = 0
-                    and publicBeginTime &lt;= UNIX_TIMESTAMP() * 1000
-                    and publicEndTime >= UNIX_TIMESTAMP() * 1000
-                </when>
-                <when test="isPublic != null and isPublic == 1">
-                    and isPublic = 1
-                </when>
-            </choose>
         </where>
         order by sort,id desc
     </select>

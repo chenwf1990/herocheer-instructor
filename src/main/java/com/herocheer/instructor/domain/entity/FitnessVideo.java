@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author chenwf
  * @desc 健身视频管理
- * @date 2021-03-18 15:17:12
+ * @date 2021-03-19 08:56:56
  * @company 厦门熙重电子科技有限公司
  */
 @Data
@@ -28,7 +28,7 @@ public class FitnessVideo extends BaseEntity {
     private Long deptId;
     @ApiModelProperty("机构名称")   
     private String deptName;
-    @ApiModelProperty("浏览数量")
+    @ApiModelProperty("浏览数量")   
     private Integer browseNum;
 
 }
