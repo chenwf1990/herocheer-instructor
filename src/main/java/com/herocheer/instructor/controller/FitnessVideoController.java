@@ -3,6 +3,7 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.domain.entity.FitnessVideo;
 import com.herocheer.instructor.domain.vo.FitnessVideoVo;
 import com.herocheer.instructor.domain.vo.VideoQueryVo;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 public class FitnessVideoController extends BaseController{
     @Resource
     private FitnessVideoService fitnessVideoService;
+    final String videoUrl = "/instructor/video/";
 
     @PostMapping("/queryPageList")
     @ApiOperation("健身视频列表查询")
@@ -57,7 +59,11 @@ public class FitnessVideoController extends BaseController{
     @PostMapping("/update")
     @ApiOperation("更新健身视频")
     public ResponseResult get(@RequestBody FitnessVideo fitnessVideo){
-
+        if(StringUtils.isNotEmpty(fitnessVideo.getVideoUrl())){
+            if(fitnessVideo.getVideoUrl().indexOf(videoUrl) == 0) {
+                fitnessVideo.setVideoUrl(videoUrl + fitnessVideo.getVideoUrl());
+            }
+        }
         return ResponseResult.ok(fitnessVideoService.update(fitnessVideo));
     }
 
@@ -74,6 +80,9 @@ public class FitnessVideoController extends BaseController{
     @PostMapping("/add")
     @ApiOperation("新增健身视频")
     public ResponseResult add(@RequestBody FitnessVideo fitnessVideo){
+        if(StringUtils.isNotEmpty(fitnessVideo.getVideoUrl())){
+            fitnessVideo.setVideoUrl(videoUrl+ fitnessVideo.getVideoUrl());
+        }
         return ResponseResult.isSuccess(fitnessVideoService.insert(fitnessVideo));
     }
 
