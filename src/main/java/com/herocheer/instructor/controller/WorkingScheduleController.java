@@ -106,9 +106,9 @@ public class WorkingScheduleController extends BaseController{
 
     @GetMapping("/getTaskInfoList")
     @ApiOperation("获取任务信息(日历)")
-    public ResponseResult<List<WorkingUserVo>> getTaskInfoList(@ApiParam("请求类型1代办 2已办") @RequestParam int reqType,
-                                                                      @ApiParam("招募活动类型 1驿站 2赛事") @RequestParam int activityType,
-                                                                      HttpServletRequest request){
+    public ResponseResult<List<WorkingUserVo>> getTaskInfoList(@ApiParam("请求类型1待办 2已办") @RequestParam int reqType,
+                                                              @ApiParam("招募活动类型 1驿站 2赛事") @RequestParam int activityType,
+                                                              HttpServletRequest request){
         Long userId = getCurUserId(request);
         List<WorkingUserVo> workingUserVos = workingScheduleService.getTaskInfoList(reqType,activityType,userId);
         return ResponseResult.ok(workingUserVos);

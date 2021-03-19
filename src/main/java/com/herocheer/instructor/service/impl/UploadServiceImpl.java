@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -41,22 +42,7 @@ public class UploadServiceImpl implements UploadService {
         }
         String url = path + dr + "/" + newFileName;
         try {
-            InputStream is = new FileInputStream(tempFile);
-//            file.transferTo(new File(url));
-            OutputStream os = new FileOutputStream(new File(url));
-
-            byte[] buffer = new byte[1024];
-
-            int length = 0 ;
-
-            while((length = is.read(buffer))>0){
-
-                os.write(buffer, 0, length);
-
-            }
-            is.close();
-
-            os.close();
+            file.transferTo(new File(url));
         } catch (IOException e) {
             e.printStackTrace();
         }
