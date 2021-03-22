@@ -59,21 +59,22 @@ public class FitnessVideoController extends BaseController{
     @PostMapping("/update")
     @ApiOperation("更新健身视频")
     public ResponseResult get(@RequestBody FitnessVideo fitnessVideo){
-        setVideoUrl(fitnessVideo);
+        String videoUrl = setVideoUrl(fitnessVideo.getVideoUrl());
+        fitnessVideo.setVideoUrl(videoUrl);
         return ResponseResult.ok(fitnessVideoService.update(fitnessVideo));
     }
 
-    private void setVideoUrl(FitnessVideo fitnessVideo) {
-        String videoUrl = fitnessVideo.getVideoUrl();
+    private String setVideoUrl(String videoUrl) {
         if(StringUtils.isNotEmpty(videoUrl)){
             if(videoUrl.toLowerCase().startsWith("http")){
-                return;
+                return videoUrl;
             }
-            if(videoUrl.startsWith(videoUrl)){
-                return;
+            if(videoUrl.startsWith(videoDefaultUrl)){
+                return videoUrl;
             }
-            fitnessVideo.setVideoUrl(videoDefaultUrl + videoUrl);
+            videoUrl = videoDefaultUrl + videoUrl;
         }
+        return videoUrl;
     }
 
     @GetMapping("/updateState")
@@ -89,7 +90,8 @@ public class FitnessVideoController extends BaseController{
     @PostMapping("/add")
     @ApiOperation("新增健身视频")
     public ResponseResult add(@RequestBody FitnessVideo fitnessVideo){
-        setVideoUrl(fitnessVideo);
+        String videoUrl = setVideoUrl(fitnessVideo.getVideoUrl());
+        fitnessVideo.setVideoUrl(videoUrl);
         return ResponseResult.isSuccess(fitnessVideoService.insert(fitnessVideo));
     }
 
