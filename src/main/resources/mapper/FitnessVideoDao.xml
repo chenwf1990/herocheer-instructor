@@ -203,7 +203,7 @@
     <select id="queryPageList" parameterType="com.herocheer.instructor.domain.vo.VideoQueryVo" resultType="com.herocheer.instructor.domain.vo.FitnessVideoVo">
         select
         a.*
-        <if test="reqType != null and reqType == 1">
+        <if test="reqType != null">
             ,(select count(1) from user_collect uc where uc.objectId = a.id and uc.type = 2 and uc.openId = #{openId}) as collectNum
         </if>
         from fitness_video a

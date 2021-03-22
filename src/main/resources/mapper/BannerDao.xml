@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.BannerDao">
     
     <sql id="table_field">
-      id, name, position, sort, pic, isPublic, linkType, linkValue, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, name, position, sort, pic, isPublic, linkType, linkName, linkValue, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
     
     <!--单表新增-->
@@ -27,6 +27,9 @@
         </if>
         <if test="linkType != null">
             linkType,
+        </if>
+        <if test="linkName != null">
+            linkName,
         </if>
         <if test="linkValue != null">
             linkValue,
@@ -52,6 +55,9 @@
         </if>
         <if test="linkType != null">
             #{linkType},
+        </if>
+        <if test="linkName != null">
+            #{linkName},
         </if>
         <if test="linkValue != null">
             #{linkValue},
@@ -87,6 +93,9 @@
             </if>
             <if test="linkType != null">
                 linkType = #{linkType},
+            </if>
+            <if test="linkName != null">
+                linkName = #{linkName},
             </if>
             <if test="linkValue != null">
                 linkValue = #{linkValue},
@@ -125,6 +134,9 @@
             <if test="linkType != null">
                 and linkType = #{linkType}
             </if>
+            <if test="linkName != null">
+                and linkName = #{linkName}
+            </if>
             <if test="linkValue != null">
                 and linkValue = #{linkValue}
             </if>
@@ -161,6 +173,9 @@
             </if>
             <if test="linkType != null">
                 and linkType = #{linkType}
+            </if>
+            <if test="linkName != null">
+                and linkName = #{linkName}
             </if>
             <if test="linkValue != null">
                 and linkValue = #{linkValue}
