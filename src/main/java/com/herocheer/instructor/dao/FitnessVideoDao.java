@@ -4,6 +4,7 @@ import com.herocheer.instructor.domain.entity.FitnessVideo;
 import com.herocheer.instructor.domain.vo.FitnessVideoVo;
 import com.herocheer.instructor.domain.vo.VideoQueryVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,5 +23,5 @@ public interface FitnessVideoDao extends BaseDao<FitnessVideo,Long>{
      * @param id
      * @return
      */
-    int addBrowseNum(Long id);
+    int addBrowseNum(@Param("id") Long id);
 }

@@ -234,7 +234,7 @@
     </select>
 
     <!-- 更新浏览数量 -->
-    <update id="addBrowseNum" parameterType="int">
+    <update id="addBrowseNum">
         update fitness_video set browseNum = browseNum + 1
         where id = #{id}
     </update>
