@@ -3,7 +3,15 @@
 <mapper namespace="com.herocheer.instructor.dao.ReservationDao">
     <sql id="table_field">
       id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone,
-      `status`, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      <if test="queryType==1">
+          case
+          when `status`=2 then 0
+          else `status`
+          END AS 'status',
+      </if>
+      <if test="queryType!=1">
+          `status`,
+      </if> createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
 
     <!--单表新增-->
@@ -292,7 +300,13 @@
             <if test="type!=null">
                 and `type` = #{type}
             </if>
-            <if test="status != null">
+            <if test="status != null and queryType!=1">
+                and status = #{status}
+            </if>
+            <if test="status != null and queryType==1 and status==0">
+                and (status = #{status} or status=2)
+            </if>
+            <if test="status != null and queryType==1 and status==1">
                 and status = #{status}
             </if>
             <if test="startTime!=null">

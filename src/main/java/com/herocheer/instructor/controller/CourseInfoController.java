@@ -78,7 +78,6 @@ public class CourseInfoController extends BaseController{
     @PostMapping("/update")
     @ApiOperation("更新课程信息")
     public ResponseResult update(@RequestBody CourseInfo courseInfo){
-        courseInfo.setState(CourseApprovalState.PENDING.getState());
         courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.update(courseInfo);
         return ResponseResult.isSuccess(count);
