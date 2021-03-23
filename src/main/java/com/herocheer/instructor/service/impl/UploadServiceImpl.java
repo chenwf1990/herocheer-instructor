@@ -1,7 +1,6 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.entity.UploadFileVO;
-import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.service.UploadService;
 import com.herocheer.instructor.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,5 +51,4 @@ public class UploadServiceImpl implements UploadService {
         fileVO.setFilePath(visitPath + dr + "/" + newFileName);
         return fileVO;
     }
-
 }

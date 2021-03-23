@@ -455,6 +455,9 @@
             <if test="channel != null">
                 and channel = #{channel}
             </if>
+            <if test="nameOrProject != null">
+                and (name = #{nameOrProject} or guideProject = #{nameOrProject})
+            </if>
             <if test="auditStates != null">
                 and auditState in
                 <foreach item="auditState" index="index" collection="auditStates" open="(" separator="," close=")">

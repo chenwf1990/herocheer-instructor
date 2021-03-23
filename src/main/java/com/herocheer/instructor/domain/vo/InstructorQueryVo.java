@@ -37,6 +37,8 @@ public class InstructorQueryVo implements Serializable {
     private List<Integer> auditStates;
     @ApiModelProperty("数据来源 0pc端 1i健身 2小程序 3ios 4安卓 5导入")
     private Integer channel;
+    @ApiModelProperty("名称或者指导项目联合模糊查询")
+    private String nameOrProject;
     @ApiModelProperty("页码")
     private int pageNo;
     @ApiModelProperty("页数")
