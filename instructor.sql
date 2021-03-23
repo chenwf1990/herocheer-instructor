@@ -9,6 +9,7 @@ CREATE TABLE `banner` (
                         `pic` varchar(100) NOT NULL COMMENT '图片地址',
                         `isPublic` int(1) NOT NULL COMMENT '是否上下架 0上架 1下架',
                         `linkType` int(1) NOT NULL COMMENT '链接方式 1url 2课程 3驿站招募 4赛事招募 5新闻',
+                        `linkName` varchar(256) DEFAULT NULL COMMENT '链接名称',
                         `linkValue` varchar(256) DEFAULT NULL COMMENT '链接值',
                         `createdId` bigint(20) DEFAULT NULL COMMENT '创建者ID',
                         `createdBy` varchar(30) DEFAULT NULL COMMENT '创建者',
@@ -18,7 +19,7 @@ CREATE TABLE `banner` (
                         `updateTime` bigint(20) DEFAULT '0' COMMENT '更新时间',
                         PRIMARY KEY (`id`) USING BTREE,
                         KEY `banner_index01` (`isPublic`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='banner管理';
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='banner管理';
 
 
 CREATE TABLE `fitness_video` (
@@ -40,11 +41,11 @@ CREATE TABLE `fitness_video` (
                                `updateTime` bigint(20) DEFAULT '0' COMMENT '更新时间',
                                PRIMARY KEY (`id`) USING BTREE,
                                KEY `fitness_video_index01` (`state`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='健身视频管理';
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='健身视频管理';
 
 
 ALTER TABLE `herocheer_instructor`.`course_info`
-  MODIFY COLUMN `approvalStatus` int(2) NULL DEFAULT NULL COMMENT '审批状态0待审核 1通过 2驳回 3撤回 4草稿' AFTER `image`
+  MODIFY COLUMN `approvalStatus` int(2) NULL DEFAULT NULL COMMENT '审批状态0待审核 1通过 2驳回 3撤回 4草稿' AFTER `image`;
 
   -- 调整菜单页面 gaorh 20210323
   drop table if exists sys_menu;
