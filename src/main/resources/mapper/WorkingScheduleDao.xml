@@ -253,8 +253,9 @@
         (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 3 and reserveStatus = 0) as subscribeUserName
         from working_schedule a
         <where>
+                and a.activityType = 1
             <if test="courierStationId != null">
-                a.courierStationId = #{courierStationId}
+                and a.courierStationId = #{courierStationId}
             </if>
             <if test="scheduleBeginTime != null">
                 and a.scheduleTime >= #{scheduleBeginTime}
