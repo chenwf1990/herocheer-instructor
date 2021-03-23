@@ -41,3 +41,7 @@ CREATE TABLE `fitness_video` (
                                PRIMARY KEY (`id`) USING BTREE,
                                KEY `fitness_video_index01` (`state`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='健身视频管理';
+
+
+ALTER TABLE `herocheer_instructor`.`course_info`
+  MODIFY COLUMN `approvalStatus` int(2) NULL DEFAULT NULL COMMENT '审批状态0待审核 1通过 2驳回 3撤回 4草稿' AFTER `image`

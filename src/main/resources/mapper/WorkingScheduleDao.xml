@@ -248,9 +248,9 @@
         a.serviceEndTime,
         a.createdBy,
         a.createdTime,
-        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 1) as stationUserName,
-        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 2) as fixationUserName,
-        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 3) as subscribeUserName
+        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 1 and reserveStatus = 0) as stationUserName,
+        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 2 and reserveStatus = 0) as fixationUserName,
+        (select GROUP_CONCAT(b.userName) from working_schedule_user b where a.id = b.workingScheduleId and b.type = 3 and reserveStatus = 0) as subscribeUserName
         from working_schedule a
         <where>
             <if test="courierStationId != null">
