@@ -20,7 +20,7 @@ public class ReservationQueryVo implements Serializable {
     @ApiModelProperty("预约类型(1.驿站招募2.赛事招募3.课程培训)")
     private Integer type;
 
-    @ApiModelProperty("预约状态(0.预约成功1.取消预约2.已关闭)")
+    @ApiModelProperty("预约状态(0.预约成功 1.取消预约 2.活动取消)")
     private Integer status;
 
     @ApiModelProperty("开始时间")
