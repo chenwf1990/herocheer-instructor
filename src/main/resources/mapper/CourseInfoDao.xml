@@ -7,7 +7,7 @@
         approvalId,approvalBy,approvalTime,tearcherId,tearcherName
         CASE
             WHEN approvalStatus != 1 THEN null
-            WHEN `state`!=0 THEN `state`
+            WHEN `state`=5 THEN `state`
             WHEN approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
             WHEN approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime THEN 3
