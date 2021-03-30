@@ -4,7 +4,7 @@
 
     <sql id="table_field">
         id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-        approvalId,approvalBy,approvalTime,tearcherId,tearcherName
+        approvalId,approvalBy,approvalTime,tearcherId,tearcherName,
         CASE
             WHEN approvalStatus != 1 THEN null
             WHEN `state`=5 THEN `state`
