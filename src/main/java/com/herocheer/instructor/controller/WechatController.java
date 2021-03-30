@@ -220,7 +220,12 @@ public class WechatController extends BaseController {
     @ApiOperation("我的资料")
     public ResponseResult<User> fetchUserById(HttpServletRequest request){
         // 获取当前用户信息
-        return ResponseResult.ok(userService.get(getCurUserId(request)));
+        String userInfo = redisClient.get(getCurTokenId(request));
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
+        log.debug("当前用户信息：{}",infoVo);
+        log.debug("当前用户信息ID：{}",infoVo.getId());
+        log.debug("当前用户信息SJ：{}",userService.get(infoVo.getId()));
+        return ResponseResult.ok(userService.get(infoVo.getId()));
     }
 
     /**

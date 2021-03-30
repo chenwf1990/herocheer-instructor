@@ -379,20 +379,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
             this.update(oldUser);
 
-            /**
-             * 重置当前用户信息
-             *
-             * 业务场景：1、游客进入公众号，在I厦门登入后，需要重新退出再进入公众号，才能获取当前用户信息的场景
-             *         2、游客进入公众号，做指导员认证，审批在通过后，在I厦门登入后，需要重新退出再进入公众号，才能获取当前用户信息的场景
-             * @Date 2021/3/17 15:27
-             **/
-            currentUser.setId(sysUser.getId());
-            currentUser.setIxmLoginStatus(true);
-            log.debug("在I厦门登入后重置当前用户信息：{}",currentUser);
-            log.debug("在I厦门登入后重置当前用户信息ID：{}",sysUser.getId());
-            redisClient.set(currentUser.getTokenId(),JSONObject.toJSONString(currentUser), CacheKeyConst.EXPIRETIME);
-
-
             sysUser.setCertificateNo(certificateNum);
             sysUser.setUserName(user.getString("certificateName"));
             sysUser.setPhone(user.getString("mobile"));
@@ -400,6 +386,19 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setIxmLoginStatus(true);
             sysUser.setUpdateTime(oldUser.getUpdateTime());
         }
+        /**
+         * 重置当前用户信息
+         *
+         * 业务场景：1、游客进入公众号，在I厦门登入后，需要重新退出再进入公众号，才能获取当前用户信息的场景
+         *         2、游客进入公众号，做指导员认证，审批在通过后，在I厦门登入后，需要重新退出再进入公众号，才能获取当前用户信息的场景
+         * @Date 2021/3/17 15:27
+         **/
+        currentUser.setId(sysUser.getId());
+        currentUser.setIxmLoginStatus(true);
+        log.debug("在I厦门登入后重置当前用户信息：{}",currentUser);
+        log.debug("在I厦门登入后重置当前用户信息ID：{}",sysUser.getId());
+        redisClient.set(currentUser.getTokenId(),JSONObject.toJSONString(currentUser), CacheKeyConst.EXPIRETIME);
+
         sysUser.setIxmToken("");
         //用户信息存入session
         session.setAttribute(WechatConst.SESSION_USER, sysUser);
