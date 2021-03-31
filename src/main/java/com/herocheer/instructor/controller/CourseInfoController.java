@@ -11,7 +11,6 @@ import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.service.CourseInfoService;
-import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -111,7 +110,6 @@ public class CourseInfoController extends BaseController{
      */
     @GetMapping("/QrCode")
     @ApiOperation("生产二维码")
-    @AllowAnonymous
     public void fetchQrCode(@ApiParam("课程id") @RequestParam Long id, HttpServletResponse response) throws IOException {
         String url = StrUtil.format(InsuranceConst.QRCODE_URL,id);
 
