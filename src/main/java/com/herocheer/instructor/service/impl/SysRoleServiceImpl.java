@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author gaorh
@@ -91,6 +92,13 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
         return sysRole;
     }
 
+    private static Map hashMap = new ConcurrentHashMap<String, String>();
+
+    static {
+        hashMap.put("76","78");
+        hashMap.put("14","82");
+        hashMap.put("64","79");
+    }
     /**
      * 设置角色菜单关联表
      *
@@ -115,16 +123,10 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
                  * 业务场景：1、当角色分配的菜单里有包含：培训课程信息查看、驿站招募查询和赛事活动招募查看时，需默认新增课程详情和驿站招募详情
                  * @Date 2021/3/30 15:27
                  **/
-                if( "76".equals(arr[i])|| "14".equals(arr[i])){
+                if(hashMap.containsKey(arr[i])){
                     sysRoleMenu = new SysRoleMenu();
                     sysRoleMenu.setRoleId(roleId);
-                    sysRoleMenu.setMenuId(Long.parseLong("78"));
-                    list.add(sysRoleMenu);
-                }
-                if("64".equals(arr[i])){
-                    sysRoleMenu = new SysRoleMenu();
-                    sysRoleMenu.setRoleId(roleId);
-                    sysRoleMenu.setMenuId(Long.parseLong("79"));
+                    sysRoleMenu.setMenuId(Long.parseLong(hashMap.get(arr[i]).toString()));
                     list.add(sysRoleMenu);
                 }
 
@@ -134,9 +136,6 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
                 sysRoleMenu.setMenuId(Long.parseLong(arr[i]));
                 list.add(sysRoleMenu);
             }
-
-
-
             this.dao.insertBatchSysRoleMenu(list);
         }
 
