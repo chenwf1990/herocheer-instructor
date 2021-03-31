@@ -1,12 +1,17 @@
 package com.herocheer.instructor.controller;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
-import com.herocheer.instructor.enums.CourseApprovalState;
+import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -95,4 +102,25 @@ public class CourseInfoController extends BaseController{
         return ResponseResult.isSuccess(courseInfoService.delete(id));
     }
 
+
+    /**
+     * 获取二维码
+     *
+     * @param id id
+     * @return {@link ResponseResult}
+     */
+    @GetMapping("/QrCode")
+    @ApiOperation("生产二维码")
+    @AllowAnonymous
+    public void fetchQrCode(@ApiParam("课程id") @RequestParam Long id, HttpServletResponse response) throws IOException {
+        String url = StrUtil.format(InsuranceConst.QRCODE_URL,id);
+
+        QrConfig config = new QrConfig(300, 300);
+        // 设置边距，既二维码和背景之间的边距
+        config.setMargin(0);
+        // 高纠错级别
+        config.setErrorCorrection(ErrorCorrectionLevel.H);
+        // 生成二维码到文件，也可以到流
+        QrCodeUtil.generate(url, config, "PNG",response.getOutputStream());
+    }
 }

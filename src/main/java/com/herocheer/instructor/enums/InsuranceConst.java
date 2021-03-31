@@ -20,6 +20,11 @@ public class InsuranceConst {
      */
     public static String TEMPLATE_ID;
 
+    /**
+     *  二维码内容
+     */
+    public static String QRCODE_URL;
+
     @Value("${ijs.baseUrl}")
     public void setBaseUrl(String baseUrl) {
         BASE_URL = baseUrl;
@@ -29,6 +34,11 @@ public class InsuranceConst {
     @Value("${ijs.templateId}")
     public void setTemplateId(String templateId) {
         TEMPLATE_ID = templateId;
+    }
+
+    @Value("${ijs.QrCodeUrl}")
+    public void setQrCodeUrl(String QrCodeUrl) {
+        QRCODE_URL = QrCodeUrl;
     }
     //  public static final String BASE_URL = "http://192.168.147.133/sports/wechat/api";
     //  public static final String URL = "192.168.100.168:8280";

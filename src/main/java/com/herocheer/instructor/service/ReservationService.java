@@ -69,4 +69,14 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @return
      */
     List<String> findReservationOpenid(Long relevanceId,Integer type);
+
+
+    /**
+     * 添加签到信息
+     *
+     * @param courseId 进程id
+     * @param userId   用户id
+     * @return {@link String}
+     */
+    String addSignInfo(Long courseId, Long userId);
 }

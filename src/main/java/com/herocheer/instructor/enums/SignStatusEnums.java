@@ -10,7 +10,11 @@ package com.herocheer.instructor.enums;
 public enum SignStatusEnums {
     SIGN_NORMAL(0,"正常"),
     SIGN_ABNORMAL(1,"异常"),
-    SIGN_UN_FINISH(2,"待完成");
+    SIGN_UN_FINISH(2,"待完成"),
+
+    SIGN_DO(0,"未签到"),
+    SIGN_DONE(1,"已签到"),
+    SIGN_FAIED(2,"签到失败");
 
     private int status;
     private String name;

@@ -42,6 +42,8 @@ file:
 ijs:
   baseUrl: http://tycd.herocheer.com/sports/wechat/api
   templateId: 2b8LbGUFPSCgLvbUyjaJ7HggjBh4Uc6dmp8-zBEQERI
+  QrCodeUrl: http://tycd.herocheer.com/instructor/#/training/trainingDetail?id={}&type=5
+
 
 #测试i厦门
 ixm:

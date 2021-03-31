@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ReservationDao">
     <sql id="table_field">
-      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone,
+      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone,signTime,signType,signStatus
       <if test="queryType==1">
           case
           when `status`=2 then 0
@@ -63,6 +63,15 @@
         <if test="status != null">
             status,
         </if>
+        <if test="signTime != null">
+            signTime,
+        </if>
+        <if test="signType != null">
+            signType,
+        </if>
+        <if test="signStatus != null">
+            signStatus,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -111,6 +120,15 @@
         </if>
         <if test="status != null">
             #{status},
+        </if>
+        <if test="signTime != null">
+            #{signTime},
+        </if>
+        <if test="signType != null">
+            #{signType},
+        </if>
+        <if test="signStatus != null">
+            #{signStatus},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -170,6 +188,15 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="signTime != null">
+                signTime = #{signTime},
+            </if>
+            <if test="signType != null">
+                signType = #{signType},
+            </if>
+            <if test="signStatus != null">
+                signStatus = #{signStatus},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

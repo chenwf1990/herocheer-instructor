@@ -2,7 +2,10 @@ package com.herocheer.instructor.enums;
 
 public enum SignType {
     SIGN_IN(1,"签到"),
-    SIGN_OUT(2,"签退");
+    SIGN_OUT(2,"签退"),
+
+    SIGN_ONLINE(0,"线上签到"),
+    SIGN_OFFLINE(1,"线下签到");
 
 
     private int type;
