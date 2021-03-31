@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 授课老师VO
@@ -26,7 +27,7 @@ public class CourseTearcherVO {
     @NotBlank(message = "授课老师姓名")
     private String tearcherName;
     @ApiModelProperty("性别 0未知1男2女")
-    @NotBlank(message = "性别 0未知1男2女")
+    @NotNull(message = "性别 0未知1男2女")
     private Integer sex;
     @ApiModelProperty("手机号码")
     @NotBlank(message = "手机号码")
