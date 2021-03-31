@@ -107,13 +107,36 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
         if(CharSequenceUtil.isNotBlank(menuIds)){
             String[] arr = menuIds.split(",");
             List<SysRoleMenu> list = new ArrayList<>();
+
             SysRoleMenu sysRoleMenu = null;
             for (int i = 0; i < arr.length; i++) {
+                /**
+                 *
+                 * 业务场景：1、当角色分配的菜单里有包含：培训课程信息查看、驿站招募查询和赛事活动招募查看时，需默认新增课程详情和驿站招募详情
+                 * @Date 2021/3/30 15:27
+                 **/
+                if( "76".equals(arr[i])|| "14".equals(arr[i])){
+                    sysRoleMenu = new SysRoleMenu();
+                    sysRoleMenu.setRoleId(roleId);
+                    sysRoleMenu.setMenuId(Long.parseLong("78"));
+                    list.add(sysRoleMenu);
+                }
+                if("64".equals(arr[i])){
+                    sysRoleMenu = new SysRoleMenu();
+                    sysRoleMenu.setRoleId(roleId);
+                    sysRoleMenu.setMenuId(Long.parseLong("79"));
+                    list.add(sysRoleMenu);
+                }
+
+                // 正常情况
                 sysRoleMenu = new SysRoleMenu();
                 sysRoleMenu.setRoleId(roleId);
                 sysRoleMenu.setMenuId(Long.parseLong(arr[i]));
                 list.add(sysRoleMenu);
             }
+
+
+
             this.dao.insertBatchSysRoleMenu(list);
         }
 
