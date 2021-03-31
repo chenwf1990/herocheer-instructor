@@ -62,6 +62,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     @Resource
     private WorkingScheduleUserService workingScheduleUserService;
     @Resource
+    private WorkingScheduleService workingScheduleService;
+    @Resource
     private CourierStationService courierStationService;
     @Resource
     private ServiceHoursService serviceHoursService;
@@ -424,6 +426,15 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         }
         workingSchedule.setServiceBeginTime(times[0]);
         workingSchedule.setServiceEndTime(times[1]);
+        Map<String,Object> map=new HashMap<>();
+        map.put("courierStationId",workingSchedule.getCourierStationId());
+        map.put("serviceTimeId",workingSchedule.getServiceTimeId());
+        map.put("scheduleTime",workingSchedule.getScheduleTime());
+        Integer count=workingScheduleService.count(map);
+        if(count!=null && count>0){
+            throw new CommonException("导入失败:{}在{}的{}已经存在排班",workingSchedule.getCourierStationName(),
+                    dataList.get(1).toString(),dataList.get(2).toString());
+        }
         this.dao.insert(workingSchedule);
         List<WorkingScheduleUser> workingScheduleUserList = new ArrayList<>();
         //值班站长
