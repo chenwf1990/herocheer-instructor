@@ -64,7 +64,6 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
     @Override
     public List<Tree<Long>> findMenuTreeToUser(UserEntity currentUser) {
         Map<String, Object> paramMap = new HashMap<>();
-
 //        paramMap.put("status", false);
 
         List<SysMenu> sysMenus = null;
