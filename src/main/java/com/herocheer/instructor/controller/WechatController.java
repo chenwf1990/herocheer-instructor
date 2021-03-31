@@ -1,6 +1,5 @@
 package com.herocheer.instructor.controller;
 
-import cn.hutool.core.util.URLUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
@@ -8,6 +7,7 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.MsgCodeVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
@@ -129,22 +129,24 @@ public class WechatController extends BaseController {
     })
     public ResponseResult<User> ixmLogin(HttpServletRequest request, HttpSession session, @NotBlank(message = "微信用户openid不能为空") String openid,
                                                @NotBlank(message = "i厦门token不能为空") String token) {
-        return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token));
+        // 获取当前用户信息
+        String userInfo = redisClient.get(getCurTokenId(request));
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
+        return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token,infoVo));
     }
 
     /**
      * 获取短信验证码
      *
-     * @param request 请求
-     * @param phone   电话
-     * @return {@link ResponseResult<User>}
+     * @param request    请求
+     * @param msgCodeVO 用户实体
+     * @return {@link ResponseResult}
      */
-    @GetMapping("/sms/code")
+    @PostMapping("/sms/code")
     @ApiOperation(value = "短信验证码")
-    @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query")
-    public ResponseResult fetchSmsCode(@NotBlank(message = "手机号不能为空") String phone,HttpServletRequest request) {
+    public ResponseResult fetchSmsCode( @ApiParam("短信验证码VO") @RequestBody MsgCodeVO msgCodeVO, HttpServletRequest request) {
         // 限制短信验证码的使用（很贵）
-        User user = userService.findUserByPhone(URLUtil.decode(phone));
+        User user = userService.findUserByPhone(msgCodeVO.getPhone());
         if(ObjectUtils.isEmpty(user)){
             // 后台无记录，请前往社会指导员认证或联系管理员。
             throw new CommonException("您未注册指导员，请联系管理员");
@@ -155,7 +157,7 @@ public class WechatController extends BaseController {
             throw new CommonException("您已绑定过了");
         }
         // 发送短信验证码
-        SmsCodeUtil.getSmsCode(AesUtil.decrypt(URLUtil.decode(phone)));
+        SmsCodeUtil.getSmsCode(AesUtil.decrypt(msgCodeVO.getPhone()));
         return ResponseResult.ok();
     }
 
@@ -163,28 +165,21 @@ public class WechatController extends BaseController {
     /**
      * 验证短信验证码
      *
-     * @param phone   电话
-     * @param code    验证码
      * @param request 请求
      * @return {@link ResponseResult<User>}
      */
-    @GetMapping("/sms/binding")
+    @PostMapping("/sms/binding")
     @ApiOperation(value = "手机绑定")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "String",paramType = "query"),
-            @ApiImplicitParam(name = "code", value = "验证码", dataType = "String",paramType = "query")
-    })
-    public ResponseResult verifySmsCode(@NotBlank(message = "手机号不能为空") String phone,
-                                         @NotBlank(message = "验证码不能为空") String code, HttpServletRequest request) {
+    public ResponseResult verifySmsCode(@ApiParam("短信验证码VO")  @RequestBody MsgCodeVO msgCodeVO, HttpServletRequest request) {
 
-        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.decrypt(URLUtil.decode(phone)), code);
+        ResponseResult  result = SmsCodeUtil.verifySmsCode(AesUtil.decrypt(msgCodeVO.getPhone()), msgCodeVO.getCode());
         if("F".equals(result.getSuccess())){
             return ResponseResult.fail(result.getMessage());
         }
 
         // 绑定功能
         UserEntity correntUser = getUser(request);
-        UserInfoVo UserInfo = wechatService.bindingWeChat(correntUser, URLUtil.decode(phone));
+        UserInfoVo UserInfo = wechatService.bindingWeChat(correntUser, msgCodeVO.getPhone());
 
         // 绑定成功之后要替换当前用户信息
         redisClient.set(correntUser.getToken(),JSONObject.toJSONString(UserInfo));
@@ -224,10 +219,7 @@ public class WechatController extends BaseController {
     @GetMapping("/correctUser")
     @ApiOperation("我的资料")
     public ResponseResult<User> fetchUserById(HttpServletRequest request){
-        // TODO 这里一定要返回user
         // 获取当前用户信息
-        /*String userInfo = redisClient.get(getUser(request).getToken());
-        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);*/
         return ResponseResult.ok(userService.get(getCurUserId(request)));
     }
 

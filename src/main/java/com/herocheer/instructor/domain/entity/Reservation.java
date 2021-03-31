@@ -40,7 +40,7 @@ public class Reservation extends BaseEntity {
     private String identityNumber;
     @ApiModelProperty("手机号")   
     private String phone;
-    @ApiModelProperty("状态 (0.已预约 1.取消预约 2.活动撤销 3.已结束 4.已关闭)")
+    @ApiModelProperty("状态 (0.已预约 1.取消预约 2.活动撤销)")
     private Integer status;
 
 }

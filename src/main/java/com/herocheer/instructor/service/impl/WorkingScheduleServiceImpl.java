@@ -484,7 +484,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
     }
 
     /**
-     * @param monthData
+     * @param reqType
      * @param userId
      * @return
      * @author chenwf
@@ -492,48 +492,23 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
      * @date 2021-01-19 09:47:02
      */
     @Override
-    public List<WorkingUserInfoVo> getTaskInfoList(String monthData, int activityType, Long userId) {
-        List<WorkingUserInfoVo> workingUserInfoVos = new ArrayList<>();
-        if(StringUtils.isEmpty(monthData)){
-            monthData = DateUtil.format(new Date(),DateUtil.YYYY_MM);
-        }
-        Date scheduleDate = DateUtil.parse(monthData,DateUtil.YYYY_MM);
+    public List<WorkingUserVo> getTaskInfoList(int reqType, int activityType, Long userId) {
         //查找当月的值班任务
         Map<String,Object> params = new HashMap<>();
-        params.put("scheduleBeginTime",DateUtil.beginOfMonth(scheduleDate).getTime());
-        params.put("scheduleEndTime",DateUtil.endOfMonth(scheduleDate).getTime());
         params.put("userId",userId);
         params.put("activityType",activityType);
+        params.put("reqType",reqType);
         List<WorkingUserVo> workingUserVos = this.dao.getTaskInfoList(params);
         if(!workingUserVos.isEmpty()) {
-            Map<String, List<WorkingUserVo>> map = workingUserVos.stream().collect(Collectors.groupingBy(s -> s.getScheduleTimeText()));
-            for (Map.Entry<String, List<WorkingUserVo>> entry : map.entrySet()) {
-                WorkingUserInfoVo vo = new WorkingUserInfoVo();
-                vo.setScheduleTimeText(entry.getKey());
-                vo.setWorkingUserVos(entry.getValue());
-                for (WorkingUserVo workingUserVo : vo.getWorkingUserVos()) {
-                    Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
-                    Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
-                    //获取打卡状态
-                    int signStatus = commonService.getPunchCardStatus(serviceBeginTime,serviceEndTime,workingUserVo.getSignInTime(),workingUserVo.getSignOutTime());
-                    workingUserVo.setSignStatus(signStatus);
-                }
-                //查看是否存在异常打卡
-                long abnormalCount = vo.getWorkingUserVos().stream().filter(s -> s.getSignStatus() == SignStatusEnums.SIGN_ABNORMAL.getStatus()).count();
-                if(abnormalCount > 0){//存在异常打卡
-                    vo.setStatus(SignStatusEnums.SIGN_ABNORMAL.getStatus());
-                }else{
-                    long unFinishCount = vo.getWorkingUserVos().stream().filter(s -> s.getSignStatus() == SignStatusEnums.SIGN_UN_FINISH.getStatus()).count();
-                    if(unFinishCount > 0) {//存在待完成打卡
-                        vo.setStatus(SignStatusEnums.SIGN_UN_FINISH.getStatus());
-                    }else{//及不存在异常也不存在待完成打卡就是已完成
-                        vo.setStatus(SignStatusEnums.SIGN_NORMAL.getStatus());
-                    }
-                }
-                workingUserInfoVos.add(vo);
+            for (WorkingUserVo workingUserVo : workingUserVos) {
+                Long serviceBeginTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceBeginTime());
+                Long serviceEndTime = workingUserVo.getScheduleTime() + DateUtil.timeToUnix(workingUserVo.getServiceEndTime());
+                //获取打卡状态
+                int signStatus = commonService.getPunchCardStatus(serviceBeginTime,serviceEndTime,workingUserVo.getSignInTime(),workingUserVo.getSignOutTime());
+                workingUserVo.setSignStatus(signStatus);
             }
         }
-        return workingUserInfoVos;
+        return workingUserVos;
     }
 
     /**

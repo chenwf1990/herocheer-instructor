@@ -277,8 +277,18 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     }
 
 
+    /**
+     * ixm登录
+     *
+     * @param request      请求
+     * @param session      会话
+     * @param openid       openid
+     * @param token        令牌
+     * @param currentUser 当前系统的用户信息
+     * @return {@link User}
+     */
     @Override
-    public User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token) {
+    public User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token,UserInfoVo currentUser) {
         String result = "";
         String ssoSessionId = "";
         try {
@@ -340,12 +350,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setOpenid(openid);
             sysUser.setUserType(UserTypeEnums.weChatUser.getCode());
             sysUser.setSource(SourceEnums.ixm.getCode().toString());
-
             this.insert(sysUser);
 
             // 异步同步用户数据
             userService.asynUserInfo2Ijianshen(user, sysUser);
-
         } else {
             User oldUser = User.builder().build();
             oldUser.setId(sysUser.getId());
@@ -370,6 +378,20 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             oldUser.setUpdateTime(System.currentTimeMillis());
 
             this.update(oldUser);
+
+            /**
+             * 重置当前用户信息
+             *
+             * 业务场景：1、游客进入公众号，在I厦门登入后，需要重新退出再进入公众号，才能获取当前用户信息的场景
+             *         2、游客进入公众号，做指导员认证，审批在通过后，在I厦门登入后，需要重新退出再进入公众号，才能获取当前用户信息的场景
+             * @Date 2021/3/17 15:27
+             **/
+            currentUser.setId(sysUser.getId());
+            currentUser.setIxmLoginStatus(true);
+            log.debug("在I厦门登入后重置当前用户信息：{}",currentUser);
+            log.debug("在I厦门登入后重置当前用户信息ID：{}",sysUser.getId());
+            redisClient.set(currentUser.getTokenId(),JSONObject.toJSONString(currentUser), CacheKeyConst.EXPIRETIME);
+
 
             sysUser.setCertificateNo(certificateNum);
             sysUser.setUserName(user.getString("certificateName"));

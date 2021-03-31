@@ -36,6 +36,8 @@ import java.util.Map;
 @RequestMapping("/upload")
 @Api(tags = "图片，文件上传，下载api")
 public class UploadController {
+    @Value("${file.upload.savePath}")
+    private String savePath;
     @Value("${file.upload.visitPath}")
     private String visitPath;
 
@@ -116,4 +118,92 @@ public class UploadController {
         map.put("link",uploadFile.getFilePath());
         return map;
     }
+
+//
+//    @PostMapping(value = "/uploadBigFile")
+//    @ApiOperation(value = "大文件file")
+//    @AllowAnonymous
+//    public ResponseResult<UploadFileVO> uploadBigFile(HttpServletRequest request,HttpServletResponse response){
+//        Integer schunk = null;
+//        Integer schunks = null;
+//        String name = null;
+//        String dr = "instructor/" + DateUtil.format(new Date(), DateUtil.IMAGE_PARAENT);
+//        String uploadPath = savePath + dr;
+//        BufferedOutputStream os = null;
+//        response.setCharacterEncoding("UTF-8");
+//        UploadFileVO fileVO = new UploadFileVO();
+//        try {
+//            File folder = new File(uploadPath);
+//            if (!folder.exists()) {
+//                folder.mkdirs();
+//            }
+//            DiskFileItemFactory factory = new DiskFileItemFactory();
+//            factory.setSizeThreshold(1024);//设置文件阈限
+//            factory.setRepository(new File(uploadPath));//设置上传路径
+//            ServletFileUpload upload = new ServletFileUpload(factory);
+//            upload.setFileSizeMax(5L * 1024L * 1024L * 1024L);//设置单个文件上传大小
+//            upload.setSizeMax(10L * 1024L * 1024L * 1024L);// 设置总文件上传大小
+//            //它是用于解析request对象，得到所有上传项.每一个FileItem就相当于一个上传项.
+//            List<FileItem> items = upload.parseRequest(request);
+//            for (FileItem item : items) {
+//                if(item.isFormField()){
+//                    if("chunk".equals(item.getFieldName())){
+//                        schunk = Integer.parseInt(item.getString("utf-8"));
+//                    }
+//                    if("chunks".equals(item.getFieldName())){
+//                        schunks = Integer.parseInt(item.getString("utf-8"));
+//                    }
+//                    if("name".equals(item.getFieldName())){
+//                        name = item.getString("utf-8");
+//                    }
+//                }
+//            }
+//            for (FileItem item : items) {
+//                if(!item.isFormField()){
+//                    String temFileName = name;
+//                    if(name != null){
+//                        if(schunk != null){
+//                            temFileName = schunk + "_" + name;
+//                        }
+//                        File temFile = new File(uploadPath,temFileName);
+//                        if(!temFile.exists()){//断点续传
+//                            item.write(temFile);
+//                        }
+//                    }
+//                }
+//            }
+//            //文件合并
+//            if(schunk != null && schunk.intValue() == schunks.intValue() - 1){
+//                File tempFile = new File(uploadPath,name);
+//                os = new BufferedOutputStream(new FileOutputStream(tempFile));
+//                for (int i = 0; i < schunks; i++) {
+//                    File f = new File(uploadPath,i + "_" + name);
+//                    while (!f.exists()){
+//                        Thread.sleep(100);
+//                    }
+//                    byte[] bytes = FileUtils.readFileToByteArray(f);
+//                    os.write(bytes);
+//                    os.flush();
+//                    f.delete();
+//                }
+//                os.flush();
+//            }
+//
+//            fileVO.setRelativeFilePath("/" + dr + "/" + name);
+//            fileVO.setFilePath(visitPath + dr + "/" + name);
+//        } catch (FileUploadException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                if(os != null){
+//                    os.close();
+//                }
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+//        }
+//        return ResponseResult.ok(fileVO);
+//    }
 }

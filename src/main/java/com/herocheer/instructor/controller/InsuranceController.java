@@ -1,7 +1,6 @@
 package com.herocheer.instructor.controller;
 
 
-import cn.hutool.core.util.URLUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -9,6 +8,7 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.utils.AesUtil;
@@ -26,6 +26,8 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,27 +67,26 @@ public class InsuranceController extends BaseController {
         return ResponseResult.ok(user.getCertificateNo());
     }
 
-    public static void main(String[] args) {
-        String certificateNo = "2zSu%2BNyaWl2eR%2FYdMeIqlNMdo4t29%2BU7Zjnb6Wp6fmc%3D";
-        String a = AesUtil.decrypt(URLUtil.decode(certificateNo));
-        System.out.println(a);
-    }
-
     /**
      * 我的保单
      *
-     * @param certificateNo 证书没有
-     * @param request       请求
+     * @param request    请求
+     * @param WeChatUser 我们聊天用户
      * @return {@link ResponseResult<JSONArray>}
      */
-    @GetMapping("/certificateNo")
+    @PostMapping("/certificateNo")
     @ApiOperation("我的保单")
-    public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @RequestParam String certificateNo, HttpServletRequest request){
-        certificateNo = AesUtil.decrypt(URLUtil.decode(certificateNo));
+    public ResponseResult<JSONArray> fecthInsuranceInfoByCertificateNo(@ApiParam("身份证号") @RequestBody WeChatUserVO WeChatUser, HttpServletRequest request){
+        String certificateNo = AesUtil.decrypt(WeChatUser.getCertificateNo());
+        if(StringUtils.isEmpty(certificateNo)){
+            throw new CommonException("保险身份证号不能为空");
+        }
         String sign = DigestUtils.md5DigestAsHex((certificateNo + InsuranceConst.KEY).getBytes());
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("sign", sign);
         paramMap.put("certificateNo", certificateNo);
+        log.debug("请求保险信息参数：{}",paramMap);
+        log.debug("请求保险信息地址：{}",InsuranceConst.BASE_URL+"/insurance/listInsurance");
         String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/listInsurance", paramMap);
 
         JSONObject JSONObj = JSONObject.parseObject(result);
