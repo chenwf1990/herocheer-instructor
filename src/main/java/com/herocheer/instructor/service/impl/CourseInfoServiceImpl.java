@@ -211,12 +211,16 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             throw new CommonException("您未绑定身份，请使用手机绑定功能");
         }
 
-        Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         //获取授课老师的ID
         User user = userService.findUserByOpenId(currentUser.getOtherId());
+//        User user = userService.findUserByOpenId("or6Q-wTcK-Liu2RGNmTSqx7Hk6-w");
+
         if(ObjectUtils.isEmpty(user)){
-            return page;
+            throw new CommonException("您还不是公众号用户");
         }
+
+        Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
+
         List<TearcherVO> tearcherVOList = courseTearcherService.findCourseTearcherByPhone(user.getPhone());
         if(CollectionUtil.isNotEmpty(tearcherVOList)){
             queryVo.setLecturerTeacherId(tearcherVOList.get(0).getId());

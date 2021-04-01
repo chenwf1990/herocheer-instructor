@@ -56,10 +56,10 @@ public class CourseInfoQueryVo implements Serializable {
     private Integer state;
 
     @ApiModelProperty("页码")
-    private int pageNo;
+    private int pageNo = 1;
 
     @ApiModelProperty("页数")
-    private int pageSize;
+    private int pageSize = 10;
 
 
     @ApiModelProperty("授课老师名")
