@@ -1,12 +1,15 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.CourseInfoDao;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
+import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
@@ -19,12 +22,16 @@ import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +43,7 @@ import java.util.Map;
  */
 @Service
 @Transactional
+@Slf4j
 public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, CourseInfo,Long> implements CourseInfoService {
 
     @Resource
@@ -134,5 +142,47 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             courseInfo.setApprovalStatus(CourseApprovalState.PENDING.getState());
         }
         return courseInfo;
+    }
+
+    /**
+     * 通过id发现课程信息
+     *
+     * @param id id
+     * @return {@link CourseInfoVo}
+     */
+    @Override
+    public CourseInfo findCourseInfoById(Long id,String flag,Long userId) {
+        CourseInfo courseInfo  = this.dao.get(id);
+        if(StringUtils.isBlank(flag)){
+            return courseInfo;
+        }
+        // 扫码签到场景
+        CourseInfoVo courseInfoVo = new CourseInfoVo();
+        if(ObjectUtils.isEmpty(courseInfo)){
+            return courseInfoVo;
+        }
+        BeanCopier.create(courseInfo.getClass(),courseInfoVo.getClass(),false).copy(courseInfo,courseInfoVo,null);
+
+        // 否签到和预约
+        log.debug("扫码签到当前用户ID:{}",userId);
+        if(userId.equals(null) || userId.equals("")){
+            throw new CommonException("无法识别用户，请登入");
+        }
+
+        // 用户是否预约
+        Map<String,Object> map=new HashMap<>();
+        map.put("relevanceId",id);
+        map.put("userId",userId);
+        map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
+        map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
+        List<Reservation> list = reservationService.findByLimit(map);
+        if(CollectionUtil.isNotEmpty(list)){
+            courseInfoVo.setReservationStatus(0);
+            Reservation reservation = list.get(0);
+            if(reservation.getSignStatus().equals(1)){
+                courseInfoVo.setSignStatus(1);
+            }
+        }
+        return courseInfoVo;
     }
 }

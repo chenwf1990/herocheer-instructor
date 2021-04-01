@@ -77,9 +77,9 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      *
      * @param courseId 进程id
      * @param userId   用户id
-     * @return {@link String}
+     * @return {@link Long}
      */
-    String addSignInfo(Long courseId, Long userId);
+    Long addSignInfo(Long courseId, Long userId);
 
     /**
      * 签到信息列表

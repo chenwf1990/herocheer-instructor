@@ -71,7 +71,7 @@ public class ReservationController extends BaseController{
     @ApiOperation("预约签到")
     public ResponseResult createSignInfo( @ApiParam("课程id") @RequestParam Long courseId, HttpServletRequest request){
         // 返回签到时间
-        String signTime = reservationService.addSignInfo(courseId,getCurUserId(request));
+        Long signTime = reservationService.addSignInfo(courseId,getCurUserId(request));
         return ResponseResult.ok(signTime);
     }
 

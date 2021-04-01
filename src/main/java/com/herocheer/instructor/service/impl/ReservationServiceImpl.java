@@ -1,6 +1,5 @@
 package com.herocheer.instructor.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -223,7 +221,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String addSignInfo(Long courseId, Long userId) {
+    public Long addSignInfo(Long courseId, Long userId) {
         // 是否预约过
         Map<String,Object> map=new HashMap<>();
         map.put("relevanceId",courseId);
@@ -233,20 +231,17 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         List<Reservation> list= this.dao.findByLimit(map);
 
         Long currentLong = System.currentTimeMillis();
-        Date date = DateUtil.date(currentLong);
-        String formatDateTime = DateUtil.formatDateTime(date);
-
         // 预约过签到(线上签到)
         if(!list.isEmpty()){
            this.onLineSign(list.get(0),currentLong);
-            return formatDateTime;
+            return currentLong;
         }
 
         // 未预约签到(线下签到)
         if(list.isEmpty()){
             // 添加预约记录
             this.offLineSign(courseId,userId,currentLong);
-            return formatDateTime;
+            return currentLong;
         }
         return null;
     }
@@ -344,5 +339,4 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         page.setDataList(instructors);
         return page;
     }
-
 }
