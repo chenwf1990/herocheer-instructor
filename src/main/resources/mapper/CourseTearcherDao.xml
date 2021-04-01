@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.CourseTearcherDao">
 
     <sql id="table_field">
-      id, tearcherName, sex, phone, cardType, cardNo, guideProject, remark, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, tearcherName, sex, phone, cardType, cardNo, guideProject, remark, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime,certificateGrade
     </sql>
 
     <!--单表新增-->
@@ -35,6 +35,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="certificateGrade != null">
+                certificateGrade,
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
         ) VALUES (
@@ -62,6 +65,9 @@
             </if>
             <if test="status != null">
                 #{status},
+            </if>
+            <if test="certificateGrade != null">
+                #{certificateGrade},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -100,6 +106,9 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="certificateGrade != null">
+                certificateGrade = #{certificateGrade},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

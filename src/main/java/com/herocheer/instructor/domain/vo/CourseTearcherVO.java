@@ -61,4 +61,8 @@ public class CourseTearcherVO {
     private int pageNo = 1;
     @ApiModelProperty("页数")
     private int pageSize = 10;
+
+    @NotBlank(message = "证书等级")
+    @ApiModelProperty("证书等级")
+    private String certificateGrade;
 }

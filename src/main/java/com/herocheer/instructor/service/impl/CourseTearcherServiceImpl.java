@@ -1,5 +1,6 @@
 package com.herocheer.instructor.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
@@ -36,6 +37,10 @@ public class CourseTearcherServiceImpl extends BaseServiceImpl<CourseTearcherDao
     @Override
     public CourseTearcher addCourseTearcher(CourseTearcherVO courseTearcherVO) {
         CourseTearcher courseTearcher = CourseTearcher.builder().build();
+        List<TearcherVO> tearcherList = this.findCourseTearcherByPhone(courseTearcherVO.getPhone());
+        if(CollectionUtil.isNotEmpty(tearcherList)){
+            throw new CommonException("授课老师已存在(手机)");
+        }
         BeanCopier.create(courseTearcherVO.getClass(),courseTearcher.getClass(),false).copy(courseTearcherVO,courseTearcher,null);
         this.insert(courseTearcher);
         return courseTearcher;

@@ -42,4 +42,7 @@ public class CourseTearcher extends BaseEntity {
     private Boolean status;
     @ApiModelProperty("指导员头像")
     private String headPic;
+
+    @ApiModelProperty("证书登记")
+    private String certificateGrade;
 }
