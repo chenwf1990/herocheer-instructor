@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
+import com.herocheer.instructor.domain.vo.SignInfoVO;
 
 import java.util.List;
 
@@ -79,4 +80,12 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @return {@link String}
      */
     String addSignInfo(Long courseId, Long userId);
+
+    /**
+     * 签到信息列表
+     *
+     * @param signInfoVO VO
+     * @return {@link Page<SignInfoVO>}
+     */
+    Page<Reservation> findSignInfoByPage(SignInfoVO signInfoVO);
 }

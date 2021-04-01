@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
+import com.herocheer.instructor.domain.vo.SignInfoVO;
 import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -74,4 +75,17 @@ public class ReservationController extends BaseController{
         return ResponseResult.ok(signTime);
     }
 
+    /**
+     * 签到信息列表
+     *
+     * @param signInfoVO VO
+     * @param request 请求
+     * @return {@link ResponseResult<Page<Reservation>>}
+     */
+    @PostMapping("/sign/page")
+    @ApiOperation("签到信息")
+    public ResponseResult<Page<Reservation>> querySignInfoByPage(@RequestBody SignInfoVO signInfoVO, HttpServletRequest request){
+        Page<Reservation> page = reservationService.findSignInfoByPage(signInfoVO);
+        return ResponseResult.ok(page);
+    }
 }

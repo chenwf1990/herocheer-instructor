@@ -14,6 +14,7 @@ import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
+import com.herocheer.instructor.domain.vo.SignInfoVO;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
@@ -328,4 +329,20 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setSignStatus(SignStatusEnums.SIGN_DONE.getStatus());
         return this.dao.update(reservation);
     }
+
+
+    /**
+     * 签到信息列表
+     *
+     * @param signInfoVO VO
+     * @return {@link Page< SignInfoVO >}
+     */
+    @Override
+    public Page<Reservation> findSignInfoByPage(SignInfoVO signInfoVO) {
+        Page page = Page.startPage(signInfoVO.getPageNo(),signInfoVO.getPageSize());
+        List<Reservation> instructors = this.dao.selectSignInfoByPage(signInfoVO);
+        page.setDataList(instructors);
+        return page;
+    }
+
 }

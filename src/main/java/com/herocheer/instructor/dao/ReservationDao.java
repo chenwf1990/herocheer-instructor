@@ -2,6 +2,7 @@ package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
+import com.herocheer.instructor.domain.vo.SignInfoVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,4 +27,12 @@ public interface ReservationDao extends BaseDao<Reservation,Long>{
 
     List<String> findReservationOpenid(@Param("relevanceId")Long relevanceId,
                                        @Param("type") Integer type);
+
+    /**
+     * 签到信息列表
+     *
+     * @param signInfoVO VO
+     * @return {@link List<Reservation>}
+     */
+    List<Reservation> selectSignInfoByPage(SignInfoVO signInfoVO);
 }
