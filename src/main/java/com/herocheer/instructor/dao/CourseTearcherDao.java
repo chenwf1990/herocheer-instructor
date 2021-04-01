@@ -30,5 +30,5 @@ public interface CourseTearcherDao extends BaseDao<CourseTearcher, Long> {
      * @param paramMap 参数映射
      * @return {@link List<TearcherVO>}
      */
-    List<TearcherVO>  selectCourseTearcherByName(Map<String, Object> paramMap);
+    List<TearcherVO>  selectCourseTearcher(Map<String, Object> paramMap);
 }

@@ -83,7 +83,7 @@ public class ReservationController extends BaseController{
      * @return {@link ResponseResult<Page<Reservation>>}
      */
     @PostMapping("/sign/page")
-    @ApiOperation("签到信息")
+    @ApiOperation("签到列表")
     public ResponseResult<Page<Reservation>> querySignInfoByPage(@RequestBody SignInfoVO signInfoVO, HttpServletRequest request){
         Page<Reservation> page = reservationService.findSignInfoByPage(signInfoVO);
         return ResponseResult.ok(page);

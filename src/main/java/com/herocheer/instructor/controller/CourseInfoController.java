@@ -121,4 +121,11 @@ public class CourseInfoController extends BaseController{
         // 生成二维码到文件，也可以到流
         QrCodeUtil.generate(url, config, "PNG",response.getOutputStream());
     }
+
+
+    @GetMapping("/sign")
+    @ApiOperation("根据id查询课程详情")
+    public ResponseResult<CourseInfo> get11(@ApiParam("招募信息id") @RequestParam Long id,@ApiParam("扫二维码标识") @RequestParam(value="flag",required=false) String flag,HttpServletRequest request){
+        return ResponseResult.ok(courseInfoService.findCourseInfoById(id,flag,getCurUserId(request)));
+    }
 }

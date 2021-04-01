@@ -189,7 +189,7 @@
 
 
     <!--列表筛选-->
-    <select id="selectCourseTearcherByName" parameterType="map" resultType="com.herocheer.instructor.domain.vo.TearcherVO">
+    <select id="selectCourseTearcher" parameterType="map" resultType="com.herocheer.instructor.domain.vo.TearcherVO">
         select
         <include refid="table_field"/>
         from course_tearcher

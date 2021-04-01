@@ -4,7 +4,7 @@
 
     <sql id="table_field">
         id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-        approvalId,approvalBy,approvalTime,tearcherId,tearcherName,
+        approvalId,approvalBy,approvalTime,
         CASE
             WHEN approvalStatus != 1 THEN null
             WHEN `state`=5 THEN `state`
@@ -96,12 +96,6 @@
         <if test="approvalTime != null">
             approvalTime,
         </if>
-        <if test="tearcherId != null">
-            tearcherId,
-        </if>
-        <if test="tearcherName != null">
-            tearcherName,
-        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -180,12 +174,6 @@
         </if>
         <if test="approvalTime != null">
             #{approvalTime},
-        </if>
-        <if test="tearcherId != null">
-            #{tearcherId},
-        </if>
-        <if test="tearcherName != null">
-            #{tearcherName},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -275,12 +263,6 @@
             </if>
             <if test="approvalTime != null">
                 approvalTime = #{approvalTime},
-            </if>
-            <if test="tearcherId != null">
-                tearcherId = #{tearcherId},
-            </if>
-            <if test="tearcherName != null">
-                tearcherName = #{tearcherName},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

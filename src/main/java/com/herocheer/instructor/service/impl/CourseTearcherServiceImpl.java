@@ -75,13 +75,11 @@ public class CourseTearcherServiceImpl extends BaseServiceImpl<CourseTearcherDao
     /**
      * 查询授课老师
      *
-     * @param name
      * @return {@link List<CourseTearcher>}
      */
     @Override
-    public List<TearcherVO> findCourseTearcherByName(String name) {
+    public List<TearcherVO> findCourseTearcher() {
         Map<String, Object> paramMap = new HashMap();
-        paramMap.put("tearcherName",name);
-        return this.dao.selectCourseTearcherByName(paramMap);
+        return this.dao.selectCourseTearcher(paramMap);
     }
 }

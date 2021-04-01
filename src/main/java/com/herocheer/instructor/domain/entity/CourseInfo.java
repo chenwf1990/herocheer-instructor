@@ -62,9 +62,4 @@ public class CourseInfo extends BaseEntity {
     private Long approvalTime;
     @ApiModelProperty("审批人id")
     private Long approvalId;
-
-    @ApiModelProperty("授课老师ID")
-    private Long tearcherId;
-    @ApiModelProperty("授课老师姓名")
-    private String tearcherName;
-}
+    }

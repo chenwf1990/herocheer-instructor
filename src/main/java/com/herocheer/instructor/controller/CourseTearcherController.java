@@ -106,13 +106,12 @@ public class CourseTearcherController extends BaseController {
      * 获取所有老师信息
      *
      * @param request 请求
-     * @param name    的名字
-     * @return {@link ResponseResult<List<CourseTearcher>>}
+     * @return {@link ResponseResult<List<TearcherVO>>}
      */
-    @GetMapping("/{name:\\w+}")
+    @GetMapping("/all")
     @ApiOperation("老师姓名")
-    public ResponseResult<List<TearcherVO>> fetchTearcherByName(@ApiParam("老师ID") @PathVariable String name, HttpServletRequest request){
-        return ResponseResult.ok(courseTearcherService.findCourseTearcherByName(name));
+    public ResponseResult<List<TearcherVO>> fetchTearcherByName(HttpServletRequest request){
+        return ResponseResult.ok(courseTearcherService.findCourseTearcher());
     }
 
 }

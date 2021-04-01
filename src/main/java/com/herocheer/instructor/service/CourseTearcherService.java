@@ -43,9 +43,8 @@ public interface CourseTearcherService extends BaseService<CourseTearcher, Long>
     /**
      * 查询授课老师
      *
-     * @param name 的名字
      * @return {@link List<CourseTearcher>}
      */
-    List<TearcherVO> findCourseTearcherByName(String name);
+    List<TearcherVO> findCourseTearcher();
 
 }
