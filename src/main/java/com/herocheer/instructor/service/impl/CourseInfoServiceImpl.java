@@ -10,20 +10,25 @@ import com.herocheer.instructor.dao.CourseInfoDao;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.TearcherVO;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.CourseApprovalState;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.service.CourseApprovalService;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.service.CourseTearcherService;
 import com.herocheer.instructor.service.ReservationService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +57,11 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     private ReservationService reservationService;
     @Resource
     private WechatService wechatService;
+
+    @Autowired
+    private CourseTearcherService courseTearcherService;
+    @Autowired
+    private UserService userService;
     @Override
     public Page<CourseInfo> queryPage(CourseInfoQueryVo queryVo, Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
@@ -185,4 +195,36 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         }
         return courseInfoVo;
     }
+
+
+    /**
+     * 培训任务分页查询
+     *
+     * @param queryVo     VO
+     * @param currentUser 当前用户
+     * @return {@link Page<CourseInfo>}
+     */
+    @Override
+    public Page<CourseInfo> findtaskByPage(CourseInfoQueryVo queryVo, UserEntity currentUser) {
+        // TODO 业务场景：知道自己是授课老师，进入公众号后直接到个人中心的培训任务，怎么办？
+        if(StringUtils.isBlank(currentUser.getOtherId())){
+            throw new CommonException("您未绑定身份，请使用手机绑定功能");
+        }
+
+        Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
+        //获取授课老师的ID
+        User user = userService.findUserByOpenId(currentUser.getOtherId());
+        if(ObjectUtils.isEmpty(user)){
+            return page;
+        }
+        List<TearcherVO> tearcherVOList = courseTearcherService.findCourseTearcherByPhone(user.getPhone());
+        if(CollectionUtil.isNotEmpty(tearcherVOList)){
+            queryVo.setLecturerTeacherId(tearcherVOList.get(0).getId());
+        }
+
+        List<CourseInfo> instructors = this.dao.queryList(queryVo);
+        page.setDataList(instructors);
+        return page;
+    }
+
 }

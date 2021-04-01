@@ -60,4 +60,12 @@ public class CourseInfoQueryVo implements Serializable {
 
     @ApiModelProperty("页数")
     private int pageSize;
+
+
+    @ApiModelProperty("授课老师名")
+    private String lecturerTeacherName;
+
+    @ApiModelProperty("授课老师ID")
+    private Long lecturerTeacherId;
+
 }

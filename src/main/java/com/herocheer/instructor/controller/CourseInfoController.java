@@ -123,9 +123,17 @@ public class CourseInfoController extends BaseController{
     }
 
 
-    @GetMapping("/sign")
-    @ApiOperation("根据id查询课程详情")
-    public ResponseResult<CourseInfo> get11(@ApiParam("招募信息id") @RequestParam Long id,@ApiParam("扫二维码标识") @RequestParam(value="flag",required=false) String flag,HttpServletRequest request){
-        return ResponseResult.ok(courseInfoService.findCourseInfoById(id,flag,getCurUserId(request)));
+    /**
+     * 培训任务
+     *
+     * @param queryVo 查询签证官
+     * @param request 请求
+     * @return {@link ResponseResult<Page<CourseInfo>>}
+     */
+    @PostMapping("/task/page")
+    @ApiOperation("培训任务")
+    public ResponseResult<Page<CourseInfo>> fetchtaskByPage(@RequestBody CourseInfoQueryVo queryVo, HttpServletRequest request){
+        Page<CourseInfo> page = courseInfoService.findtaskByPage(queryVo,getUser(request));
+        return ResponseResult.ok(page);
     }
 }

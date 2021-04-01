@@ -40,5 +40,6 @@ public class CourseTearcher extends BaseEntity {
     private String remark;
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status;
-
+    @ApiModelProperty("指导员头像")
+    private String headPic;
 }

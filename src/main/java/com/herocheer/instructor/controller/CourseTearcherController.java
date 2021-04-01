@@ -3,9 +3,11 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.CourseTearcher;
+import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.vo.CourseTearcherVO;
 import com.herocheer.instructor.domain.vo.TearcherVO;
 import com.herocheer.instructor.service.CourseTearcherService;
+import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
@@ -37,6 +40,8 @@ public class CourseTearcherController extends BaseController {
     @Autowired
     private CourseTearcherService courseTearcherService;
 
+    @Resource
+    private InstructorService instructorService;
 
     /**
      * 创建字典
@@ -74,7 +79,14 @@ public class CourseTearcherController extends BaseController {
     @GetMapping("/name/{id:\\w+}")
     @ApiOperation("回显老师")
     public ResponseResult<CourseTearcher> fecthTearcherById(@ApiParam("老师ID") @PathVariable Long id, HttpServletRequest request){
-        return ResponseResult.ok(courseTearcherService.get(id));
+        CourseTearcher courseTearcher = courseTearcherService.get(id);
+
+        // 指导员头像
+        if(courseTearcher != null){
+            Instructor instructor =instructorService.findByPhone(courseTearcher.getPhone());
+            courseTearcher.setHeadPic(instructor.getHeadPic());
+        }
+        return ResponseResult.ok(courseTearcher);
     }
 
     /**

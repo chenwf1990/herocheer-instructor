@@ -78,4 +78,14 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
      * @return {@link CourseInfo}
      */
     CourseInfo findCourseInfoById(Long id,String flag,Long userId);
+
+    /**
+     * 培训任务分页查询
+     *
+     * @param queryVo     VO
+     * @param currentUser 当前用户
+     * @return {@link Page<CourseInfo>}
+     */
+    Page<CourseInfo> findtaskByPage(CourseInfoQueryVo queryVo, UserEntity currentUser);
+
 }
