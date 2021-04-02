@@ -177,4 +177,14 @@
         </where>
         ORDER BY ReadStatus ASC,createdTime DESC
     </select>
+
+    <!--统计消息-->
+    <select id="countMessage" parameterType="map" resultType="int">
+        select count(1) from sys_message
+        <where>
+            <if test="ReadStatus != null">
+                and ReadStatus = #{ReadStatus}
+            </if>
+        </where>
+    </select>
 </mapper>

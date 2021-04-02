@@ -80,4 +80,16 @@ public class SysMessageServiceImpl extends BaseServiceImpl<SysMessageDao, SysMes
         page.setDataList(sysMessageList);
         return page;
     }
+
+    /**
+     * 统计信息
+     *
+     * @return int
+     */
+    @Override
+    public int countMessage() {
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("ReadStatus", false);
+        return this.dao.countMessage(paramMap);
+    }
 }

@@ -36,7 +36,19 @@ public class SysMessageController extends BaseController {
     @Autowired
     private SysMessageService sysMessageService;
 
-    //TODO 消息统计
+
+    /**
+     * 统计信息
+     *
+     * @param request 请求
+     * @return {@link ResponseResult}
+     */
+    @GetMapping("/count")
+    @ApiOperation("消息统计")
+    public ResponseResult countMessage(HttpServletRequest request){
+        return ResponseResult.ok(sysMessageService.countMessage());
+    }
+
 
     /**
      * 消息详情
@@ -50,8 +62,6 @@ public class SysMessageController extends BaseController {
     public ResponseResult<SysMessage> fecthMessageById(@ApiParam("消息ID") @PathVariable Long id, HttpServletRequest request){
         return ResponseResult.ok(sysMessageService.get(id));
     }
-    // TODO
-
 
     /**
      * 消息列表
@@ -65,6 +75,7 @@ public class SysMessageController extends BaseController {
     public ResponseResult<Page<SysMessage>> fecthMessageByPage(@ApiParam("消息列表") @RequestBody SysMessageVO sysMessageVO, HttpServletRequest request){
         return ResponseResult.ok(sysMessageService.findMessageByPage(sysMessageVO));
     }
+
     /**
      * 消息已读
      *

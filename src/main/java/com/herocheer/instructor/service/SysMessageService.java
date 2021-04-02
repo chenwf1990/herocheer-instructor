@@ -45,4 +45,10 @@ public interface SysMessageService extends BaseService<SysMessage, Long> {
      */
     Page<SysMessage> findMessageByPage(SysMessageVO sysMessageVO);
 
+    /**
+     * 统计信息
+     *
+     * @return int
+     */
+    int countMessage();
 }

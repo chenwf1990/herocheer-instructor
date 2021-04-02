@@ -30,4 +30,12 @@ public interface SysMessageDao extends BaseDao<SysMessage, Long> {
      */
     List<SysMessage> selectMessageByPage(SysMessageVO sysMessageVO);
 
+
+    /**
+     * 统计信息
+     *
+     * @param paramMap 参数映射
+     * @return int
+     */
+    int countMessage(Map<String,Object> paramMap);
 }
