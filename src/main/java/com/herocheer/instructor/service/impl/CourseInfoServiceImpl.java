@@ -213,23 +213,21 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
         //获取授课老师的ID
         User user = userService.findUserByOpenId(currentUser.getOtherId());
-//        User user = userService.findUserByOpenId("or6Q-wTcK-Liu2RGNmTSqx7Hk6-w");
+//        User user = userService.findUserByOpenId("obOp1s2fGwPvYxvtkljRkMdtGRx4");
 
         if(ObjectUtils.isEmpty(user)){
             throw new CommonException("您还不是公众号用户");
         }
 
-        Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
-
         List<TearcherVO> tearcherVOList = courseTearcherService.findCourseTearcherByPhone(user.getPhone());
+        Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         if(CollectionUtil.isNotEmpty(tearcherVOList)){
+            // 授课老师自身的培训任务
             log.debug("授课老师ID:{}",tearcherVOList.get(0).getId());
             queryVo.setLecturerTeacherId(tearcherVOList.get(0).getId());
+            List<CourseInfo> instructors = this.dao.queryList(queryVo);
+            page.setDataList(instructors);
         }
-
-        List<CourseInfo> instructors = this.dao.queryList(queryVo);
-        page.setDataList(instructors);
         return page;
     }
-
 }
