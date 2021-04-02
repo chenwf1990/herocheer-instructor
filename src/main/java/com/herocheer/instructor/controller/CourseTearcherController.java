@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -81,7 +82,6 @@ public class CourseTearcherController extends BaseController {
     @ApiOperation("老师详情")
     public ResponseResult<CourseTearcher> fecthTearcherById(@ApiParam("老师ID") @PathVariable Long id, HttpServletRequest request){
         CourseTearcher courseTearcher = courseTearcherService.get(id);
-
         // 指导员头像
         if(courseTearcher != null){
             Instructor instructor =instructorService.findByPhone(courseTearcher.getPhone());
@@ -131,4 +131,16 @@ public class CourseTearcherController extends BaseController {
         return ResponseResult.ok(courseTearcherService.findCourseTearcher());
     }
 
+    /**
+     * 回填老师信息
+     *
+     * @param param   参数
+     * @param request 请求
+     * @return {@link ResponseResult<List<TearcherVO>>}
+     */
+    @GetMapping("/backfill")
+    @ApiOperation("回填信息")
+    public ResponseResult<Instructor> fetchTearcherByParam(@ApiParam("参数") @RequestParam String param, HttpServletRequest request){
+        return ResponseResult.ok(instructorService.findByCardNo(param));
+    }
 }
