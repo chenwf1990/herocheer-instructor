@@ -6,11 +6,15 @@ import cn.hutool.extra.qrcode.QrConfig;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
+import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.enums.InsuranceConst;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -78,6 +82,9 @@ public class CourseInfoController extends BaseController{
         courseInfo.setSignNumber(0);
         courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.insert(courseInfo);
+
+        // 采集系统消息
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getCode(),courseInfo.getId())));
         return ResponseResult.isSuccess(count);
     }
 

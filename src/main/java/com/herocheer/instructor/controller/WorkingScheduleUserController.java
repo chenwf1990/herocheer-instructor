@@ -2,6 +2,7 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
@@ -12,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,4 +62,19 @@ public class WorkingScheduleUserController extends BaseController{
         Page<ReservationInfoVo> page = workingScheduleUserService.findReservationInfoPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
+
+
+    /**
+     * 服务时长详情
+     *
+     * @param id      id
+     * @param request 请求
+     * @return {@link ResponseResult<WorkingScheduleUser>}
+     */
+    @GetMapping("/detail/{id:\\w+}")
+    @ApiOperation("服务时长详情")
+    public ResponseResult<WorkingScheduleUser> fecthWorkingSchedulsUserById(@ApiParam("服务时长ID") @PathVariable Long id, HttpServletRequest request){
+        return ResponseResult.ok(workingScheduleUserService.get(id));
+    }
+
 }
