@@ -17,9 +17,8 @@ public interface SysMessageService extends BaseService<SysMessage, Long> {
      * 添加消息
      *
      * @param sysMessageVO VO
-     * @return {@link SysMessage}
      */
-    SysMessage addMessage(SysMessageVO sysMessageVO);
+    void addMessage(SysMessageVO sysMessageVO);
 
     /**
      * 通过id修改消息读取状态

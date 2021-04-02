@@ -90,16 +90,18 @@ public class SysMessageController extends BaseController {
     }
 
     /**
+     * 创建消息
      * 消息新增
      *
      * @param sysMessageVO VO
      * @param request      请求
-     * @return {@link ResponseResult<SysMessage>}
+     * @return {@link ResponseResult}
      */
     @PostMapping
     @ApiOperation("新增消息")
-    public ResponseResult<SysMessage> createMessage(@ApiParam("系统消息") @Valid @RequestBody SysMessageVO sysMessageVO, HttpServletRequest request){
-        return ResponseResult.ok(sysMessageService.addMessage(sysMessageVO));
+    public ResponseResult createMessage(@ApiParam("系统消息") @Valid @RequestBody SysMessageVO sysMessageVO, HttpServletRequest request){
+        sysMessageService.addMessage(sysMessageVO);
+        return ResponseResult.ok();
     }
 
     /**

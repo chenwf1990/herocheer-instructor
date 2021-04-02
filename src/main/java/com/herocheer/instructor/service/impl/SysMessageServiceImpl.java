@@ -25,18 +25,16 @@ import java.util.Map;
 public class SysMessageServiceImpl extends BaseServiceImpl<SysMessageDao, SysMessage, Long> implements SysMessageService {
 
     /**
-     * 添加消息
+     * 添加消息（异步且线程池、事件）
      *
      * @param sysMessageVO VO
      * @return {@link SysMessage}
      */
-    // TODO 异步且线程池、事件
     @Override
-    public SysMessage addMessage(SysMessageVO sysMessageVO) {
+    public void  addMessage(SysMessageVO sysMessageVO) {
         SysMessage sysMessage = SysMessage.builder().build();
         BeanCopier.create(sysMessageVO.getClass(),sysMessage.getClass(),false).copy(sysMessageVO,sysMessage,null);
         this.insert(sysMessage);
-        return sysMessage;
     }
 
     /**

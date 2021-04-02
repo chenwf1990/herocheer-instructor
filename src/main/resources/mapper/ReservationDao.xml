@@ -378,8 +378,11 @@
             <if test="relevanceId!=null">
                 and relevanceId = #{relevanceId}
             </if>
-            <if test="signType!=null and signType !=2">
+            <if test="signType != null and signType !=2">
                 and signType = #{signType}
+            </if>
+            <if test="signStatus != null">
+                and signStatus = #{signStatus}
             </if>
         </where>
         order by signTime desc

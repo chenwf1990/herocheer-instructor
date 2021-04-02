@@ -191,6 +191,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             Reservation reservation = list.get(0);
             if(reservation.getSignStatus().equals(1)){
                 courseInfoVo.setSignStatus(1);
+                courseInfoVo.setSignTime(reservation.getSignTime());
             }
         }
         return courseInfoVo;

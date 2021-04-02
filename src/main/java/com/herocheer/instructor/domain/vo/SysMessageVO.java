@@ -17,6 +17,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SysMessageVO {
+
+    public SysMessageVO(String messageContext, String messageType, String messageCode, Long objectId) {
+        this.messageContext = messageContext;
+        this.messageType = messageType;
+        this.messageCode = messageCode;
+        this.objectId = objectId;
+    }
+
     private Long id;
     @ApiModelProperty("消息内容")
     private String messageContext;

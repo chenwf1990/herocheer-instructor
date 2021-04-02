@@ -76,7 +76,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,获取课程信息失败!");
         }
         if(courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
-            throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约人数已满!");
+            throw new CommonException(ResponseCode.SERVER_ERROR,"抱歉，已达到报名人数上限，无法报名");
         }
         Map<String,Object> map=new HashMap<>();
         map.put("relevanceId",courseId);
@@ -266,9 +266,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }else {
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,获取课程信息失败!");
         }
-        if(courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
-            throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约人数已满!");
-        }
+
         Map<String,Object> map=new HashMap<>();
         map.put("relevanceId",courseId);
         map.put("userId",userId);
@@ -278,6 +276,12 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if(!list.isEmpty()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"您已预约该课程,无需重复预约!");
         }
+
+        // 重复报名需要在限制人数之前
+        if(courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"抱歉，已达到报名人数上限，无法报名");
+        }
+
         if(userId==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
         }
