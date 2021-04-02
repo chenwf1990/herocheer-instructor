@@ -223,6 +223,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
         List<TearcherVO> tearcherVOList = courseTearcherService.findCourseTearcherByPhone(user.getPhone());
         if(CollectionUtil.isNotEmpty(tearcherVOList)){
+            log.debug("授课老师ID:{}",tearcherVOList.get(0).getId());
             queryVo.setLecturerTeacherId(tearcherVOList.get(0).getId());
         }
 

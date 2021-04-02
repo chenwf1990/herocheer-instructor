@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.SysMessageDao">
 
     <sql id="table_field">
-      ID, messageContext, messageType, handleStatus, objectId, ReadStatus, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      ID, messageContext, messageType, handleStatus, objectId, ReadStatus, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime,messageCode
     </sql>
 
     <!--单表新增-->
@@ -29,6 +29,9 @@
             <if test="remark != null">
                 remark,
             </if>
+            <if test="messageCode != null">
+                messageCode,
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
         ) VALUES (
@@ -50,6 +53,9 @@
             </if>
             <if test="remark != null">
                 #{remark},
+            </if>
+            <if test="messageCode != null">
+                #{messageCode},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -82,6 +88,9 @@
             </if>
             <if test="remark != null">
                 remark = #{remark},
+            </if>
+            <if test="messageCode != null">
+                messageCode = #{messageCode},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -161,6 +170,9 @@
             </if>
             <if test="ReadStatus != null">
                 and ReadStatus = #{ReadStatus}
+            </if>
+            <if test="messageCode != null">
+                and messageCode = #{messageCode}
             </if>
         </where>
         ORDER BY ReadStatus ASC,createdTime DESC

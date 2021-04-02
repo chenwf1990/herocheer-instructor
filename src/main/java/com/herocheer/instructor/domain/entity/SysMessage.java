@@ -36,4 +36,7 @@ public class SysMessage extends BaseEntity {
     private Boolean ReadStatus;
     @ApiModelProperty("备注")
     private String remark;
+
+    @ApiModelProperty("消息编码")
+    private String messageCode;
 }

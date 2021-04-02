@@ -22,6 +22,8 @@ public class SysMessageVO {
     private String messageContext;
     @ApiModelProperty("消息类型")
     private String messageType;
+    @ApiModelProperty("消息编码")
+    private String messageCode;
 
     @ApiModelProperty("办理状态")
     private Boolean handleStatus;

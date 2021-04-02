@@ -517,7 +517,7 @@
                      signEndTime between #{signStartTime} and #{signEndTime})
             </if>
 
-            <if test="lecturerTeacherId!=null">
+            <if test="lecturerTeacherId != null and lecturerTeacherId !='' ">
                 and lecturerTeacherId=#{lecturerTeacherId}
             </if>
         </where>

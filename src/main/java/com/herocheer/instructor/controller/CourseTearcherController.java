@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,14 +78,18 @@ public class CourseTearcherController extends BaseController {
      * @return {@link ResponseResult<CourseTearcher>}
      */
     @GetMapping("/name/{id:\\w+}")
-    @ApiOperation("回显老师")
+    @ApiOperation("老师详情")
     public ResponseResult<CourseTearcher> fecthTearcherById(@ApiParam("老师ID") @PathVariable Long id, HttpServletRequest request){
         CourseTearcher courseTearcher = courseTearcherService.get(id);
 
         // 指导员头像
         if(courseTearcher != null){
             Instructor instructor =instructorService.findByPhone(courseTearcher.getPhone());
-            courseTearcher.setHeadPic(instructor.getHeadPic());
+            if (ObjectUtils.isEmpty(instructor)) {
+                courseTearcher.setHeadPic("");
+            } else {
+                courseTearcher.setHeadPic(instructor.getHeadPic());
+            }
         }
         return ResponseResult.ok(courseTearcher);
     }

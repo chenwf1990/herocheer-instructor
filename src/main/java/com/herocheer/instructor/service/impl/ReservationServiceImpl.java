@@ -260,9 +260,9 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             if(courseInfo.getSignStartTime()>System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程报名未开始!");
             }
-            if(courseInfo.getSignEndTime()+24*60*60*1000-1<System.currentTimeMillis()){
+            /*if(courseInfo.getSignEndTime()+24*60*60*1000-1<System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程报名已结束!");
-            }
+            }*/
         }else {
             throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,获取课程信息失败!");
         }
@@ -310,6 +310,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         this.dao.insert(reservation);
         courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
         return courseInfoService.update(courseInfo);
+
     }
 
     /**
