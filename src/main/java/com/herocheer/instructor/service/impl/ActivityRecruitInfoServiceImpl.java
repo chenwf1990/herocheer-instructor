@@ -141,9 +141,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
 
         // 采集系统消息
         if(activityRecruitInfoVo.getRecruitType().equals(2)){
-            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_JI0N_CHECK.getText(),SysMessageEnums.MATCH_JI0N_CHECK.getText(), SysMessageEnums.MATCH_JI0N_CHECK.getCode(),activityRecruitInfoVo.getId())));
+            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_JI0N_CHECK.getText(),SysMessageEnums.MATCH_JI0N_CHECK.getType(), SysMessageEnums.MATCH_JI0N_CHECK.getCode(),activityRecruitInfoVo.getId())));
         }else {
-            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_CHECK.getText(),SysMessageEnums.STATION_CHECK.getText(), SysMessageEnums.STATION_CHECK.getCode(),activityRecruitInfoVo.getId())));
+            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_CHECK.getText(),SysMessageEnums.STATION_CHECK.getType(), SysMessageEnums.STATION_CHECK.getCode(),activityRecruitInfoVo.getId())));
         }
 
         //保存赛事招募明细

@@ -124,6 +124,9 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         courseInfo.setApprovalId(userEntity.getId());
         courseInfo.setApprovalBy(userEntity.getUserName());
         courseInfo.setApprovalTime(System.currentTimeMillis());
+
+        //同步消息中心状态
+
         return this.dao.update(courseInfo);
     }
 
@@ -211,6 +214,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         }
 
         //获取授课老师的ID
+        log.debug("当前用户的OpenId:{}",currentUser.getOtherId());
         User user = userService.findUserByOpenId(currentUser.getOtherId());
 //        User user = userService.findUserByOpenId("obOp1s2fGwPvYxvtkljRkMdtGRx4
 

@@ -84,7 +84,7 @@ public class CourseInfoController extends BaseController{
         Integer count=courseInfoService.insert(courseInfo);
 
         // 采集系统消息
-        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getCode(),courseInfo.getId())));
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getType(),SysMessageEnums.COURSE_CHECK.getCode(),courseInfo.getId())));
         return ResponseResult.isSuccess(count);
     }
 

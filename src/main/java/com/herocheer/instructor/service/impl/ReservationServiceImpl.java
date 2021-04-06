@@ -313,7 +313,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
 
         // 线下签到信息
         reservation.setSignTime(currentLong);
-        reservation.setSignType(SignType.SIGN_ONLINE.getType());
+        reservation.setSignType(SignType.SIGN_OFFLINE.getType());
         reservation.setSignStatus(SignStatusEnums.SIGN_DONE.getStatus());
         this.dao.insert(reservation);
         courseInfo.setSignNumber(courseInfo.getSignNumber()+1);

@@ -119,7 +119,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         }
 
         // 采集系统消息
-        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.INSTRUCTOR_AUTH.getText(),SysMessageEnums.INSTRUCTOR_AUTH.getText(),SysMessageEnums.INSTRUCTOR_AUTH.getCode(),instructorApply.getId())));
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.INSTRUCTOR_AUTH.getText(),SysMessageEnums.INSTRUCTOR_AUTH.getType(),SysMessageEnums.INSTRUCTOR_AUTH.getCode(),instructorApply.getId())));
         return instructorApply;
     }
 

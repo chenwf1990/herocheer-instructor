@@ -124,7 +124,7 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
         long count = this.dao.insert(newsNotice);
 
         // 系统消息采集
-        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.NEWS_JION_CHECK.getText(),SysMessageEnums.NEWS_JION_CHECK.getText(),SysMessageEnums.NEWS_JION_CHECK.getCode(),newsNotice.getId())));
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.NEWS_JION_CHECK.getText(),SysMessageEnums.NEWS_JION_CHECK.getType(),SysMessageEnums.NEWS_JION_CHECK.getCode(),newsNotice.getId())));
         return count;
     }
 
