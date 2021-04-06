@@ -366,16 +366,16 @@
     <select id="selectSignInfoByPage" resultType="com.herocheer.instructor.domain.entity.Reservation" parameterType="com.herocheer.instructor.domain.vo.SignInfoVO">
         select <include refid="table_field"/> from reservation
         <where>
-            <if test="type!=null">
+            <if test="type != null">
                 and `type` = #{type}
             </if>
-            <if test="beginTime!=null">
+            <if test="beginTime != null">
                 and createdTime <![CDATA[ >= ]]> #{startTime}
             </if>
-            <if test="endTime!=null">
+            <if test="endTime != null">
                 and createdTime <![CDATA[ <= ]]> #{endTime}
             </if>
-            <if test="relevanceId!=null">
+            <if test="relevanceId != null">
                 and relevanceId = #{relevanceId}
             </if>
             <if test="signType != null and signType !=2">

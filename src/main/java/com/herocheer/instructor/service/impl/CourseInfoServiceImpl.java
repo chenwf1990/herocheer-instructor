@@ -175,28 +175,26 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
         // 否签到和预约
         log.debug("扫码签到当前用户ID:{}",userId);
-        if(userId.equals(null) || userId.equals("")){
-            throw new CommonException("无法识别用户，请登入");
-        }
-
-        // 用户是否预约
-        Map<String,Object> map=new HashMap<>();
-        map.put("relevanceId",id);
-        map.put("userId",userId);
-        map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
-        map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
-        List<Reservation> list = reservationService.findByLimit(map);
-        if(CollectionUtil.isNotEmpty(list)){
-            courseInfoVo.setReservationStatus(0);
-            Reservation reservation = list.get(0);
-            if(reservation.getSignStatus().equals(1)){
-                courseInfoVo.setSignStatus(1);
-                courseInfoVo.setSignTime(reservation.getSignTime());
+        if(null != userId){
+            // 用户是否预约
+            Map<String,Object> map=new HashMap<>();
+            map.put("relevanceId",id);
+            map.put("userId",userId);
+            map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
+            map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
+            List<Reservation> list = reservationService.findByLimit(map);
+            if(CollectionUtil.isNotEmpty(list)){
+                courseInfoVo.setReservationStatus(0);
+                Reservation reservation = list.get(0);
+                log.debug("扫码签到当前用户的预约信息:{}",reservation);
+                if(reservation.getSignStatus().equals(1)){
+                    courseInfoVo.setSignStatus(1);
+                    courseInfoVo.setSignTime(reservation.getSignTime());
+                }
             }
         }
         return courseInfoVo;
     }
-
 
     /**
      * 培训任务分页查询
@@ -214,7 +212,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
         //获取授课老师的ID
         User user = userService.findUserByOpenId(currentUser.getOtherId());
-//        User user = userService.findUserByOpenId("obOp1s2fGwPvYxvtkljRkMdtGRx4");
+//        User user = userService.findUserByOpenId("obOp1s2fGwPvYxvtkljRkMdtGRx4
 
         if(ObjectUtils.isEmpty(user)){
             throw new CommonException("您还不是公众号用户");
