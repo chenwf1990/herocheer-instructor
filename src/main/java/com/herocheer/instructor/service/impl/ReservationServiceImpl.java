@@ -14,6 +14,7 @@ import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
+import com.herocheer.instructor.enums.CourseApprovalState;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
@@ -261,9 +262,14 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     private Integer offLineSign(Long courseId, Long userId, Long currentLong) {
         CourseInfo courseInfo = courseInfoService.get(courseId);
         if(courseInfo!=null){
+            if(!courseInfo.getApprovalStatus().equals(CourseApprovalState.PASSED.getState())){
+                throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程还在审核中!");
+            }
+
             if(courseInfo.getSignStartTime()>System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程报名未开始!");
             }
+
             /*if(courseInfo.getSignEndTime()+24*60*60*1000-1<System.currentTimeMillis()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程报名已结束!");
             }*/

@@ -3,7 +3,6 @@ package com.herocheer.instructor.service.impl;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.dao.WorkingScheduleUserDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
@@ -12,7 +11,6 @@ import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
-import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
@@ -22,7 +20,6 @@ import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.enums.SignType;
-import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.CommonService;
@@ -30,7 +27,6 @@ import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
-import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -274,13 +270,13 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         int count = this.dao.update(scheduleUser);
 
         // 采集系统消息
-        if(workingUserVo.getActivityType().equals(2)){
+        /*if(workingUserVo.getActivityType().equals(2)){
             // 赛事活动
             SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_TIME.getText(),SysMessageEnums.MATCH_TIME.getType(),SysMessageEnums.MATCH_TIME.getCode(),scheduleUser.getId())));
         }else {
             // 驿站值班
             SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_TIME.getText(),SysMessageEnums.STATION_TIME.getType(),SysMessageEnums.STATION_TIME.getCode(),scheduleUser.getId())));
-        }
+        }*/
         return count;
     }
 
