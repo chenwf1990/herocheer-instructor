@@ -9,7 +9,6 @@ import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.ApplicationListVo;
-import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.SysMessageService;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,6 +89,9 @@ public class ActivityRecruitInfoController extends BaseController{
     @ApiOperation("更新招募信息")
     public ResponseResult update(@RequestBody ActivityRecruitInfoVo activityRecruitInfoVo){
         Integer count=activityRecruitInfoService.updateActivityRecruitInfo(activityRecruitInfoVo);
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_CHECK.getCode(),SysMessageEnums.MATCH_JI0N_CHECK.getCode()), activityRecruitInfoVo.getId(),false,false);
         return ResponseResult.isSuccess(count);
     }
 
@@ -111,9 +114,7 @@ public class ActivityRecruitInfoController extends BaseController{
         Integer count=activityRecruitInfoService.approval(activityRecruitApproval,getUser(request));
 
         // 同步系统消息状态
-        if (activityRecruitApproval.getApprovalStatus() == ActivityApprovalStateEnums.PASSED.getState()){
-            sysMessageService.modifyMessage(SysMessageEnums.STATION_CHECK.getCode() +"','" + SysMessageEnums.MATCH_JI0N_CHECK.getCode(), activityRecruitApproval.getRecruitId());
-        }
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_CHECK.getCode(),SysMessageEnums.MATCH_JI0N_CHECK.getCode()), activityRecruitApproval.getRecruitId(),true,true);
         return ResponseResult.isSuccess(count);
     }
 

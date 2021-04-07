@@ -199,6 +199,6 @@
                 ReadStatus = #{ReadStatus},
             </if>
         </set>
-        where objectId = #{objectId} and messageCode in ( #{messageCode} )
+        where objectId = #{objectId} and messageCode in <foreach item="messageCode" index="index" collection="messageCode" open="(" separator="," close=")">#{messageCode} </foreach>
     </update>
 </mapper>

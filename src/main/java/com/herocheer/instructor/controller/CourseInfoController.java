@@ -33,6 +33,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -99,7 +100,8 @@ public class CourseInfoController extends BaseController{
         courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.update(courseInfo);
 
-        // 
+        // 同步系统消息状态(不区别审核通过和驳回)
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseInfo.getId(),false,false);
         return ResponseResult.isSuccess(count);
     }
     @PostMapping("/approval")
@@ -107,10 +109,8 @@ public class CourseInfoController extends BaseController{
     public ResponseResult approval(@RequestBody CourseApproval courseApproval,HttpServletRequest request){
         Integer count=courseInfoService.approval(courseApproval,getUser(request));
 
-        // 同步系统消息状态
-        if(courseApproval.getApprovalStatus() == 1){
-            sysMessageService.modifyMessage(SysMessageEnums.COURSE_CHECK.getCode(), courseApproval.getCourseId());
-        }
+        // 同步系统消息状态(不区别审核通过和驳回)
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseApproval.getCourseId(),true,true);
         return ResponseResult.isSuccess(count);
     }
 

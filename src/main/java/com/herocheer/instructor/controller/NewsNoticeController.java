@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -66,6 +67,9 @@ public class NewsNoticeController extends BaseController{
     @ApiOperation("编辑新闻活动")
     public ResponseResult update(@RequestBody NewsNotice newsNotice){
         newsNoticeService.updateNewsNotice(newsNotice);
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.NEWS_JION_CHECK.getCode()),newsNotice.getId(),false,false);
         return ResponseResult.ok();
     }
 
@@ -94,10 +98,8 @@ public class NewsNoticeController extends BaseController{
                                    HttpServletRequest request){
         newsNoticeService.approval(id,auditState,auditIdea,getCurUserId(request));
 
-        if(auditState == 1){
-            // 同步系统消息状态
-            sysMessageService.modifyMessage(SysMessageEnums.NEWS_JION_CHECK.getCode(),id);
-        }
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.NEWS_JION_CHECK.getCode()),id,true,true);
         return ResponseResult.ok();
     }
 

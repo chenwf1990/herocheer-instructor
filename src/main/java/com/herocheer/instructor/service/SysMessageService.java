@@ -5,6 +5,8 @@ import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.SysMessage;
 import com.herocheer.instructor.domain.vo.SysMessageVO;
 
+import java.util.List;
+
 /**
  * @author gaorh
  * @desc 系统消息通知(SysMessage)表服务接口
@@ -54,8 +56,8 @@ public interface SysMessageService extends BaseService<SysMessage, Long> {
     /**
      * 同步消息中心信息
      *
-     * @param messageType id
+     * @param messageCode messageCode
      * @param objId id
      */
-    void modifyMessage(String messageType,Long objId);
+    void modifyMessage(List<String> messageCode, Long objId, Boolean handleStatus, Boolean readStatus);
 }

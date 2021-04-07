@@ -19,15 +19,18 @@ import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.InstructorApplyAuditLogService;
 import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.instructor.service.SysRoleService;
 import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,9 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     private InstructorApplyAuditLogService instructorApplyAuditLogService;
     @Resource
     private SysRoleService sysRoleService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     /**
      * 指导员申请单列表查询
@@ -149,6 +155,10 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         }
         instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         int count = this.dao.update(instructorApply);
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.INSTRUCTOR_AUTH.getCode()), instructorApply.getId(),false,false);
+
         //写入日志
         insertLog(instructorApply);
         return count;

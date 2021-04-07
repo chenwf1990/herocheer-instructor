@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,9 +90,7 @@ public class InstructorApplyController extends BaseController{
         instructorApplyService.approval(id,auditState,auditIdea,getCurUserId(request));
 
         // 同步系统消息状态
-        if(auditState == 1){
-            sysMessageService.modifyMessage(SysMessageEnums.INSTRUCTOR_AUTH.getCode(), id);
-        }
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.INSTRUCTOR_AUTH.getCode()), id,true,true);
         return ResponseResult.ok();
     }
 
