@@ -7,12 +7,15 @@ import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.InstructorApplyService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +41,9 @@ import java.util.List;
 public class InstructorApplyController extends BaseController{
     @Resource
     private InstructorApplyService instructorApplyService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     @PostMapping("/queryPageList")
     @ApiOperation("指导员申请单列表查询")
@@ -81,6 +87,11 @@ public class InstructorApplyController extends BaseController{
                                    @ApiParam("审核意见") @RequestParam(required = false) String auditIdea,
                                    HttpServletRequest request){
         instructorApplyService.approval(id,auditState,auditIdea,getCurUserId(request));
+
+        // 同步系统消息状态
+        if(auditState == 1){
+            sysMessageService.modifyMessage(SysMessageEnums.INSTRUCTOR_AUTH.getCode(), id);
+        }
         return ResponseResult.ok();
     }
 

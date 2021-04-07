@@ -1,12 +1,14 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.SysMessageDao;
 import com.herocheer.instructor.domain.entity.SysMessage;
 import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.cglib.beans.BeanCopier;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,5 +91,24 @@ public class SysMessageServiceImpl extends BaseServiceImpl<SysMessageDao, SysMes
         Map<String,Object> paramMap = new HashMap<>();
         paramMap.put("ReadStatus", false);
         return this.dao.countMessage(paramMap);
+    }
+
+    /**
+     * 同步消息中心信息
+     *
+     * @param messageCode messageCode
+     * @param objId    id
+     */
+    @Async
+    @Override
+    public void modifyMessage(String messageCode, Long objId) {
+        Map<String,Object> paramMap = new HashMap<>();
+        if(StringUtils.isNotBlank(messageCode) && objId != null){
+            paramMap.put("messageCode", messageCode);
+            paramMap.put("objectId", objId);
+            paramMap.put("handleStatus", true);
+            paramMap.put("ReadStatus", true);
+            this.dao.updateMessageByTypeAndOjbId(paramMap);
+        }
     }
 }

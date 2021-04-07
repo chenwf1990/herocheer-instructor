@@ -5,11 +5,14 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
 import com.herocheer.instructor.domain.vo.NewsQueryVo;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.NewsNoticeService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +37,9 @@ import java.util.List;
 public class NewsNoticeController extends BaseController{
     @Resource
     private NewsNoticeService newsNoticeService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     @PostMapping("/queryPageList")
     @ApiOperation("新闻列表查询")
@@ -87,6 +93,11 @@ public class NewsNoticeController extends BaseController{
                                    @ApiParam("审核意见") @RequestParam(required = false) String auditIdea,
                                    HttpServletRequest request){
         newsNoticeService.approval(id,auditState,auditIdea,getCurUserId(request));
+
+        if(auditState == 1){
+            // 同步系统消息状态
+            sysMessageService.modifyMessage(SysMessageEnums.NEWS_JION_CHECK.getCode(),id);
+        }
         return ResponseResult.ok();
     }
 

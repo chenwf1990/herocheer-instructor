@@ -187,4 +187,18 @@
             </if>
         </where>
     </select>
+
+    <!--通过主键修改数据-->
+    <update id="updateMessageByTypeAndOjbId" parameterType="map">
+        update sys_message
+        <set>
+            <if test="handleStatus != null">
+                handleStatus = #{handleStatus},
+            </if>
+            <if test="ReadStatus != null">
+                ReadStatus = #{ReadStatus},
+            </if>
+        </set>
+        where objectId = #{objectId} and messageCode in ( #{messageCode} )
+    </update>
 </mapper>

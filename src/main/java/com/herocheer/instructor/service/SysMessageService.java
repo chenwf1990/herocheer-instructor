@@ -50,4 +50,12 @@ public interface SysMessageService extends BaseService<SysMessage, Long> {
      * @return int
      */
     int countMessage();
+
+    /**
+     * 同步消息中心信息
+     *
+     * @param messageType id
+     * @param objId id
+     */
+    void modifyMessage(String messageType,Long objId);
 }

@@ -62,6 +62,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     private CourseTearcherService courseTearcherService;
     @Autowired
     private UserService userService;
+
     @Override
     public Page<CourseInfo> queryPage(CourseInfoQueryVo queryVo, Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
@@ -124,9 +125,6 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         courseInfo.setApprovalId(userEntity.getId());
         courseInfo.setApprovalBy(userEntity.getUserName());
         courseInfo.setApprovalTime(System.currentTimeMillis());
-
-        //同步消息中心状态
-
         return this.dao.update(courseInfo);
     }
 

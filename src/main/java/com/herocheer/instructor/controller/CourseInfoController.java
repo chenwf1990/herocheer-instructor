@@ -14,11 +14,13 @@ import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +47,9 @@ import java.util.List;
 public class CourseInfoController extends BaseController{
     @Resource
     private CourseInfoService courseInfoService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     @PostMapping("/queryPage")
     @ApiOperation("课程信息列表查询")
@@ -93,12 +98,19 @@ public class CourseInfoController extends BaseController{
     public ResponseResult update(@RequestBody CourseInfo courseInfo){
         courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.update(courseInfo);
+
+        // 
         return ResponseResult.isSuccess(count);
     }
     @PostMapping("/approval")
     @ApiOperation("课程审批")
     public ResponseResult approval(@RequestBody CourseApproval courseApproval,HttpServletRequest request){
         Integer count=courseInfoService.approval(courseApproval,getUser(request));
+
+        // 同步系统消息状态
+        if(courseApproval.getApprovalStatus() == 1){
+            sysMessageService.modifyMessage(SysMessageEnums.COURSE_CHECK.getCode(), courseApproval.getCourseId());
+        }
         return ResponseResult.isSuccess(count);
     }
 

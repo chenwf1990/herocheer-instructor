@@ -2,23 +2,35 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.dao.WorkingReplaceCardDao;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.domain.entity.WorkingReplaceCard;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
+import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
-import com.herocheer.instructor.enums.*;
+import com.herocheer.instructor.enums.ApprovalTypeEnums;
+import com.herocheer.instructor.enums.AuditStateEnums;
+import com.herocheer.instructor.enums.AuditStatusEnums;
+import com.herocheer.instructor.enums.ReissueCardEnums;
+import com.herocheer.instructor.enums.SignType;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.WorkingReplaceCardService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
+import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -94,7 +106,18 @@ public class WorkingReplaceCardServiceImpl extends BaseServiceImpl<WorkingReplac
         }
         workingReplaceCard.setType(type);
         workingReplaceCard.setApprovalStatus(AuditStateEnums.to_audit.getState());
-        return this.dao.insert(workingReplaceCard);
+
+        int count = this.dao.insert(workingReplaceCard);
+
+        // 采集系统消息
+        if(workingUserVo.getActivityType().equals(2)){
+            // 赛事活动
+            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_CARD.getText(),SysMessageEnums.MATCH_CARD.getType(),SysMessageEnums.MATCH_CARD.getCode(),workingReplaceCard.getId())));
+        }else {
+            // 驿站值班
+            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_CARD.getText(),SysMessageEnums.STATION_CARD.getType(),SysMessageEnums.STATION_CARD.getCode(),workingReplaceCard.getId())));
+        }
+        return count;
     }
 
     /**

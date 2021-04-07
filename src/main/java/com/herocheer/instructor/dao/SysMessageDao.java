@@ -38,4 +38,12 @@ public interface SysMessageDao extends BaseDao<SysMessage, Long> {
      * @return int
      */
     int countMessage(Map<String,Object> paramMap);
+
+    /**
+     * 同步消息中心
+     *
+     * @return int
+     */
+    int updateMessageByTypeAndOjbId(Map<String,Object> paramMap);
+
 }
