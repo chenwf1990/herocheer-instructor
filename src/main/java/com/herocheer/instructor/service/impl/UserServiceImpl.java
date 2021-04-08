@@ -21,6 +21,7 @@ import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.AreaPermissionVO;
 import com.herocheer.instructor.domain.vo.MemberVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
+import com.herocheer.instructor.domain.vo.TearcherVO;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
@@ -28,6 +29,7 @@ import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.enums.OperationConst;
 import com.herocheer.instructor.enums.UserTypeEnums;
+import com.herocheer.instructor.service.CourseTearcherService;
 import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysMenuService;
@@ -80,6 +82,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
     @Autowired
     private SysMenuService sysMenuService;
+
+    @Autowired
+    private CourseTearcherService courseTearcherService;
 
     /**
      * 检查账号
@@ -685,6 +690,15 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         infoVo.setInstructorFlag(instructorFlag);
         // 指导员头像
         infoVo.setHeadPic(instructor == null ? "" : instructor.getHeadPic());
+
+        // 判断是否是授课老师
+        log.debug("当前用户信息phone：{}",infoVo.getPhone());
+        if(org.springframework.util.StringUtils.hasText(infoVo.getPhone())){
+            List<TearcherVO> tearcherList = courseTearcherService.findCourseTearcherByPhone(infoVo.getPhone());
+            if(!CollectionUtils.isEmpty(tearcherList)){
+                infoVo.setTearchFlag(true);
+            }
+        }
         return infoVo;
     }
 

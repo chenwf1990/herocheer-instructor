@@ -35,4 +35,6 @@ public class UserInfoVo extends UserEntity {
     @ApiModelProperty("之前是否给过微信授权码")
     private Boolean codeFlag = true;
 
+    @ApiModelProperty("是否是授课老师")
+    private Boolean tearchFlag = false;
 }
