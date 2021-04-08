@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://xyaq.herocheer.com:6002/herocheer_instructor?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: xz107110
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    database: 4
+    port: 6379
+    timeout: 5000ms
+
+
+
+
+
