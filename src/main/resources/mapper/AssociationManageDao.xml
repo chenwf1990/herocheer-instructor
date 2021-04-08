@@ -231,13 +231,13 @@
         LEFT JOIN association_member b on a.id=b.associationId
         <where>
             <if test="areaCode != null">
-                and areaCode Like  concat(#{areaCode},'%')
+                and a.areaCode Like  concat(#{areaCode},'%')
             </if>
             <if test="name != null and name != ''">
-                and name like concat('%',#{name},'%')
+                and a.name like concat('%',#{name},'%')
             </if>
             <if test="type != null">
-                and type=#{type}
+                and a.type=#{type}
             </if>
         </where>
         GROUP BY a.id
