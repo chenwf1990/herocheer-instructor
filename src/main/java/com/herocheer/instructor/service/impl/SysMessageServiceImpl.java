@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.entity.SysMessage;
 import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.Map;
  */
 @Service
 @Transactional
+@Slf4j
 public class SysMessageServiceImpl extends BaseServiceImpl<SysMessageDao, SysMessage, Long> implements SysMessageService {
 
     /**
@@ -36,6 +38,7 @@ public class SysMessageServiceImpl extends BaseServiceImpl<SysMessageDao, SysMes
     public void  addMessage(SysMessageVO sysMessageVO) {
         SysMessage sysMessage = SysMessage.builder().build();
         BeanCopier.create(sysMessageVO.getClass(),sysMessage.getClass(),false).copy(sysMessageVO,sysMessage,null);
+        log.debug("系统消息:{}",sysMessage);
         this.insert(sysMessage);
     }
 
