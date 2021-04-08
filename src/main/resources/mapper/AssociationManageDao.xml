@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.AssociationManageDao">
+    <sql id="table_field">
+      id, name, type, principal, contactNumber, areaCode, areaName, address, longitude, latitude, imageUrl, description, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.AssociationManage">
+        insert into association_manage (
+    <trim suffixOverrides=",">
+        <if test="name != null">
+            name,
+        </if>
+        <if test="type != null">
+            type,
+        </if>
+        <if test="principal != null">
+            principal,
+        </if>
+        <if test="contactNumber != null">
+            contactNumber,
+        </if>
+        <if test="areaCode != null">
+            areaCode,
+        </if>
+        <if test="areaName != null">
+            areaName,
+        </if>
+        <if test="address != null">
+            address,
+        </if>
+        <if test="longitude != null">
+            longitude,
+        </if>
+        <if test="latitude != null">
+            latitude,
+        </if>
+        <if test="imageUrl != null">
+            imageUrl,
+        </if>
+        <if test="description != null">
+            description,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="name != null">
+            #{name},
+        </if>
+        <if test="type != null">
+            #{type},
+        </if>
+        <if test="principal != null">
+            #{principal},
+        </if>
+        <if test="contactNumber != null">
+            #{contactNumber},
+        </if>
+        <if test="areaCode != null">
+            #{areaCode},
+        </if>
+        <if test="areaName != null">
+            #{areaName},
+        </if>
+        <if test="address != null">
+            #{address},
+        </if>
+        <if test="longitude != null">
+            #{longitude},
+        </if>
+        <if test="latitude != null">
+            #{latitude},
+        </if>
+        <if test="imageUrl != null">
+            #{imageUrl},
+        </if>
+        <if test="description != null">
+            #{description},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from association_manage where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.AssociationManage">
+        update association_manage
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="principal != null">
+                principal = #{principal},
+            </if>
+            <if test="contactNumber != null">
+                contactNumber = #{contactNumber},
+            </if>
+            <if test="areaCode != null">
+                areaCode = #{areaCode},
+            </if>
+            <if test="areaName != null">
+                areaName = #{areaName},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="imageUrl != null">
+                imageUrl = #{imageUrl},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.AssociationManage">
+        select <include refid="table_field"/> from association_manage where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.AssociationManage">
+        select <include refid="table_field"/> from association_manage
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="principal != null">
+                and principal = #{principal}
+            </if>
+            <if test="contactNumber != null">
+                and contactNumber = #{contactNumber}
+            </if>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="imageUrl != null">
+                and imageUrl = #{imageUrl}
+            </if>
+            <if test="description != null">
+                and description = #{description}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from association_manage
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="principal != null">
+                and principal = #{principal}
+            </if>
+            <if test="contactNumber != null">
+                and contactNumber = #{contactNumber}
+            </if>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="imageUrl != null">
+                and imageUrl = #{imageUrl}
+            </if>
+            <if test="description != null">
+                and description = #{description}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="findList" parameterType="com.herocheer.instructor.domain.vo.AssociationManageQueryVo"
+            resultType="com.herocheer.instructor.domain.vo.AssociationManageVo">
+        SELECT
+            a.id, a.name, a.type, a.principal, a.contactNumber, a.areaCode, a.areaName,
+            a.address, a.longitude, a.latitude, a.imageUrl,a.createdId,a.createdBy,
+            a.createdTime, a.updateId, a.updateBy, a.updateTime,count(b.id) AS 'membersNumber'
+        from association_manage a
+        LEFT JOIN association_member b on a.id=b.associationId
+        <where>
+            <if test="areaCode != null">
+                and areaCode Like  concat(#{areaCode},'%')
+            </if>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="type != null">
+                and type=#{type}
+            </if>
+        </where>
+        GROUP BY a.id
+        order by a.createdTime desc
+    </select>
+
+
+    <select id="getAssociationDict" resultType="com.herocheer.instructor.domain.vo.AssociationManageVo">
+        select  id , name from association_manage
+        order by createdTime desc
+    </select>
+</mapper>

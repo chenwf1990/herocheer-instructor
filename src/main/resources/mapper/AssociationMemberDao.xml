@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.AssociationMemberDao">
+    <sql id="table_field">
+      id, associationId, associationName, name, gender, licenseNumber, contactNumber, jobTitle, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.AssociationMember">
+        insert into association_member (
+    <trim suffixOverrides=",">
+        <if test="associationId != null">
+            associationId,
+        </if>
+        <if test="associationName != null">
+            associationName,
+        </if>
+        <if test="name != null">
+            name,
+        </if>
+        <if test="gender != null">
+            gender,
+        </if>
+        <if test="licenseNumber != null">
+            licenseNumber,
+        </if>
+        <if test="contactNumber != null">
+            contactNumber,
+        </if>
+        <if test="jobTitle != null">
+            jobTitle,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="associationId != null">
+            #{associationId},
+        </if>
+        <if test="associationName != null">
+            #{associationName},
+        </if>
+        <if test="name != null">
+            #{name},
+        </if>
+        <if test="gender != null">
+            #{gender},
+        </if>
+        <if test="licenseNumber != null">
+            #{licenseNumber},
+        </if>
+        <if test="contactNumber != null">
+            #{contactNumber},
+        </if>
+        <if test="jobTitle != null">
+            #{jobTitle},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from association_member where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.AssociationMember">
+        update association_member
+        <set>
+            <if test="associationId != null">
+                associationId = #{associationId},
+            </if>
+            <if test="associationName != null">
+                associationName = #{associationName},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="licenseNumber != null">
+                licenseNumber = #{licenseNumber},
+            </if>
+            <if test="contactNumber != null">
+                contactNumber = #{contactNumber},
+            </if>
+            <if test="jobTitle != null">
+                jobTitle = #{jobTitle},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.AssociationMember">
+        select <include refid="table_field"/> from association_member where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.AssociationMember">
+        select <include refid="table_field"/> from association_member
+        <where>
+            <if test="associationId != null">
+                and associationId = #{associationId}
+            </if>
+            <if test="associationName != null">
+                and associationName = #{associationName}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="licenseNumber != null">
+                and licenseNumber = #{licenseNumber}
+            </if>
+            <if test="contactNumber != null">
+                and contactNumber = #{contactNumber}
+            </if>
+            <if test="jobTitle != null">
+                and jobTitle = #{jobTitle}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from association_member
+        <where>
+            <if test="associationId != null">
+                and associationId = #{associationId}
+            </if>
+            <if test="associationName != null">
+                and associationName = #{associationName}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="licenseNumber != null">
+                and licenseNumber = #{licenseNumber}
+            </if>
+            <if test="contactNumber != null">
+                and contactNumber = #{contactNumber}
+            </if>
+            <if test="jobTitle != null">
+                and jobTitle = #{jobTitle}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+
+    <select id="findList" parameterType="com.herocheer.instructor.domain.vo.AssociationMemberQueryVo"
+        resultType="com.herocheer.instructor.domain.entity.AssociationMember">
+        select
+            id, associationId, associationName, name, gender, licenseNumber, contactNumber,
+            jobTitle, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+        from association_member
+        <where>
+            <if test="associationId!=null">
+                and associationId=#{associationId}
+            </if>
+            <if test="name!=null and name !=''">
+                and `name` like concat('%',#{name},'%')
+            </if>
+            <if test="contactNumber!=null and contactNumber!=''">
+                and contactNumber=#{contactNumber}
+            </if>
+        </where>
+    </select>
+</mapper>
