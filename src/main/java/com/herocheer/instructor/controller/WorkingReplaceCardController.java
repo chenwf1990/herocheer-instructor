@@ -3,15 +3,24 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.WorkingReplaceCard;
+import com.herocheer.instructor.enums.SysMessageEnums;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.instructor.service.WorkingReplaceCardService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,6 +35,8 @@ import java.util.List;
 public class WorkingReplaceCardController extends BaseController{
     @Resource
     private WorkingReplaceCardService workingReplaceCardService;
+    @Autowired
+    private SysMessageService sysMessageService;
 
     @GetMapping("/getReplaceCardList")
     @ApiOperation("获取补卡列表")
@@ -49,6 +60,9 @@ public class WorkingReplaceCardController extends BaseController{
                                                        HttpServletRequest request){
         UserEntity userEntity = getUser(request);
         workingReplaceCardService.approval(id,approvalStatus,approvalComments,userEntity);
+
+        // 同步系统消息状态(不区别审核通过和驳回) 同一张表的ID不会重复
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.MATCH_CARD.getCode(),SysMessageEnums.STATION_CARD.getCode()), id,true,true);
         return ResponseResult.ok();
     }
 

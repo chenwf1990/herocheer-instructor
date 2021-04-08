@@ -1,8 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -62,5 +62,4 @@ public class CourseInfo extends BaseEntity {
     private Long approvalTime;
     @ApiModelProperty("审批人id")
     private Long approvalId;
-
-}
+    }

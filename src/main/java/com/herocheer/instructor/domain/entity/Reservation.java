@@ -1,8 +1,14 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author chenwf
@@ -10,7 +16,13 @@ import io.swagger.annotations.ApiModelProperty;
  * @date 2021-02-24 16:53:46
  * @company 厦门熙重电子科技有限公司
  */
+@ApiModel(description = "预约记录表")
+@SuperBuilder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class Reservation extends BaseEntity {
     @ApiModelProperty("关联预约主表id")   
     private Long relevanceId;
@@ -43,4 +55,10 @@ public class Reservation extends BaseEntity {
     @ApiModelProperty("状态 (0.已预约 1.取消预约 2.活动撤销)")
     private Integer status;
 
+    @ApiModelProperty("签到时间")
+    private Long signTime;
+    @ApiModelProperty("签到类型：0-线下签到，1-线上签到")
+    private Integer signType;
+    @ApiModelProperty("签到状态：0-未签到，1-已签到，2-签到失败")
+    private Integer signStatus;
 }

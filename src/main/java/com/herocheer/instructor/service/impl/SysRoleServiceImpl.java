@@ -92,6 +92,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
         return sysRole;
     }
 
+
     private static Map hashMap = new ConcurrentHashMap<String, String>();
 
     static {

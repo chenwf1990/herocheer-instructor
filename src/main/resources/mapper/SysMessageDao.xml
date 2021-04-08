@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.SysMessageDao">
+
+    <sql id="table_field">
+      ID, messageContext, messageType, handleStatus, objectId, ReadStatus, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime,messageCode
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.SysMessage">
+        insert into sys_message (
+        <trim suffixOverrides=",">
+            <if test="messageContext != null">
+                messageContext,
+            </if>
+            <if test="messageType != null">
+                messageType,
+            </if>
+            <if test="handleStatus != null">
+                handleStatus,
+            </if>
+            <if test="objectId != null">
+                objectId,
+            </if>
+            <if test="ReadStatus != null">
+                ReadStatus,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="messageCode != null">
+                messageCode,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="messageContext != null">
+                #{messageContext},
+            </if>
+            <if test="messageType != null">
+                #{messageType},
+            </if>
+            <if test="handleStatus != null">
+                #{handleStatus},
+            </if>
+            <if test="objectId != null">
+                #{objectId},
+            </if>
+            <if test="ReadStatus != null">
+                #{ReadStatus},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <if test="messageCode != null">
+                #{messageCode},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from sys_message where ID = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.SysMessage">
+        update sys_message
+        <set>
+            <if test="messageContext != null">
+                messageContext = #{messageContext},
+            </if>
+            <if test="messageType != null">
+                messageType = #{messageType},
+            </if>
+            <if test="handleStatus != null">
+                handleStatus = #{handleStatus},
+            </if>
+            <if test="objectId != null">
+                objectId = #{objectId},
+            </if>
+            <if test="ReadStatus != null">
+                ReadStatus = #{ReadStatus},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="messageCode != null">
+                messageCode = #{messageCode},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where ID = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.SysMessage">
+        select
+        <include refid="table_field"/>
+        from sys_message where ID = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysMessage">
+        select
+        <include refid="table_field"/>
+        from sys_message
+        <where>
+            <if test="ID != null">
+                and ID = #{ID}
+            </if>
+            <if test="messageContext != null">
+                and messageContext = #{messageContext}
+            </if>
+            <if test="messageType != null">
+                and messageType = #{messageType}
+            </if>
+            <if test="handleStatus != null">
+                and handleStatus = #{handleStatus}
+            </if>
+            <if test="objectId != null">
+                and objectId = #{objectId}
+            </if>
+            <if test="ReadStatus != null">
+                and ReadStatus = #{ReadStatus}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!--通过主键修改数据-->
+    <update id="updateMessageStatusById" parameterType="map">
+        update sys_message
+        <set>
+            <if test="handleStatus != null">
+                handleStatus = #{handleStatus},
+            </if>
+            <if test="ReadStatus != null">
+                ReadStatus = #{ReadStatus},
+            </if>
+        </set>
+        where ID = #{id}
+    </update>
+
+    <!--查询指定行数据-->
+    <select id="selectMessageByPage" parameterType="com.herocheer.instructor.domain.vo.SysMessageVO" resultType="com.herocheer.instructor.domain.entity.SysMessage">
+        select
+        <include refid="table_field"/>
+        from sys_message
+        <where>
+            <if test="messageContext != null">
+                and messageContext = #{messageContext}
+            </if>
+            <if test="messageType != null">
+                and messageType = #{messageType}
+            </if>
+            <if test="handleStatus != null">
+                and handleStatus = #{handleStatus}
+            </if>
+            <if test="objectId != null">
+                and objectId = #{objectId}
+            </if>
+            <if test="ReadStatus != null">
+                and ReadStatus = #{ReadStatus}
+            </if>
+            <if test="messageCode != null">
+                and messageCode = #{messageCode}
+            </if>
+        </where>
+        ORDER BY ReadStatus ASC,createdTime DESC
+    </select>
+
+    <!--统计消息-->
+    <select id="countMessage" parameterType="map" resultType="int">
+        select count(1) from sys_message
+        <where>
+            <if test="ReadStatus != null">
+                and ReadStatus = #{ReadStatus}
+            </if>
+        </where>
+    </select>
+
+    <!--通过主键修改数据-->
+    <update id="updateMessageByTypeAndOjbId" parameterType="map">
+        update sys_message
+        <set>
+            <if test="handleStatus != null">
+                handleStatus = #{handleStatus},
+            </if>
+            <if test="ReadStatus != null">
+                ReadStatus = #{ReadStatus},
+            </if>
+        </set>
+        where objectId = #{objectId} and messageCode in <foreach item="messageCode" index="index" collection="messageCode" open="(" separator="," close=")">#{messageCode} </foreach>
+    </update>
+</mapper>

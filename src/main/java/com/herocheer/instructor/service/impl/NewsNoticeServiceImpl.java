@@ -2,15 +2,19 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.dao.NewsNoticeDao;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
 import com.herocheer.instructor.domain.vo.NewsQueryVo;
+import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.enums.AuditStateEnums;
 import com.herocheer.instructor.enums.AuditUnitEnums;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.NewsNoticeLogService;
 import com.herocheer.instructor.service.NewsNoticeService;
 import com.herocheer.instructor.service.SysRoleService;
+import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +122,9 @@ public class NewsNoticeServiceImpl extends BaseServiceImpl<NewsNoticeDao, NewsNo
     @Transactional(rollbackFor = Exception.class)
     public long addNews(NewsNotice newsNotice) {
         long count = this.dao.insert(newsNotice);
+
+        // 系统消息采集
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.NEWS_JION_CHECK.getText(),SysMessageEnums.NEWS_JION_CHECK.getType(),SysMessageEnums.NEWS_JION_CHECK.getCode(),newsNotice.getId())));
         return count;
     }
 

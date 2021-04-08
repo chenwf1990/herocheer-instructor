@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ReservationDao">
     <sql id="table_field">
-      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone,
+      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone, signTime, signType, signStatus,
       <if test="queryType==1">
           case
           when `status`=2 then 0
@@ -63,6 +63,15 @@
         <if test="status != null">
             status,
         </if>
+        <if test="signTime != null">
+            signTime,
+        </if>
+        <if test="signType != null">
+            signType,
+        </if>
+        <if test="signStatus != null">
+            signStatus,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -111,6 +120,15 @@
         </if>
         <if test="status != null">
             #{status},
+        </if>
+        <if test="signTime != null">
+            #{signTime},
+        </if>
+        <if test="signType != null">
+            #{signType},
+        </if>
+        <if test="signStatus != null">
+            #{signStatus},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -170,6 +188,15 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="signTime != null">
+                signTime = #{signTime},
+            </if>
+            <if test="signType != null">
+                signType = #{signType},
+            </if>
+            <if test="signStatus != null">
+                signStatus = #{signStatus},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -295,7 +322,7 @@
         select <include refid="table_field"/> from reservation
         <where>
             <if test="title!=null and title!=''">
-                and title liek concat('%',#{title},'%')
+                and title like concat('%',#{title},'%')
             </if>
             <if test="type!=null">
                 and `type` = #{type}
@@ -333,5 +360,31 @@
     <select id="findReservationOpenid" resultType="java.lang.String">
         SELECT u.openid FROM `reservation` r LEFT JOIN `user` u on r.userId=u.id where r.relevanceId=#{relevanceId}
         and r.status=0 and r.type=#{type}
+    </select>
+
+    <!-- 签到信息列表 -->
+    <select id="selectSignInfoByPage" resultType="com.herocheer.instructor.domain.entity.Reservation" parameterType="com.herocheer.instructor.domain.vo.SignInfoVO">
+        select <include refid="table_field"/> from reservation
+        <where>
+            <if test="type != null">
+                and `type` = #{type}
+            </if>
+            <if test="beginTime != null">
+                and createdTime <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                and createdTime <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="relevanceId != null">
+                and relevanceId = #{relevanceId}
+            </if>
+            <if test="signType != null and signType !=2">
+                and signType = #{signType}
+            </if>
+            <if test="signStatus != null">
+                and signStatus = #{signStatus}
+            </if>
+        </where>
+        order by signTime desc
     </select>
 </mapper>

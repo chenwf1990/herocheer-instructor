@@ -3,15 +3,13 @@ package com.herocheer.instructor.aspect;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.alibaba.fastjson.JSON;
 import com.herocheer.instructor.domain.vo.SysOperationLogVO;
-import com.herocheer.instructor.service.SysOperationLogService;
 import com.herocheer.instructor.utils.IPUtil;
+import com.herocheer.instructor.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -33,12 +31,6 @@ import java.util.List;
 @Component
 @Slf4j
 public class SysLogAspect {
-
-    @Autowired
-    private SysOperationLogService sysOperationLogService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     /**
      * 正常返回通知，拦截用户操作日志，连接点正常执行完成后执行， 如果连接点抛出异常，则不会执行
@@ -84,10 +76,9 @@ public class SysLogAspect {
             sysOperationLog.setUri(request.getMethod() +" " +request.getRequestURI()); // 请求URI
             sysOperationLog.setIp(IPUtil.getRealIp(request)); // 请求IP
             sysOperationLog.setIp(ServletUtil.getClientIP(request)); // 请求IP
+
             // 异步解耦
-            if (applicationContext != null) {
-                applicationContext.publishEvent(new SysLogEvent(sysOperationLog));
-            }
+            SpringUtil.publishEvent(new SysLogEvent(sysOperationLog));
         } catch (Exception e) {
             log.error("系统报错：",e);
         }

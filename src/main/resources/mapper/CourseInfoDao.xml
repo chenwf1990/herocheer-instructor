@@ -516,6 +516,10 @@
                 and (signStartTime between #{signStartTime} and #{signEndTime} or
                      signEndTime between #{signStartTime} and #{signEndTime})
             </if>
+
+            <if test="lecturerTeacherId != null and lecturerTeacherId !='' ">
+                and lecturerTeacherId=#{lecturerTeacherId}
+            </if>
         </where>
         order by placedTop DESC,createdTime DESC
     </select>

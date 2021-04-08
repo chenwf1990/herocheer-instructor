@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.CourseTearcherDao">
+
+    <sql id="table_field">
+      id, tearcherName, sex, phone, cardType, cardNo, guideProject, remark, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime,certificateGrade
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.CourseTearcher">
+        insert into course_tearcher (
+        <trim suffixOverrides=",">
+            <if test="tearcherName != null">
+                tearcherName,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="cardType != null">
+                cardType,
+            </if>
+            <if test="cardNo != null">
+                cardNo,
+            </if>
+            <if test="guideProject != null">
+                guideProject,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="certificateGrade != null">
+                certificateGrade,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="tearcherName != null">
+                #{tearcherName},
+            </if>
+            <if test="sex != null">
+                #{sex},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="cardType != null">
+                #{cardType},
+            </if>
+            <if test="cardNo != null">
+                #{cardNo},
+            </if>
+            <if test="guideProject != null">
+                #{guideProject},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="certificateGrade != null">
+                #{certificateGrade},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from course_tearcher where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.CourseTearcher">
+        update course_tearcher
+        <set>
+            <if test="tearcherName != null">
+                tearcherName = #{tearcherName},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="cardType != null">
+                cardType = #{cardType},
+            </if>
+            <if test="cardNo != null">
+                cardNo = #{cardNo},
+            </if>
+            <if test="guideProject != null">
+                guideProject = #{guideProject},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="certificateGrade != null">
+                certificateGrade = #{certificateGrade},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourseTearcher">
+        select
+        <include refid="table_field"/>
+        from course_tearcher where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.CourseTearcher">
+        select
+        <include refid="table_field"/>
+        from course_tearcher
+        <where>
+            <if test="tearcherName != null">
+                and tearcherName like concat('%',#{tearcherName},'%')
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="cardType != null">
+                and cardType = #{cardType}
+            </if>
+            <if test="cardNo != null">
+                and cardNo = #{cardNo}
+            </if>
+            <if test="guideProject != null">
+                and guideProject = #{guideProject}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!--列表筛选-->
+    <select id="selectTearcherByPage" parameterType="com.herocheer.instructor.domain.vo.CourseTearcherVO" resultType="com.herocheer.instructor.domain.entity.CourseTearcher">
+        select
+        <include refid="table_field"/>
+        from course_tearcher
+        <where>
+            <if test="tearcherName != null">
+                and tearcherName like concat('%',#{tearcherName},'%')
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="cardType != null">
+                and cardType = #{cardType}
+            </if>
+            <if test="cardNo != null">
+                and cardNo = #{cardNo}
+            </if>
+            <if test="guideProject != null">
+                and guideProject = #{guideProject}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and createdTime >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and createdTime &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+
+    <!--列表筛选-->
+    <select id="selectCourseTearcher" parameterType="map" resultType="com.herocheer.instructor.domain.vo.TearcherVO">
+        select
+        <include refid="table_field"/>
+        from course_tearcher
+        <where>
+            <if test="tearcherName != null">
+                and tearcherName like concat('%',#{tearcherName},'%')
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="cardType != null">
+                and cardType = #{cardType}
+            </if>
+            <if test="cardNo != null">
+                and cardNo = #{cardNo}
+            </if>
+        </where>
+    </select>
+</mapper>

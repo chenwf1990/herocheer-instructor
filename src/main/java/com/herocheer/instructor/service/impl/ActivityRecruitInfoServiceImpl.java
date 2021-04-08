@@ -5,6 +5,7 @@ import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.dao.ActivityRecruitInfoDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitApproval;
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
@@ -14,10 +15,12 @@ import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.ApplicationListVo;
+import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.RecruitStateEnums;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.ActivityRecruitApprovalService;
 import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
@@ -26,6 +29,7 @@ import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.utils.DateUtil;
+import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,6 +138,16 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             activityRecruitInfoVo.setApprovalStatus(ActivityApprovalStateEnums.PENDING.getState());
         }
         Integer count=this.dao.insert(activityRecruitInfoVo);
+
+        // 采集系统消息
+        if(activityRecruitInfoVo.getRecruitType().equals(2)){
+            // 赛事活动招募
+            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_JI0N_CHECK.getText(),SysMessageEnums.MATCH_JI0N_CHECK.getType(), SysMessageEnums.MATCH_JI0N_CHECK.getCode(),activityRecruitInfoVo.getId())));
+        }else {
+            //  驿站招募
+            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_CHECK.getText(),SysMessageEnums.STATION_CHECK.getType(), SysMessageEnums.STATION_CHECK.getCode(),activityRecruitInfoVo.getId())));
+        }
+
         //保存赛事招募明细
         this.saveMatchDetail(activityRecruitInfoVo);
         return count;

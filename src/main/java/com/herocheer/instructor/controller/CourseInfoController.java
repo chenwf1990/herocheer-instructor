@@ -1,16 +1,26 @@
 package com.herocheer.instructor.controller;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
-import com.herocheer.instructor.enums.CourseApprovalState;
+import com.herocheer.instructor.domain.vo.SysMessageVO;
+import com.herocheer.instructor.enums.InsuranceConst;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.service.SysMessageService;
+import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,6 +48,9 @@ import java.util.List;
 public class CourseInfoController extends BaseController{
     @Resource
     private CourseInfoService courseInfoService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     @PostMapping("/queryPage")
     @ApiOperation("课程信息列表查询")
@@ -56,8 +72,8 @@ public class CourseInfoController extends BaseController{
 
     @GetMapping("/get")
     @ApiOperation("根据id查询课程详情")
-    public ResponseResult<CourseInfo> get(@ApiParam("招募信息id") @RequestParam Long id){
-        return ResponseResult.ok(courseInfoService.get(id));
+    public ResponseResult<CourseInfo> get(@ApiParam("招募信息id") @RequestParam Long id,@ApiParam("扫二维码标识") @RequestParam(value="flag",required=false) String flag,HttpServletRequest request){
+        return ResponseResult.ok(courseInfoService.findCourseInfoById(id,flag,getCurUserId(request)));
     }
 
     @GetMapping("/approval/record")
@@ -72,6 +88,9 @@ public class CourseInfoController extends BaseController{
         courseInfo.setSignNumber(0);
         courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.insert(courseInfo);
+
+        // 采集系统消息
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getType(),SysMessageEnums.COURSE_CHECK.getCode(),courseInfo.getId())));
         return ResponseResult.isSuccess(count);
     }
 
@@ -80,12 +99,18 @@ public class CourseInfoController extends BaseController{
     public ResponseResult update(@RequestBody CourseInfo courseInfo){
         courseInfo=courseInfoService.verificationDate(courseInfo);
         Integer count=courseInfoService.update(courseInfo);
+
+        // 同步系统消息状态(不区别审核通过和驳回)
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseInfo.getId(),false,false);
         return ResponseResult.isSuccess(count);
     }
     @PostMapping("/approval")
     @ApiOperation("课程审批")
     public ResponseResult approval(@RequestBody CourseApproval courseApproval,HttpServletRequest request){
         Integer count=courseInfoService.approval(courseApproval,getUser(request));
+
+        // 同步系统消息状态(不区别审核通过和驳回)
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseApproval.getCourseId(),true,true);
         return ResponseResult.isSuccess(count);
     }
 
@@ -95,4 +120,39 @@ public class CourseInfoController extends BaseController{
         return ResponseResult.isSuccess(courseInfoService.delete(id));
     }
 
+
+    /**
+     * 获取二维码
+     *
+     * @param id id
+     * @return {@link ResponseResult}
+     */
+    @GetMapping("/QrCode")
+    @ApiOperation("生产二维码")
+    public void fetchQrCode(@ApiParam("课程id") @RequestParam Long id, HttpServletResponse response) throws IOException {
+        String url = StrUtil.format(InsuranceConst.QRCODE_URL,id);
+
+        QrConfig config = new QrConfig(300, 300);
+        // 设置边距，既二维码和背景之间的边距
+        config.setMargin(0);
+        // 高纠错级别
+        config.setErrorCorrection(ErrorCorrectionLevel.H);
+        // 生成二维码到文件，也可以到流
+        QrCodeUtil.generate(url, config, "PNG",response.getOutputStream());
+    }
+
+
+    /**
+     * 培训任务
+     *
+     * @param queryVo 查询签证官
+     * @param request 请求
+     * @return {@link ResponseResult<Page<CourseInfo>>}
+     */
+    @PostMapping("/task/page")
+    @ApiOperation("培训任务")
+    public ResponseResult<Page<CourseInfo>> fetchtaskByPage(@RequestBody CourseInfoQueryVo queryVo, HttpServletRequest request){
+        Page<CourseInfo> page = courseInfoService.findtaskByPage(queryVo,getUser(request));
+        return ResponseResult.ok(page);
+    }
 }

@@ -4,26 +4,33 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.dao.InstructorApplyAuditLogDao;
 import com.herocheer.instructor.dao.InstructorApplyDao;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.enums.AuditStateEnums;
 import com.herocheer.instructor.enums.AuditUnitEnums;
 import com.herocheer.instructor.enums.ChannelEnums;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.InstructorApplyAuditLogService;
 import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.instructor.service.SysRoleService;
+import com.herocheer.instructor.utils.SpringUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +52,9 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     private InstructorApplyAuditLogService instructorApplyAuditLogService;
     @Resource
     private SysRoleService sysRoleService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     /**
      * 指导员申请单列表查询
@@ -113,6 +123,10 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         if(ChannelEnums.imp.getType() != instructorApply.getChannel() || instructorApply.getId() != null) {
             this.dao.insert(instructorApply);
         }
+
+        // 采集系统消息
+        log.debug("指导员认证系统消息采集");
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.INSTRUCTOR_AUTH.getText(),SysMessageEnums.INSTRUCTOR_AUTH.getType(),SysMessageEnums.INSTRUCTOR_AUTH.getCode(),instructorApply.getId())));
         return instructorApply;
     }
 
@@ -142,6 +156,10 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         }
         instructorApply.setAuditState(AuditStateEnums.to_audit.getState());
         int count = this.dao.update(instructorApply);
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.INSTRUCTOR_AUTH.getCode()), instructorApply.getId(),false,false);
+
         //写入日志
         insertLog(instructorApply);
         return count;

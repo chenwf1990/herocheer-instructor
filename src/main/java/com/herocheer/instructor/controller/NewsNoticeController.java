@@ -5,11 +5,14 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.NewsNotice;
 import com.herocheer.instructor.domain.entity.NewsNoticeLog;
 import com.herocheer.instructor.domain.vo.NewsQueryVo;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.NewsNoticeService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,6 +38,9 @@ import java.util.List;
 public class NewsNoticeController extends BaseController{
     @Resource
     private NewsNoticeService newsNoticeService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     @PostMapping("/queryPageList")
     @ApiOperation("新闻列表查询")
@@ -60,6 +67,9 @@ public class NewsNoticeController extends BaseController{
     @ApiOperation("编辑新闻活动")
     public ResponseResult update(@RequestBody NewsNotice newsNotice){
         newsNoticeService.updateNewsNotice(newsNotice);
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.NEWS_JION_CHECK.getCode()),newsNotice.getId(),false,false);
         return ResponseResult.ok();
     }
 
@@ -87,6 +97,9 @@ public class NewsNoticeController extends BaseController{
                                    @ApiParam("审核意见") @RequestParam(required = false) String auditIdea,
                                    HttpServletRequest request){
         newsNoticeService.approval(id,auditState,auditIdea,getCurUserId(request));
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.NEWS_JION_CHECK.getCode()),id,true,true);
         return ResponseResult.ok();
     }
 

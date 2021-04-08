@@ -14,12 +14,20 @@ import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
-import com.herocheer.instructor.domain.entity.*;
+import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
+import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
+import com.herocheer.instructor.domain.entity.CourierStation;
+import com.herocheer.instructor.domain.entity.Instructor;
+import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.entity.ServiceHours;
+import com.herocheer.instructor.domain.entity.WorkingReplaceCard;
+import com.herocheer.instructor.domain.entity.WorkingSchedule;
+import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.domain.vo.ActivityReservationVo;
 import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
-import com.herocheer.instructor.domain.vo.WorkingUserInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingUserVo;
 import com.herocheer.instructor.domain.vo.WorkingVo;
 import com.herocheer.instructor.enums.AuditStatusEnums;
@@ -27,7 +35,18 @@ import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.enums.ScheduleUserTypeEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
-import com.herocheer.instructor.service.*;
+import com.herocheer.instructor.service.ActivityRecruitDetailService;
+import com.herocheer.instructor.service.ActivityRecruitInfoService;
+import com.herocheer.instructor.service.CommonService;
+import com.herocheer.instructor.service.CourierStationService;
+import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.ReservationService;
+import com.herocheer.instructor.service.ServiceHoursService;
+import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.service.WorkingReplaceCardService;
+import com.herocheer.instructor.service.WorkingScheduleService;
+import com.herocheer.instructor.service.WorkingScheduleUserService;
+import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.instructor.utils.ExcelUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -577,7 +596,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             activityRecruitDetail=activityRecruitDetailService.get(Long.valueOf(detailId));
             if(activityRecruitDetail!=null){
                 if(activityRecruitDetail.getHadRecruitNumber()>=activityRecruitDetail.getRecruitNumber()){
-                    throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约人数已满!");
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"抱歉，已达到报名人数上限，无法报名");
                 }
                 if(!activityRecruitDetail.getServiceDate().equals(reservationVo.getReservationDate())){
                     throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,预约日期和预约时段不匹配!");

@@ -9,12 +9,15 @@ import com.herocheer.instructor.domain.vo.ActivityRecruitDetailVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.ApplicationListVo;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -41,6 +45,9 @@ public class ActivityRecruitInfoController extends BaseController{
     private ActivityRecruitInfoService activityRecruitInfoService;
     @Resource
     private RedisClient redisClient;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     @PostMapping("/queryPage")
     @ApiOperation("招募信息查询")
@@ -82,6 +89,9 @@ public class ActivityRecruitInfoController extends BaseController{
     @ApiOperation("更新招募信息")
     public ResponseResult update(@RequestBody ActivityRecruitInfoVo activityRecruitInfoVo){
         Integer count=activityRecruitInfoService.updateActivityRecruitInfo(activityRecruitInfoVo);
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_CHECK.getCode(),SysMessageEnums.MATCH_JI0N_CHECK.getCode()), activityRecruitInfoVo.getId(),false,false);
         return ResponseResult.isSuccess(count);
     }
 
@@ -102,6 +112,9 @@ public class ActivityRecruitInfoController extends BaseController{
     public ResponseResult approval(HttpServletRequest request,@RequestBody ActivityRecruitApproval activityRecruitApproval){
         reqLimitByUserId(request,"ActivityRecruitInfo_approval",1);
         Integer count=activityRecruitInfoService.approval(activityRecruitApproval,getUser(request));
+
+        // 同步系统消息状态
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_CHECK.getCode(),SysMessageEnums.MATCH_JI0N_CHECK.getCode()), activityRecruitApproval.getRecruitId(),true,true);
         return ResponseResult.isSuccess(count);
     }
 
