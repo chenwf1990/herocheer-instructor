@@ -65,7 +65,7 @@ public class AssociationManageServiceImpl extends BaseServiceImpl<AssociationMan
         map.put("name",associationManage.getName());
         List<AssociationManage> list=this.dao.findByLimit(map);
         if(!list.isEmpty()){
-            if(list.size()>2){
+            if(list.size()>1){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "协会名重复!");
             }else if(list.size()==1 && !associationManage.getId().equals(list.get(0).getId())){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "协会名重复!");
