@@ -47,12 +47,17 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +91,23 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Autowired
     private CourseTearcherService courseTearcherService;
 
+    private ThreadPoolExecutor threadPoolExecutor;
+
+    // 初始化线程池
+    @PostConstruct
+    void init() {
+        if (threadPoolExecutor == null) {
+            threadPoolExecutor = new ThreadPoolExecutor(1, 1, 10L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(2000));
+        }
+    }
+
+    @PreDestroy
+    void destroy() {
+        if (threadPoolExecutor != null) {
+            threadPoolExecutor.shutdown();
+            threadPoolExecutor = null;
+        }
+    }
     /**
      * 检查账号
      *
@@ -710,7 +732,16 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @Override
     public void asynUserInfo2Ijianshen(JSONObject user, User sysUser) {
-        //  封装参数，千万不要替换为Map与HashMap，否则参数无法传递
+        threadPoolExecutor.execute(() -> sendUserInfoToIJianShen(user, sysUser));
+    }
+
+    /**
+     * 用户信息发送给I健身
+     *
+     * @param user    用户
+     * @param sysUser 系统用户
+     */
+    private void sendUserInfoToIJianShen(JSONObject user, User sysUser) {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("ixmUserId",sysUser.getIxmUserId());
         paramMap.put("ixmUserName",sysUser.getIxmUserName());

@@ -117,4 +117,11 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return
      */
     List<String> findSignRecord(Long activityId);
+
+    /**
+     * 定时处理时长审核数据
+     *
+     * @return {@link List<WorkingSchedulsUserVo>}
+     */
+    List<WorkingSchedulsUserVo> findWorkingUserByCheck();
 }

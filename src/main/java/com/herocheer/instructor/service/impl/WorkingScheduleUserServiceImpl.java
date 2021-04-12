@@ -20,18 +20,22 @@ import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.enums.SignStatusEnums;
 import com.herocheer.instructor.enums.SignType;
+import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.CommonService;
 import com.herocheer.instructor.service.CourierStationService;
+import com.herocheer.instructor.service.SysMessageService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +59,9 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     private CourierStationService courierStationService;
     @Resource
     private WorkingSignRecordService workingSignRecordService;
+
+    @Autowired
+    private SysMessageService sysMessageService;
 
     /**
      * @param workingScheduleUserQueryVo
@@ -269,14 +276,9 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         scheduleUser.setStatus(AuditStatusEnums.to_pass.getState());
         int count = this.dao.update(scheduleUser);
 
-        // 采集系统消息
-        /*if(workingUserVo.getActivityType().equals(2)){
-            // 赛事活动
-            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_TIME.getText(),SysMessageEnums.MATCH_TIME.getType(),SysMessageEnums.MATCH_TIME.getCode(),scheduleUser.getId())));
-        }else {
-            // 驿站值班
-            SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_TIME.getText(),SysMessageEnums.STATION_TIME.getType(),SysMessageEnums.STATION_TIME.getCode(),scheduleUser.getId())));
-        }*/
+
+        // 同步系统消息状态(不区别审核通过和驳回) 同一张表的ID不会重复
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_TIME.getCode(),SysMessageEnums.MATCH_TIME.getCode()), scheduleUser.getId(),true,true);
         return count;
     }
 
@@ -328,5 +330,15 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     @Override
     public List<String> findSignRecord(Long activityId) {
         return this.dao.findSignRecord(activityId);
+    }
+
+    /**
+     * 定时处理时长审核数据
+     *
+     * @return {@link List<WorkingSchedulsUserVo>}
+     */
+    @Override
+    public List<WorkingSchedulsUserVo> findWorkingUserByCheck(){
+        return this.dao.selectWorkingUserByCheck(new HashMap<>());
     }
 }
