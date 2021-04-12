@@ -333,7 +333,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     }
 
     /**
-     * 定时处理时长审核数据
+     * 定时处理时长审核通知
      *
      * @return {@link List<WorkingSchedulsUserVo>}
      */

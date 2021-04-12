@@ -60,4 +60,13 @@ public interface SysMessageService extends BaseService<SysMessage, Long> {
      * @param objId id
      */
     void modifyMessage(List<String> messageCode, Long objId, Boolean handleStatus, Boolean readStatus);
+
+    /**
+     * 找到一个系统消息
+     *
+     * @param messageCode 消息代码
+     * @param objId       obj id
+     * @return {@link SysMessage}
+     */
+    SysMessage findMessageOne(List<String> messageCode, Long objId);
 }

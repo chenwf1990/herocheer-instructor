@@ -2,6 +2,7 @@ package com.herocheer.instructor.config;
 
 import com.alibaba.fastjson.JSON;
 import com.herocheer.instructor.aspect.SysMessageEvent;
+import com.herocheer.instructor.domain.entity.SysMessage;
 import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.instructor.enums.SysMessageEnums;
@@ -12,9 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,28 +43,30 @@ public class SysMessageScheduleTask {
 //    @Scheduled(cron = "0/30 * * * * ?")
     //或直接指定时间间隔，例如：5秒
     //@Scheduled(fixedRate=5000)
+     @Scheduled(cron = "0 0 1 * * ?")
+    //    每天凌晨1点执行一次：0 0 1 * * ?
+
     public void execute() throws Exception {
         log.debug("###### ScheduleTask.execute start....");
         List<String> list = new ArrayList<>();
 
         List<WorkingSchedulsUserVo> workList = workingScheduleUserService.findWorkingUserByCheck();
         // 采集系统消息
-        for ( WorkingSchedulsUserVo SchedulsUser :workList){
-            if(SchedulsUser.getActivityType().equals(2)){
-                // TODO 注意重复插入
-                SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_TIME.getText(),SysMessageEnums.MATCH_TIME.getType(),SysMessageEnums.MATCH_TIME.getCode(),SchedulsUser.getId())));
-                /*Page<SysMessage> sysMessagePage=  sysMessageService.findMessageByPage(SysMessageVO.builder().messageCode(SysMessageEnums.MATCH_TIME.getCode()).objectId(SchedulsUser.getId()).build());
-                if(CollectionUtils.isEmpty(sysMessagePage.getDataList())){
-                    // 赛事活动
-                    SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_TIME.getText(),SysMessageEnums.MATCH_TIME.getType(),SysMessageEnums.MATCH_TIME.getCode(),SchedulsUser.getId())));
-                }*/
-            }else {
-                SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_TIME.getText(),SysMessageEnums.STATION_TIME.getType(),SysMessageEnums.STATION_TIME.getCode(),SchedulsUser.getId())));
+        for ( WorkingSchedulsUserVo schedulsUser :workList){
 
-                /*Page<SysMessage> sysMessagePage=  sysMessageService.findMessageByPage(SysMessageVO.builder().messageCode(SysMessageEnums.STATION_TIME.getCode()).objectId(SchedulsUser.getId()).build());
-                if(CollectionUtils.isEmpty(sysMessagePage.getDataList())){
+            SysMessage sysMessage=  sysMessageService.findMessageOne(Arrays.asList(SysMessageEnums.MATCH_TIME.getCode(),SysMessageEnums.STATION_TIME.getCode()),schedulsUser.getId());
+
+            if(ObjectUtils.isEmpty(sysMessage)){
+                // 赛事活动
+                if(schedulsUser.getActivityType().equals(2)){
+                    SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.MATCH_TIME.getText(),SysMessageEnums.MATCH_TIME.getType(),SysMessageEnums.MATCH_TIME.getCode(),schedulsUser.getId())));
+                }else {
                     // 驿站值班
-                }*/
+                    SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.STATION_TIME.getText(),SysMessageEnums.STATION_TIME.getType(),SysMessageEnums.STATION_TIME.getCode(),schedulsUser.getId())));
+                }
+            }else {
+                // 同步系统消息状态(不区别审核通过和驳回) 同一张表的ID不会重复
+                sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_TIME.getCode(),SysMessageEnums.MATCH_TIME.getCode()), schedulsUser.getId(),false,false);
             }
         }
         log.debug("###### ScheduleTask.execute end...." + JSON.toJSONString(""));

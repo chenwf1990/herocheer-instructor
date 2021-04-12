@@ -114,4 +114,22 @@ public class SysMessageServiceImpl extends BaseServiceImpl<SysMessageDao, SysMes
             this.dao.updateMessageByTypeAndOjbId(paramMap);
         }
     }
+
+    /**
+     * 找到一个系统消息
+     *
+     * @param messageCode 消息代码
+     * @param objId       obj id
+     * @return {@link SysMessage}
+     */
+    @Override
+    public SysMessage findMessageOne(List<String> messageCode, Long objId) {
+        Map<String,Object> paramMap = new HashMap<>();
+        if(!CollectionUtils.isEmpty(messageCode) && objId != null){
+            paramMap.put("messageCode", messageCode);
+            paramMap.put("objectId", objId);
+            this.dao.selectMessageOne(paramMap);
+        }
+        return null;
+    }
 }

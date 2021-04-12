@@ -201,4 +201,32 @@
         </set>
         where objectId = #{objectId} and messageCode in <foreach item="messageCode" index="index" collection="messageCode" open="(" separator="," close=")">#{messageCode} </foreach>
     </update>
+
+    <!--查询一个系统消息-->
+    <select id="selectMessageOne" parameterType="map" resultType="com.herocheer.instructor.domain.entity.SysMessage">
+        select
+        <include refid="table_field"/>
+        from sys_message
+        <where>
+            <if test="messageContext != null">
+                and messageContext = #{messageContext}
+            </if>
+            <if test="messageType != null">
+                and messageType = #{messageType}
+            </if>
+            <if test="handleStatus != null">
+                and handleStatus = #{handleStatus}
+            </if>
+            <if test="objectId != null">
+                and objectId = #{objectId}
+            </if>
+            <if test="ReadStatus != null">
+                and ReadStatus = #{ReadStatus}
+            </if>
+            <if test="messageCode != null">
+                and messageCode in <foreach item="messageCode" index="index" collection="messageCode" open="(" separator="," close=")">#{messageCode} </foreach>
+            </if>
+        </where>
+        Limit 1
+    </select>
 </mapper>

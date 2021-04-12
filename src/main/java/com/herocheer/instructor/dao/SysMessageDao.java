@@ -46,4 +46,13 @@ public interface SysMessageDao extends BaseDao<SysMessage, Long> {
      */
     int updateMessageByTypeAndOjbId(Map<String,Object> paramMap);
 
+
+    /**
+     * 选择一个消息
+     *
+     * @param paramMap 参数映射
+     * @return int
+     */
+    SysMessage selectMessageOne(Map<String,Object> paramMap);
+
 }
