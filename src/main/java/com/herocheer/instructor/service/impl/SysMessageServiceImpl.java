@@ -128,8 +128,7 @@ public class SysMessageServiceImpl extends BaseServiceImpl<SysMessageDao, SysMes
         if(!CollectionUtils.isEmpty(messageCode) && objId != null){
             paramMap.put("messageCode", messageCode);
             paramMap.put("objectId", objId);
-            this.dao.selectMessageOne(paramMap);
         }
-        return null;
+        return this.dao.selectMessageOne(paramMap);
     }
 }

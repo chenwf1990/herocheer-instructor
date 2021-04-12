@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,22 +39,19 @@ public class SysMessageScheduleTask {
     @Autowired
     private SysMessageService sysMessageService;
     //3.添加定时任务
-//    @Scheduled(cron = "0/30 * * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     //或直接指定时间间隔，例如：5秒
     //@Scheduled(fixedRate=5000)
-     @Scheduled(cron = "0 0 1 * * ?")
+//     @Scheduled(cron = "0 0 1 * * ?")
     //    每天凌晨1点执行一次：0 0 1 * * ?
 
     public void execute() throws Exception {
         log.debug("###### ScheduleTask.execute start....");
-        List<String> list = new ArrayList<>();
-
+        //
         List<WorkingSchedulsUserVo> workList = workingScheduleUserService.findWorkingUserByCheck();
         // 采集系统消息
-        for ( WorkingSchedulsUserVo schedulsUser :workList){
-
+        for (WorkingSchedulsUserVo schedulsUser : workList){
             SysMessage sysMessage=  sysMessageService.findMessageOne(Arrays.asList(SysMessageEnums.MATCH_TIME.getCode(),SysMessageEnums.STATION_TIME.getCode()),schedulsUser.getId());
-
             if(ObjectUtils.isEmpty(sysMessage)){
                 // 赛事活动
                 if(schedulsUser.getActivityType().equals(2)){
@@ -66,9 +62,11 @@ public class SysMessageScheduleTask {
                 }
             }else {
                 // 同步系统消息状态(不区别审核通过和驳回) 同一张表的ID不会重复
-                sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_TIME.getCode(),SysMessageEnums.MATCH_TIME.getCode()), schedulsUser.getId(),false,false);
+                if(sysMessage.getReadStatus().equals(true)){
+                    sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.STATION_TIME.getCode(),SysMessageEnums.MATCH_TIME.getCode()), schedulsUser.getId(),false,false);
+                }
             }
         }
-        log.debug("###### ScheduleTask.execute end...." + JSON.toJSONString(""));
+        log.debug("###### ScheduleTask.execute end...." + JSON.toJSONString(workList));
     }
 }
