@@ -39,10 +39,10 @@ public class SysMessageScheduleTask {
     @Autowired
     private SysMessageService sysMessageService;
     //3.添加定时任务
-    @Scheduled(cron = "0/30 * * * * ?")
+//    @Scheduled(cron = "0/30 * * * * ?")
     //或直接指定时间间隔，例如：5秒
     //@Scheduled(fixedRate=5000)
-//     @Scheduled(cron = "0 0 1 * * ?")
+     @Scheduled(cron = "0 0 1 * * ?")
     //    每天凌晨1点执行一次：0 0 1 * * ?
 
     public void execute() throws Exception {
