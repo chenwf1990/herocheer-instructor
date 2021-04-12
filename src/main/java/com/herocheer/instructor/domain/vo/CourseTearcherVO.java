@@ -33,10 +33,8 @@ public class CourseTearcherVO {
     @NotBlank(message = "手机号码")
     private String phone;
     @ApiModelProperty("证件类型")
-    @NotBlank(message = "证件类型")
     private String cardType;
     @ApiModelProperty("证件号码")
-    @NotBlank(message = "证件号码")
     private String cardNo;
     @ApiModelProperty("指导项目")
     @NotBlank(message = "指导项目")
@@ -62,7 +60,6 @@ public class CourseTearcherVO {
     @ApiModelProperty("页数")
     private int pageSize = 10;
 
-    @NotBlank(message = "证书等级")
     @ApiModelProperty("证书等级")
     private String certificateGrade;
 }
