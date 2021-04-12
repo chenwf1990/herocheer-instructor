@@ -618,4 +618,9 @@
         SELECT u.taskNo from working_schedule_user u left join working_schedule s on s.id=u.workingScheduleId
         where s.activityId=#{activityId} and (signInTime is not null or signOutTime is not null)
     </select>
+
+    <!--定时处理数据-->
+    <select id="selectWorkingUserByCheck" parameterType="map" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
+        select a.scheduleTime,a.serviceBeginTime,a.serviceEndTime,a.activityType,a.activityTitle,b.id from working_schedule a inner join working_schedule_user b on a.id = b.workingScheduleId where b.`status`= 1 and (unix_timestamp() * 1000) > a.scheduleTime
+    </select>
 </mapper>

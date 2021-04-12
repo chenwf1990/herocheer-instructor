@@ -16,6 +16,8 @@ import lombok.Data;
 public class WorkingSchedulsUserVo extends WorkingScheduleUser{
     @ApiModelProperty("活动主题")
     private String activityTitle;
+    @ApiModelProperty("活动类型")
+    private Integer activityType;
     @ApiModelProperty("驿站id")
     private Long courierStationId;
     @ApiModelProperty("驿站名称")

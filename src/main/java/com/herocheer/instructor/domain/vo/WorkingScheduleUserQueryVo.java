@@ -20,7 +20,7 @@ public class WorkingScheduleUserQueryVo {
     @ApiModelProperty("值班开始日期")
     private Long scheduleBeginTime;
     @ApiModelProperty("值班结束日期")
-    private Long scheduleEndTime;
+    private Long scheduleEndTime = System.currentTimeMillis();
     @ApiModelProperty("活动类型 1驿站 2赛事")
     private Long activityType;
     @ApiModelProperty("任务编号")

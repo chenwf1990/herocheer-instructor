@@ -1,10 +1,10 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
-import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
-import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
+import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
+import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
@@ -88,4 +88,13 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return
      */
     List<String> findSignRecord(@Param("activityId")Long activityId);
+
+
+    /**
+     * 定时处理时长审核数据
+     *
+     * @param map 地图
+     * @return {@link List<WorkingSchedulsUserVo>}
+     */
+    List<WorkingSchedulsUserVo> selectWorkingUserByCheck(Map<String,Object> map);
 }
