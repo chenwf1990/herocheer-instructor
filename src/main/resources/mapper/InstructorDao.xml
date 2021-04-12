@@ -270,7 +270,7 @@
         select <include refid="table_field"/> from instructor
         <where>
             <if test="name != null">
-                and name = #{name}
+                and name like concat('%',#{name},'%')
             </if>
             <if test="sex != null">
                 and sex = #{sex}
