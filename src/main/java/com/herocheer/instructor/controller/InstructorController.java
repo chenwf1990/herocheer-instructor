@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -76,5 +77,19 @@ public class InstructorController extends BaseController{
     @ApiOperation("所有指导员")
     public ResponseResult<List<Instructor>> fetchInstructorAll(HttpServletRequest request){
         return ResponseResult.ok(instructorService.findByLimit(new HashMap<String,Object>()));
+    }
+
+    /**
+     * 根据指导员名字获取指导员信息
+     *
+     * @param request 请求
+     * @return {@link ResponseResult<Instructor>}
+     */
+    @GetMapping("/instructores/name")
+    @ApiOperation("模糊查询")
+    public ResponseResult<List<Instructor>> fetchInstructorBylikeName(@ApiParam("指导员姓名") @RequestParam String name,HttpServletRequest request){
+        Map paramMap = new HashMap<String,Object>();
+        paramMap.put("name",name);
+        return ResponseResult.ok(instructorService.findByLimit(paramMap));
     }
 }
