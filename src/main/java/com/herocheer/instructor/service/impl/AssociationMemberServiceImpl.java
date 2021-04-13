@@ -4,32 +4,25 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelWriter;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.common.utils.StringUtils;
+import com.herocheer.instructor.dao.AssociationMemberDao;
 import com.herocheer.instructor.domain.entity.AssociationManage;
 import com.herocheer.instructor.domain.entity.AssociationMember;
-import com.herocheer.instructor.dao.AssociationMemberDao;
-import com.herocheer.instructor.domain.entity.CourierStation;
-import com.herocheer.instructor.domain.entity.ServiceHours;
-import com.herocheer.instructor.domain.vo.AssociationManageVo;
 import com.herocheer.instructor.domain.vo.AssociationMemberQueryVo;
-import com.herocheer.instructor.domain.vo.UserGuideProjectVo;
 import com.herocheer.instructor.enums.JobTitleEnums;
 import com.herocheer.instructor.enums.SexEnums;
 import com.herocheer.instructor.service.AssociationManageService;
 import com.herocheer.instructor.service.AssociationMemberService;
 import com.herocheer.instructor.utils.AesUtil;
 import com.herocheer.instructor.utils.ExcelUtil;
+import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.springframework.stereotype.Service;
-import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -37,12 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author makejava
@@ -169,8 +159,21 @@ public class AssociationMemberServiceImpl extends BaseServiceImpl<AssociationMem
                 associationMember.setAssociationName(associationManage.getName());
                 associationMember.setName(String.valueOf(data.get(0)).trim());
                 associationMember.setGender(SexEnums.getType(String.valueOf(data.get(1)).trim()));
+
+                // 验证身份证号长度
+                String LicenseNumber = String.valueOf(data.get(2)).trim();
+                if(StringUtils.hasText(LicenseNumber) && LicenseNumber.length() != 18){
+                    throw new CommonException("请输入18位身份证号");
+                }
                 associationMember.setLicenseNumber(AesUtil.encrypt(String.valueOf(data.get(2)).trim()));
+
+                // 验证手机号长度
+                String contactNumber = String.valueOf(data.get(3)).trim();
+                if(StringUtils.hasText(contactNumber) && contactNumber.length() != 11){
+                    throw new CommonException("请输入11位手机号");
+                }
                 associationMember.setContactNumber(AesUtil.encrypt(String.valueOf(data.get(3)).trim()));
+
                 associationMember.setJobTitle(JobTitleEnums.getType(String.valueOf(data.get(4)).trim()));
                 Map<String,Object> map=new HashMap<>();
                 map.put("associationId",associationMember.getAssociationId());
