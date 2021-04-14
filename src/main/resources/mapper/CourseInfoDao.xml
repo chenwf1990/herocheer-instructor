@@ -521,7 +521,6 @@
                 and lecturerTeacherId=#{lecturerTeacherId}
             </if>
         </where>
-        order by placedTop DESC,createdTime DESC
         <choose>
             <when test="queryType!=null and queryType==4">
                 order by  CASE
