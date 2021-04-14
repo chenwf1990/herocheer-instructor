@@ -2,16 +2,20 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
+import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
+import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +39,9 @@ import javax.servlet.http.HttpServletRequest;
 public class WorkingScheduleUserController extends BaseController{
     @Resource
     private WorkingScheduleUserService workingScheduleUserService;
+
+    @Autowired
+    private WorkingScheduleService workingScheduleService;
 
     @PostMapping("/queryPageList")
     @ApiOperation("值班人员列表查询")
@@ -73,8 +80,22 @@ public class WorkingScheduleUserController extends BaseController{
      */
     @GetMapping("/detail/{id:\\w+}")
     @ApiOperation("服务时长详情")
-    public ResponseResult<WorkingScheduleUser> fecthWorkingSchedulsUserById(@ApiParam("服务时长ID") @PathVariable Long id, HttpServletRequest request){
-        return ResponseResult.ok(workingScheduleUserService.get(id));
+    public ResponseResult<WorkingSchedulsUserVo> fecthWorkingSchedulsUserById(@ApiParam("服务时长ID") @PathVariable Long id, HttpServletRequest request){
+        WorkingScheduleUser workingScheduleUser = workingScheduleUserService.get(id);
+        WorkingSchedulsUserVo workingSchedulsUserVo = new WorkingSchedulsUserVo();
+        BeanCopier.create(workingScheduleUser.getClass(),workingSchedulsUserVo.getClass(),false).copy(workingScheduleUser,workingSchedulsUserVo,null);
+
+        // 封装
+        WorkingSchedule workingSchedule  = workingScheduleService.get(workingScheduleUser.getWorkingScheduleId());
+        workingSchedulsUserVo.setActivityAddress(workingSchedule.getActivityAddress());
+        workingSchedulsUserVo.setActivityTitle(workingSchedule.getActivityTitle());
+        workingSchedulsUserVo.setActivityType(workingSchedule.getActivityType());
+        workingSchedulsUserVo.setServiceBeginTime(workingSchedule.getServiceBeginTime());
+        workingSchedulsUserVo.setServiceEndTime(workingSchedule.getServiceEndTime());
+        workingSchedulsUserVo.setScheduleTime(workingSchedule.getScheduleTime());
+        workingSchedulsUserVo.setCourierStationId(workingSchedule.getCourierStationId());
+        workingSchedulsUserVo.setCourierStationName(workingSchedule.getCourierStationName());
+        return ResponseResult.ok(workingSchedulsUserVo);
     }
 
 }
