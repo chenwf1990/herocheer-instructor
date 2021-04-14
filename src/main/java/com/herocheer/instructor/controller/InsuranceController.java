@@ -95,15 +95,28 @@ public class InsuranceController extends BaseController {
             throw new CommonException("请求保险信息详情失败");
         }
 
+        // 保险状态情况
         JSONArray array = JSONArray.parseArray(JSONObj.getString("result"));
-        JSONArray arr = new JSONArray();
+        // 4-已生效
+        JSONArray arr4 = new JSONArray();
+        // 5-已过期
+        JSONArray arr5 = new JSONArray();
+
         for(int i=0; i < array.size(); i++){
             if(array.getJSONObject(i).getString("status").equals("4")){
-                arr.add(array.getJSONObject(i));
-                break;
+                arr4.add(array.getJSONObject(i));
+            }
+            if(array.getJSONObject(i).getString("status").equals("5")){
+                arr5.add(array.getJSONObject(i));
             }
         }
-        return ResponseResult.ok(arr);
+        if(arr4.size() > 0){
+            return ResponseResult.ok(arr4);
+        }
+        if(arr5.size() > 0){
+            throw new CommonException("您购买的保险已过期，请前往i健身首页进行续保，谢谢！");
+        }
+        throw new CommonException("您未购买保险，请前往i健身首页购买保险");
     }
 
     /**
@@ -176,7 +189,7 @@ public class InsuranceController extends BaseController {
             paramMap.put("endTime", endStr + " 23:59:59");
         }
 
-        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/pageInsurance", paramMap);
+        String result = HttpUtil.post(InsuranceConst.BASE_URL+"/insurance/pageInsurance", paramMap);
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
             throw new CommonException("请求保险列表失败");
