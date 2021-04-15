@@ -102,6 +102,8 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         Reservation reservation=new Reservation();
         //保存招募信息
         reservation.setRelevanceId(courseInfo.getId());
+        //设置状态线上预约
+        reservation.setSource(1);
         reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
         reservation.setTitle(courseInfo.getTitle());
         reservation.setImage(courseInfo.getImage());
@@ -142,6 +144,8 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }
         //保存招募信息
         reservation.setRelevanceId(courseInfo.getId());
+        //设置状态线上预约
+        reservation.setSource(1);
         reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
         reservation.setTitle(courseInfo.getTitle());
         reservation.setImage(courseInfo.getImage());
@@ -153,7 +157,9 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         //保存用户信息
         reservation.setUserId(courseInfo.getId());
         reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
-        return this.dao.insert(reservation);
+        this.dao.insert(reservation);
+        courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
+        return courseInfoService.update(courseInfo);
     }
 
     @Override
@@ -176,9 +182,11 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             if(System.currentTimeMillis()>activityRecruitDetail.getServiceDate()){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"活动当天不能取消预约!");
             }
-            //已预约数减一
-            activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()-1);
-            activityRecruitDetailService.update(activityRecruitDetail);
+            if(reservation.getSource().equals(1)){
+                //已预约数减一
+                activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()-1);
+                activityRecruitDetailService.update(activityRecruitDetail);
+            }
             //设置状态取消预约
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
             workingScheduleUserService.update(workingScheduleUser);
@@ -187,10 +195,12 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             if(courseInfo==null){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
             }
-            if(courseInfo.getSignNumber()>=1){
-                //已预约数减一
-                courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
-                courseInfoService.update(courseInfo);
+            if(reservation.getSource().equals(1)){
+                if(courseInfo.getSignNumber()>=1){
+                    //已预约数减一
+                    courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
+                    courseInfoService.update(courseInfo);
+                }
             }
         }
         reservation.setStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
