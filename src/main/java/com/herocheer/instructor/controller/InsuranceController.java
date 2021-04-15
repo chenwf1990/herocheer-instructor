@@ -4,10 +4,12 @@ package com.herocheer.instructor.controller;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.service.UserService;
@@ -54,6 +56,9 @@ public class InsuranceController extends BaseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisClient redisClient;
 
     @GetMapping("/certificate")
     @ApiOperation("当前用户的身份证号码")
@@ -225,4 +230,38 @@ public class InsuranceController extends BaseController {
         return ResponseResult.ok(JSONObject.parseObject(JSONObj.getString("result")));
     }
 
+
+    @GetMapping("/family")
+    @ApiOperation("家庭成员")
+    @AllowAnonymous
+    public ResponseResult<JSONArray> fecthFamilyInfo(HttpServletRequest request){
+        String userInfo = redisClient.get(getCurTokenId(request));
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
+        if(ObjectUtils.isEmpty(infoVo)){
+            throw new CommonException("获取当前用户信息失败，请登入");
+        }
+        log.debug("当前用户信息：{}",infoVo);
+        log.debug("当前用户信息ID：{}",infoVo.getId());
+        User user =userService.get(infoVo.getId());
+        log.debug("当前用户信息SJ：{}",userService.get(infoVo.getId()));
+        String certificateNo = user.getCertificateNo();
+        if(StringUtils.isBlank(certificateNo)){
+            throw new CommonException("当前用户身份证号为空，请I厦门登入");
+        }
+
+//        String certificateNo = "vHw2LdsNeiNqgIcdtpztNQs+FQm6PtgzkP1fqlWFAZI=";
+//        String certificateNo = "2zSu+NyaWl2eR/YdMeIqlOz0me44IxX7uRdjUF1WX4o=";
+        String sign = DigestUtils.md5DigestAsHex((AesUtil.decrypt(certificateNo) + InsuranceConst.KEY).getBytes());
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("sign", sign);
+        paramMap.put("certificateNo", (AesUtil.decrypt(certificateNo)));
+        String result= HttpUtil.post(InsuranceConst.BASE_URL+"/familyManage/members", paramMap);
+
+        JSONObject JSONObj = JSONObject.parseObject(result);
+        if(JSONObj == null || JSONObj.getInteger("code") != 200){
+            log.error("请求家庭信息失败:{}",JSONObj);
+            throw new CommonException("请求家庭信息失败");
+        }
+        return ResponseResult.ok(JSONArray.parseArray(JSONObj.getString("result")));
+    }
 }

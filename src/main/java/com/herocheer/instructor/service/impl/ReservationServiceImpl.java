@@ -288,9 +288,10 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }
 
         // 重复报名需要在限制人数之前
-        if(courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
+        // 上课结束时间线下预约不限制人数
+        /*if(courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"抱歉，已达到报名人数上限，无法报名");
-        }
+        }*/
 
         if(userId==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
@@ -299,7 +300,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if (user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
         }
-        Reservation reservation=new Reservation();
+        Reservation reservation = new Reservation();
         //保存招募信息
         reservation.setRelevanceId(courseInfo.getId());
         reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
@@ -322,6 +323,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setSignType(SignType.SIGN_OFFLINE.getType());
         reservation.setSignStatus(SignStatusEnums.SIGN_DONE.getStatus());
         this.dao.insert(reservation);
+
         courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
         return courseInfoService.update(courseInfo);
 
