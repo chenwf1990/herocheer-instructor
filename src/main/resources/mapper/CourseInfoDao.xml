@@ -536,6 +536,23 @@
                 and lecturerTeacherId=#{lecturerTeacherId}
             </if>
         </where>
-        order by placedTop DESC,createdTime DESC
+        <choose>
+            <when test="queryType!=null and queryType==4">
+                order by  CASE
+                WHEN approvalStatus != 1 THEN null
+                WHEN `state`=5 THEN `state`
+                WHEN approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+                WHEN approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime THEN 3
+                WHEN approvalStatus = 1 AND signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 0
+                WHEN approvalStatus = 1 AND signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1 END ASC
+                ,placedTop DESC,createdTime DESC
+            </when>
+            <otherwise>
+                order by placedTop DESC,createdTime DESC
+            </otherwise>
+        </choose>
     </select>
 </mapper>
