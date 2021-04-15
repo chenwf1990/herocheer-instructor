@@ -122,6 +122,41 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     }
 
     @Override
+    public Integer webReservation(Reservation reservation) {
+        CourseInfo courseInfo=courseInfoService.get(reservation.getRelevanceId());
+        if (courseInfo==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
+        }
+        User user=userService.findUserByPhone(reservation.getPhone());
+        if (user==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
+        }
+        Map<String,Object> map=new HashMap<>();
+        map.put("relevanceId",courseInfo.getId());
+        map.put("userId",user.getId());
+        map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
+        map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
+        List<Reservation> list=this.dao.findByLimit(map);
+        if(!list.isEmpty()){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"您已预约该课程,无需重复预约!");
+        }
+        //保存招募信息
+        reservation.setRelevanceId(courseInfo.getId());
+        reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
+        reservation.setTitle(courseInfo.getTitle());
+        reservation.setImage(courseInfo.getImage());
+        reservation.setStartTime(courseInfo.getCourseStartTime());
+        reservation.setEndTime(courseInfo.getCourseEndTime());
+        reservation.setAddress(courseInfo.getAddress());
+        reservation.setLongitude(courseInfo.getLongitude());
+        reservation.setLatitude(courseInfo.getLatitude());
+        //保存用户信息
+        reservation.setUserId(courseInfo.getId());
+        reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+        return this.dao.insert(reservation);
+    }
+
+    @Override
     public Integer cancel(Long id) {
         Reservation reservation=this.dao.get(id);
         if(reservation==null){

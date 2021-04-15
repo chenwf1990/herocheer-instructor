@@ -41,6 +41,12 @@ public class ReservationController extends BaseController{
         Integer count=reservationService.reservation(courseId,getCurUserId(request));
         return ResponseResult.isSuccess(count);
     }
+    @PostMapping("/web/course")
+    @ApiOperation("后端预约")
+    public ResponseResult webReservation(@RequestBody Reservation reservation){
+        Integer count=reservationService.webReservation(reservation);
+        return ResponseResult.isSuccess(count);
+    }
 
     @GetMapping("/cancel")
     @ApiOperation("取消预约")

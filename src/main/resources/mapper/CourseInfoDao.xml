@@ -14,6 +14,7 @@
             WHEN approvalStatus = 1 AND signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
             WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 1
+            WHEN UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> releaseTime THEN 0
             ELSE `state` END AS 'state'
     </sql>
     
@@ -519,7 +520,7 @@
                 AND createdId=#{createdId}
             </if>
             <if test="queryType!=null and queryType==4">
-                AND approvalStatus=1 AND state!=5
+                AND approvalStatus=1 AND state!=5 AND releaseTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="approvalStartTime!=null">
                 and updateTime <![CDATA[ > ]]> #{approvalStartTime}
@@ -548,10 +549,10 @@
                 WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 0
                 WHEN approvalStatus = 1 AND signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1 END ASC
-                ,placedTop DESC,createdTime DESC
+                ,placedTop DESC,releaseTime DESC
             </when>
             <otherwise>
-                order by placedTop DESC,createdTime DESC
+                order by placedTop DESC,releaseTime DESC
             </otherwise>
         </choose>
     </select>

@@ -12,6 +12,9 @@ import lombok.Data;
  **/
 @Data
 public class CourseInfoVo extends CourseInfo {
+    @ApiModelProperty("预约Id")
+    private Long reservationId;
+
     @ApiModelProperty("预约状态(0.已预约1.取消预约2.已关闭)")
     private Integer reservationStatus;
 

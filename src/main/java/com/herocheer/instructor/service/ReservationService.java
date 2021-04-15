@@ -27,6 +27,13 @@ public interface ReservationService extends BaseService<Reservation,Long> {
     Integer reservation(Long courseId, Long userId);
 
     /**
+     * web端预约
+     * @param reservation
+     * @return
+     */
+    Integer webReservation(Reservation reservation);
+
+    /**
      * 取消预约
      * @param id
      * @return
