@@ -4,7 +4,7 @@
 
     <sql id="table_field">
         id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-        approvalId,approvalBy,approvalTime,
+        approvalId,approvalBy,approvalTime,releaseTime,
         CASE
             WHEN approvalStatus != 1 THEN null
             WHEN `state`=5 THEN `state`
@@ -520,7 +520,7 @@
                 AND createdId=#{createdId}
             </if>
             <if test="queryType!=null and queryType==4">
-                AND approvalStatus=1 AND state!=5 AND releaseTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND approvalStatus=1 AND state!=5 AND releaseTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="approvalStartTime!=null">
                 and updateTime <![CDATA[ > ]]> #{approvalStartTime}

@@ -24,6 +24,9 @@
         <if test="type != null">
             type,
         </if>
+        <if test="source != null">
+            source,
+        </if>
         <if test="workingId != null">
             workingId,
         </if>
@@ -81,6 +84,9 @@
         </if>
         <if test="type != null">
             #{type},
+        </if>
+        <if test="source != null">
+            #{source},
         </if>
         <if test="workingId != null">
             #{workingId},
@@ -149,6 +155,9 @@
             </if>
             <if test="type != null">
                 type = #{type},
+            </if>
+            <if test="source != null">
+                source = #{source},
             </if>
             <if test="workingId != null">
                 workingId = #{workingId},
@@ -220,6 +229,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="source != null">
+                and source = #{source}
+            </if>
             <if test="workingId != null">
                 and workingId = #{workingId}
             </if>
@@ -273,6 +285,9 @@
             </if>
             <if test="type != null">
                 and type = #{type}
+            </if>
+            <if test="source != null">
+                and source = #{source}
             </if>
             <if test="workingId != null">
                 and workingId = #{workingId}
