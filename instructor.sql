@@ -1,0 +1,1 @@
+ALTER TABLE course_info ADD COLUMN releaseTime bigint(20) DEFAULT NULL COMMENT '发布时间' AFTER signNumber;

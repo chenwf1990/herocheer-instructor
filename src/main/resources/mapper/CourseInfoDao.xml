@@ -96,6 +96,9 @@
         <if test="approvalTime != null">
             approvalTime,
         </if>
+        <if test="releaseTime != null">
+            releaseTime,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -174,6 +177,9 @@
         </if>
         <if test="approvalTime != null">
             #{approvalTime},
+        </if>
+        <if test="releaseTime != null">
+            #{releaseTime},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -264,6 +270,9 @@
             <if test="approvalTime != null">
                 approvalTime = #{approvalTime},
             </if>
+            <if test="releaseTime != null">
+                releaseTime = #{releaseTime},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
         where id = #{id}
@@ -352,6 +361,9 @@
             <if test="approvalTime != null">
                 and approvalTime = #{approvalTime},
             </if>
+            <if test="releaseTime != null">
+                and releaseTime = #{releaseTime},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         <choose>
@@ -439,6 +451,9 @@
             </if>
             <if test="approvalTime != null">
                 and approvalTime = #{approvalTime},
+            </if>
+            <if test="releaseTime != null">
+                and releaseTime = #{releaseTime},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
