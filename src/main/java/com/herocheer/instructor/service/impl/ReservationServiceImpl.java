@@ -346,6 +346,8 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setAddress(courseInfo.getAddress());
         reservation.setLongitude(courseInfo.getLongitude());
         reservation.setLatitude(courseInfo.getLatitude());
+        // 线下预约
+        reservation.setSource(2);
         //保存用户信息
         reservation.setUserId(userId);
         reservation.setName(user.getUserName());
