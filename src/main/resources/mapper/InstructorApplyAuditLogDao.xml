@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.InstructorApplyAuditLogDao">
     
     <sql id="table_field">
-      id, applyId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, headPic, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, applyId, name, sex, auditState, auditTime, auditIdea, cardNo, phone, workUnit, areaCode, areaName, guideProject, guideStation, certificateNo, certificateGrade, openingDate, auditUnitType, auditUnitName, otherAuditUnitName, certificatePic, channel, openId, userId, headPic, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime,cardType
     </sql>
     
     <!--单表新增-->
@@ -85,6 +85,9 @@
         <if test="remarks != null">
             remarks,
         </if>
+        <if test="cardType != null">
+            cardType,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -163,6 +166,9 @@
         </if>
         <if test="remarks != null">
             #{remarks},
+        </if>
+        <if test="cardType != null">
+            #{cardType},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -252,6 +258,9 @@
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
+            </if>
+            <if test="cardType != null">
+                cardType = #{cardType},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

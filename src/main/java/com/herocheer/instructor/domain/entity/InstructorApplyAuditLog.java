@@ -1,8 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -63,4 +63,6 @@ public class InstructorApplyAuditLog extends BaseEntity {
     @ApiModelProperty("备注")   
     private String remarks;
 
+    @ApiModelProperty("证件类型")
+    private String cardType;
 }

@@ -9,7 +9,6 @@ import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.service.UserService;
@@ -235,7 +234,7 @@ public class InsuranceController extends BaseController {
     @ApiOperation("家庭成员")
     @AllowAnonymous
     public ResponseResult<JSONArray> fecthFamilyInfo(HttpServletRequest request){
-        String userInfo = redisClient.get(getCurTokenId(request));
+        /*String userInfo = redisClient.get(getCurTokenId(request));
         UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
         if(ObjectUtils.isEmpty(infoVo)){
             throw new CommonException("获取当前用户信息失败，请登入");
@@ -247,9 +246,9 @@ public class InsuranceController extends BaseController {
         String certificateNo = user.getCertificateNo();
         if(StringUtils.isBlank(certificateNo)){
             throw new CommonException("当前用户身份证号为空，请I厦门登入");
-        }
+        }*/
 
-//        String certificateNo = "vHw2LdsNeiNqgIcdtpztNQs+FQm6PtgzkP1fqlWFAZI=";
+        String certificateNo = "vHw2LdsNeiNqgIcdtpztNQs+FQm6PtgzkP1fqlWFAZI=";
 //        String certificateNo = "2zSu+NyaWl2eR/YdMeIqlOz0me44IxX7uRdjUF1WX4o=";
         String sign = DigestUtils.md5DigestAsHex((AesUtil.decrypt(certificateNo) + InsuranceConst.KEY).getBytes());
         Map<String, Object> paramMap = new HashMap<>();
