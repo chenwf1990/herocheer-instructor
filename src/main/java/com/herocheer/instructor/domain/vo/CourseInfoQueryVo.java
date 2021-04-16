@@ -68,4 +68,10 @@ public class CourseInfoQueryVo implements Serializable {
     @ApiModelProperty("授课老师ID")
     private Long lecturerTeacherId;
 
+    @ApiModelProperty("发布开始时间")
+    private String releaseStartTime;
+
+    @ApiModelProperty("发布结束时间")
+    private String releaseEndTime;
+
 }
