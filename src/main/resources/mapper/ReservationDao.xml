@@ -336,6 +336,12 @@
             parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
         select <include refid="table_field"/> from reservation
         <where>
+            <if test="name!=null and name!=''">
+                and `name` like concat('%',#{name},'%')
+            </if>
+            <if test="identityNumber!=null">
+                and identityNumber=#{identityNumber}
+            </if>
             <if test="title!=null and title!=''">
                 and title like concat('%',#{title},'%')
             </if>
