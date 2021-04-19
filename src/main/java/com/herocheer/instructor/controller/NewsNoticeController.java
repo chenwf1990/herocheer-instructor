@@ -8,6 +8,7 @@ import com.herocheer.instructor.domain.vo.NewsQueryVo;
 import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.NewsNoticeService;
 import com.herocheer.instructor.service.SysMessageService;
+import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,6 +44,7 @@ public class NewsNoticeController extends BaseController{
     private SysMessageService sysMessageService;
 
     @PostMapping("/queryPageList")
+    @AllowAnonymous
     @ApiOperation("新闻列表查询")
     public ResponseResult<Page<NewsNotice>> queryPageList(@RequestBody NewsQueryVo newsQueryVo){
         Page<NewsNotice> page = newsNoticeService.queryPageList(newsQueryVo);

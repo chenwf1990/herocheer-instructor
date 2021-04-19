@@ -187,7 +187,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
 
     @Override
     public Integer cancel(Long id) {
-        Reservation reservation=this.dao.get(id);
+        Reservation reservation = this.dao.get(id);
         if(reservation==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"无效的预约信息!");
         }
