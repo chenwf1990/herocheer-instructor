@@ -536,6 +536,12 @@
             <if test="lecturerTeacherId != null and lecturerTeacherId !='' ">
                 and lecturerTeacherId=#{lecturerTeacherId}
             </if>
+            <if test="releaseStartTime!=null">
+                and releaseTime <![CDATA[ >= ]]> #{releaseStartTime}
+            </if>
+            <if test="releaseEndTime!=null">
+                and releaseTime <![CDATA[ <= ]]> #{releaseEndTime}
+            </if>
         </where>
         <choose>
             <when test="queryType!=null and queryType==4">
