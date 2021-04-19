@@ -13,6 +13,7 @@ import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
+import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
 import com.herocheer.instructor.enums.CourseApprovalState;
 import com.herocheer.instructor.enums.RecruitTypeEunms;
@@ -29,6 +30,7 @@ import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -64,7 +66,15 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     private UserService userService;
 
     @Override
-    public Integer reservation(Long courseId, Long userId) {
+    public void reservation(List<ReservationVO> reservationList, Long userId) {
+        if(CollectionUtils.isEmpty(reservationList)){
+            throw new CommonException("报名信息为空");
+        }
+        Long courseId = reservationList.get(0).getCourseId();
+        if(null == courseId){
+            throw new CommonException("预约课程ID不能为空");
+        }
+
         CourseInfo courseInfo=courseInfoService.get(courseId);
         if(courseInfo!=null){
             if(courseInfo.getSignStartTime()>System.currentTimeMillis()){
@@ -99,28 +109,41 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if (user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
         }
-        Reservation reservation=new Reservation();
-        //保存招募信息
-        reservation.setRelevanceId(courseInfo.getId());
-        //设置状态线上预约
-        reservation.setSource(1);
-        reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
-        reservation.setTitle(courseInfo.getTitle());
-        reservation.setImage(courseInfo.getImage());
-        reservation.setStartTime(courseInfo.getCourseStartTime());
-        reservation.setEndTime(courseInfo.getCourseEndTime());
-        reservation.setAddress(courseInfo.getAddress());
-        reservation.setLongitude(courseInfo.getLongitude());
-        reservation.setLatitude(courseInfo.getLatitude());
-        //保存用户信息
-        reservation.setUserId(userId);
-        reservation.setName(user.getUserName());
-        reservation.setIdentityNumber(user.getCertificateNo());
-        reservation.setPhone(user.getPhone());
-        reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
-        this.dao.insert(reservation);
-        courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
-        return courseInfoService.update(courseInfo);
+
+        for (ReservationVO reservationVO:reservationList){
+            Reservation reservation=new Reservation();
+            //保存招募信息
+            reservation.setRelevanceId(courseInfo.getId());
+            //设置状态线上预约
+            reservation.setSource(1);
+            reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
+            reservation.setTitle(courseInfo.getTitle());
+            reservation.setImage(courseInfo.getImage());
+            reservation.setStartTime(courseInfo.getCourseStartTime());
+            reservation.setEndTime(courseInfo.getCourseEndTime());
+            reservation.setAddress(courseInfo.getAddress());
+            reservation.setLongitude(courseInfo.getLongitude());
+            reservation.setLatitude(courseInfo.getLatitude());
+
+            // 当前用户ID
+            reservation.setUserId(userId);
+
+            //保存用户信息
+            reservation.setName(user.getUserName());
+            reservation.setIdentityNumber(user.getCertificateNo());
+            reservation.setPhone(user.getPhone());
+            reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            reservation.setInsuranceStatus(reservationVO.getInsuranceStatus());
+            reservation.setRelationType(reservationVO.getRelationType());
+            this.dao.insert(reservation);
+
+            // 预约加1（不包含儿女）
+            if(reservationVO.getRelationType().equals(0)){
+                courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
+                courseInfoService.update(courseInfo);
+            }
+        }
+
     }
 
     @Override
@@ -190,11 +213,14 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             //设置状态取消预约
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
             workingScheduleUserService.update(workingScheduleUser);
-        }else if(reservation.getType()==RecruitTypeEunms.COURIER_RECRUIT.getType()){
+        }else if(reservation.getType().equals(RecruitTypeEunms.COURIER_RECRUIT.getType())){
+
             CourseInfo courseInfo=courseInfoService.get(reservation.getRelevanceId());
             if(courseInfo==null){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
             }
+
+            // 不统计线下预约的数量
             if(reservation.getSource().equals(1)){
                 if(courseInfo.getSignNumber()>=1){
                     //已预约数减一
@@ -263,34 +289,37 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     }
 
     /**
-     * 添加签到信息
+     * 添加签名信息
      *
-     * @param courseId 进程id
-     * @param userId   用户id
-     * @return {@link String}
+     * @param userId          用户id
+     * @param reservationList 预订单
+     * @return {@link Long}
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Long addSignInfo(Long courseId, Long userId) {
+    public Long addSignInfo(List<ReservationVO> reservationList, Long userId) {
         // 是否预约过
+        if(null == reservationList.get(0).getCourseId()){
+            throw new CommonException("预约课程ID不能为空");
+        }
         Map<String,Object> map=new HashMap<>();
-        map.put("relevanceId",courseId);
+        map.put("relevanceId",reservationList.get(0).getCourseId());
         map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
         List<Reservation> list= this.dao.findByLimit(map);
 
         Long currentLong = System.currentTimeMillis();
+
         // 预约过签到(线上签到)
         if(!list.isEmpty()){
-           this.onLineSign(list.get(0),currentLong);
-            return currentLong;
+            throw new CommonException("您已线上预约过，无法线下签到");
         }
 
         // 未预约签到(线下签到)
         if(list.isEmpty()){
             // 添加预约记录
-            this.offLineSign(courseId,userId,currentLong);
+            this.offLineSign(reservationList,userId,currentLong);
             return currentLong;
         }
         return null;
@@ -300,13 +329,14 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     /**
      * 线下签到
      *
-     * @param courseId 进程id
-     * @param userId   用户id
+     * @param userId          用户id
+     * @param reservationList 预订单
+     * @param currentLong     目前的长
      * @return {@link Integer}
      */
-    private Integer offLineSign(Long courseId, Long userId, Long currentLong) {
-        CourseInfo courseInfo = courseInfoService.get(courseId);
-        if(courseInfo!=null){
+    private void offLineSign(List<ReservationVO> reservationList, Long userId, Long currentLong) {
+        CourseInfo courseInfo = courseInfoService.get(reservationList.get(0).getCourseId());
+        if(courseInfo != null){
             if(!courseInfo.getApprovalStatus().equals(CourseApprovalState.PASSED.getState())){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"预约失败,课程还在审核中!");
             }
@@ -323,11 +353,13 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }
 
         Map<String,Object> map=new HashMap<>();
-        map.put("relevanceId",courseId);
+        map.put("relevanceId",reservationList.get(0).getCourseId());
         map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
         List<Reservation> list=this.dao.findByLimit(map);
+
+        // TODO 需要考虑预约过后，再给儿女预约的场景
         if(!list.isEmpty()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"您已预约该课程,无需重复预约!");
         }
@@ -345,34 +377,47 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if (user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
         }
-        Reservation reservation = new Reservation();
-        //保存招募信息
-        reservation.setRelevanceId(courseInfo.getId());
-        reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
-        reservation.setTitle(courseInfo.getTitle());
-        reservation.setImage(courseInfo.getImage());
-        reservation.setStartTime(courseInfo.getCourseStartTime());
-        reservation.setEndTime(courseInfo.getCourseEndTime());
-        reservation.setAddress(courseInfo.getAddress());
-        reservation.setLongitude(courseInfo.getLongitude());
-        reservation.setLatitude(courseInfo.getLatitude());
-        // 线下预约
-        reservation.setSource(2);
-        //保存用户信息
-        reservation.setUserId(userId);
-        reservation.setName(user.getUserName());
-        reservation.setIdentityNumber(user.getCertificateNo());
-        reservation.setPhone(user.getPhone());
-        reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
 
-        // 线下签到信息
-        reservation.setSignTime(currentLong);
-        reservation.setSignType(SignType.SIGN_OFFLINE.getType());
-        reservation.setSignStatus(SignStatusEnums.SIGN_DONE.getStatus());
-        this.dao.insert(reservation);
+        Reservation reservation = null;
+        for (ReservationVO reservationVO: reservationList){
+            reservation = new Reservation();
+            //保存招募信息
+            reservation.setRelevanceId(courseInfo.getId());
+            reservation.setType(RecruitTypeEunms.COURIER_RECRUIT.getType());
+            reservation.setTitle(courseInfo.getTitle());
+            reservation.setImage(courseInfo.getImage());
+            reservation.setStartTime(courseInfo.getCourseStartTime());
+            reservation.setEndTime(courseInfo.getCourseEndTime());
+            reservation.setAddress(courseInfo.getAddress());
+            reservation.setLongitude(courseInfo.getLongitude());
+            reservation.setLatitude(courseInfo.getLatitude());
+            // 线下预约
+            reservation.setSource(2);
 
-        courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
-        return courseInfoService.update(courseInfo);
+            // 当前预约用户的ID
+            reservation.setUserId(userId);
+
+            //保存用户信息
+            reservation.setName(reservationVO.getUserName());
+            reservation.setIdentityNumber(reservationVO.getCertificateNo());
+            reservation.setPhone(reservationVO.getPhone());
+            reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            reservation.setInsuranceStatus(reservationVO.getInsuranceStatus());
+            reservation.setRelationType(reservationVO.getRelationType());
+
+            // 线下签到信息
+            reservation.setSignTime(currentLong);
+            reservation.setSignType(SignType.SIGN_OFFLINE.getType());
+            reservation.setSignStatus(SignStatusEnums.SIGN_DONE.getStatus());
+
+            this.dao.insert(reservation);
+            // 预约加1（不包含儿女）
+            if(reservationVO.getRelationType().equals(0)){
+                courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
+                courseInfoService.update(courseInfo);
+            }
+
+        }
 
     }
 
@@ -402,5 +447,49 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         List<Reservation> instructors = this.dao.selectSignInfoByPage(signInfoVO);
         page.setDataList(instructors);
         return page;
+    }
+
+    /**
+     * 根据当前用户ID获取预约信息
+     *
+     * @param courseId 进程id
+     * @param userId   用户id
+     * @return {@link List<Reservation>}
+     */
+    @Override
+    public List<Reservation> findReservationByCurrentUserId(Long courseId, Long userId) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("relevanceId",courseId);
+        map.put("userId",userId);
+        map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
+        map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
+        List<Reservation> list = this.dao.findByLimit(map);
+        return list;
+    }
+
+    /**
+     * 线上签到
+     *
+     * @param courseId 进程id
+     * @param userId   用户id
+     * @return {@link Long}
+     */
+    @Override
+    public Long addOnlineSignInfo(Long courseId, Long userId) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("relevanceId",courseId);
+        map.put("userId",userId);
+        map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
+        map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
+        List<Reservation> list= this.dao.findByLimit(map);
+
+        Long currentLong = System.currentTimeMillis();
+
+        // 预约过签到(线上签到)
+        if(list.isEmpty()){
+            throw new CommonException("您未线上预约,请预约");
+        }
+        this.onLineSign(list.get(0),currentLong);
+        return currentLong;
     }
 }
