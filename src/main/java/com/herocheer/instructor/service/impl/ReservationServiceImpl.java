@@ -416,12 +416,13 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             reservation.setSignStatus(SignStatusEnums.SIGN_DONE.getStatus());
 
             this.dao.insert(reservation);
-            // 预约加1（不包含儿女）
-            if(reservationVO.getRelationType().equals(0)){
+
+
+            // 预约加1（不包含儿女）线下签到都不做统计
+            /*if(reservationVO.getRelationType().equals(0)){
                 courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
                 courseInfoService.update(courseInfo);
-            }
-
+            }*/
         }
 
     }
