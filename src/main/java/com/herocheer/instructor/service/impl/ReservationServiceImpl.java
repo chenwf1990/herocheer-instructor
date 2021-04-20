@@ -129,9 +129,9 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             reservation.setUserId(userId);
 
             //保存用户信息
-            reservation.setName(user.getUserName());
-            reservation.setIdentityNumber(user.getCertificateNo());
-            reservation.setPhone(user.getPhone());
+            reservation.setName(reservationVO.getUserName());
+            reservation.setIdentityNumber(reservationVO.getCertificateNo());
+            reservation.setPhone(reservationVO.getPhone());
             reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
             reservation.setInsuranceStatus(reservationVO.getInsuranceStatus());
             reservation.setRelationType(reservationVO.getRelationType());
@@ -186,7 +186,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     }
 
     @Override
-    public Integer cancel(Long id) {
+    public void cancel(Long id) {
         Reservation reservation = this.dao.get(id);
         if(reservation==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"无效的预约信息!");
@@ -215,22 +215,27 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             workingScheduleUserService.update(workingScheduleUser);
         }else if(reservation.getType().equals(RecruitTypeEunms.COURIER_RECRUIT.getType())){
 
-            CourseInfo courseInfo=courseInfoService.get(reservation.getRelevanceId());
+            CourseInfo courseInfo = courseInfoService.get(reservation.getRelevanceId());
             if(courseInfo==null){
                 throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
             }
 
-            // 不统计线下预约的数量
-            if(reservation.getSource().equals(1)){
-                if(courseInfo.getSignNumber()>=1){
-                    //已预约数减一
-                    courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
-                    courseInfoService.update(courseInfo);
+            List<Reservation> reservationList = findReservationByCurrentUserId(reservation.getRelevanceId(),reservation.getUserId());
+            if(!CollectionUtils.isEmpty(reservationList)){
+                for(Reservation reservation1 :reservationList){
+                    // 不统计线下预约的数量
+                    if(reservation1.getSource().equals(1)){
+                        if(courseInfo.getSignNumber() >= 1){
+                            //已预约数减一
+                            courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
+                            courseInfoService.update(courseInfo);
+                        }
+                    }
+                    reservation1.setStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
+                    this.dao.update(reservation1);
                 }
             }
         }
-        reservation.setStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
-        return this.dao.update(reservation);
     }
 
     @Override
@@ -462,7 +467,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         map.put("relevanceId",courseId);
         map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
-        map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
+//        map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
         List<Reservation> list = this.dao.findByLimit(map);
         return list;
     }

@@ -40,7 +40,7 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @param id
      * @return
      */
-    Integer cancel(Long id);
+    void cancel(Long id);
 
     /**
      * 查询预约记录

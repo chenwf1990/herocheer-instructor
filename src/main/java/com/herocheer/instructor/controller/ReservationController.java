@@ -55,7 +55,8 @@ public class ReservationController extends BaseController{
     @GetMapping("/cancel")
     @ApiOperation("取消预约")
     public ResponseResult cancel(@ApiParam("预约id") @RequestParam Long id){
-        return ResponseResult.ok(reservationService.cancel(id));
+        reservationService.cancel(id);
+        return ResponseResult.ok();
     }
 
     @PostMapping("/queryPage")
@@ -130,6 +131,6 @@ public class ReservationController extends BaseController{
     @GetMapping("/info/{courseId:\\w+}")
     @ApiOperation("已参与人员")
     public ResponseResult<List<Reservation>> fecthReservationBycurrentUserId(@ApiParam("课程ID") @PathVariable Long courseId, HttpServletRequest request){
-        return ResponseResult.ok(reservationService.findReservationByCurrentUserId(courseId,1L));
+        return ResponseResult.ok(reservationService.findReservationByCurrentUserId(courseId,getCurUserId(request)));
     }
 }

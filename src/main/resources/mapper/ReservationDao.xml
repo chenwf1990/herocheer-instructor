@@ -387,6 +387,9 @@
             <if test="userId!=null">
                 and userId = #{userId}
             </if>
+            <if test="relationType != null">
+                and relationType = #{relationType}
+            </if>
         </where>
         order by startTime desc,endTime desc
     </select>
