@@ -49,7 +49,4 @@ public class ReservationQueryVo implements Serializable {
 
     @ApiModelProperty("页数")
     private int pageSize;
-
-    @ApiModelProperty("携带关系：0-本人，1-儿子，2-女儿")
-    private Integer relationType = 0;
 }

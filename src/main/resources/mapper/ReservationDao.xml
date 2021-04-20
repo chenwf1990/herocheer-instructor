@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ReservationDao">
     <sql id="table_field">
-      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone, signTime, signType, signStatus, insuranceStatus, relationType, source,
+      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone, signTime, signType, signStatus, source,
       <if test="queryType==1">
           case
           when `status`=2 then 0
@@ -75,12 +75,6 @@
         <if test="signStatus != null">
             signStatus,
         </if>
-        <if test="insuranceStatus != null">
-            insuranceStatus,
-        </if>
-        <if test="relationType != null">
-            relationType,
-        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -141,12 +135,6 @@
         </if>
         <if test="signStatus != null">
             #{signStatus},
-        </if>
-        <if test="insuranceStatus != null">
-            #{insuranceStatus},
-        </if>
-        <if test="relationType != null">
-            #{relationType},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -218,12 +206,6 @@
             </if>
             <if test="signStatus != null">
                 signStatus = #{signStatus},
-            </if>
-            <if test="insuranceStatus != null">
-                insuranceStatus = #{insuranceStatus},
-            </if>
-            <if test="relationType != null">
-                relationType = #{relationType},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -350,9 +332,35 @@
         </where>
     </select>
 
-    <select id="findList" resultType="com.herocheer.instructor.domain.entity.Reservation"
-            parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
-        select <include refid="table_field"/> from reservation
+    <select id="findList" resultType="com.herocheer.instructor.domain.entity.Reservation" parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
+        select
+            id,
+            relevanceId,
+            type,
+            workingId,
+            title,
+            image,
+            startTime,
+            endTime,
+            address,
+            longitude,
+            latitude,
+            userId,
+            IFNULL(a.`name`,(select GROUP_CONCAT( b.userName SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
+            IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `identityNumber`,
+            IFNULL(a.phone,(select GROUP_CONCAT( b.phone SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as phone,
+            signTime,
+            signType,
+            signStatus,
+            source,
+            STATUS,
+            createdId,
+            createdBy,
+            createdTime,
+            updateId,
+            updateBy,
+            updateTime
+        from reservation a
         <where>
             <if test="name!=null and name!=''">
                 and `name` like concat('%',#{name},'%')
@@ -386,9 +394,6 @@
             </if>
             <if test="userId!=null">
                 and userId = #{userId}
-            </if>
-            <if test="relationType != null">
-                and relationType = #{relationType}
             </if>
         </where>
         order by startTime desc,endTime desc

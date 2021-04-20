@@ -3,6 +3,7 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
@@ -40,13 +41,12 @@ public class ReservationController extends BaseController{
     private ReservationService reservationService;
 
     @PostMapping("/course")
-    @ApiOperation("线上课程预约")
-    public ResponseResult reservation( @ApiParam("预约信息") @RequestBody List<ReservationVO> reservationList, HttpServletRequest request){
-        reservationService.reservation(reservationList,getCurUserId(request));
-        return ResponseResult.ok();
+    @ApiOperation("线上预约")
+    public ResponseResult<Reservation> reservation( @ApiParam("预约信息") @RequestBody List<ReservationVO> reservationList, HttpServletRequest request){
+        return ResponseResult.ok(reservationService.reservation(reservationList,getCurUserId(request)));
     }
     @PostMapping("/web/course")
-    @ApiOperation("后端预约")
+    @ApiOperation("老年人预约")
     public ResponseResult webReservation(@RequestBody Reservation reservation){
         Integer count=reservationService.webReservation(reservation);
         return ResponseResult.isSuccess(count);
@@ -86,7 +86,7 @@ public class ReservationController extends BaseController{
      * @return {@link ResponseResult}
      */
     @PostMapping("/sign/info")
-    @ApiOperation("线下预约签到")
+    @ApiOperation("线下预约及签到")
     public ResponseResult createSignInfo(@ApiParam("预约信息") @Valid @RequestBody List<ReservationVO> reservationList, HttpServletRequest request){
         // 返回签到时间
         Long signTime = reservationService.addSignInfo(reservationList,getCurUserId(request));
@@ -103,7 +103,7 @@ public class ReservationController extends BaseController{
      */
     @GetMapping("/online/sign/info")
     @ApiOperation("线上签到")
-    public ResponseResult createOnlineSignInfo(@ApiParam("课程ID") Long courseId, HttpServletRequest request){
+    public ResponseResult createOnlineSignInfo(@ApiParam("课程ID") @RequestParam Long courseId, HttpServletRequest request){
         // 返回签到时间
         Long signTime = reservationService.addOnlineSignInfo(courseId,getCurUserId(request));
         return ResponseResult.ok(signTime);
@@ -125,12 +125,12 @@ public class ReservationController extends BaseController{
     /**
      * 根据当前用户ID获取预约信息
      *
-     * @param courseId 进程id
+     * @param relevanceId 进程id
      * @return {@link ResponseResult<List<Reservation>>}
      */
-    @GetMapping("/info/{courseId:\\w+}")
+    @GetMapping("/info/{relevanceId:\\w+}")
     @ApiOperation("已参与人员")
-    public ResponseResult<List<Reservation>> fecthReservationBycurrentUserId(@ApiParam("课程ID") @PathVariable Long courseId, HttpServletRequest request){
-        return ResponseResult.ok(reservationService.findReservationByCurrentUserId(courseId,getCurUserId(request)));
+    public ResponseResult<List<ReservationMember>> fecthReservationBycurrentUserId(@ApiParam("预约ID") @PathVariable Long relevanceId, HttpServletRequest request){
+        return ResponseResult.ok(reservationService.findReservationByCurrentUserId(relevanceId,getCurUserId(request)));
     }
 }

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.ReservationMemberDao">
+
+    <sql id="table_field">
+      id, relevanceId, userId, userName, sex, identityNumber, phone, insuranceStatus, relationType, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.ReservationMember">
+        insert into reservation_member (
+        <trim suffixOverrides=",">
+            <if test="relevanceId != null">
+                relevanceId,
+            </if>
+            <if test="userId != null">
+                userId,
+            </if>
+            <if test="userName != null">
+                userName,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="identityNumber != null">
+                identityNumber,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="insuranceStatus != null">
+                insuranceStatus,
+            </if>
+            <if test="relationType != null">
+                relationType,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="relevanceId != null">
+                #{relevanceId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="sex != null">
+                #{sex},
+            </if>
+            <if test="identityNumber != null">
+                #{identityNumber},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="insuranceStatus != null">
+                #{insuranceStatus},
+            </if>
+            <if test="relationType != null">
+                #{relationType},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from reservation_member where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.ReservationMember">
+        update reservation_member
+        <set>
+            <if test="relevanceId != null">
+                relevanceId = #{relevanceId},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="userName != null">
+                userName = #{userName},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="identityNumber != null">
+                identityNumber = #{identityNumber},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="insuranceStatus != null">
+                insuranceStatus = #{insuranceStatus},
+            </if>
+            <if test="relationType != null">
+                relationType = #{relationType},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long"
+            resultType="com.herocheer.instructor.domain.entity.ReservationMember">
+        select
+        <include refid="table_field"/>
+        from reservation_member where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.ReservationMember">
+        select
+        <include refid="table_field"/>
+        from reservation_member
+        <where>
+            <if test="relevanceId != null">
+                and relevanceId = #{relevanceId}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="userName != null">
+                and userName = #{userName}
+            </if>
+            <if test="sex != null">
+                and sex = #{sex}
+            </if>
+            <if test="identityNumber != null">
+                and identityNumber = #{identityNumber}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="insuranceStatus != null">
+                and insuranceStatus = #{insuranceStatus}
+            </if>
+            <if test="relationType != null">
+                and relationType = #{relationType}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

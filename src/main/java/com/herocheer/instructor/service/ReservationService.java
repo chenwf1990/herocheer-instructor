@@ -3,6 +3,7 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
@@ -24,9 +25,9 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      *
      * @param reservationList 预订单
      * @param userId          用户id
-     * @return {@link Integer}
+     * @return {@link Reservation}
      */
-    void reservation(List<ReservationVO> reservationList, Long userId);
+    Reservation reservation(List<ReservationVO> reservationList, Long userId);
 
     /**
      * web端预约
@@ -105,7 +106,7 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @param userId   用户id
      * @return {@link List<Reservation>}
      */
-    List<Reservation> findReservationByCurrentUserId(Long courseId,Long userId);
+    List<ReservationMember> findReservationByCurrentUserId(Long courseId, Long userId);
 
     /**
      * 线上签到

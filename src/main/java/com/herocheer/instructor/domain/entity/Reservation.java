@@ -63,9 +63,4 @@ public class Reservation extends BaseEntity {
     private Integer signType;
     @ApiModelProperty("签到状态：0-未签到，1-已签到，2-签到失败")
     private Integer signStatus;
-
-    @ApiModelProperty("保险状态：0-未购买 1-待审核 2-审核不通过 3-未生效 4-已生效 5-已过期")
-    private Integer insuranceStatus;
-    @ApiModelProperty("携带关系：0-本人，1-儿子，2-女儿")
-    private Integer relationType;
 }
