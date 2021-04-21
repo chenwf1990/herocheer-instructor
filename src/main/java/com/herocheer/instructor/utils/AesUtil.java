@@ -65,7 +65,7 @@ public class AesUtil {
     }
 
     public static void main(String[] args) {
-        String str = "brjXzQauGqh3BQhVfpcKsXr9PlOureT9xEqZntSnUGM=";
+        String str = "PmwOukoG5GhhLUgkrhyDXrC6omB3eMSlMI+pZB1D2Qw=";
         String a = decrypt(str);
         System.out.println(a);
 //        System.out.println(decrypt(a));

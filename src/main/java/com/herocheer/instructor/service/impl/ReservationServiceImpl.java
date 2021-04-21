@@ -171,6 +171,8 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
         }
         User user=userService.findUserByPhone(reservation.getPhone());
+        log.debug("老年人预约用户手机：{}",reservation.getPhone());
+        log.debug("老年人预约用户：{}",user);
         if (user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取用户信息失败!");
         }
@@ -202,9 +204,21 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setLongitude(courseInfo.getLongitude());
         reservation.setLatitude(courseInfo.getLatitude());
         //保存用户信息
-        reservation.setUserId(courseInfo.getId());
+        reservation.setUserId(user.getId());
         reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
         this.dao.insert(reservation);
+
+        // 报名人员
+        ReservationMember reservationMember  = ReservationMember.builder().build();
+        reservationMember.setRelevanceId(reservation.getId());
+        reservationMember.setUserId(user.getId());
+        reservationMember.setUserName(reservation.getName());
+        reservationMember.setPhone(reservation.getPhone());
+        reservationMember.setIdentityNumber(reservation.getIdentityNumber());
+        reservationMember.setInsuranceStatus(4);
+        reservationMember.setRelationType(0);
+
+        reservationMemberService.insert(reservationMember);
         courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
         return courseInfoService.update(courseInfo);
     }
