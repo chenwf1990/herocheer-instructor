@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.EquipmentRemandDao">
+    <sql id="table_field">
+      id, borrowId, borrowDetailsId, remandQuantity, receiveBy, receiveId, receiveTime, phoneNumber, remandStatus, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.EquipmentRemand">
+        insert into equipment_remand (
+    <trim suffixOverrides=",">
+        <if test="borrowId != null">
+            borrowId,
+        </if>
+        <if test="borrowDetailsId != null">
+            borrowDetailsId,
+        </if>
+        <if test="remandQuantity != null">
+            remandQuantity,
+        </if>
+        <if test="receiveBy != null">
+            receiveBy,
+        </if>
+        <if test="receiveId != null">
+            receiveId,
+        </if>
+        <if test="receiveTime != null">
+            receiveTime,
+        </if>
+        <if test="phoneNumber != null">
+            phoneNumber,
+        </if>
+        <if test="remandStatus != null">
+            remandStatus,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="borrowId != null">
+            #{borrowId},
+        </if>
+        <if test="borrowDetailsId != null">
+            #{borrowDetailsId},
+        </if>
+        <if test="remandQuantity != null">
+            #{remandQuantity},
+        </if>
+        <if test="receiveBy != null">
+            #{receiveBy},
+        </if>
+        <if test="receiveId != null">
+            #{receiveId},
+        </if>
+        <if test="receiveTime != null">
+            #{receiveTime},
+        </if>
+        <if test="phoneNumber != null">
+            #{phoneNumber},
+        </if>
+        <if test="remandStatus != null">
+            #{remandStatus},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from equipment_remand where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.EquipmentRemand">
+        update equipment_remand
+        <set>
+            <if test="borrowId != null">
+                borrowId = #{borrowId},
+            </if>
+            <if test="borrowDetailsId != null">
+                borrowDetailsId = #{borrowDetailsId},
+            </if>
+            <if test="remandQuantity != null">
+                remandQuantity = #{remandQuantity},
+            </if>
+            <if test="receiveBy != null">
+                receiveBy = #{receiveBy},
+            </if>
+            <if test="receiveId != null">
+                receiveId = #{receiveId},
+            </if>
+            <if test="receiveTime != null">
+                receiveTime = #{receiveTime},
+            </if>
+            <if test="phoneNumber != null">
+                phoneNumber = #{phoneNumber},
+            </if>
+            <if test="remandStatus != null">
+                remandStatus = #{remandStatus},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.EquipmentRemand">
+        select <include refid="table_field"/> from equipment_remand where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.EquipmentRemand">
+        select <include refid="table_field"/> from equipment_remand
+        <where>
+            <if test="borrowId != null">
+                and borrowId = #{borrowId}
+            </if>
+            <if test="borrowDetailsId != null">
+                and borrowDetailsId = #{borrowDetailsId}
+            </if>
+            <if test="remandQuantity != null">
+                and remandQuantity = #{remandQuantity}
+            </if>
+            <if test="receiveBy != null">
+                and receiveBy = #{receiveBy}
+            </if>
+            <if test="receiveId != null">
+                and receiveId = #{receiveId}
+            </if>
+            <if test="receiveTime != null">
+                and receiveTime = #{receiveTime}
+            </if>
+            <if test="phoneNumber != null">
+                and phoneNumber = #{phoneNumber}
+            </if>
+            <if test="remandStatus != null">
+                and remandStatus = #{remandStatus}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from equipment_remand
+        <where>
+            <if test="borrowId != null">
+                and borrowId = #{borrowId}
+            </if>
+            <if test="borrowDetailsId != null">
+                and borrowDetailsId = #{borrowDetailsId}
+            </if>
+            <if test="remandQuantity != null">
+                and remandQuantity = #{remandQuantity}
+            </if>
+            <if test="receiveBy != null">
+                and receiveBy = #{receiveBy}
+            </if>
+            <if test="receiveId != null">
+                and receiveId = #{receiveId}
+            </if>
+            <if test="receiveTime != null">
+                and receiveTime = #{receiveTime}
+            </if>
+            <if test="phoneNumber != null">
+                and phoneNumber = #{phoneNumber}
+            </if>
+            <if test="remandStatus != null">
+                and remandStatus = #{remandStatus}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="findRemandList" resultType="com.herocheer.instructor.domain.vo.EquipmentRemandVo">
+        SELECT b.*,r.id as 'remandId',r.remandQuantity as 'thisRemandQuantity' from equipment_borrow_details b
+            LEFT JOIN equipment_remand r on b.id=r.borrowDetailsId
+        where b.borrowId=#{borrowId} and r.remandStatus=#{remandStatus}
+    </select>
+
+    <update id="updateRemandStatus">
+        update equipment_remand set remandStatus = #{remandStatus} where borrowId = #{borrowId}
+    </update>
+
+    <select id="getRemandByDetailsId" resultType="com.herocheer.instructor.domain.entity.EquipmentRemand">
+        select * from equipment_remand
+        where borrowDetailsId=#{borrowDetailsId} and (remandStatus=2 or remandStatus=3)
+    </select>
+</mapper>
