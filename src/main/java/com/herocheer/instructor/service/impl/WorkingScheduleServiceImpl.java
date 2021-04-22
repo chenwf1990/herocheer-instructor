@@ -678,6 +678,7 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
             reservation.setUserId(userEntity.getId());
             reservation.setPhone(userEntity.getPhone());
             reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
+            reservation.setSource(1);
             reservationService.insert(reservation);
             //已预约数加一
             activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()+1);

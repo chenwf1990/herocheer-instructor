@@ -28,6 +28,8 @@ public class Reservation extends BaseEntity {
     private Long relevanceId;
     @ApiModelProperty("类型(1.驿站招募2.赛事招募3.课程培训)")   
     private Integer type;
+    @ApiModelProperty("来源(1.线上 2.线下)")
+    private Integer source;
     @ApiModelProperty("关联任务id")   
     private Long workingId;
     @ApiModelProperty("标题")   

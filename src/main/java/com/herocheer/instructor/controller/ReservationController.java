@@ -3,9 +3,11 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
+import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
 import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.web.base.BaseController;
@@ -13,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author makejava
@@ -35,17 +40,23 @@ public class ReservationController extends BaseController{
     @Resource
     private ReservationService reservationService;
 
-    @GetMapping("/course")
-    @ApiOperation("课程信息预约")
-    public ResponseResult reservation( @ApiParam("课程id") @RequestParam Long courseId, HttpServletRequest request){
-        Integer count=reservationService.reservation(courseId,getCurUserId(request));
+    @PostMapping("/course")
+    @ApiOperation("线上预约")
+    public ResponseResult<Reservation> reservation( @ApiParam("预约信息") @RequestBody List<ReservationVO> reservationList, HttpServletRequest request){
+        return ResponseResult.ok(reservationService.reservation(reservationList,getCurUserId(request)));
+    }
+    @PostMapping("/web/course")
+    @ApiOperation("老年人预约")
+    public ResponseResult webReservation(@RequestBody Reservation reservation){
+        Integer count=reservationService.webReservation(reservation);
         return ResponseResult.isSuccess(count);
     }
 
     @GetMapping("/cancel")
     @ApiOperation("取消预约")
     public ResponseResult cancel(@ApiParam("预约id") @RequestParam Long id){
-        return ResponseResult.ok(reservationService.cancel(id));
+        reservationService.cancel(id);
+        return ResponseResult.ok();
     }
 
     @PostMapping("/queryPage")
@@ -67,14 +78,36 @@ public class ReservationController extends BaseController{
         return ResponseResult.ok(reservationService.getCourse(id));
     }
 
-    @GetMapping("/sign/info")
-    @ApiOperation("预约签到")
-    public ResponseResult createSignInfo( @ApiParam("课程id") @RequestParam Long courseId, HttpServletRequest request){
+    /**
+     * 创建签名信息
+     *
+     * @param reservationList 预订单
+     * @param request         请求
+     * @return {@link ResponseResult}
+     */
+    @PostMapping("/sign/info")
+    @ApiOperation("线下预约及签到")
+    public ResponseResult createSignInfo(@ApiParam("预约信息") @Valid @RequestBody List<ReservationVO> reservationList, HttpServletRequest request){
         // 返回签到时间
-        Long signTime = reservationService.addSignInfo(courseId,getCurUserId(request));
+        Long signTime = reservationService.addSignInfo(reservationList,getCurUserId(request));
         return ResponseResult.ok(signTime);
     }
 
+
+    /**
+     * 线上签到
+     *
+     * @param courseId 进程id
+     * @param request  请求
+     * @return {@link ResponseResult}
+     */
+    @GetMapping("/online/sign/info")
+    @ApiOperation("线上签到")
+    public ResponseResult createOnlineSignInfo(@ApiParam("课程ID") @RequestParam Long courseId, HttpServletRequest request){
+        // 返回签到时间
+        Long signTime = reservationService.addOnlineSignInfo(courseId,getCurUserId(request));
+        return ResponseResult.ok(signTime);
+    }
     /**
      * 签到信息列表
      *
@@ -87,5 +120,17 @@ public class ReservationController extends BaseController{
     public ResponseResult<Page<Reservation>> querySignInfoByPage(@RequestBody SignInfoVO signInfoVO, HttpServletRequest request){
         Page<Reservation> page = reservationService.findSignInfoByPage(signInfoVO);
         return ResponseResult.ok(page);
+    }
+
+    /**
+     * 根据当前用户ID获取预约信息
+     *
+     * @param relevanceId 进程id
+     * @return {@link ResponseResult<List<Reservation>>}
+     */
+    @GetMapping("/info/{relevanceId:\\w+}")
+    @ApiOperation("已参与人员")
+    public ResponseResult<List<ReservationMember>> fecthReservationBycurrentUserId(@ApiParam("预约ID") @PathVariable Long relevanceId, HttpServletRequest request){
+        return ResponseResult.ok(reservationService.findReservationByCurrentUserId(relevanceId,getCurUserId(request)));
     }
 }

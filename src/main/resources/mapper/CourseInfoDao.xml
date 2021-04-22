@@ -4,7 +4,7 @@
 
     <sql id="table_field">
         id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-        approvalId,approvalBy,approvalTime,
+        approvalId,approvalBy,approvalTime,releaseTime,
         CASE
             WHEN approvalStatus != 1 THEN null
             WHEN `state`=5 THEN `state`
@@ -14,6 +14,7 @@
             WHEN approvalStatus = 1 AND signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
             WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 1
+            WHEN UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> releaseTime THEN 0
             ELSE `state` END AS 'state'
     </sql>
     
@@ -96,6 +97,9 @@
         <if test="approvalTime != null">
             approvalTime,
         </if>
+        <if test="releaseTime != null">
+            releaseTime,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -174,6 +178,9 @@
         </if>
         <if test="approvalTime != null">
             #{approvalTime},
+        </if>
+        <if test="releaseTime != null">
+            #{releaseTime},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -264,6 +271,9 @@
             <if test="approvalTime != null">
                 approvalTime = #{approvalTime},
             </if>
+            <if test="releaseTime != null">
+                releaseTime = #{releaseTime},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
         where id = #{id}
@@ -351,6 +361,9 @@
             </if>
             <if test="approvalTime != null">
                 and approvalTime = #{approvalTime},
+            </if>
+            <if test="releaseTime != null">
+                and releaseTime = #{releaseTime},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
@@ -440,6 +453,9 @@
             <if test="approvalTime != null">
                 and approvalTime = #{approvalTime},
             </if>
+            <if test="releaseTime != null">
+                and releaseTime = #{releaseTime},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
@@ -504,7 +520,7 @@
                 AND createdId=#{createdId}
             </if>
             <if test="queryType!=null and queryType==4">
-                AND approvalStatus=1 AND state!=5
+                AND approvalStatus=1 AND state!=5 AND releaseTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="approvalStartTime!=null">
                 and updateTime <![CDATA[ > ]]> #{approvalStartTime}
@@ -520,6 +536,12 @@
             <if test="lecturerTeacherId != null and lecturerTeacherId !='' ">
                 and lecturerTeacherId=#{lecturerTeacherId}
             </if>
+            <if test="releaseStartTime!=null">
+                and releaseTime <![CDATA[ >= ]]> #{releaseStartTime}
+            </if>
+            <if test="releaseEndTime!=null">
+                and releaseTime <![CDATA[ <= ]]> #{releaseEndTime}
+            </if>
         </where>
         <choose>
             <when test="queryType!=null and queryType==4">
@@ -533,10 +555,10 @@
                 WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 0
                 WHEN approvalStatus = 1 AND signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1 END ASC
-                ,placedTop DESC,createdTime DESC
+                ,placedTop DESC,releaseTime DESC
             </when>
             <otherwise>
-                order by placedTop DESC,createdTime DESC
+                order by placedTop DESC,releaseTime DESC
             </otherwise>
         </choose>
     </select>

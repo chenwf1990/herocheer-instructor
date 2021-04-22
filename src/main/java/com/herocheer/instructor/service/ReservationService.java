@@ -3,9 +3,11 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
+import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
 
 import java.util.List;
@@ -20,18 +22,26 @@ public interface ReservationService extends BaseService<Reservation,Long> {
 
     /**
      * 课程预约
-     * @param courseId
-     * @param userId
+     *
+     * @param reservationList 预订单
+     * @param userId          用户id
+     * @return {@link Reservation}
+     */
+    Reservation reservation(List<ReservationVO> reservationList, Long userId);
+
+    /**
+     * web端预约
+     * @param reservation
      * @return
      */
-    Integer reservation(Long courseId, Long userId);
+    Integer webReservation(Reservation reservation);
 
     /**
      * 取消预约
      * @param id
      * @return
      */
-    Integer cancel(Long id);
+    void cancel(Long id);
 
     /**
      * 查询预约记录
@@ -73,13 +83,13 @@ public interface ReservationService extends BaseService<Reservation,Long> {
 
 
     /**
-     * 添加签到信息
+     * 添加签名信息
      *
-     * @param courseId 进程id
-     * @param userId   用户id
+     * @param userId          用户id
+     * @param reservationList 预订单
      * @return {@link Long}
      */
-    Long addSignInfo(Long courseId, Long userId);
+    Long addSignInfo(List<ReservationVO> reservationList, Long userId);
 
     /**
      * 签到信息列表
@@ -88,4 +98,22 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @return {@link Page<SignInfoVO>}
      */
     Page<Reservation> findSignInfoByPage(SignInfoVO signInfoVO);
+
+    /**
+     * 根据当前用户ID获取预约信息
+     *
+     * @param courseId 进程id
+     * @param userId   用户id
+     * @return {@link List<Reservation>}
+     */
+    List<ReservationMember> findReservationByCurrentUserId(Long courseId, Long userId);
+
+    /**
+     * 线上签到
+     *
+     * @param courseId 进程id
+     * @param userId   用户id
+     * @return {@link Long}
+     */
+    Long addOnlineSignInfo(Long courseId,Long userId);
 }

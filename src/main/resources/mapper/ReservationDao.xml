@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ReservationDao">
     <sql id="table_field">
-      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone, signTime, signType, signStatus,
+      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone, signTime, signType, signStatus, source,
       <if test="queryType==1">
           case
           when `status`=2 then 0
@@ -23,6 +23,9 @@
         </if>
         <if test="type != null">
             type,
+        </if>
+        <if test="source != null">
+            source,
         </if>
         <if test="workingId != null">
             workingId,
@@ -81,6 +84,9 @@
         </if>
         <if test="type != null">
             #{type},
+        </if>
+        <if test="source != null">
+            #{source},
         </if>
         <if test="workingId != null">
             #{workingId},
@@ -149,6 +155,9 @@
             </if>
             <if test="type != null">
                 type = #{type},
+            </if>
+            <if test="source != null">
+                source = #{source},
             </if>
             <if test="workingId != null">
                 workingId = #{workingId},
@@ -220,6 +229,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="source != null">
+                and source = #{source}
+            </if>
             <if test="workingId != null">
                 and workingId = #{workingId}
             </if>
@@ -274,6 +286,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="source != null">
+                and source = #{source}
+            </if>
             <if test="workingId != null">
                 and workingId = #{workingId}
             </if>
@@ -317,10 +332,42 @@
         </where>
     </select>
 
-    <select id="findList" resultType="com.herocheer.instructor.domain.entity.Reservation"
-            parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
-        select <include refid="table_field"/> from reservation
+    <select id="findList" resultType="com.herocheer.instructor.domain.entity.Reservation" parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
+        select
+            id,
+            relevanceId,
+            type,
+            workingId,
+            title,
+            image,
+            startTime,
+            endTime,
+            address,
+            longitude,
+            latitude,
+            userId,
+            IFNULL(a.`name`,(select GROUP_CONCAT( b.userName SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
+            IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `identityNumber`,
+            IFNULL(a.phone,(select GROUP_CONCAT( b.phone SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as phone,
+            signTime,
+            signType,
+            signStatus,
+            source,
+            STATUS,
+            createdId,
+            createdBy,
+            createdTime,
+            updateId,
+            updateBy,
+            updateTime
+        from reservation a
         <where>
+            <if test="name!=null and name!=''">
+                and `name` like concat('%',#{name},'%')
+            </if>
+            <if test="identityNumber!=null">
+                and identityNumber=#{identityNumber}
+            </if>
             <if test="title!=null and title!=''">
                 and title like concat('%',#{title},'%')
             </if>
@@ -364,7 +411,34 @@
 
     <!-- 签到信息列表 -->
     <select id="selectSignInfoByPage" resultType="com.herocheer.instructor.domain.entity.Reservation" parameterType="com.herocheer.instructor.domain.vo.SignInfoVO">
-        select <include refid="table_field"/> from reservation
+        select
+            id,
+            relevanceId,
+            type,
+            workingId,
+            title,
+            image,
+            startTime,
+            endTime,
+            address,
+            longitude,
+            latitude,
+            userId,
+            IFNULL(a.`name`,(select GROUP_CONCAT( b.userName SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
+            IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `identityNumber`,
+            IFNULL(a.phone,(select GROUP_CONCAT( b.phone SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as phone,
+            signTime,
+            signType,
+            signStatus,
+            source,
+            STATUS,
+            createdId,
+            createdBy,
+            createdTime,
+            updateId,
+            updateBy,
+            updateTime
+        from reservation a
         <where>
             <if test="type != null">
                 and `type` = #{type}

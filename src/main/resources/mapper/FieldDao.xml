@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.FieldDao">
+
+    <sql id="table_field">
+      id, fieldName, areaName, areaCode, address, longitude, latitude, fieldType, fieldTypeCode, fieldItem, other, foundTime, fieldImages, adminUnit, adminName, phone, openStatus, noOpenReason, adminSystemStatus, billboardStatus, lastMaintainTime, remark, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.Field">
+        insert into field (
+        <trim suffixOverrides=",">
+            <if test="fieldName != null">
+                fieldName,
+            </if>
+            <if test="areaName != null">
+                areaName,
+            </if>
+            <if test="areaCode != null">
+                areaCode,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="longitude != null">
+                longitude,
+            </if>
+            <if test="latitude != null">
+                latitude,
+            </if>
+            <if test="fieldType != null">
+                fieldType,
+            </if>
+            <if test="fieldTypeCode != null">
+                fieldTypeCode,
+            </if>
+            <if test="fieldItem != null">
+                fieldItem,
+            </if>
+            <if test="other != null">
+                other,
+            </if>
+            <if test="foundTime != null">
+                foundTime,
+            </if>
+            <if test="fieldImages != null">
+                fieldImages,
+            </if>
+            <if test="adminUnit != null">
+                adminUnit,
+            </if>
+            <if test="adminName != null">
+                adminName,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="openStatus != null">
+                openStatus,
+            </if>
+            <if test="noOpenReason != null">
+                noOpenReason,
+            </if>
+            <if test="adminSystemStatus != null">
+                adminSystemStatus,
+            </if>
+            <if test="billboardStatus != null">
+                billboardStatus,
+            </if>
+            <if test="lastMaintainTime != null">
+                lastMaintainTime,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="fieldName != null">
+                #{fieldName},
+            </if>
+            <if test="areaName != null">
+                #{areaName},
+            </if>
+            <if test="areaCode != null">
+                #{areaCode},
+            </if>
+            <if test="address != null">
+                #{address},
+            </if>
+            <if test="longitude != null">
+                #{longitude},
+            </if>
+            <if test="latitude != null">
+                #{latitude},
+            </if>
+            <if test="fieldType != null">
+                #{fieldType},
+            </if>
+            <if test="fieldTypeCode != null">
+                #{fieldTypeCode},
+            </if>
+            <if test="fieldItem != null">
+                #{fieldItem},
+            </if>
+            <if test="other != null">
+                #{other},
+            </if>
+            <if test="foundTime != null">
+                #{foundTime},
+            </if>
+            <if test="fieldImages != null">
+                #{fieldImages},
+            </if>
+            <if test="adminUnit != null">
+                #{adminUnit},
+            </if>
+            <if test="adminName != null">
+                #{adminName},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="openStatus != null">
+                #{openStatus},
+            </if>
+            <if test="noOpenReason != null">
+                #{noOpenReason},
+            </if>
+            <if test="adminSystemStatus != null">
+                #{adminSystemStatus},
+            </if>
+            <if test="billboardStatus != null">
+                #{billboardStatus},
+            </if>
+            <if test="lastMaintainTime != null">
+                #{lastMaintainTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from field where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.Field">
+        update field
+        <set>
+            <if test="fieldName != null">
+                fieldName = #{fieldName},
+            </if>
+            <if test="areaName != null">
+                areaName = #{areaName},
+            </if>
+            <if test="areaCode != null">
+                areaCode = #{areaCode},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="fieldType != null">
+                fieldType = #{fieldType},
+            </if>
+            <if test="fieldTypeCode != null">
+                fieldTypeCode = #{fieldTypeCode},
+            </if>
+            <if test="fieldItem != null">
+                fieldItem = #{fieldItem},
+            </if>
+            <if test="other != null">
+                other = #{other},
+            </if>
+            <if test="foundTime != null">
+                foundTime = #{foundTime},
+            </if>
+            <if test="fieldImages != null">
+                fieldImages = #{fieldImages},
+            </if>
+            <if test="adminUnit != null">
+                adminUnit = #{adminUnit},
+            </if>
+            <if test="adminName != null">
+                adminName = #{adminName},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="openStatus != null">
+                openStatus = #{openStatus},
+            </if>
+            <if test="noOpenReason != null">
+                noOpenReason = #{noOpenReason},
+            </if>
+            <if test="adminSystemStatus != null">
+                adminSystemStatus = #{adminSystemStatus},
+            </if>
+            <if test="billboardStatus != null">
+                billboardStatus = #{billboardStatus},
+            </if>
+            <if test="lastMaintainTime != null">
+                lastMaintainTime = #{lastMaintainTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.Field">
+        select
+        <include refid="table_field"/>
+        from field where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.Field">
+        select
+        <include refid="table_field"/>
+        from field
+        <where>
+            <if test="fieldName != null">
+                and fieldName = #{fieldName}
+            </if>
+            <if test="areaName != null">
+                and areaName = #{areaName}
+            </if>
+            <if test="areaCode != null">
+                and areaCode = #{areaCode}
+            </if>
+            <if test="address != null">
+                and address = #{address}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="fieldType != null">
+                and fieldType = #{fieldType}
+            </if>
+            <if test="fieldTypeCode != null">
+                and fieldTypeCode = #{fieldTypeCode}
+            </if>
+            <if test="fieldItem != null">
+                and fieldItem = #{fieldItem}
+            </if>
+            <if test="other != null">
+                and other = #{other}
+            </if>
+            <if test="foundTime != null">
+                and foundTime = #{foundTime}
+            </if>
+            <if test="fieldImages != null">
+                and fieldImages = #{fieldImages}
+            </if>
+            <if test="adminUnit != null">
+                and adminUnit = #{adminUnit}
+            </if>
+            <if test="adminName != null">
+                and adminName = #{adminName}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="openStatus != null">
+                and openStatus = #{openStatus}
+            </if>
+            <if test="noOpenReason != null">
+                and noOpenReason = #{noOpenReason}
+            </if>
+            <if test="adminSystemStatus != null">
+                and adminSystemStatus = #{adminSystemStatus}
+            </if>
+            <if test="billboardStatus != null">
+                and billboardStatus = #{billboardStatus}
+            </if>
+            <if test="lastMaintainTime != null">
+                and lastMaintainTime = #{lastMaintainTime}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

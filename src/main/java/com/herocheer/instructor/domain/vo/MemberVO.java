@@ -26,6 +26,8 @@ public class MemberVO {
     private String userName;
     @ApiModelProperty("用户类型")
     private Integer userType;
+    @ApiModelProperty("证件号码")
+    private String certificateNo;
 
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status = true;

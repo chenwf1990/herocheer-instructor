@@ -187,6 +187,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             if(CollectionUtil.isNotEmpty(list)){
                 courseInfoVo.setReservationStatus(0);
                 Reservation reservation = list.get(0);
+                courseInfoVo.setReservationId(reservation.getId());
                 log.debug("扫码签到当前用户的预约信息:{}",reservation);
                 if(reservation.getSignStatus().equals(1)){
                     courseInfoVo.setSignStatus(1);
