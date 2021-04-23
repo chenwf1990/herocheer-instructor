@@ -295,8 +295,25 @@
                 <if test="status != null">
                     and status = #{status}
                 </if>
+                <if test="queryType!=null and queryType==1">
+                    and status = 0
+                </if>
+                <if test="queryType!=null and queryType==2">
+                    and remandStatus = 1
+                </if>
+                <if test="queryType!=null and queryType==2">
+                    and (status = 3 or status=4)
+                </if>
             </where>
-        order by createdTime DESC
+            <choose>
+                <when test="queryType!=null">
+                    order by case when remandStatus=1 then  0
+                    ELSE 1 end ASC,createdTime DESC
+                </when>
+                <otherwise>
+                    order by createdTime DESC
+                </otherwise>
+            </choose>
     </select>
 
     <select id="getEquipmentBorrow"

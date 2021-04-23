@@ -25,6 +25,14 @@ public interface BrandInfoService extends BaseService<BrandInfo,Long> {
     Page<BrandInfo> queryPage(String brandName,Integer pageNo,Integer pageSize);
 
     /**
+     * 更新品牌状态
+     * @param id
+     * @param isEnable
+     * @return
+     */
+    Integer isEnable(Long id,Integer isEnable);
+
+    /**
      * 保存品牌
      * @param brandInfo
      * @return

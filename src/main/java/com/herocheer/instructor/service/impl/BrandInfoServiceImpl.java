@@ -37,6 +37,14 @@ public class BrandInfoServiceImpl extends BaseServiceImpl<BrandInfoDao, BrandInf
     }
 
     @Override
+    public Integer isEnable(Long id, Integer isEnable) {
+        BrandInfo brandInfo=new BrandInfo();
+        brandInfo.setId(id);
+        brandInfo.setIsEnable(isEnable);
+        return this.dao.update(brandInfo);
+    }
+
+    @Override
     public Integer addBrand(BrandInfo brandInfo) {
         Integer count=this.dao.getCount(brandInfo.getNumbering(),null);
         if(count>0){

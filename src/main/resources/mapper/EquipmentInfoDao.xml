@@ -201,8 +201,6 @@
         FROM
         equipment_info i
         LEFT JOIN equipment_borrow_details b ON i.id = b.equipmentId
-        GROUP BY
-        i.id
         <where>
             <if test="courierId != null">
                 and i.courierId = #{courierId}
@@ -214,6 +212,8 @@
                 and i.brandName like concat('%',#{brandName},'%')
             </if>
         </where>
+        GROUP BY
+        i.id
         order by i.createdTime DESC
     </select>
 </mapper>

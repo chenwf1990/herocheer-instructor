@@ -36,6 +36,14 @@ public class BrandInfoController extends BaseController{
         return ResponseResult.ok(page);
     }
 
+    @GetMapping("/update/Enable")
+    @ApiOperation("分页查询品牌")
+    public ResponseResult updateEnable(@ApiParam("品牌ID") @RequestParam Long id,
+                                     @ApiParam("是否启用:0.启用 1.关闭") @RequestParam Integer isEnable){
+        Integer count = brandInfoService.isEnable(id,isEnable);
+        return ResponseResult.isSuccess(count);
+    }
+
     @PostMapping("/add")
     @ApiOperation("新增品牌")
     public ResponseResult add(@RequestBody BrandInfo brandInfo){
