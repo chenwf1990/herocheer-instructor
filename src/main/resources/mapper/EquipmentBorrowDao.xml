@@ -296,9 +296,6 @@
                     and status = #{status}
                 </if>
                 <if test="status==5">
-                    and remandStatus = 1
-                </if>
-                <if test="status==6">
                     and (status = 3 or status=4)
                 </if>
                 <if test="userId!=null and queryType==2">

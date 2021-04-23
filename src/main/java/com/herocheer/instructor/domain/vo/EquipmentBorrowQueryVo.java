@@ -42,7 +42,7 @@ public class EquipmentBorrowQueryVo implements Serializable {
     @ApiModelProperty("归还结束时间")
     private Long userId;
 
-    @ApiModelProperty("状态 (0.待审核 1.待借出 2.待归还 3.已归还 4.驳回 5.归还核实 6.已办结)")
+    @ApiModelProperty("状态 (0.待审核 1.待借出 2.待归还 3.已归还 4.驳回  5.已办结)")
     private Integer status;
 
     @ApiModelProperty("查询类型(0.查询全部 1.驿站值班人员查询 2.用户查询)")
