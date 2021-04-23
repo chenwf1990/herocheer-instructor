@@ -357,7 +357,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         } else {
             User oldUser = User.builder().build();
             oldUser.setId(sysUser.getId());
+            oldUser.setIxmUserId(user.getString("uuid").replace("-", ""));
+            oldUser.setIxmUserName(user.getString("userName"));
             oldUser.setCertificateNo(AesUtil.encrypt(certificateNum));
+            oldUser.setIxmRealNameLevel(user.getString("realNameStatus"));
             oldUser.setUserName(user.getString("certificateName"));
             oldUser.setPhone(AesUtil.encrypt(user.getString("mobile")));
             oldUser.setOpenid(openid);
@@ -376,8 +379,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
                 oldUser.setSex(0);
             }
             oldUser.setUpdateTime(System.currentTimeMillis());
+            oldUser.setIxmUserRealName(user.getString("certificateName"));
 
             this.update(oldUser);
+            currentUser.setUserType(userService.get(sysUser.getId()).getUserType());
 
             sysUser.setCertificateNo(certificateNum);
             sysUser.setUserName(user.getString("certificateName"));
