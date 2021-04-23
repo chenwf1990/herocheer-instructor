@@ -28,6 +28,8 @@ import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,9 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
 
     @Resource
     private EquipmentRemandService equipmentRemandService;
+
+    @Resource
+    private EquipmentInfoService equipmentInfoService;
 
     @Override
     public Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo) {
@@ -77,12 +82,25 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if (vo.getBorrowDetails().isEmpty()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "请选择要借用的器材!");
         }
-        for(EquipmentBorrowDetails details:vo.getBorrowDetails()){
-            borrowEquipment.append(details.getEquipmentName());
+        List<EquipmentBorrowDetails> detailsList=vo.getBorrowDetails();
+        for(int i=0;i<detailsList.size();i++){
+            EquipmentInfo equipmentInfo=equipmentInfoService.get(detailsList.get(i).getEquipmentId());
+            if (equipmentInfo==null){
+                throw new CommonException(ResponseCode.SERVER_ERROR, "器材错误!");
+            }
+            borrowEquipment.append(equipmentInfo.getEquipmentName());
             borrowEquipment.append("*");
-            borrowEquipment.append(details.getBorrowQuantity());
+            borrowEquipment.append(detailsList.get(i).getBorrowQuantity());
             borrowEquipment.append(",");
+            //保存器材信息
+            detailsList.get(i).setEquipmentName(equipmentInfo.getEquipmentName());
+            detailsList.get(i).setBrandName(equipmentInfo.getBrandName());
+            detailsList.get(i).setModel(equipmentInfo.getModel());
         }
+        SimpleDateFormat dateFormat=new SimpleDateFormat("yyyyMM");
+        String borrowReceipt="QCJY"+dateFormat.format(new Date());
+        Integer receiptCount=this.dao.getCountByReceipt(borrowReceipt);
+        vo.setBorrowReceipt(String.format(borrowReceipt+ "%04d",receiptCount+1));
         vo.setBorrowEquipment(borrowEquipment.toString().substring(0,borrowEquipment.length()-1));
         Integer count=this.dao.insert(vo);
         for(EquipmentBorrowDetails details:vo.getBorrowDetails()){
@@ -123,7 +141,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         }
         equipmentBorrow.setStatus(BorrowStatusEnums.to_remand.getStatus());
         equipmentBorrow.setBorrowEquipment(borrowEquipment.toString().substring(0,borrowEquipment.length()-1));
-        return this.dao.insert(equipmentBorrow);
+        return this.dao.update(equipmentBorrow);
     }
 
     @Override
@@ -153,6 +171,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             if(details==null){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用器材失败!");
             }
+            equipmentRemand.setRemandStatus(RemandStatusEnums.apply_remand.getStatus());
             if(details.getUnreturnedQuantity()>0 && details.getRemandStatus().equals(0)){
                 equipmentRemandService.insert(equipmentRemand);
             }

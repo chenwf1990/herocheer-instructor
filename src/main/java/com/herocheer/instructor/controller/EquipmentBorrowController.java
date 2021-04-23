@@ -86,7 +86,7 @@ public class EquipmentBorrowController extends BaseController{
     }
 
     @GetMapping("/remand/apply/list")
-    @ApiOperation("器材借用查询")
+    @ApiOperation("查询申请归还的器材")
     public ResponseResult<List<EquipmentRemandVo>> remandList(@ApiParam("借用id") @RequestParam Long id){
         List<EquipmentRemandVo> list = equipmentBorrowService.remandList(id);
         return ResponseResult.ok(list);

@@ -30,4 +30,11 @@ public interface EquipmentBorrowDao extends BaseDao<EquipmentBorrow,Long>{
      */
     EquipmentBorrowVo getEquipmentBorrow(@Param("id")Long id);
 
+    /**
+     * 查询统计数
+     * @param borrowReceipt
+     * @return
+     */
+    Integer getCountByReceipt(@Param("borrowReceipt")String borrowReceipt);
+
 }
