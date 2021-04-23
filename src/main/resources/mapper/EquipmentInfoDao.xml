@@ -189,6 +189,9 @@
             <if test="brandName != null">
                 and brandName like concat('%',#{brandName},'%')
             </if>
+            <if test="brandId!=null">
+                and brandId = #{brandId}
+            </if>
         </where>
         order by createdTime DESC
     </select>
@@ -197,7 +200,7 @@
     <select id="findStockList" parameterType="com.herocheer.instructor.domain.vo.EquipmentInfoQueryVo"
             resultType="com.herocheer.instructor.domain.vo.EquipmentInfoStockVo">
         SELECT
-        i.*,SUM( b.unreturnedQuantity ) AS 'borrowQuantity',i.stockNumber - SUM( b.unreturnedQuantity ) AS 'surplusQuantity'
+        i.*,sum(ifnull(b.unreturnedQuantity,0)) AS 'borrowQuantity',i.stockNumber - sum(ifnull(b.unreturnedQuantity,0)) AS 'surplusQuantity'
         FROM
         equipment_info i
         LEFT JOIN equipment_borrow_details b ON i.id = b.equipmentId
@@ -207,6 +210,9 @@
             </if>
             <if test="equipmentName != null">
                 and i.equipmentName like concat('%',#{equipmentName},'%')
+            </if>
+            <if test="brandId!=null">
+                and i.brandId = #{brandId}
             </if>
             <if test="brandName != null">
                 and i.brandName like concat('%',#{brandName},'%')

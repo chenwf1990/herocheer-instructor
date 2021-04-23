@@ -58,4 +58,11 @@ public interface WorkingScheduleDao extends BaseDao<WorkingSchedule,Long>{
      * @return
      */
     List<WorkingUserVo> getTaskInfoList(Map<String, Object> params);
+
+    /**
+     * 获取用户的排班信息
+     * @param map
+     * @return
+     */
+    WorkingSchedule getUserWorking(Map<String,Object> map);
 }

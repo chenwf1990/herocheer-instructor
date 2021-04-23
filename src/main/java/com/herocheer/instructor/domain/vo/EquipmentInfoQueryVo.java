@@ -23,6 +23,9 @@ public class EquipmentInfoQueryVo implements Serializable {
     @ApiModelProperty("品牌名")
     private String brandName;
 
+    @ApiModelProperty("品牌id")
+    private String brandId;
+
     @ApiModelProperty("页码")
     private int pageNo;
 

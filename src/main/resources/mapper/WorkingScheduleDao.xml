@@ -379,4 +379,16 @@
             </choose>
         </where>
     </select>
+
+    <!--获取用户的排班记录-->
+    <select id="getUserWorking" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        select a.* from working_schedule a
+        INNER JOIN working_schedule_user b on a.id = b.workingScheduleId
+        and a.activityType=1
+        and b.reserveStatus = 0
+        and a.scheduleTime = #{scheduleTime}
+        and a.serviceBeginTime &lt; #{serviceTime}
+        and a.serviceEndTime >= #{serviceTime}
+        and b.userId=#{userId}
+    </select>
 </mapper>
