@@ -292,21 +292,21 @@
                 <if test="remandEndTime != null">
                     and remandTime <![CDATA[ < ]]> #{remandEndTime}
                 </if>
-                <if test="status != null">
+                <if test="status != null and status!=5 and status!=6">
                     and status = #{status}
                 </if>
-                <if test="queryType!=null and queryType==1">
-                    and status = 0
-                </if>
-                <if test="queryType!=null and queryType==2">
+                <if test="status==5">
                     and remandStatus = 1
                 </if>
-                <if test="queryType!=null and queryType==2">
+                <if test="status==6">
                     and (status = 3 or status=4)
+                </if>
+                <if test="userId!=null and queryType==2">
+                    and createdId=#{userId}
                 </if>
             </where>
             <choose>
-                <when test="queryType!=null">
+                <when test="queryType==1 or queryType==2">
                     order by case when remandStatus=1 then  0
                     ELSE 1 end ASC,createdTime DESC
                 </when>

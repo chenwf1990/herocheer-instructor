@@ -26,7 +26,7 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      * @param queryVo
      * @return
      */
-    Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo);
+    Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo,Long userId);
 
     /**
      * 用户申请借用器材

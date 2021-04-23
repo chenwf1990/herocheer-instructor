@@ -37,8 +37,8 @@ public class EquipmentBorrowController extends BaseController{
 
     @PostMapping("/queryPage")
     @ApiOperation("器材借用查询")
-    public ResponseResult<Page<EquipmentBorrow>> queryPage(@RequestBody EquipmentBorrowQueryVo queryVo){
-        Page<EquipmentBorrow> page = equipmentBorrowService.queryPage(queryVo);
+    public ResponseResult<Page<EquipmentBorrow>> queryPage(@RequestBody EquipmentBorrowQueryVo queryVo,HttpServletRequest request){
+        Page<EquipmentBorrow> page = equipmentBorrowService.queryPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
 
@@ -102,7 +102,7 @@ public class EquipmentBorrowController extends BaseController{
     @GetMapping("/remand/user/confirm")
     @ApiOperation("用户确认归还")
     public ResponseResult userConfirmRemand(@ApiParam("借用id") @RequestParam Long id){
-        Integer count=equipmentBorrowService.userReceipt(id);
+        Integer count=equipmentBorrowService.userConfirmRemand(id);
         return ResponseResult.isSuccess(count);
     }
 

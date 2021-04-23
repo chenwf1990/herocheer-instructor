@@ -57,8 +57,11 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     private EquipmentInfoService equipmentInfoService;
 
     @Override
-    public Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo) {
+    public Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo,Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
+        if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(2)){
+            queryVo.setUserId(userId);
+        }
         List<EquipmentBorrow> list=this.dao.findList(queryVo);
         page.setDataList(list);
         return page;
