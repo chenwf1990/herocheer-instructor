@@ -37,4 +37,11 @@ public interface EquipmentBorrowDao extends BaseDao<EquipmentBorrow,Long>{
      */
     Integer getCountByReceipt(@Param("borrowReceipt")String borrowReceipt);
 
+    /**
+     * 查询用户进行中单据的数量
+     * @param userId
+     * @return
+     */
+    Integer getCountByUserId(@Param("userId")Long userId);
+
 }

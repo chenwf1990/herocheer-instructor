@@ -99,4 +99,11 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      */
     EquipmentBorrowVo getEquipmentBorrow(Long id);
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    Integer getCountByUserId(Long id);
+
 }

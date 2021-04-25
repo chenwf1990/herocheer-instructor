@@ -113,4 +113,11 @@ public class EquipmentBorrowController extends BaseController{
         return ResponseResult.ok(vo);
     }
 
+    @GetMapping("/user/borrow/count")
+    @ApiOperation("获取用户进行中单据的统计数")
+    public ResponseResult<Integer> getCountByUserId( HttpServletRequest request){
+        Integer count = equipmentBorrowService.getCountByUserId(getCurUserId(request));
+        return ResponseResult.ok(count);
+    }
+
 }

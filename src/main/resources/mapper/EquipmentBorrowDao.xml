@@ -321,4 +321,9 @@
     <select id="getCountByReceipt" resultType="java.lang.Integer">
         select count(1) from equipment_borrow where borrowReceipt like concat(#{borrowReceipt},'%')
     </select>
+
+    <select id="getCountByUserId" resultType="java.lang.Integer">
+        SELECT count(*) from equipment_borrow
+        where (`status`=0 or `status`=1 or `status`=2) and createdId=#{userId}
+    </select>
 </mapper>

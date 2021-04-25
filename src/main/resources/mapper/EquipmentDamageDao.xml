@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.EquipmentDamageDao">
+    <sql id="table_field">
+      id, borrowId, status, damageReason, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.EquipmentDamage">
+        insert into equipment_damage (
+    <trim suffixOverrides=",">
+        <if test="borrowId != null">
+            borrowId,
+        </if>
+        <if test="status != null">
+            status,
+        </if>
+        <if test="damageReason != null">
+            damageReason,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="borrowId != null">
+            #{borrowId},
+        </if>
+        <if test="status != null">
+            #{status},
+        </if>
+        <if test="damageReason != null">
+            #{damageReason},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from equipment_damage where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.EquipmentDamage">
+        update equipment_damage
+        <set>
+            <if test="borrowId != null">
+                borrowId = #{borrowId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="damageReason != null">
+                damageReason = #{damageReason},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.EquipmentDamage">
+        select <include refid="table_field"/> from equipment_damage where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.EquipmentDamage">
+        select <include refid="table_field"/> from equipment_damage
+        <where>
+            <if test="borrowId != null">
+                and borrowId = #{borrowId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="damageReason != null">
+                and damageReason = #{damageReason}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from equipment_damage
+        <where>
+            <if test="borrowId != null">
+                and borrowId = #{borrowId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="damageReason != null">
+                and damageReason = #{damageReason}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+</mapper>

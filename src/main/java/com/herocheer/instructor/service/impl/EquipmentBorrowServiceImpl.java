@@ -3,6 +3,7 @@ package com.herocheer.instructor.service.impl;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.EquipmentBorrow;
 import com.herocheer.instructor.dao.EquipmentBorrowDao;
 import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
@@ -16,6 +17,7 @@ import com.herocheer.instructor.domain.vo.EquipmentBorrowVo;
 import com.herocheer.instructor.domain.vo.EquipmentRemandVo;
 import com.herocheer.instructor.enums.BorrowStatusEnums;
 import com.herocheer.instructor.enums.RemandStatusEnums;
+import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.instructor.service.EquipmentBorrowDetailsService;
 import com.herocheer.instructor.service.EquipmentBorrowService;
 import com.herocheer.instructor.service.EquipmentInfoService;
@@ -56,6 +58,9 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     @Resource
     private EquipmentInfoService equipmentInfoService;
 
+    @Resource
+    private CourierStationService courierStationService;
+
     @Override
     public Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo,Long userId) {
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
@@ -73,9 +78,14 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if(user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
         }
-        if(!user.getInsuranceStatus().equals(4)){
-            throw new CommonException(ResponseCode.SERVER_ERROR, "保险未生效,无法借用器材!");
+//        if(!user.getInsuranceStatus().equals(4)){
+//            throw new CommonException(ResponseCode.SERVER_ERROR, "保险未生效,无法借用器材!");
+//        }
+        CourierStation courierStation=courierStationService.get(vo.getCourierId());
+        if(courierStation==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取驿站信息失败");
         }
+        vo.setCourierName(courierStation.getName());
         vo.setBorrower(user.getIxmUserRealName());
         vo.setGender(user.getSex());
         vo.setIdentityNumber(user.getCertificateNo());
@@ -298,5 +308,10 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             borrowVo.setBorrowDetails(detailsVoList);
         }
         return borrowVo;
+    }
+
+    @Override
+    public Integer getCountByUserId(Long id) {
+        return this.dao.getCountByUserId(id);
     }
 }
