@@ -38,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -545,14 +544,5 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }
         this.onLineSign(list.get(0),currentLong);
         return currentLong;
-    }
-
-    public static void main(String[] args) {
-        List<ReservationVO> reservationList = new ArrayList<>();
-        reservationList.add(ReservationVO.builder().relationType(1).build());
-        reservationList.add(ReservationVO.builder().relationType(2).build());
-        Set<Integer> intSet = reservationList.stream().map((ReservationVO reservationVO)->reservationVO.getRelationType()).collect(Collectors.toSet());
-        System.out.println(intSet);
-        System.out.println(intSet.contains(0));
     }
 }
