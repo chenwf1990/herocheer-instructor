@@ -13,6 +13,7 @@ import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.ReservationListVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
@@ -272,7 +273,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     }
 
     @Override
-    public Page<Reservation> queryPage(ReservationQueryVo queryVo, Long userId) {
+    public Page<ReservationListVO> queryPage(ReservationQueryVo queryVo, Long userId) {
 
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         if(queryVo.getQueryType()!=null){
@@ -283,7 +284,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
                 queryVo.setUserId(userId);
             }
         }
-        List<Reservation> instructors = this.dao.findList(queryVo);
+        List<ReservationListVO> instructors = this.dao.findList(queryVo);
         page.setDataList(instructors);
         return page;
     }
@@ -461,9 +462,9 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
      * @return {@link Page< SignInfoVO >}
      */
     @Override
-    public Page<Reservation> findSignInfoByPage(SignInfoVO signInfoVO) {
+    public Page<ReservationListVO> findSignInfoByPage(SignInfoVO signInfoVO) {
         Page page = Page.startPage(signInfoVO.getPageNo(),signInfoVO.getPageSize());
-        List<Reservation> instructors = this.dao.selectSignInfoByPage(signInfoVO);
+        List<ReservationListVO> instructors = this.dao.selectSignInfoByPage(signInfoVO);
         page.setDataList(instructors);
         return page;
     }
