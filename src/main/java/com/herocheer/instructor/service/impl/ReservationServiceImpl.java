@@ -41,6 +41,8 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author makejava
@@ -146,13 +148,21 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
 
         // 报名人员
         ReservationMember reservationMember = null;
+        Set<Integer> intSet = reservationList.stream().map((ReservationVO reservationVO)->reservationVO.getRelationType()).collect(Collectors.toSet());
         for (ReservationVO reservationVO:reservationList){
             reservationMember  = ReservationMember.builder().build();
             //保存用户信息
             reservationMember.setRelevanceId(reservation.getId());
             reservationMember.setUserId(userId);
             reservationMember.setUserName(reservationVO.getUserName());
-            reservationMember.setPhone(reservationVO.getPhone());
+
+            // 是否有家长一起报名
+            if (intSet.contains(0)){
+                reservationMember.setPhone(reservationVO.getPhone());
+            }else {
+                reservationMember.setPhone(userService.get(userId).getPhone());
+            }
+
             reservationMember.setIdentityNumber(reservationVO.getCertificateNo());
             reservationMember.setInsuranceStatus(reservationVO.getInsuranceStatus());
             reservationMember.setRelationType(reservationVO.getRelationType());
