@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -436,13 +437,20 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         this.dao.insert(reservation);
 
         // 线下报名人员
+        Set<Integer> intSet = reservationList.stream().map((ReservationVO reservationVO)->reservationVO.getRelationType()).collect(Collectors.toSet());
         ReservationMember reservationMember = null;
         for (ReservationVO reservationVO: reservationList){
             reservationMember  = ReservationMember.builder().build();
             reservationMember.setRelevanceId(reservation.getId());
             reservationMember.setUserId(userId);
             reservationMember.setUserName(reservationVO.getUserName());
-            reservationMember.setPhone(reservationVO.getPhone());
+
+            if(intSet.contains(0)){
+                reservationMember.setPhone(reservationVO.getPhone());
+            }else {
+                reservationMember.setPhone(userService.get(userId).getPhone());
+            }
+
             reservationMember.setIdentityNumber(reservationVO.getCertificateNo());
             reservationMember.setInsuranceStatus(reservationVO.getInsuranceStatus());
             reservationMember.setRelationType(reservationVO.getRelationType());
@@ -537,5 +545,14 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }
         this.onLineSign(list.get(0),currentLong);
         return currentLong;
+    }
+
+    public static void main(String[] args) {
+        List<ReservationVO> reservationList = new ArrayList<>();
+        reservationList.add(ReservationVO.builder().relationType(1).build());
+        reservationList.add(ReservationVO.builder().relationType(2).build());
+        Set<Integer> intSet = reservationList.stream().map((ReservationVO reservationVO)->reservationVO.getRelationType()).collect(Collectors.toSet());
+        System.out.println(intSet);
+        System.out.println(intSet.contains(0));
     }
 }
