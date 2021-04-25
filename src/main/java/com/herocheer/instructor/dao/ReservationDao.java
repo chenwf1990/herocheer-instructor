@@ -1,6 +1,7 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.Reservation;
+import com.herocheer.instructor.domain.vo.ReservationListVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
@@ -20,7 +21,7 @@ public interface ReservationDao extends BaseDao<Reservation,Long>{
      * @param queryVo
      * @return
      */
-    List<Reservation> findList(ReservationQueryVo queryVo);
+    List<ReservationListVO> findList(ReservationQueryVo queryVo);
 
     Integer updateReservationStatus(@Param("status")Integer status,@Param("relevanceId")Long relevanceId,
                                     @Param("type")Integer type);
@@ -34,5 +35,5 @@ public interface ReservationDao extends BaseDao<Reservation,Long>{
      * @param signInfoVO VO
      * @return {@link List<Reservation>}
      */
-    List<Reservation> selectSignInfoByPage(SignInfoVO signInfoVO);
+    List<ReservationListVO> selectSignInfoByPage(SignInfoVO signInfoVO);
 }

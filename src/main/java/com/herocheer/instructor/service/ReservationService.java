@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.ReservationListVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
@@ -49,7 +50,7 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @param userId
      * @return
      */
-    Page<Reservation> queryPage(ReservationQueryVo queryVo, Long userId);
+    Page<ReservationListVO> queryPage(ReservationQueryVo queryVo, Long userId);
 
     /**
      * 查询招募预约详情
@@ -97,7 +98,7 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @param signInfoVO VO
      * @return {@link Page<SignInfoVO>}
      */
-    Page<Reservation> findSignInfoByPage(SignInfoVO signInfoVO);
+    Page<ReservationListVO> findSignInfoByPage(SignInfoVO signInfoVO);
 
     /**
      * 根据当前用户ID获取预约信息

@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.ReservationListVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
@@ -61,8 +62,8 @@ public class ReservationController extends BaseController{
 
     @PostMapping("/queryPage")
     @ApiOperation("我的预约列表")
-    public ResponseResult<Page<Reservation>> queryPageList(@RequestBody ReservationQueryVo queryVo, HttpServletRequest request){
-        Page<Reservation> page = reservationService.queryPage(queryVo,getCurUserId(request));
+    public ResponseResult<Page<ReservationListVO>> queryPageList(@RequestBody ReservationQueryVo queryVo, HttpServletRequest request){
+        Page<ReservationListVO> page = reservationService.queryPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
     }
 
@@ -117,8 +118,8 @@ public class ReservationController extends BaseController{
      */
     @PostMapping("/sign/page")
     @ApiOperation("签到列表")
-    public ResponseResult<Page<Reservation>> querySignInfoByPage(@RequestBody SignInfoVO signInfoVO, HttpServletRequest request){
-        Page<Reservation> page = reservationService.findSignInfoByPage(signInfoVO);
+    public ResponseResult<Page<ReservationListVO>> querySignInfoByPage(@RequestBody SignInfoVO signInfoVO, HttpServletRequest request){
+        Page<ReservationListVO> page = reservationService.findSignInfoByPage(signInfoVO);
         return ResponseResult.ok(page);
     }
 
