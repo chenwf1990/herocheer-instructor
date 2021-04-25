@@ -332,7 +332,7 @@
         </where>
     </select>
 
-    <select id="findList" resultType="com.herocheer.instructor.domain.entity.Reservation" parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
+    <select id="findList" resultType="com.herocheer.instructor.domain.vo.ReservationListVO" parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
         select
             id,
             relevanceId,
@@ -348,6 +348,7 @@
             userId,
             IFNULL(a.`name`,(select GROUP_CONCAT( b.userName SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
             IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `identityNumber`,
+            (select GROUP_CONCAT( b.relationType SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId) as relationType,
             IFNULL(a.phone,(select GROUP_CONCAT( b.phone SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as phone,
             signTime,
             signType,
@@ -410,7 +411,7 @@
     </select>
 
     <!-- 签到信息列表 -->
-    <select id="selectSignInfoByPage" resultType="com.herocheer.instructor.domain.entity.Reservation" parameterType="com.herocheer.instructor.domain.vo.SignInfoVO">
+    <select id="selectSignInfoByPage" resultType="com.herocheer.instructor.domain.vo.ReservationListVO" parameterType="com.herocheer.instructor.domain.vo.SignInfoVO">
         select
             id,
             relevanceId,
@@ -426,6 +427,7 @@
             userId,
             IFNULL(a.`name`,(select GROUP_CONCAT( b.userName SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
             IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `identityNumber`,
+            (select GROUP_CONCAT( b.relationType SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId) as relationType,
             IFNULL(a.phone,(select GROUP_CONCAT( b.phone SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as phone,
             signTime,
             signType,
