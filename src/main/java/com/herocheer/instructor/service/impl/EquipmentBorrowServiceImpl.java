@@ -340,6 +340,9 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         Integer count=equipmentDamageService.insert(vo);
         for(EquipmentDamageDetailsVo damageDetailsVo:vo.getDamageDetailsVos()){
             EquipmentBorrowDetails borrowDetails=equipmentBorrowDetailsService.get(damageDetailsVo.getBorrowDetailsId());
+            if(borrowDetails.getUnreturnedQuantity()<1){
+                throw new CommonException(ResponseCode.SERVER_ERROR, "该器材以归还成功,无需报损!");
+            }
             if(borrowDetails==null){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用详情失败!");
             }
