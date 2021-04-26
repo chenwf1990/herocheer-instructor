@@ -675,7 +675,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
 //            currentUser.setUserType(userService.get(sysUser.getId()).getUserType());
 
-            sysUser.setCertificateNo(certificateNum);
+            sysUser.setCertificateNo(AesUtil.encrypt(certificateNum));
             sysUser.setUserName(jsonObject2.getString("realName"));
             sysUser.setPhone(AesUtil.encrypt(jsonObject1.getString("phone")));
 //            sysUser.setOpenid(openid);
@@ -695,6 +695,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         log.debug("I厦门APP用户登入信息：{}",userInfo);
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
+
+        sysUser.setTokenId(token);
         return sysUser;
     }
 }
