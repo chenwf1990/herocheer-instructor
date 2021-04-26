@@ -98,7 +98,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取驿站信息失败");
         }
         vo.setCourierName(courierStation.getName());
-        vo.setBorrower(user.getIxmUserRealName());
+        vo.setBorrower(user.getUserName());
         vo.setGender(user.getSex());
         vo.setIdentityNumber(user.getCertificateNo());
         vo.setPhoneNumber(user.getPhone());
