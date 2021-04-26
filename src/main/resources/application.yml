@@ -99,3 +99,20 @@ wechat:
 #  accessTokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code
 #  ticketUrl: https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi
 #  menuUrl: https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s
+
+#i厦门APP（测试环境）
+ixmApp:
+  client_id: f6ee09d312e248f380757fd7a6351b1d
+  client_secret: a4bab1a7464f434085315b1853bcf16a
+  authUrl: https://auth-test.ixiamen.org.cn
+  restUrl: https://rest-test.ixiamen.org.cn
+
+#市民卡(测试环境)
+smk:
+  clientid: sports
+  password: sports@2019
+  url:  http://218.5.69.218:9088
+  userUrl: ${smk.url}/user/query-token/full
+  timestampUrl: ${smk.url}/basic/timestamp #系统对时
+  qrcodeGenerateUrl: ${smk.url}/qrcode/generate/303 #二维码生成
+  qrcodeCheckUrl: ${smk.url}/qrcode/check #二维码识别
