@@ -5,10 +5,12 @@ import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.EquipmentBorrow;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
+import com.herocheer.instructor.domain.entity.EquipmentDamage;
 import com.herocheer.instructor.domain.entity.EquipmentRemand;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowSaveVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowVo;
+import com.herocheer.instructor.domain.vo.EquipmentDamageVo;
 import com.herocheer.instructor.domain.vo.EquipmentRemandVo;
 
 import java.util.List;
@@ -106,4 +108,17 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      */
     Integer getCountByUserId(Long id);
 
+    /**
+     * 新增器材报废
+     * @param vo
+     * @return
+     */
+    Integer andDamage(EquipmentDamageVo vo);
+
+    /**
+     * 获取器材报废详情
+     * @param borrowId
+     * @return
+     */
+    List<EquipmentDamageVo> getDamage(Long borrowId);
 }

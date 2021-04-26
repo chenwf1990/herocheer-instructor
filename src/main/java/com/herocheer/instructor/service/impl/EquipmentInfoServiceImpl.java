@@ -1,11 +1,14 @@
 package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.common.constants.ResponseCode;
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.BrandInfo;
 import com.herocheer.instructor.domain.entity.EquipmentInfo;
 import com.herocheer.instructor.dao.EquipmentInfoDao;
 import com.herocheer.instructor.domain.vo.EquipmentInfoQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentInfoStockVo;
+import com.herocheer.instructor.domain.vo.EquipmentInfoVo;
 import com.herocheer.instructor.service.EquipmentInfoService;
 import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
@@ -51,7 +54,23 @@ public class EquipmentInfoServiceImpl extends BaseServiceImpl<EquipmentInfoDao, 
     }
 
     @Override
-    public Integer updateEquipment(EquipmentInfo equipmentInfo) {
+    public Integer updateEquipment(EquipmentInfo equipmentInfo,Long damageId) {
+        EquipmentInfo oldInfo=this.dao.get(equipmentInfo.getId());
+        if(oldInfo==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取器材信息失败!");
+        }
+        EquipmentInfoVo infoVo=new EquipmentInfoVo();
+        infoVo.setEquipmentId(oldInfo.getId());
+        infoVo.setDamageId(damageId);
+        infoVo.setCourierId(oldInfo.getCourierId());
+        infoVo.setCourierName(oldInfo.getCourierName());
+        infoVo.setEquipmentName(oldInfo.getEquipmentName());
+        infoVo.setModel(oldInfo.getModel());
+        infoVo.setBrandId(oldInfo.getBrandId());
+        infoVo.setBrandName(oldInfo.getBrandName());
+        infoVo.setStockNumber(oldInfo.getStockNumber());
+        infoVo.setRemarks(oldInfo.getRemarks());
+         this.dao.insertLog(infoVo);
         return this.dao.update(equipmentInfo);
     }
 

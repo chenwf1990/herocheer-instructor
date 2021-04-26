@@ -100,4 +100,17 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
+    <select id="findList" resultType="com.herocheer.instructor.domain.vo.EquipmentDamageDetailsVo">
+        SELECT
+            d.*,
+            b.equipmentName,
+            b.model,
+            b.brandName,
+            b.unreturnedQuantity
+        FROM
+            equipment_damage_details d
+            LEFT JOIN equipment_borrow_details b ON d.borrowDetailsId = b.id
+        where d.damageId=#{damageId}
+    </select>
 </mapper>

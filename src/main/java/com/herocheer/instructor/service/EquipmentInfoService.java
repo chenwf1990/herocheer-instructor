@@ -22,7 +22,7 @@ public interface EquipmentInfoService extends BaseService<EquipmentInfo,Long> {
 
     Integer addEquipment(EquipmentInfo equipmentInfo);
 
-    Integer updateEquipment(EquipmentInfo equipmentInfo);
+    Integer updateEquipment(EquipmentInfo equipmentInfo,Long damageId);
 
     Integer deleteEquipment(Long id);
 }

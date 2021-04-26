@@ -28,6 +28,8 @@ public class EquipmentBorrowDetails extends BaseEntity {
     private Integer actualBorrowQuantity;
     @ApiModelProperty("累计归还数量")
     private Integer remandQuantity;
+    @ApiModelProperty("损失数量")
+    private Integer damageQuantity;
     @ApiModelProperty("待归还数量")   
     private Integer unreturnedQuantity;
     @ApiModelProperty("归还状态(0.待归还 1.已归还)")   

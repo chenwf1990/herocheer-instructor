@@ -100,4 +100,8 @@
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
+    <select id="findList" resultType="com.herocheer.instructor.domain.vo.EquipmentDamageVo">
+        select <include refid="table_field"/> from equipment_damage where borrowId = #{borrowId}
+    </select>
 </mapper>

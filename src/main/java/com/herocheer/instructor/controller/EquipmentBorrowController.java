@@ -11,6 +11,7 @@ import com.herocheer.instructor.domain.entity.EquipmentRemand;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowSaveVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowVo;
+import com.herocheer.instructor.domain.vo.EquipmentDamageVo;
 import com.herocheer.instructor.domain.vo.EquipmentRemandVo;
 import com.herocheer.instructor.service.EquipmentBorrowService;
 import io.swagger.annotations.ApiOperation;
@@ -115,9 +116,22 @@ public class EquipmentBorrowController extends BaseController{
 
     @GetMapping("/user/borrow/count")
     @ApiOperation("获取用户进行中单据的统计数")
-    public ResponseResult<Integer> getCountByUserId( HttpServletRequest request){
+    public ResponseResult<Integer> getCountByUserId(HttpServletRequest request){
         Integer count = equipmentBorrowService.getCountByUserId(getCurUserId(request));
         return ResponseResult.ok(count);
     }
 
+    @PostMapping("/add/damage")
+    @ApiOperation("新增报废")
+    public ResponseResult andDamage(@RequestBody EquipmentDamageVo vo){
+        Integer count=equipmentBorrowService.andDamage(vo);
+        return ResponseResult.isSuccess(count);
+    }
+
+    @GetMapping("/get/damage")
+    @ApiOperation("获取报废详情")
+    public ResponseResult<List<EquipmentDamageVo>> getDamage(@ApiParam("借用id") @RequestParam Long id){
+        List<EquipmentDamageVo> list= equipmentBorrowService.getDamage(id);
+        return ResponseResult.ok(list);
+    }
 }

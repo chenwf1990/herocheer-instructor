@@ -51,7 +51,7 @@ public class EquipmentInfoController extends BaseController{
     @PostMapping("/update")
     @ApiOperation("修改器材信息")
     public ResponseResult update(@RequestBody EquipmentInfo equipmentInfo){
-        Integer count=equipmentInfoService.updateEquipment(equipmentInfo);
+        Integer count=equipmentInfoService.updateEquipment(equipmentInfo,null);
         return ResponseResult.isSuccess(count);
     }
 

@@ -222,4 +222,76 @@
         i.id
         order by i.createdTime DESC
     </select>
+
+    <insert id="insertLog" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.vo.EquipmentInfoVo">
+        insert into equipment_info_log (
+        <trim suffixOverrides=",">
+            <if test="equipmentId != null">
+                equipmentId,
+            </if>
+            <if test="damageId != null">
+                damageId,
+            </if>
+            <if test="courierId != null">
+                courierId,
+            </if>
+            <if test="courierName != null">
+                courierName,
+            </if>
+            <if test="equipmentName != null">
+                equipmentName,
+            </if>
+            <if test="model != null">
+                model,
+            </if>
+            <if test="brandId != null">
+                brandId,
+            </if>
+            <if test="brandName != null">
+                brandName,
+            </if>
+            <if test="stockNumber != null">
+                stockNumber,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="equipmentId != null">
+                #{equipmentId},
+            </if>
+            <if test="damageId != null">
+                #{damageId},
+            </if>
+            <if test="courierId != null">
+                #{courierId},
+            </if>
+            <if test="courierName != null">
+                #{courierName},
+            </if>
+            <if test="equipmentName != null">
+                #{equipmentName},
+            </if>
+            <if test="model != null">
+                #{model},
+            </if>
+            <if test="brandId != null">
+                #{brandId},
+            </if>
+            <if test="brandName != null">
+                #{brandName},
+            </if>
+            <if test="stockNumber != null">
+                #{stockNumber},
+            </if>
+            <if test="remarks != null">
+                #{remarks},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
 </mapper>

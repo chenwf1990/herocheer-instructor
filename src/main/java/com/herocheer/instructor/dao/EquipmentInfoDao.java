@@ -4,6 +4,7 @@ import com.herocheer.instructor.domain.entity.BrandInfo;
 import com.herocheer.instructor.domain.entity.EquipmentInfo;
 import com.herocheer.instructor.domain.vo.EquipmentInfoQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentInfoStockVo;
+import com.herocheer.instructor.domain.vo.EquipmentInfoVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,11 @@ public interface EquipmentInfoDao extends BaseDao<EquipmentInfo,Long>{
      * @return
      */
     List<EquipmentInfoStockVo> findStockList(EquipmentInfoQueryVo vo);
+
+    /**
+     * 保存日志
+     * @param infoVo
+     * @return
+     */
+    Integer insertLog(EquipmentInfoVo infoVo);
 }

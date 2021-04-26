@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.EquipmentBorrowDetailsDao">
     <sql id="table_field">
-      id, borrowId, equipmentId, equipmentName, brandName, model, borrowQuantity, actualBorrowQuantity, remandQuantity, unreturnedQuantity, remandStatus, borrowBy, borrowUserId, borrowTime, phoneNumber, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, borrowId, equipmentId, equipmentName, brandName, model, borrowQuantity, actualBorrowQuantity, remandQuantity, damageQuantity, unreturnedQuantity, remandStatus, borrowBy, borrowUserId, borrowTime, phoneNumber, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -32,6 +32,9 @@
         </if>
         <if test="remandQuantity != null">
             remandQuantity,
+        </if>
+        <if test="damageQuantity != null">
+            damageQuantity,
         </if>
         <if test="unreturnedQuantity != null">
             unreturnedQuantity,
@@ -78,6 +81,9 @@
         </if>
         <if test="remandQuantity != null">
             #{remandQuantity},
+        </if>
+        <if test="damageQuantity != null">
+            #{damageQuantity},
         </if>
         <if test="unreturnedQuantity != null">
             #{unreturnedQuantity},
@@ -134,6 +140,9 @@
             </if>
             <if test="remandQuantity != null">
                 remandQuantity = #{remandQuantity},
+            </if>
+            <if test="damageQuantity != null">
+                damageQuantity = #{damageQuantity},
             </if>
             <if test="unreturnedQuantity != null">
                 unreturnedQuantity = #{unreturnedQuantity},
@@ -193,6 +202,9 @@
             <if test="remandQuantity != null">
                 and remandQuantity = #{remandQuantity}
             </if>
+            <if test="damageQuantity != null">
+                and damageQuantity = #{damageQuantity}
+            </if>
             <if test="unreturnedQuantity != null">
                 and unreturnedQuantity = #{unreturnedQuantity}
             </if>
@@ -243,6 +255,9 @@
             </if>
             <if test="remandQuantity != null">
                 and remandQuantity = #{remandQuantity}
+            </if>
+            <if test="damageQuantity != null">
+                and damageQuantity = #{damageQuantity}
             </if>
             <if test="unreturnedQuantity != null">
                 and unreturnedQuantity = #{unreturnedQuantity}

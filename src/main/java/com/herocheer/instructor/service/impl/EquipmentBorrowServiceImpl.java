@@ -7,6 +7,8 @@ import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.EquipmentBorrow;
 import com.herocheer.instructor.dao.EquipmentBorrowDao;
 import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
+import com.herocheer.instructor.domain.entity.EquipmentDamage;
+import com.herocheer.instructor.domain.entity.EquipmentDamageDetails;
 import com.herocheer.instructor.domain.entity.EquipmentInfo;
 import com.herocheer.instructor.domain.entity.EquipmentRemand;
 import com.herocheer.instructor.domain.entity.User;
@@ -14,12 +16,16 @@ import com.herocheer.instructor.domain.vo.EquipmentBorrowDetailsVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowSaveVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowVo;
+import com.herocheer.instructor.domain.vo.EquipmentDamageDetailsVo;
+import com.herocheer.instructor.domain.vo.EquipmentDamageVo;
 import com.herocheer.instructor.domain.vo.EquipmentRemandVo;
 import com.herocheer.instructor.enums.BorrowStatusEnums;
 import com.herocheer.instructor.enums.RemandStatusEnums;
 import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.instructor.service.EquipmentBorrowDetailsService;
 import com.herocheer.instructor.service.EquipmentBorrowService;
+import com.herocheer.instructor.service.EquipmentDamageDetailsService;
+import com.herocheer.instructor.service.EquipmentDamageService;
 import com.herocheer.instructor.service.EquipmentInfoService;
 import com.herocheer.instructor.service.EquipmentRemandService;
 import com.herocheer.instructor.service.UserService;
@@ -60,6 +66,12 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
 
     @Resource
     private CourierStationService courierStationService;
+
+    @Resource
+    private EquipmentDamageService equipmentDamageService;
+
+    @Resource
+    private EquipmentDamageDetailsService equipmentDamageDetailsService;
 
     @Override
     public Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo,Long userId) {
@@ -313,5 +325,56 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     @Override
     public Integer getCountByUserId(Long id) {
         return this.dao.getCountByUserId(id);
+    }
+
+    @Override
+    public Integer andDamage(EquipmentDamageVo vo) {
+        Integer count=equipmentDamageService.insert(vo);
+        for(EquipmentDamageDetailsVo damageDetailsVo:vo.getDamageDetailsVos()){
+            EquipmentBorrowDetails borrowDetails=equipmentBorrowDetailsService.get(damageDetailsVo.getBorrowDetailsId());
+            if(borrowDetails==null){
+                throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用详情失败!");
+            }
+            borrowDetails.setUnreturnedQuantity(borrowDetails.getUnreturnedQuantity()-damageDetailsVo.getDamagQuantity());
+            borrowDetails.setDamageQuantity(borrowDetails.getDamageQuantity()+damageDetailsVo.getDamagQuantity());
+            //没有待归还数量,设置器材为已归还
+            if(borrowDetails.getUnreturnedQuantity().equals(0)){
+                borrowDetails.setRemandStatus(1);
+            }
+            equipmentBorrowDetailsService.update(borrowDetails);
+            damageDetailsVo.setId(vo.getId());
+            equipmentDamageDetailsService.insert(damageDetailsVo);
+            EquipmentInfo equipmentInfo=equipmentInfoService.get(borrowDetails.getEquipmentId());
+            if(equipmentInfo==null){
+                throw new CommonException(ResponseCode.SERVER_ERROR, "获取器材信息失败!");
+            }
+            equipmentInfo.setStockNumber(equipmentInfo.getStockNumber()-damageDetailsVo.getDamagQuantity());
+            equipmentInfoService.updateEquipment(equipmentInfo,damageDetailsVo.getId());
+        }
+        Map<String,Object> map=new HashedMap();
+        map.put("borrowId",vo.getBorrowId());
+        map.put("remandStatus",0);
+        if(equipmentBorrowDetailsService.count(map)==0){
+            EquipmentBorrow equipmentBorrow=new EquipmentBorrow();
+            equipmentBorrow.setId(vo.getBorrowId());
+            equipmentBorrow.setStatus(BorrowStatusEnums.already_borrow.getStatus());
+            this.dao.update(equipmentBorrow);
+        }
+        return count;
+    }
+
+    @Override
+    public List<EquipmentDamageVo> getDamage(Long borrowId) {
+        List<EquipmentDamageVo> damageVos=equipmentDamageService.findList(borrowId);
+        if(damageVos.isEmpty()){
+            return null;
+        }
+        for(int i=0;i<damageVos.size();i++){
+            List<EquipmentDamageDetailsVo> list=equipmentDamageDetailsService.findList(damageVos.get(i).getId());
+            if(!list.isEmpty()){
+                damageVos.get(i).setDamageDetailsVos(list);
+            }
+        }
+        return damageVos;
     }
 }

@@ -2,6 +2,10 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.instructor.domain.entity.EquipmentDamage;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.vo.EquipmentDamageVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author makejava
@@ -10,5 +14,5 @@ import com.herocheer.common.base.service.BaseService;
  * @company 厦门熙重电子科技有限公司
  */
 public interface EquipmentDamageService extends BaseService<EquipmentDamage,Long> {
-
+    List<EquipmentDamageVo> findList(Long borrowId);
 }

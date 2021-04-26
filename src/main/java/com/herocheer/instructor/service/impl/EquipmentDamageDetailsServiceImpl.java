@@ -2,10 +2,13 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.instructor.domain.entity.EquipmentDamageDetails;
 import com.herocheer.instructor.dao.EquipmentDamageDetailsDao;
+import com.herocheer.instructor.domain.vo.EquipmentDamageDetailsVo;
 import com.herocheer.instructor.service.EquipmentDamageDetailsService;
 import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author makejava
@@ -16,5 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class EquipmentDamageDetailsServiceImpl extends BaseServiceImpl<EquipmentDamageDetailsDao, EquipmentDamageDetails,Long> implements EquipmentDamageDetailsService {
-    
+
+    @Override
+    public List<EquipmentDamageDetailsVo> findList(Long damageId) {
+        return this.dao.findList(damageId);
+    }
 }

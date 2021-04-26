@@ -1,7 +1,11 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.EquipmentDamageDetails;
+import com.herocheer.instructor.domain.vo.EquipmentDamageDetailsVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author makejava
@@ -10,5 +14,5 @@ import com.herocheer.mybatis.base.dao.BaseDao;
  * @company 厦门熙重电子科技有限公司
  */
 public interface EquipmentDamageDetailsDao extends BaseDao<EquipmentDamageDetails,Long>{
-
+    List<EquipmentDamageDetailsVo> findList(@Param("damageId") Long damageId);
 }
