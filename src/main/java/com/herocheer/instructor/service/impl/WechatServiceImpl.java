@@ -804,7 +804,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         BeanCopier.create(sysUser.getClass(),userInfo.getClass(),false).copy(sysUser,userInfo,null);
         userInfo.setUserType(sysUser.getUserType());
         userInfo.setTokenId(instructorToken);
-        log.debug("I厦门APP用户登入信息：{}",userInfo);
+        log.debug("市民卡APP用户登入信息：{}",userInfo);
         // 用户信息放入Redis
         redisClient.set(instructorToken,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
         return userInfo;
