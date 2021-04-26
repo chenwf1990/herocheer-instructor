@@ -1,21 +1,30 @@
 package com.herocheer.instructor.controller;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.vo.CourierStationQueryVo;
 import com.herocheer.instructor.domain.vo.CourierStationVo;
+import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author chenwf
@@ -29,6 +38,9 @@ import javax.servlet.http.HttpServletRequest;
 public class CourierStationController extends BaseController{
     @Resource
     private CourierStationService courierStationService;
+
+    @Value("${courier.station.url}")
+    private String statioUrl;
 
     @PostMapping("/queryPageList")
     @ApiOperation("驿站列表列表查询")
@@ -64,5 +76,19 @@ public class CourierStationController extends BaseController{
     @ApiOperation("删除驿站")
     public ResponseResult delete(@ApiParam("驿站id") @RequestParam Long id){
         return ResponseResult.isSuccess(courierStationService.deleteCourierStation(id));
+    }
+    @GetMapping("/QrCode")
+    @ApiOperation("生产二维码")
+    @AllowAnonymous
+    public void fetchQrCode(@ApiParam("驿站id") @RequestParam Long id, HttpServletResponse response) throws IOException {
+        String url = StrUtil.format(statioUrl,id);
+
+        QrConfig config = new QrConfig(300, 300);
+        // 设置边距，既二维码和背景之间的边距
+        config.setMargin(0);
+        // 高纠错级别
+        config.setErrorCorrection(ErrorCorrectionLevel.H);
+        // 生成二维码到文件，也可以到流
+        QrCodeUtil.generate(url, config, "PNG",response.getOutputStream());
     }
 }

@@ -55,3 +55,6 @@ ijs:
   baseUrl: http://192.168.147.133/sports/wechat/api
   templateId: 2b8LbGUFPSCgLvbUyjaJ7HggjBh4Uc6dmp8-zBEQERI
   QrCodeUrl: https://ijs.sports.xm.gov.cn/instructor/#/training/trainingDetail?id={}&type=5
+courier:
+  station:
+    url: http://ijs.sports.xm.gov.cn/instructor/#/equipment/equipmentBorrow?id={}&type=1

@@ -30,4 +30,6 @@ file:
   upload:
     savePath: /home/instructor/instructor-file/
     visitPath: http://xyaq.herocheer.com:6003/instructor-file/
-
+courier:
+  station:
+    url: http://tycd.herocheer.com/instructor/#/equipment/equipmentBorrow?id={}&type=2
