@@ -82,6 +82,16 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     @Value("${ixm.appName}")
     private String appName;
 
+    @Value("${ixmApp.authUrl}")
+    private String ixmAppAuthUrl;
+    @Value("${ixmApp.client_id}")
+    private String ixmAppClientId;
+    @Value("${ixmApp.client_secret}")
+    private String ixmAppClientSecret;
+    @Value("${ixmApp.restUrl}")
+    private String ixmAppRestUrl;
+
+
     @Resource
     private RedisClient redisClient;
 
@@ -220,11 +230,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             // 返回I厦门的登入状态
             userInfo.setIxmLoginStatus(user.getIxmLoginStatus());
         }
-        // 为I厦门那方便去用户数据
+        // 为I厦门那方便取用户数据
         session.setAttribute(WechatConst.SESSION_USER, user);
 
         BeanCopier.create(user.getClass(),userInfo.getClass(),false).copy(user,userInfo,null);
-        userInfo.setOtherId(openid);
         userInfo.setUserType(user.getUserType());
 
         userInfo.setTokenId(token);
@@ -400,8 +409,8 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
          **/
         currentUser.setId(sysUser.getId());
         currentUser.setIxmLoginStatus(true);
-        log.debug("在I厦门登入后重置当前用户信息：{}",currentUser);
-        log.debug("在I厦门登入后重置当前用户信息ID：{}",sysUser.getId());
+        log.debug("在I厦门公众号登入后重置当前用户信息：{}",currentUser);
+        log.debug("在I厦门公众号登入后重置当前用户信息ID：{}",sysUser.getId());
         redisClient.set(currentUser.getTokenId(),JSONObject.toJSONString(currentUser), CacheKeyConst.EXPIRETIME);
 
         sysUser.setIxmToken("");
@@ -556,5 +565,136 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
                 throw new CommonException("消息发送失败：{}",jsonObject);
             }
         }
+    }
+
+    @Override
+    public String ixmAppLoginUrl(String redirectUri) {
+        String url = ixmAppAuthUrl + "/oauth/authorize?client_id=" + ixmAppClientId
+                + "&response_type=code&grant_type=authorization_code" +
+                "&scope=snsapi_userinfo&redirect_uri=" + redirectUri;
+        log.debug("ixmAppLoginUrl:{}", url);
+        return url;
+    }
+
+    @Override
+    public User ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri) {
+        String authUrl = ixmAppAuthUrl + "/oauth/token?code=" + code + "&client_id=" + ixmAppClientId
+                + "&client_secret=" + ixmAppClientSecret +
+                "&grant_type=authorization_code&redirect_uri=" + redirectUri;
+        log.debug("ixmApp getAccess_token url:{}", authUrl);
+        ResponseEntity<String> tokenEntity = restTemplate.postForEntity(authUrl, null, String.class);
+        String tokenResult = tokenEntity.getBody();
+        log.debug("ixmApp getAccess_token result:{}", tokenResult);
+        if (StringUtils.isBlank(tokenResult)) {
+            throw new CommonException("i厦门==========获取token失败");
+        }
+        JSONObject jsonObject = JSONObject.parseObject(tokenResult, JSONObject.class);
+        if (!jsonObject.containsKey("access_token") || !jsonObject.containsKey("scope")) {
+            throw new CommonException("i厦门==========获取token失败");
+        }
+        String accessToken = jsonObject.getString("access_token");
+        if (StringUtils.isBlank(accessToken)) {
+            throw new CommonException("i厦门==========获取token失败");
+        }
+
+        String restUrl = ixmAppRestUrl + "/resource/user/userinfo?access_token=" + accessToken;
+        log.debug("ixmApp getUserInfo url:{}", restUrl);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(restUrl, null, String.class);
+        String result = responseEntity.getBody();
+        log.debug("ixmApp getUserInfo result:{}", result);
+        if (StringUtils.isBlank(result)) {
+            throw new CommonException("i厦门==========获取用户信息失败");
+        }
+        JSONObject jsonObject1 = JSONObject.parseObject(result, JSONObject.class);
+        if (jsonObject1.getInteger("status") != 1) {
+            log.error("i厦门==========获取用户信息失败 code: {} message {}",
+                    jsonObject1.getString("code"), jsonObject1.getString("message"));
+            throw new CommonException("i厦门==========获取用户信息失败");
+        }
+
+        jsonObject1 = jsonObject1.getJSONObject("content");//外层
+        JSONObject jsonObject2 = jsonObject1.getJSONObject("userAuth");
+        log.debug("ixmApp用户信息：{}", jsonObject1);
+
+
+        //根据phone判断用户本地数据是否存在
+        Map map = new HashMap();
+        map.put("phone",AesUtil.encrypt(jsonObject1.getString("phone")));
+        User sysUser  = this.dao.selectSysUserOne(map);
+
+        String certificateNum = jsonObject2.getString("cardId");
+        if (sysUser == null) {
+            sysUser = User.builder().build();
+            sysUser.setIxmUserId(jsonObject1.getString("id"));
+            sysUser.setIxmUserName(jsonObject1.getString("userName"));
+            sysUser.setUserName(jsonObject2.getString("realName"));
+            if (certificateNum.length() == 18) {//判断证件类型
+                if (Integer.parseInt(certificateNum.substring(16).substring(0, 1)) % 2 == 0) {// 判断性别
+                    sysUser.setSex(2);
+                } else {
+                    sysUser.setSex(1);
+                }
+            } else {
+                sysUser.setSex(0);
+            }
+            // 身份证加密
+            sysUser.setCertificateNo(AesUtil.encrypt(certificateNum));
+            sysUser.setIxmRealNameLevel(jsonObject2.getString("status"));
+            sysUser.setIxmUserRealName(jsonObject2.getString("realName"));
+            sysUser.setPhone(AesUtil.encrypt(jsonObject1.getString("phone")));
+            sysUser.setInsuranceStatus(0);
+            sysUser.setCommitmentStatus(false);
+            sysUser.setIxmLoginStatus(true);
+            sysUser.setUserType(UserTypeEnums.weChatUser.getCode());
+            sysUser.setSource(SourceEnums.ixmApp.getCode().toString());
+            this.insert(sysUser);
+
+            // 异步同步用户数据
+//            userService.asynUserInfo2Ijianshen(user, sysUser);
+        } else {
+            User oldUser = User.builder().build();
+            oldUser.setId(sysUser.getId());
+            oldUser.setCertificateNo(AesUtil.encrypt(certificateNum));
+            oldUser.setUserName(jsonObject2.getString("realName"));
+            oldUser.setPhone(AesUtil.encrypt(jsonObject1.getString("phone")));
+            oldUser.setIxmLoginStatus(true);
+            if (certificateNum.length() == 18) {//判断证件类型
+                if (Integer.parseInt(certificateNum.substring(16).substring(0, 1)) % 2 == 0) {// 判断性别
+                    sysUser.setSex(2);
+                    oldUser.setSex(2);
+                } else {
+                    sysUser.setSex(1);
+                    oldUser.setSex(1);
+                }
+            } else {
+                sysUser.setSex(0);
+                oldUser.setSex(0);
+            }
+            oldUser.setUpdateTime(System.currentTimeMillis());
+            this.update(oldUser);
+
+//            currentUser.setUserType(userService.get(sysUser.getId()).getUserType());
+
+            sysUser.setCertificateNo(certificateNum);
+            sysUser.setUserName(jsonObject2.getString("realName"));
+            sysUser.setPhone(AesUtil.encrypt(jsonObject1.getString("phone")));
+//            sysUser.setOpenid(openid);
+            sysUser.setIxmLoginStatus(true);
+            sysUser.setUpdateTime(oldUser.getUpdateTime());
+        }
+
+        sysUser.setIxmToken("");
+        //用户信息存入session
+        session.setAttribute(WechatConst.SESSION_USER, sysUser);
+
+        UserInfoVo userInfo = new UserInfoVo();
+        String token = IdUtil.simpleUUID();
+        BeanCopier.create(sysUser.getClass(),userInfo.getClass(),false).copy(sysUser,userInfo,null);
+        userInfo.setUserType(sysUser.getUserType());
+        userInfo.setTokenId(token);
+        log.debug("I厦门APP用户登入信息：{}",userInfo);
+        // 用户信息放入Redis
+        redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
+        return sysUser;
     }
 }

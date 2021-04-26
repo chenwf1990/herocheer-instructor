@@ -8,6 +8,7 @@ package com.herocheer.instructor.enums;
  */
 public enum SourceEnums {
     ixm(1,"i厦门——绑定用户"),
+    ixmApp(1,"i厦门——绑定用户"),
     instructor(2,"后台系统——录入"),
     sysUser(3,"微信公众号——注册");
 

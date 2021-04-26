@@ -135,6 +135,62 @@ public class WechatController extends BaseController {
         return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token,infoVo));
     }
 
+
+    /**
+     * ixmAPP应用登录网址
+     *
+     * @param redirectUri 重定向的uri
+     * @return {@link ResponseResult<String>}
+     */
+    @PostMapping("ixmAppLoginUrl")
+    @ApiOperation(value = "i厦门APP登录页回调地址")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "redirectUri", value = "i厦门APP登录页回调地址"),
+    })
+    public ResponseResult<String> ixmAppLoginUrl(@NotBlank(message = "i厦门APP登录页回调地址不能为空") String redirectUri) {
+        return ResponseResult.ok(wechatService.ixmAppLoginUrl(redirectUri));
+    }
+
+    /**
+     * ixmAPP应用登录
+     *
+     * @param request     请求
+     * @param session     会话
+     * @param code        代码
+     * @param redirectUri 重定向的uri
+     * @return {@link ResponseResult<User>}
+     */
+    @PostMapping("ixmAppLogin")
+    @ApiOperation(value = "i厦门APP登录")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "code", value = "微信用户openid"),
+            @ApiImplicitParam(name = "redirectUri", value = "i厦门APP登录页回调地址")
+    })
+    public ResponseResult<User> ixmAppLogin(HttpServletRequest request, HttpSession session,
+                                                  @NotBlank(message = "i厦门APP code不能为空") String code,
+                                                  @NotBlank(message = "i厦门APP登录页回调地址不能为空") String redirectUri) {
+        return  ResponseResult.ok(wechatService.ixmAppLogin(request, session, code, redirectUri));
+    }
+
+    /**
+     * 厦门市民卡APP登录
+     *
+     * @param session 会话
+     * @param token   令牌
+     * @return {@link ResponseResult<User>}
+     */
+/*    @PostMapping("smkLogin")
+    @ApiOperation(value = "厦门市民卡APP登录")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "市民卡token"),
+    })
+    public ResponseResult<User> smkLogin(HttpSession session, @NotBlank(message = "市民卡token不能为空") String token) {
+        return weChatApiService.smkLogin(session, token);
+    }*/
+
     /**
      * 获取短信验证码
      *

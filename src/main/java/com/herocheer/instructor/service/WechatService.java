@@ -66,4 +66,23 @@ public interface WechatService {
      * @param title    标题
      */
     void sendWechatMessages(List<String> userList,String title);
+
+    /**
+     * ixmAPP应用登录网址
+     *
+     * @param redirectUri 重定向的uri
+     * @return {@link String}
+     */
+    String ixmAppLoginUrl(String redirectUri);
+
+    /**
+     * ixmAPP应用登录
+     *
+     * @param request     请求
+     * @param session     会话
+     * @param code        代码
+     * @param redirectUri 重定向的uri
+     * @return {@link User}
+     */
+    User ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri);
 }
