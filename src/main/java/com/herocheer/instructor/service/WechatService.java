@@ -82,7 +82,7 @@ public interface WechatService {
      * @param session     会话
      * @param code        代码
      * @param redirectUri 重定向的uri
-     * @return {@link User}
+     * @return {@link UserInfoVo}
      */
-    User ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri);
+    UserInfoVo ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri);
 }

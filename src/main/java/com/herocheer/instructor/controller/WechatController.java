@@ -168,7 +168,7 @@ public class WechatController extends BaseController {
             @ApiImplicitParam(name = "code", value = "微信用户openid"),
             @ApiImplicitParam(name = "redirectUri", value = "i厦门APP登录页回调地址")
     })
-    public ResponseResult<User> ixmAppLogin(HttpServletRequest request, HttpSession session,
+    public ResponseResult<UserInfoVo> ixmAppLogin(HttpServletRequest request, HttpSession session,
                                                   @NotBlank(message = "i厦门APP code不能为空") String code,
                                                   @NotBlank(message = "i厦门APP登录页回调地址不能为空") String redirectUri) {
         return  ResponseResult.ok(wechatService.ixmAppLogin(request, session, code, redirectUri));

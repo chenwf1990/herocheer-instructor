@@ -577,7 +577,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     }
 
     @Override
-    public User ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri) {
+    public UserInfoVo ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri) {
         String authUrl = ixmAppAuthUrl + "/oauth/token?code=" + code + "&client_id=" + ixmAppClientId
                 + "&client_secret=" + ixmAppClientSecret +
                 "&grant_type=authorization_code&redirect_uri=" + redirectUri;
@@ -696,7 +696,6 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
 
-        sysUser.setTokenId(token);
-        return sysUser;
+        return userInfo;
     }
 }
