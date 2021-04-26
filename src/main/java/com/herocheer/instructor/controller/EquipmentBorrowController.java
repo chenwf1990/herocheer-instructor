@@ -81,8 +81,8 @@ public class EquipmentBorrowController extends BaseController{
 
     @PostMapping("/remand/confirm")
     @ApiOperation("值班人员确认归还")
-    public ResponseResult confirmRemand(@RequestBody List<EquipmentRemand> remand){
-        Integer count=equipmentBorrowService.confirmRemand(remand);
+    public ResponseResult confirmRemand(@RequestBody List<EquipmentRemand> remand,HttpServletRequest request){
+        Integer count=equipmentBorrowService.confirmRemand(remand,getCurUserId(request));
         return ResponseResult.isSuccess(count);
     }
 

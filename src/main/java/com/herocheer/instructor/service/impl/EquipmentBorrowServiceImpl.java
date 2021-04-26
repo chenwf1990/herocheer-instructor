@@ -213,9 +213,13 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     }
 
     @Override
-    public Integer confirmRemand(List<EquipmentRemand> remand) {
+    public Integer confirmRemand(List<EquipmentRemand> remand,Long userId) {
         EquipmentBorrowDetails borrowDetails;
         Long borrowId=0L;
+        User user=userService.get(userId);
+        if(user==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
+        }
         for(EquipmentRemand equipmentRemand:remand){
             Integer remandQuantity=equipmentRemand.getRemandQuantity();
             equipmentRemand=equipmentRemandService.get(equipmentRemand.getId());
@@ -235,6 +239,10 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             equipmentBorrowDetailsService.update(borrowDetails);
             equipmentRemand.setRemandQuantity(remandQuantity);
             equipmentRemand.setRemandStatus(RemandStatusEnums.to_confirmed.getStatus());
+            equipmentRemand.setReceiveBy(user.getIxmUserRealName());
+            equipmentRemand.setReceiveId(user.getId());
+            equipmentRemand.setReceiveTime(System.currentTimeMillis());
+            equipmentRemand.setPhoneNumber(user.getPhone());
             equipmentRemandService.update(equipmentRemand);
             if(equipmentRemand.getBorrowId()!=null){
                 borrowId=equipmentRemand.getBorrowId();

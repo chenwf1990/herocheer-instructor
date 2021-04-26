@@ -71,7 +71,7 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      * @param remand
      * @return
      */
-    Integer confirmRemand(List<EquipmentRemand> remand);
+    Integer confirmRemand(List<EquipmentRemand> remand,Long userId);
 
     /**
      * 申请归还列表
