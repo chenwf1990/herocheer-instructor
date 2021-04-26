@@ -181,15 +181,15 @@ public class WechatController extends BaseController {
      * @param token   令牌
      * @return {@link ResponseResult<User>}
      */
-/*    @PostMapping("smkLogin")
+    @PostMapping("smkLogin")
     @ApiOperation(value = "厦门市民卡APP登录")
     @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "市民卡token"),
     })
-    public ResponseResult<User> smkLogin(HttpSession session, @NotBlank(message = "市民卡token不能为空") String token) {
-        return weChatApiService.smkLogin(session, token);
-    }*/
+    public ResponseResult<UserInfoVo> smkLogin(HttpSession session, @NotBlank(message = "市民卡token不能为空") String token) {
+        return ResponseResult.ok(wechatService.smkLogin(session, token));
+    }
 
     /**
      * 获取短信验证码

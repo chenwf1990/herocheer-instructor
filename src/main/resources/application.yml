@@ -116,3 +116,7 @@ smk:
   timestampUrl: ${smk.url}/basic/timestamp #系统对时
   qrcodeGenerateUrl: ${smk.url}/qrcode/generate/303 #二维码生成
   qrcodeCheckUrl: ${smk.url}/qrcode/check #二维码识别
+
+courier:
+  station:
+    url: http://tycd.herocheer.com/instructor/#/equipment/equipmentBorrow?id={}&type=2

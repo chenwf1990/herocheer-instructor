@@ -85,4 +85,13 @@ public interface WechatService {
      * @return {@link UserInfoVo}
      */
     UserInfoVo ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri);
+
+    /**
+     * 烟登录
+     *
+     * @param session 会话
+     * @param token   令牌
+     * @return {@link UserInfoVo}
+     */
+    UserInfoVo smkLogin(HttpSession session, String token);
 }
