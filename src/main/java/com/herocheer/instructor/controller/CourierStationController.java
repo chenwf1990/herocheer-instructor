@@ -78,7 +78,7 @@ public class CourierStationController extends BaseController{
         return ResponseResult.isSuccess(courierStationService.deleteCourierStation(id));
     }
     @GetMapping("/QrCode")
-    @ApiOperation("生产二维码")
+    @ApiOperation("驿站二维码")
     @AllowAnonymous
     public void fetchQrCode(@ApiParam("驿站id") @RequestParam Long id, HttpServletResponse response) throws IOException {
         String url = StrUtil.format(statioUrl,id);
