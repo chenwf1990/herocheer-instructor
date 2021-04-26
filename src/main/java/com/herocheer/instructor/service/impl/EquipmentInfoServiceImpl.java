@@ -50,29 +50,31 @@ public class EquipmentInfoServiceImpl extends BaseServiceImpl<EquipmentInfoDao, 
 
     @Override
     public Integer addEquipment(EquipmentInfo equipmentInfo) {
-        return this.dao.insert(equipmentInfo);
+        Integer count=this.dao.insert(equipmentInfo);
+        insertLog(equipmentInfo,null);
+        return count;
     }
 
     @Override
     public Integer updateEquipment(EquipmentInfo equipmentInfo,Long damageId) {
-        EquipmentInfo oldInfo=this.dao.get(equipmentInfo.getId());
-        if(oldInfo==null){
-            throw new CommonException(ResponseCode.SERVER_ERROR, "获取器材信息失败!");
-        }
-        EquipmentInfoVo infoVo=new EquipmentInfoVo();
-        infoVo.setEquipmentId(oldInfo.getId());
-        infoVo.setDamageId(damageId);
-        infoVo.setCourierId(oldInfo.getCourierId());
-        infoVo.setCourierName(oldInfo.getCourierName());
-        infoVo.setEquipmentName(oldInfo.getEquipmentName());
-        infoVo.setModel(oldInfo.getModel());
-        infoVo.setBrandId(oldInfo.getBrandId());
-        infoVo.setBrandName(oldInfo.getBrandName());
-        infoVo.setStockNumber(oldInfo.getStockNumber());
-        infoVo.setRemarks(oldInfo.getRemarks());
-         this.dao.insertLog(infoVo);
+        insertLog(equipmentInfo,damageId);
         return this.dao.update(equipmentInfo);
     }
+
+    public Integer insertLog(EquipmentInfo equipmentInfo,Long damageId){
+        EquipmentInfoVo infoVo=new EquipmentInfoVo();
+        infoVo.setEquipmentId(equipmentInfo.getId());
+        infoVo.setDamageId(damageId);
+        infoVo.setCourierId(equipmentInfo.getCourierId());
+        infoVo.setCourierName(equipmentInfo.getCourierName());
+        infoVo.setEquipmentName(equipmentInfo.getEquipmentName());
+        infoVo.setModel(equipmentInfo.getModel());
+        infoVo.setBrandId(equipmentInfo.getBrandId());
+        infoVo.setBrandName(equipmentInfo.getBrandName());
+        infoVo.setStockNumber(equipmentInfo.getStockNumber());
+        infoVo.setRemarks(equipmentInfo.getRemarks());
+        return this.dao.insertLog(infoVo);
+    };
 
     @Override
     public Integer deleteEquipment(Long id) {

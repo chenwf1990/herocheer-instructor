@@ -286,7 +286,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
                 }
             }
             if(flag>0){
-                equipment.append("未归还,请及时归换。");
+                equipment.append("未归还,请及时归还。");
             }
         }
         return equipment.toString();
