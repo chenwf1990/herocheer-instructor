@@ -349,10 +349,13 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             if(borrowDetails==null){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用详情失败!");
             }
+            if(damageDetailsVo.getDamagQuantity()>borrowDetails.getUnreturnedQuantity()){
+                throw new CommonException(ResponseCode.SERVER_ERROR, "报损数量不能大于待还数量!");
+            }
             borrowDetails.setUnreturnedQuantity(borrowDetails.getUnreturnedQuantity()-damageDetailsVo.getDamagQuantity());
             borrowDetails.setDamageQuantity(borrowDetails.getDamageQuantity()+damageDetailsVo.getDamagQuantity());
             //没有待归还数量,设置器材为已归还
-            if(borrowDetails.getUnreturnedQuantity().equals(0)){
+            if(borrowDetails.getUnreturnedQuantity()<1){
                 borrowDetails.setRemandStatus(1);
             }
             equipmentBorrowDetailsService.update(borrowDetails);
