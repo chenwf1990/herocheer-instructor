@@ -338,6 +338,9 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     @Override
     public Integer andDamage(EquipmentDamageVo vo) {
         Integer count=equipmentDamageService.insert(vo);
+        if(vo.getDamageDetailsVos().isEmpty()){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "请选择报废器材!");
+        }
         for(EquipmentDamageDetailsVo damageDetailsVo:vo.getDamageDetailsVos()){
             EquipmentBorrowDetails borrowDetails=equipmentBorrowDetailsService.get(damageDetailsVo.getBorrowDetailsId());
             if(borrowDetails.getUnreturnedQuantity()<1){
@@ -353,7 +356,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
                 borrowDetails.setRemandStatus(1);
             }
             equipmentBorrowDetailsService.update(borrowDetails);
-            damageDetailsVo.setId(vo.getId());
+            damageDetailsVo.setDamageId(vo.getId());
             equipmentDamageDetailsService.insert(damageDetailsVo);
             EquipmentInfo equipmentInfo=equipmentInfoService.get(borrowDetails.getEquipmentId());
             if(equipmentInfo==null){
