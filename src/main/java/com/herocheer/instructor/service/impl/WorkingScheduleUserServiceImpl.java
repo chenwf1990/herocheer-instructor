@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @author chenwf
@@ -340,5 +341,27 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     @Override
     public List<WorkingSchedulsUserVo> findWorkingUserByCheck(){
         return this.dao.selectWorkingUserByCheck(new HashMap<>());
+    }
+
+    @Override
+    public List<WorkingSchedulsUserVo> findNowadaysWorkingUser(Long courierStationId) {
+        Map<String, Object> map=new HashMap<>();
+        map.put("courierStationId",courierStationId);
+        //预约状态0
+        map.put("reserveStatus",0);
+        //值班日期
+        map.put("scheduleTime",System.currentTimeMillis()/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset());
+        return this.dao.findNowadaysWorkingUser(map);
+    }
+
+    @Override
+    public List<Long> findCourierStationId(Long userId) {
+        Map<String, Object> map=new HashMap<>();
+        map.put("userId",userId);
+        //预约状态0
+        map.put("reserveStatus",0);
+        //值班日期
+        map.put("scheduleTime",System.currentTimeMillis()/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset());
+        return this.dao.findCourierStationId(map);
     }
 }

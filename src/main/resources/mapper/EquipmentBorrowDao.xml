@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.EquipmentBorrowDao">
     <sql id="table_field">
-      id, borrowReceipt, courierId, courierName, borrower, gender, identityNumber, phoneNumber, borrowStartTime, borrowEndTime, status, remandStatus, remandTime, borrowEquipment, remandEquipment, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, borrowReceipt, courierId, courierName, borrower, gender, identityNumber, phoneNumber, borrowStartTime, borrowEndTime, status, remandStatus, remandTime, borrowEquipment, remandEquipment, lenderId, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -51,6 +51,9 @@
         <if test="remandEquipment != null">
             remandEquipment,
         </if>
+        <if test="lenderId != null">
+            lenderId,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -96,6 +99,9 @@
         </if>
         <if test="remandEquipment != null">
             #{remandEquipment},
+        </if>
+        <if test="lenderId != null">
+            #{lenderId},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -152,6 +158,9 @@
             </if>
             <if test="remandEquipment != null">
                 remandEquipment = #{remandEquipment},
+            </if>
+            <if test="lenderId != null">
+                lenderId = #{lenderId},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -211,6 +220,9 @@
             <if test="remandEquipment != null">
                 and remandEquipment = #{remandEquipment}
             </if>
+            <if test="lenderId != null">
+                and lenderId = #{lenderId}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
         order by id DESC
@@ -262,6 +274,9 @@
             <if test="remandEquipment != null">
                 and remandEquipment = #{remandEquipment}
             </if>
+            <if test="lenderId != null">
+                and lenderId = #{lenderId}
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
@@ -301,9 +316,20 @@
                 <if test="userId!=null and queryType==2">
                     and createdId=#{userId}
                 </if>
+                <if test="userId!=null and queryType==1 ">
+                    and (lenderId=#{userId}
+                    or id in (SELECT borrowId from equipment_remand where receiveId=#{userId} GROUP BY borrowId)
+                    <if test="courierStationIds!=null and courierStationIds.size>0">
+                        or courierId in
+                        <foreach item="courierId" index="index" collection="courierStationIds" open="(" separator="," close=")">
+                            #{courierId}
+                        </foreach>
+                    </if>
+                    )
+                </if>
             </where>
             <choose>
-                <when test="queryType==1 or queryType==2">
+                <when test="queryType==1 or queryType==2 or queryType==3">
                     order by case when remandStatus=1 then  0
                     ELSE 1 end ASC,createdTime DESC
                 </when>

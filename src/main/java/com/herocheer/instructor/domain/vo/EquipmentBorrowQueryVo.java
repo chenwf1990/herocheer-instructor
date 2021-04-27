@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @program: herocheer-instructor
@@ -45,8 +46,11 @@ public class EquipmentBorrowQueryVo implements Serializable {
     @ApiModelProperty("状态 (0.待审核 1.待借出 2.待归还 3.已归还 4.驳回  5.已办结)")
     private Integer status;
 
-    @ApiModelProperty("查询类型(0.查询全部 1.驿站值班人员查询 2.用户查询)")
+    @ApiModelProperty("查询类型(0.查询全部 1.驿站值班人员查询 2.用户查询 3.管理员查询<不做限制>)")
     private Integer queryType;
+
+    @ApiModelProperty("驿站id集合")
+    private List<Long> courierStationIds;
 
     @ApiModelProperty("页码")
     private int pageNo;

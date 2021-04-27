@@ -109,7 +109,7 @@
                 and brandName like concat('%',#{brandName},'%')
             </if>
         </where>
-        order by createdTime DESC
+        order by numbering DESC
     </select>
 
     <select id="getCount" resultType="java.lang.Integer">

@@ -623,4 +623,40 @@
     <select id="selectWorkingUserByCheck" parameterType="map" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
         select a.scheduleTime,a.serviceBeginTime,a.serviceEndTime,a.activityType,a.activityTitle,b.id from working_schedule a inner join working_schedule_user b on a.id = b.workingScheduleId where b.`status`= 1 and (unix_timestamp(curdate())*1000) > a.scheduleTime
     </select>
+
+    <!--获取当天值班的人员信息-->
+    <select id="findNowadaysWorkingUser" parameterType="map" resultType="com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo">
+        SELECT
+            u.taskNo,
+            u.userName,
+            u.type,
+            u.certificateGrade,
+            u.guideProject,
+            s.scheduleTime,
+            s.serviceBeginTime,
+            s.serviceEndTime,
+            s.courierStationId
+        FROM
+            working_schedule_user u
+            LEFT JOIN working_schedule s ON u.workingScheduleId = s.id
+        WHERE
+                u.reserveStatus = #{reserveStatus}
+            AND s.courierStationId =#{courierStationId}
+            AND s.scheduleTime=#{scheduleTime}
+        order by u.createdTime desc
+    </select>
+
+    <select id="findCourierStationId" parameterType="map" resultType="java.lang.Long">
+        SELECT
+           s.courierStationId
+        FROM
+            working_schedule_user u
+            LEFT JOIN working_schedule s ON u.workingScheduleId = s.id
+        WHERE
+                u.reserveStatus = #{reserveStatus}
+            AND u.userId=#{userId}
+            AND s.courierStationId is not null
+            AND s.scheduleTime=#{scheduleTime}
+        GROUP BY s.courierStationId
+    </select>
 </mapper>

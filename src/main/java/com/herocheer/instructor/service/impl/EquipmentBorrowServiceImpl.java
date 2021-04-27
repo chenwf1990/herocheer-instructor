@@ -29,6 +29,7 @@ import com.herocheer.instructor.service.EquipmentDamageService;
 import com.herocheer.instructor.service.EquipmentInfoService;
 import com.herocheer.instructor.service.EquipmentRemandService;
 import com.herocheer.instructor.service.UserService;
+import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.sun.org.apache.xalan.internal.res.XSLTErrorResources;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
@@ -73,10 +74,26 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     @Resource
     private EquipmentDamageDetailsService equipmentDamageDetailsService;
 
+    @Resource
+    private WorkingScheduleUserService workingScheduleUserService;
+
     @Override
     public Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo,Long userId) {
+        User user=userService.get(userId);
+        if (user==null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
+        }
+        //后台管理员 查询不做限制
+        if(user.getUserType()==4){
+            queryVo.setQueryType(3);
+        }
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(2)){
+            queryVo.setUserId(userId);
+        }
+        if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(1)){
+            List<Long> courierStationIds= workingScheduleUserService.findCourierStationId(userId);
+            queryVo.setCourierStationIds(courierStationIds);
             queryVo.setUserId(userId);
         }
         List<EquipmentBorrow> list=this.dao.findList(queryVo);
@@ -151,7 +168,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             //待归还数量等于实际借用数量
             borrowDetails.setUnreturnedQuantity(borrowDetails.getActualBorrowQuantity());
             //保存借出人信息
-            borrowDetails.setBorrowBy(user.getIxmUserRealName());
+            borrowDetails.setBorrowBy(user.getUserName());
             borrowDetails.setBorrowUserId(user.getId());
             borrowDetails.setBorrowTime(System.currentTimeMillis());
             borrowDetails.setPhoneNumber(user.getPhone());
@@ -166,6 +183,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         }
         equipmentBorrow.setStatus(BorrowStatusEnums.to_remand.getStatus());
         equipmentBorrow.setBorrowEquipment(borrowEquipment.toString().substring(0,borrowEquipment.length()-1));
+        equipmentBorrow.setLenderId(user.getId());
         return this.dao.update(equipmentBorrow);
     }
 
@@ -239,7 +257,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             equipmentBorrowDetailsService.update(borrowDetails);
             equipmentRemand.setRemandQuantity(remandQuantity);
             equipmentRemand.setRemandStatus(RemandStatusEnums.to_confirmed.getStatus());
-            equipmentRemand.setReceiveBy(user.getIxmUserRealName());
+            equipmentRemand.setReceiveBy(user.getUserName());
             equipmentRemand.setReceiveId(user.getId());
             equipmentRemand.setReceiveTime(System.currentTimeMillis());
             equipmentRemand.setPhoneNumber(user.getPhone());
@@ -256,8 +274,22 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         //查询是否还有未归还的器材
         Map<String,Object> map=new HashedMap();
         map.put("borrowId",equipmentBorrow.getId());
-        map.put("remandStatus",0);
-        Integer count=equipmentBorrowDetailsService.count(map);
+        List<EquipmentBorrowDetails> details=equipmentBorrowDetailsService.findByLimit(map);
+        StringBuffer remandEquipment=new StringBuffer();
+        Integer count=0;
+        for(EquipmentBorrowDetails equipmentBorrowDetails:details){
+            if(equipmentBorrowDetails.getRemandQuantity()>0){
+                remandEquipment.append(equipmentBorrowDetails.getEquipmentName());
+                remandEquipment.append("*");
+                remandEquipment.append(equipmentBorrowDetails.getRemandQuantity());
+                remandEquipment.append(",");
+            }
+            if(equipmentBorrowDetails.getRemandStatus()==0){
+                count++;
+            }
+        }
+        equipmentBorrow.setRemandEquipment(remandEquipment.toString());
+        //没有待归还的 设置订单状态为已归还
         if(count==0){
             equipmentBorrow.setStatus(BorrowStatusEnums.already_borrow.getStatus());
         }

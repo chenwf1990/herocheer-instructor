@@ -40,5 +40,6 @@ public class EquipmentBorrow extends BaseEntity {
     private String borrowEquipment;
     @ApiModelProperty("归还器材")   
     private String remandEquipment;
-
+    @ApiModelProperty("借出人id")
+    private Long lenderId;
 }
