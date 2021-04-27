@@ -95,6 +95,12 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
     Integer userConfirmRemand(Long id);
 
     /**
+     * 自动签收
+     * @return
+     */
+    Integer confirmRemandTack();
+
+    /**
      *
      * @param id
      * @return

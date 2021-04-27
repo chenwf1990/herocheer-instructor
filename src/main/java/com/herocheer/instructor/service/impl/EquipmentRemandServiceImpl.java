@@ -34,4 +34,9 @@ public class EquipmentRemandServiceImpl extends BaseServiceImpl<EquipmentRemandD
     public List<EquipmentRemand> getRemandByDetailsId(Long borrowDetailsId) {
         return this.dao.getRemandByDetailsId(borrowDetailsId);
     }
+
+    @Override
+    public List<Long> findTimeOutRemand() {
+        return this.dao.findTimeOutRemand();
+    }
 }

@@ -190,4 +190,10 @@
         select * from equipment_remand
         where borrowDetailsId=#{borrowDetailsId} and (remandStatus=2 or remandStatus=3)
     </select>
+
+    <!--超时未确认-->
+    <select id="findTimeOutRemand" resultType="java.lang.Long">
+        SELECT borrowId FROM equipment_remand
+        WHERE remandStatus=2 and receiveTime + 30 * 60 * 1000 <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 GROUP BY borrowId
+    </select>
 </mapper>

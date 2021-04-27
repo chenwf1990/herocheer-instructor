@@ -37,4 +37,10 @@ public interface EquipmentRemandService extends BaseService<EquipmentRemand,Long
      */
     List<EquipmentRemand> getRemandByDetailsId(Long borrowDetailsId);
 
+    /**
+     * 超时未签收的
+     * @return
+     */
+    List<Long> findTimeOutRemand();
+
 }

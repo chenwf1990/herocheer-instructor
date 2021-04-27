@@ -101,7 +101,7 @@ public class WorkingScheduleUserController extends BaseController{
 
     @GetMapping("/nowadays")
     @ApiOperation("获取当天驿站的值班人员信息")
-    public ResponseResult findNowadaysWorkingUser(@ApiParam("驿站id") @RequestParam Long courierStationId){
+    public ResponseResult<List<WorkingSchedulsUserVo>> findNowadaysWorkingUser(@ApiParam("驿站id") @RequestParam Long courierStationId){
         List<WorkingSchedulsUserVo> list=workingScheduleUserService.findNowadaysWorkingUser(courierStationId);
         return ResponseResult.ok(list);
     }

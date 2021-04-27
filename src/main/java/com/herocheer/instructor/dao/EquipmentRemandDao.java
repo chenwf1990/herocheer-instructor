@@ -40,4 +40,10 @@ public interface EquipmentRemandDao extends BaseDao<EquipmentRemand,Long>{
      * @return
      */
     List<EquipmentRemand> getRemandByDetailsId(@Param("borrowDetailsId")Long borrowDetailsId);
+
+    /**
+     * 获取超时未签收
+     * @return
+     */
+    List<Long> findTimeOutRemand();
 }

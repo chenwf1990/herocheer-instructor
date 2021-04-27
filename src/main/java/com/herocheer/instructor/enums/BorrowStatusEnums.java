@@ -2,7 +2,7 @@ package com.herocheer.instructor.enums;
 
 public enum BorrowStatusEnums {
     to_audit(0,"待审核"),
-    to_remand(1,"待借出"),
+    to_remand(1,"待签收"),
     to_borrow(2,"待归还"),
     already_borrow(3,"已归还"),
     overrule(4,"驳回");

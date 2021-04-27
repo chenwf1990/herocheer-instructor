@@ -181,7 +181,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if(equipmentBorrow==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
         }
-        equipmentBorrow.setStatus(BorrowStatusEnums.to_remand.getStatus());
+        equipmentBorrow.setStatus(BorrowStatusEnums.to_borrow.getStatus());
         equipmentBorrow.setBorrowEquipment(borrowEquipment.toString().substring(0,borrowEquipment.length()-1));
         equipmentBorrow.setLenderId(user.getId());
         return this.dao.update(equipmentBorrow);
@@ -268,6 +268,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         }
         EquipmentBorrow equipmentBorrow=this.dao.get(borrowId);
         equipmentBorrow.setRemandStatus(RemandStatusEnums.to_confirmed.getStatus());
+        equipmentBorrow.setRemandTime(System.currentTimeMillis());
         if(equipmentBorrow==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
         }
@@ -288,7 +289,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
                 count++;
             }
         }
-        equipmentBorrow.setRemandEquipment(remandEquipment.toString());
+        equipmentBorrow.setRemandEquipment(remandEquipment.toString().substring(0,remandEquipment.length()-1));
         //没有待归还的 设置订单状态为已归还
         if(count==0){
             equipmentBorrow.setStatus(BorrowStatusEnums.already_borrow.getStatus());
@@ -338,8 +339,17 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         EquipmentBorrow equipmentBorrow=new EquipmentBorrow();
         equipmentBorrow.setId(id);
         equipmentBorrow.setRemandStatus(RemandStatusEnums.already_borrow.getStatus());
-        this.dao.update(equipmentBorrow);
         return this.dao.update(equipmentBorrow);
+    }
+
+    @Override
+    public Integer confirmRemandTack() {
+        List<Long> borrowIds=equipmentRemandService.findTimeOutRemand();
+        Integer count=0;
+        for(Long id:borrowIds){
+            count+=userConfirmRemand(id);
+        }
+        return count;
     }
 
     @Override
