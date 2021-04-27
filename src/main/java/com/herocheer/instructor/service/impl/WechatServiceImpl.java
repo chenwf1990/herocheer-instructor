@@ -698,6 +698,9 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         BeanCopier.create(sysUser.getClass(),userInfo.getClass(),false).copy(sysUser,userInfo,null);
         userInfo.setUserType(sysUser.getUserType());
         userInfo.setTokenId(token);
+        userInfo.setOtherId(sysUser.getOpenid());
+        log.debug("I厦门APP用户sysUser-OpenId：{}",sysUser.getOpenid());
+        log.debug("I厦门APP用户userInfo-OpenId：{}",userInfo.getOtherId());
         log.debug("I厦门APP用户登入信息：{}",userInfo);
         // 用户信息放入Redis
         redisClient.set(token,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
@@ -804,7 +807,10 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         BeanCopier.create(sysUser.getClass(),userInfo.getClass(),false).copy(sysUser,userInfo,null);
         userInfo.setUserType(sysUser.getUserType());
         userInfo.setTokenId(instructorToken);
-        log.debug("市民卡APP用户登入信息：{}",userInfo);
+        userInfo.setOtherId(sysUser.getOpenid());
+        log.debug("市民卡APP用户SysUser-OpenId：{}",sysUser.getOpenid());
+        log.debug("市民卡APP用户UserInfo-OpenId：{}",userInfo.getOtherId());
+
         // 用户信息放入Redis
         redisClient.set(instructorToken,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
         return userInfo;

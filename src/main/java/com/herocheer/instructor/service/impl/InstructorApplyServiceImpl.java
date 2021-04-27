@@ -217,7 +217,7 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
         if(StringUtils.isNotEmpty(openId)){
             params.put("openId", openId);
         }else {
-            params.put("instructorId", instructorId);
+            params.put("instructorId", null != instructorId?instructorId:99999L);
         }
         params.put("orderBy","id desc");
         List<InstructorApply> applies = this.dao.findByLimit(params);
