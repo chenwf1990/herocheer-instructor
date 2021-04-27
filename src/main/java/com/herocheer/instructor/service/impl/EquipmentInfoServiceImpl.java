@@ -9,12 +9,16 @@ import com.herocheer.instructor.dao.EquipmentInfoDao;
 import com.herocheer.instructor.domain.vo.EquipmentInfoQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentInfoStockVo;
 import com.herocheer.instructor.domain.vo.EquipmentInfoVo;
+import com.herocheer.instructor.service.EquipmentBorrowDetailsService;
 import com.herocheer.instructor.service.EquipmentInfoService;
 import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author makejava
@@ -26,6 +30,8 @@ import java.util.List;
 @Transactional
 public class EquipmentInfoServiceImpl extends BaseServiceImpl<EquipmentInfoDao, EquipmentInfo,Long> implements EquipmentInfoService {
 
+    @Resource
+    private EquipmentBorrowDetailsService equipmentBorrowDetailsService;
 
     @Override
     public Page<EquipmentInfo> queryPage(EquipmentInfoQueryVo queryVo) {
@@ -78,6 +84,12 @@ public class EquipmentInfoServiceImpl extends BaseServiceImpl<EquipmentInfoDao, 
 
     @Override
     public Integer deleteEquipment(Long id) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("equipmentId",id);
+        Integer count=equipmentBorrowDetailsService.count(map);
+        if (count>0){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "器材已被使用,无法删除!");
+        }
         return this.dao.delete(id);
     }
 }

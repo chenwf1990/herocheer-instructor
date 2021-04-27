@@ -5,13 +5,16 @@ import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.domain.entity.BrandInfo;
 import com.herocheer.instructor.dao.BrandInfoDao;
+import com.herocheer.instructor.domain.entity.EquipmentInfo;
 import com.herocheer.instructor.domain.vo.AssociationManageVo;
 import com.herocheer.instructor.service.BrandInfoService;
+import com.herocheer.instructor.service.EquipmentInfoService;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,9 @@ import java.util.Map;
 @Transactional
 public class BrandInfoServiceImpl extends BaseServiceImpl<BrandInfoDao, BrandInfo,Long> implements BrandInfoService {
 
+
+    @Resource
+    private EquipmentInfoService equipmentInfoService;
     @Override
     public Page<BrandInfo> queryPage(String brandName, Integer pageNo, Integer pageSize) {
         Page page = Page.startPage(pageNo,pageSize);
@@ -64,6 +70,12 @@ public class BrandInfoServiceImpl extends BaseServiceImpl<BrandInfoDao, BrandInf
 
     @Override
     public Integer deleteBrand(Long id) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("brandId",id);
+        Integer count=equipmentInfoService.count(map);
+        if (count>0){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "该品牌下存在器材,无法删除!");
+        }
         return this.dao.delete(id);
     }
 
