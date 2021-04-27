@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -96,6 +97,13 @@ public class WorkingScheduleUserController extends BaseController{
         workingSchedulsUserVo.setCourierStationId(workingSchedule.getCourierStationId());
         workingSchedulsUserVo.setCourierStationName(workingSchedule.getCourierStationName());
         return ResponseResult.ok(workingSchedulsUserVo);
+    }
+
+    @GetMapping("/nowadays")
+    @ApiOperation("获取当天驿站的值班人员信息")
+    public ResponseResult<List<WorkingSchedulsUserVo>> findNowadaysWorkingUser(@ApiParam("驿站id") @RequestParam Long courierStationId){
+        List<WorkingSchedulsUserVo> list=workingScheduleUserService.findNowadaysWorkingUser(courierStationId);
+        return ResponseResult.ok(list);
     }
 
 }

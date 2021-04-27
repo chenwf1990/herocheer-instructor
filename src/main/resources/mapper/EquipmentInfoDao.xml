@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.EquipmentInfoDao">
+    <sql id="table_field">
+      id, courierId, courierName, equipmentName, model, brandId, brandName, stockNumber, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.EquipmentInfo">
+        insert into equipment_info (
+    <trim suffixOverrides=",">
+        <if test="courierId != null">
+            courierId,
+        </if>
+        <if test="courierName != null">
+            courierName,
+        </if>
+        <if test="equipmentName != null">
+            equipmentName,
+        </if>
+        <if test="model != null">
+            model,
+        </if>
+        <if test="brandId != null">
+            brandId,
+        </if>
+        <if test="brandName != null">
+            brandName,
+        </if>
+        <if test="stockNumber != null">
+            stockNumber,
+        </if>
+        <if test="remarks != null">
+            remarks,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="courierId != null">
+            #{courierId},
+        </if>
+        <if test="courierName != null">
+            #{courierName},
+        </if>
+        <if test="equipmentName != null">
+            #{equipmentName},
+        </if>
+        <if test="model != null">
+            #{model},
+        </if>
+        <if test="brandId != null">
+            #{brandId},
+        </if>
+        <if test="brandName != null">
+            #{brandName},
+        </if>
+        <if test="stockNumber != null">
+            #{stockNumber},
+        </if>
+        <if test="remarks != null">
+            #{remarks},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from equipment_info where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.EquipmentInfo">
+        update equipment_info
+        <set>
+            <if test="courierId != null">
+                courierId = #{courierId},
+            </if>
+            <if test="courierName != null">
+                courierName = #{courierName},
+            </if>
+            <if test="equipmentName != null">
+                equipmentName = #{equipmentName},
+            </if>
+            <if test="model != null">
+                model = #{model},
+            </if>
+            <if test="brandId != null">
+                brandId = #{brandId},
+            </if>
+            <if test="brandName != null">
+                brandName = #{brandName},
+            </if>
+            <if test="stockNumber != null">
+                stockNumber = #{stockNumber},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.EquipmentInfo">
+        select <include refid="table_field"/> from equipment_info where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.EquipmentInfo">
+        select <include refid="table_field"/> from equipment_info
+        <where>
+            <if test="courierId != null">
+                and courierId = #{courierId}
+            </if>
+            <if test="courierName != null">
+                and courierName = #{courierName}
+            </if>
+            <if test="equipmentName != null">
+                and equipmentName = #{equipmentName}
+            </if>
+            <if test="model != null">
+                and model = #{model}
+            </if>
+            <if test="brandId != null">
+                and brandId = #{brandId}
+            </if>
+            <if test="brandName != null">
+                and brandName = #{brandName}
+            </if>
+            <if test="stockNumber != null">
+                and stockNumber = #{stockNumber}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from equipment_info
+        <where>
+            <if test="courierId != null">
+                and courierId = #{courierId}
+            </if>
+            <if test="courierName != null">
+                and courierName = #{courierName}
+            </if>
+            <if test="equipmentName != null">
+                and equipmentName = #{equipmentName}
+            </if>
+            <if test="model != null">
+                and model = #{model}
+            </if>
+            <if test="brandId != null">
+                and brandId = #{brandId}
+            </if>
+            <if test="brandName != null">
+                and brandName = #{brandName}
+            </if>
+            <if test="stockNumber != null">
+                and stockNumber = #{stockNumber}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="findList" parameterType="com.herocheer.instructor.domain.vo.EquipmentInfoQueryVo"
+            resultType="com.herocheer.instructor.domain.entity.EquipmentInfo">
+        select <include refid="table_field"/> from equipment_info
+        <where>
+            <if test="courierId != null">
+                and courierId = #{courierId}
+            </if>
+            <if test="equipmentName != null">
+                and equipmentName like concat('%',#{equipmentName},'%')
+            </if>
+            <if test="brandName != null">
+                and brandName like concat('%',#{brandName},'%')
+            </if>
+            <if test="brandId!=null">
+                and brandId = #{brandId}
+            </if>
+        </where>
+        order by createdTime DESC
+    </select>
+
+    <!--库存查询-->
+    <select id="findStockList" parameterType="com.herocheer.instructor.domain.vo.EquipmentInfoQueryVo"
+            resultType="com.herocheer.instructor.domain.vo.EquipmentInfoStockVo">
+        SELECT
+        i.*,sum(ifnull(b.unreturnedQuantity,0)) AS 'borrowQuantity',i.stockNumber - sum(ifnull(b.unreturnedQuantity,0)) AS 'surplusQuantity'
+        FROM
+        equipment_info i
+        LEFT JOIN equipment_borrow_details b ON i.id = b.equipmentId
+        <where>
+            <if test="courierId != null">
+                and i.courierId = #{courierId}
+            </if>
+            <if test="equipmentName != null">
+                and i.equipmentName like concat('%',#{equipmentName},'%')
+            </if>
+            <if test="brandId!=null">
+                and i.brandId = #{brandId}
+            </if>
+            <if test="brandName != null">
+                and i.brandName like concat('%',#{brandName},'%')
+            </if>
+        </where>
+        GROUP BY
+        i.id
+        order by i.createdTime DESC
+    </select>
+
+    <insert id="insertLog" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.vo.EquipmentInfoVo">
+        insert into equipment_info_log (
+        <trim suffixOverrides=",">
+            <if test="equipmentId != null">
+                equipmentId,
+            </if>
+            <if test="damageId != null">
+                damageId,
+            </if>
+            <if test="courierId != null">
+                courierId,
+            </if>
+            <if test="courierName != null">
+                courierName,
+            </if>
+            <if test="equipmentName != null">
+                equipmentName,
+            </if>
+            <if test="model != null">
+                model,
+            </if>
+            <if test="brandId != null">
+                brandId,
+            </if>
+            <if test="brandName != null">
+                brandName,
+            </if>
+            <if test="stockNumber != null">
+                stockNumber,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="equipmentId != null">
+                #{equipmentId},
+            </if>
+            <if test="damageId != null">
+                #{damageId},
+            </if>
+            <if test="courierId != null">
+                #{courierId},
+            </if>
+            <if test="courierName != null">
+                #{courierName},
+            </if>
+            <if test="equipmentName != null">
+                #{equipmentName},
+            </if>
+            <if test="model != null">
+                #{model},
+            </if>
+            <if test="brandId != null">
+                #{brandId},
+            </if>
+            <if test="brandName != null">
+                #{brandName},
+            </if>
+            <if test="stockNumber != null">
+                #{stockNumber},
+            </if>
+            <if test="remarks != null">
+                #{remarks},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+</mapper>

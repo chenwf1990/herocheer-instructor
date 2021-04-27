@@ -9,8 +9,9 @@ spring:
     database: 4
     port: 6379
     timeout: 5000ms
-
-
+courier:
+  station:
+    url: http://tycd.herocheer.com/instructor/#/equipment/equipmentBorrow?id={}&type=2
 
 
 

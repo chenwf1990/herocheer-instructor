@@ -97,4 +97,18 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return {@link List<WorkingSchedulsUserVo>}
      */
     List<WorkingSchedulsUserVo> selectWorkingUserByCheck(Map<String,Object> map);
+
+    /**
+     * 获取当天真的值班人员信息
+     * @param map
+     * @return
+     */
+    List<WorkingSchedulsUserVo> findNowadaysWorkingUser(Map<String,Object> map);
+
+    /**
+     * 获取值班人员的驿站id
+     * @param map
+     * @return
+     */
+    List<Long> findCourierStationId(Map<String,Object> map);
 }

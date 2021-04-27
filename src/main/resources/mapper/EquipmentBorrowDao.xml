@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.EquipmentBorrowDao">
+    <sql id="table_field">
+      id, borrowReceipt, courierId, courierName, borrower, gender, identityNumber, phoneNumber, borrowStartTime, borrowEndTime, status, remandStatus, remandTime, borrowEquipment, remandEquipment, lenderId, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+    </sql>
+    
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.EquipmentBorrow">
+        insert into equipment_borrow (
+    <trim suffixOverrides=",">
+        <if test="borrowReceipt != null">
+            borrowReceipt,
+        </if>
+        <if test="courierId != null">
+            courierId,
+        </if>
+        <if test="courierName != null">
+            courierName,
+        </if>
+        <if test="borrower != null">
+            borrower,
+        </if>
+        <if test="gender != null">
+            gender,
+        </if>
+        <if test="identityNumber != null">
+            identityNumber,
+        </if>
+        <if test="phoneNumber != null">
+            phoneNumber,
+        </if>
+        <if test="borrowStartTime != null">
+            borrowStartTime,
+        </if>
+        <if test="borrowEndTime != null">
+            borrowEndTime,
+        </if>
+        <if test="status != null">
+            status,
+        </if>
+        <if test="remandStatus != null">
+            remandStatus,
+        </if>
+        <if test="remandTime != null">
+            remandTime,
+        </if>
+        <if test="borrowEquipment != null">
+            borrowEquipment,
+        </if>
+        <if test="remandEquipment != null">
+            remandEquipment,
+        </if>
+        <if test="lenderId != null">
+            lenderId,
+        </if>
+        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+    </trim>
+    ) VALUES (
+    <trim suffixOverrides=",">
+        <if test="borrowReceipt != null">
+            #{borrowReceipt},
+        </if>
+        <if test="courierId != null">
+            #{courierId},
+        </if>
+        <if test="courierName != null">
+            #{courierName},
+        </if>
+        <if test="borrower != null">
+            #{borrower},
+        </if>
+        <if test="gender != null">
+            #{gender},
+        </if>
+        <if test="identityNumber != null">
+            #{identityNumber},
+        </if>
+        <if test="phoneNumber != null">
+            #{phoneNumber},
+        </if>
+        <if test="borrowStartTime != null">
+            #{borrowStartTime},
+        </if>
+        <if test="borrowEndTime != null">
+            #{borrowEndTime},
+        </if>
+        <if test="status != null">
+            #{status},
+        </if>
+        <if test="remandStatus != null">
+            #{remandStatus},
+        </if>
+        <if test="remandTime != null">
+            #{remandTime},
+        </if>
+        <if test="borrowEquipment != null">
+            #{borrowEquipment},
+        </if>
+        <if test="remandEquipment != null">
+            #{remandEquipment},
+        </if>
+        <if test="lenderId != null">
+            #{lenderId},
+        </if>
+	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+    </trim>
+    )
+    </insert>
+    
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from equipment_borrow where id = #{id}
+    </delete>
+    
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.EquipmentBorrow">
+        update equipment_borrow
+        <set>
+            <if test="borrowReceipt != null">
+                borrowReceipt = #{borrowReceipt},
+            </if>
+            <if test="courierId != null">
+                courierId = #{courierId},
+            </if>
+            <if test="courierName != null">
+                courierName = #{courierName},
+            </if>
+            <if test="borrower != null">
+                borrower = #{borrower},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="identityNumber != null">
+                identityNumber = #{identityNumber},
+            </if>
+            <if test="phoneNumber != null">
+                phoneNumber = #{phoneNumber},
+            </if>
+            <if test="borrowStartTime != null">
+                borrowStartTime = #{borrowStartTime},
+            </if>
+            <if test="borrowEndTime != null">
+                borrowEndTime = #{borrowEndTime},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="remandStatus != null">
+                remandStatus = #{remandStatus},
+            </if>
+            <if test="remandTime != null">
+                remandTime = #{remandTime},
+            </if>
+            <if test="borrowEquipment != null">
+                borrowEquipment = #{borrowEquipment},
+            </if>
+            <if test="remandEquipment != null">
+                remandEquipment = #{remandEquipment},
+            </if>
+            <if test="lenderId != null">
+                lenderId = #{lenderId},
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+       
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.EquipmentBorrow">
+        select <include refid="table_field"/> from equipment_borrow where id = #{id}
+    </select>
+    
+    
+    
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.EquipmentBorrow">
+        select <include refid="table_field"/> from equipment_borrow
+        <where>
+            <if test="borrowReceipt != null">
+                and borrowReceipt = #{borrowReceipt}
+            </if>
+            <if test="courierId != null">
+                and courierId = #{courierId}
+            </if>
+            <if test="courierName != null">
+                and courierName = #{courierName}
+            </if>
+            <if test="borrower != null">
+                and borrower = #{borrower}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="identityNumber != null">
+                and identityNumber = #{identityNumber}
+            </if>
+            <if test="phoneNumber != null">
+                and phoneNumber = #{phoneNumber}
+            </if>
+            <if test="borrowStartTime != null">
+                and borrowStartTime = #{borrowStartTime}
+            </if>
+            <if test="borrowEndTime != null">
+                and borrowEndTime = #{borrowEndTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="remandStatus != null">
+                and remandStatus = #{remandStatus}
+            </if>
+            <if test="remandTime != null">
+                and remandTime = #{remandTime}
+            </if>
+            <if test="borrowEquipment != null">
+                and borrowEquipment = #{borrowEquipment}
+            </if>
+            <if test="remandEquipment != null">
+                and remandEquipment = #{remandEquipment}
+            </if>
+            <if test="lenderId != null">
+                and lenderId = #{lenderId}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+        order by id DESC
+    </select>
+    
+    <!--查询条数-->
+    <select id="count" parameterType="map" resultType="java.lang.Integer">
+        select count(1) from equipment_borrow
+        <where>
+            <if test="borrowReceipt != null">
+                and borrowReceipt = #{borrowReceipt}
+            </if>
+            <if test="courierId != null">
+                and courierId = #{courierId}
+            </if>
+            <if test="courierName != null">
+                and courierName = #{courierName}
+            </if>
+            <if test="borrower != null">
+                and borrower = #{borrower}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="identityNumber != null">
+                and identityNumber = #{identityNumber}
+            </if>
+            <if test="phoneNumber != null">
+                and phoneNumber = #{phoneNumber}
+            </if>
+            <if test="borrowStartTime != null">
+                and borrowStartTime = #{borrowStartTime}
+            </if>
+            <if test="borrowEndTime != null">
+                and borrowEndTime = #{borrowEndTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="remandStatus != null">
+                and remandStatus = #{remandStatus}
+            </if>
+            <if test="remandTime != null">
+                and remandTime = #{remandTime}
+            </if>
+            <if test="borrowEquipment != null">
+                and borrowEquipment = #{borrowEquipment}
+            </if>
+            <if test="remandEquipment != null">
+                and remandEquipment = #{remandEquipment}
+            </if>
+            <if test="lenderId != null">
+                and lenderId = #{lenderId}
+            </if>
+		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <select id="findList" parameterType="com.herocheer.instructor.domain.vo.EquipmentBorrowQueryVo"
+            resultType="com.herocheer.instructor.domain.entity.EquipmentBorrow">
+        select <include refid="table_field"/> from equipment_borrow
+            <where>
+                <if test="courierId != null">
+                    and courierId = #{courierId}
+                </if>
+                <if test="borrowReceipt != null">
+                    and borrowReceipt = #{borrowReceipt}
+                </if>
+                <if test="borrower != null">
+                    and borrower like concat('%',#{borrower},'%')
+                </if>
+                <if test="phoneNumber != null">
+                    and phoneNumber = #{phoneNumber}
+                </if>
+                <if test="borrowStartTime != null and borrowEndTime != null">
+                    and (borrowStartTime between #{borrowStartTime} and #{borrowEndTime}
+                        or borrowEndTime between #{borrowStartTime} and #{borrowEndTime})
+                </if>
+                <if test="remandStartTime != null">
+                    and remandTime <![CDATA[ > ]]> #{remandStartTime}
+                </if>
+                <if test="remandEndTime != null">
+                    and remandTime <![CDATA[ < ]]> #{remandEndTime}
+                </if>
+                <if test="status != null and status!=5 and status!=6">
+                    and status = #{status}
+                </if>
+                <if test="status==5">
+                    and (status = 3 or status=4)
+                </if>
+                <if test="userId!=null and queryType==2">
+                    and createdId=#{userId}
+                </if>
+                <if test="userId!=null and queryType==1 ">
+                    and (lenderId=#{userId}
+                    or id in (SELECT borrowId from equipment_remand where receiveId=#{userId} GROUP BY borrowId)
+                    <if test="courierStationIds!=null and courierStationIds.size>0">
+                        or courierId in
+                        <foreach item="courierId" index="index" collection="courierStationIds" open="(" separator="," close=")">
+                            #{courierId}
+                        </foreach>
+                    </if>
+                    )
+                </if>
+            </where>
+            <choose>
+                <when test="queryType==1 or queryType==2 or queryType==3">
+                    order by case when remandStatus=1 then  0
+                    ELSE 1 end ASC,createdTime DESC
+                </when>
+                <otherwise>
+                    order by createdTime DESC
+                </otherwise>
+            </choose>
+    </select>
+
+    <select id="getEquipmentBorrow"
+            resultType="com.herocheer.instructor.domain.vo.EquipmentBorrowVo">
+        select * from equipment_borrow where id=#{id}
+    </select>
+
+    <select id="getCountByReceipt" resultType="java.lang.Integer">
+        select count(1) from equipment_borrow where borrowReceipt like concat(#{borrowReceipt},'%')
+    </select>
+
+    <select id="getCountByUserId" resultType="java.lang.Integer">
+        SELECT count(*) from equipment_borrow
+        where (`status`=0 or `status`=1 or `status`=2) and createdId=#{userId}
+    </select>
+</mapper>

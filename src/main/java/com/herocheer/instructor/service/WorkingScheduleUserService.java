@@ -124,4 +124,13 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return {@link List<WorkingSchedulsUserVo>}
      */
     List<WorkingSchedulsUserVo> findWorkingUserByCheck();
+
+    /**
+     * 获取当天值班人员信息
+     * @param courierStationId
+     * @return
+     */
+    List<WorkingSchedulsUserVo> findNowadaysWorkingUser(Long courierStationId);
+
+    List<Long> findCourierStationId(Long userId);
 }
