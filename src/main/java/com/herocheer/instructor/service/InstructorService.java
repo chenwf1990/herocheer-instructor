@@ -47,10 +47,10 @@ public interface InstructorService extends BaseService<Instructor,Long> {
     /**
      * 根据openid获取指导员
      *
-     * @param openid openid
+     * @param phone openid
      * @return {@link Instructor}
      */
-    Instructor findInstructorByOpenId(String openid);
+    Instructor findInstructorByPhone(String phone);
 
     /**
      * 添加指导员

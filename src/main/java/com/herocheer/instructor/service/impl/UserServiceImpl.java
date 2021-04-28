@@ -706,7 +706,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         boolean instructorFlag = true;
         Instructor instructor = new Instructor();
         if(infoVo.getUserType() != UserTypeEnums.instructor.getCode().intValue()) {
-            instructor = instructorService.findInstructorByOpenId(userEntity.getOtherId());
+            instructor = instructorService.findInstructorByPhone(userEntity.getPhone());
             instructorFlag = instructor == null ? false : true;
         }
         infoVo.setInstructorFlag(instructorFlag);

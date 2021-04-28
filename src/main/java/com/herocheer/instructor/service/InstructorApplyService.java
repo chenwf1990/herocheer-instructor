@@ -56,11 +56,11 @@ public interface InstructorApplyService extends BaseService<InstructorApply,Long
 
     /**
      * 获取指导员认证信息
-     * @param openId
+     * @param phone
      * @param instructorId
      * @return
      */
-    List<InstructorApply> getAuthInfo(String openId, Long instructorId);
+    List<InstructorApply> getAuthInfo(String phone, Long instructorId);
 
     /**
      * 获取审批列表信息
