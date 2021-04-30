@@ -12,7 +12,11 @@ import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.SysArea;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
-import com.herocheer.instructor.enums.*;
+import com.herocheer.instructor.enums.AuditStateEnums;
+import com.herocheer.instructor.enums.AuditUnitEnums;
+import com.herocheer.instructor.enums.ChannelEnums;
+import com.herocheer.instructor.enums.SexEnums;
+import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.SysAreaService;
@@ -29,7 +33,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -223,13 +231,13 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
     /**
      * 根据openid获取指导员
      *
-     * @param openid openid
+     * @param phone openid
      * @return {@link Instructor}
      */
     @Override
-    public Instructor findInstructorByOpenId(String openid) {
+    public Instructor findInstructorByPhone(String phone) {
         Map<String,Object> param = new HashMap<>();
-        param.put("openId",openid);
+        param.put("phone",phone);
         List<Instructor> instructors = this.dao.findByLimit(param);
         if(!instructors.isEmpty()){
             return instructors.get(0);
@@ -256,7 +264,7 @@ public class InstructorServiceImpl extends BaseServiceImpl<InstructorDao, Instru
         //根据openId获取用户是否存在社会指导员
         Instructor instructor = null;
         if(StringUtils.isNotEmpty(apply.getOpenId())) {
-            instructor = this.findInstructorByOpenId(apply.getOpenId());
+            instructor = this.findInstructorByPhone(apply.getPhone());
         }
         if(instructor != null){//存在社会指导员，走更新用户流程
             //预防只是修改手机号码

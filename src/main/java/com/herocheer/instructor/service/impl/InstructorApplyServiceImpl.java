@@ -207,15 +207,15 @@ public class InstructorApplyServiceImpl extends BaseServiceImpl<InstructorApplyD
     /**
      * 获取指导员认证信息
      *
-     * @param openId
+     * @param phone
      * @param instructorId
      * @return
      */
     @Override
-    public List<InstructorApply> getAuthInfo(String openId, Long instructorId) {
+    public List<InstructorApply> getAuthInfo(String phone, Long instructorId) {
         Map<String,Object> params = new HashMap<>();
-        if(StringUtils.isNotEmpty(openId)){
-            params.put("openId", openId);
+        if(StringUtils.isNotEmpty(phone)){
+            params.put("phone", phone);
         }else {
             params.put("instructorId", null != instructorId?instructorId:99999L);
         }

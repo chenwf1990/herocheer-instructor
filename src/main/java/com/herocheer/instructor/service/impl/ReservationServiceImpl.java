@@ -259,9 +259,14 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
                 activityRecruitDetail.setHadRecruitNumber(activityRecruitDetail.getHadRecruitNumber()-1);
                 activityRecruitDetailService.update(activityRecruitDetail);
             }
+
             //设置状态取消预约
             workingScheduleUser.setReserveStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
             workingScheduleUserService.update(workingScheduleUser);
+
+            // 取消报名的预约
+            reservation.setStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
+            this.dao.update(reservation);
         }else if(reservation.getType().equals(RecruitTypeEunms.COURIER_RECRUIT.getType())){
 
             CourseInfo courseInfo = courseInfoService.get(reservation.getRelevanceId());

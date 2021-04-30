@@ -1,12 +1,14 @@
 package com.herocheer.instructor.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.vo.InstructorQueryVo;
+import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.enums.SysMessageEnums;
 import com.herocheer.instructor.service.InstructorApplyService;
 import com.herocheer.instructor.service.SysMessageService;
@@ -45,6 +47,9 @@ public class InstructorApplyController extends BaseController{
 
     @Autowired
     private SysMessageService sysMessageService;
+
+    @Autowired
+    private RedisClient redisClient;
 
     @PostMapping("/queryPageList")
     @ApiOperation("指导员申请单列表查询")
@@ -106,10 +111,14 @@ public class InstructorApplyController extends BaseController{
     @ApiOperation("获取认证信息")
     public ResponseResult<List<InstructorApply>> getAuthInfo(@ApiParam("指导员id") @RequestParam(required = false) Long instructorId,
                                                              HttpServletRequest request){
-        UserEntity entity = getUser(request);
-        String openId = entity.getOtherId();
-        log.info("指导员认证信息：{}", JSONObject.toJSONString(entity));
-        List<InstructorApply> applies = instructorApplyService.getAuthInfo(openId,instructorId);
+//        UserEntity entity = getUser(request);
+//        String openId = entity.getOtherId();
+        // 获取当前用户信息
+        String userInfo = redisClient.get(getCurTokenId(request));
+        UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
+        log.info("指导员认证信息：{}", JSONObject.toJSONString(infoVo));
+
+        List<InstructorApply> applies = instructorApplyService.getAuthInfo(infoVo.getPhone(),instructorId);
         return ResponseResult.ok(applies);
     }
 }
