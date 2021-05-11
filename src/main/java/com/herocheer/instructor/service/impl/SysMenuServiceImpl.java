@@ -126,7 +126,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
         Map<String, Object> rootMap = new HashMap();
         rootMap.put("path","/");
         rootMap.put("component","layout/index");
-        rootMap.put("redirect","/sportPolitical/sportPoliticalManage");
+        rootMap.put("redirect","");
         nodeList.add(new TreeNode<Long>(9999L, -1L, "社会体育指导员平台", 5).setExtra(rootMap));
 
         List<Tree<Long>> treeList = TreeUtil.build(nodeList, -1L);
