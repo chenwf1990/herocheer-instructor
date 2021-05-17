@@ -28,4 +28,7 @@ public class CourseScheduleInfoVO extends CourseSchedule {
 
     @ApiModelProperty("课表状态")
     private String courseScheduleStatus;
+
+    @ApiModelProperty("可编辑：0-不可编辑，1-可编辑")
+    private String edited;
 }

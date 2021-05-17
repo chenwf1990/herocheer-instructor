@@ -125,7 +125,15 @@
             CONCAT('剩余',limitNumber,'个')
             ELSE
             '已满'
-            END as courseScheduleStatus
+            END as courseScheduleStatus,
+            CASE
+            WHEN concat(FROM_UNIXTIME(courseDate/1000,'%Y-%m-%d '),endTime,':00') <![CDATA[ < ]]> <![CDATA[ now() ]]> THEN
+            1
+            WHEN limitNumber !=0 THEN
+            0
+            ELSE
+            1
+            END as edited
         from course_schedule
         <where>
             <if test="courseId != null">
