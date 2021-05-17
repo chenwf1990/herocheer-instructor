@@ -87,6 +87,12 @@ public class CourseInfoController extends BaseController{
         return ResponseResult.ok(courseInfoService.approvalRecord(id));
     }
 
+    /**
+     * 创建课程信息
+     *
+     * @param courseInfoVO 课程信息签证官
+     * @return {@link ResponseResult<CourseInfoVo>}
+     */
     @PostMapping("/add")
     @ApiOperation("新增课程信息")
     public ResponseResult<CourseInfoVo> createCourseInfo(@RequestBody CourseInfoVo courseInfoVO){
@@ -97,6 +103,12 @@ public class CourseInfoController extends BaseController{
         return ResponseResult.ok(courseInfoVO);
     }
 
+    /**
+     * 更新课程信息
+     *
+     * @param courseInfoVO 课程信息签证官
+     * @return {@link ResponseResult}
+     */
     @PostMapping("/update")
     @ApiOperation("更新课程信息")
     public ResponseResult updateCourseInfo(@RequestBody CourseInfoVo courseInfoVO){
@@ -105,6 +117,7 @@ public class CourseInfoController extends BaseController{
         sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseInfoVO.getId(),false,false);
         return ResponseResult.ok();
     }
+
     @PostMapping("/approval")
     @ApiOperation("课程审批")
     public ResponseResult approval(@RequestBody CourseApproval courseApproval,HttpServletRequest request){

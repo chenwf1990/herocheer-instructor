@@ -9,6 +9,7 @@ import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.CourseInfoDao;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
+import com.herocheer.instructor.domain.entity.CourseSchedule;
 import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
@@ -104,11 +105,13 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         }
         reservationService.updateReservationStatus(ReserveStatusEnums.EVENT_CANCELED.getState(),
                 courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
+
+        // 课程取消时，发送微信消息通知
+        List<String> openids=reservationService.findReservationOpenid(courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
+        wechatService.sendWechatMessages(openids,courseInfo.getTitle());
+
         //设置课程状态 5=课程取消
         courseInfo.setState(5);
-        List<String> openids=reservationService.findReservationOpenid(courseInfo.getId(),
-                RecruitTypeEunms.COURIER_RECRUIT.getType());
-        wechatService.sendWechatMessages(openids,courseInfo.getTitle());
         return this.dao.update(courseInfo);
     }
 
@@ -254,9 +257,14 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
         // 新增课程信息
         this.dao.insert(courseInfo);
-        if(!CollectionUtils.isEmpty(courseInfoVO.getCourseScheduleList())){
-            // 新增课表信息
-            courseScheduleService.batchAddCourseSchedules(courseInfoVO.getCourseScheduleList());
+
+        // 新增课表信息
+        List<CourseSchedule> courseScheduleList = courseInfoVO.getCourseScheduleList();
+        if(!CollectionUtils.isEmpty(courseScheduleList)){
+            // 回填课表的课程ID
+            Long courseId = courseInfo.getId();
+            courseScheduleList.forEach(e -> e.setCourseId(courseId));
+            courseScheduleService.batchAddCourseSchedules(courseScheduleList);
         }
         courseInfoVO.setId(courseInfo.getId());
         return courseInfoVO;
