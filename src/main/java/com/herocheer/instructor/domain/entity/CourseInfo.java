@@ -64,4 +64,12 @@ public class CourseInfo extends BaseEntity {
     private Long approvalId;
     @ApiModelProperty("发布时间")
     private Long releaseTime;
+
+    @ApiModelProperty("开课类型:1-非固定课程,2-固定课程")
+    private Integer offerCourseType;
+
+    @ApiModelProperty("课程开始时区")
+    private String courseStartZone;
+    @ApiModelProperty("课程结束时区")
+    private String courseEndZone;
     }

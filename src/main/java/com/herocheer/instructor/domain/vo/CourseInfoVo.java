@@ -1,8 +1,11 @@
 package com.herocheer.instructor.domain.vo;
 
 import com.herocheer.instructor.domain.entity.CourseInfo;
+import com.herocheer.instructor.domain.entity.CourseSchedule;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @program: herocheer-instructor
@@ -23,4 +26,7 @@ public class CourseInfoVo extends CourseInfo {
 
     @ApiModelProperty("签到时间")
     private Long signTime;
+
+    @ApiModelProperty("课表信息")
+    private List<CourseSchedule> CourseScheduleList;
 }

@@ -244,7 +244,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
         // 用户密码加密
-        user.setPassword(encoder.encode(AesUtil.decrypt(sysUserVO.getPassword())));
+        user.setPassword(encoder.encode(AesUtil.decrypt(sysUserVO.getPassword().trim())));
 
         // 插入用户信息
         this.insert(user);

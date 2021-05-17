@@ -74,4 +74,7 @@ public class CourseInfoQueryVo implements Serializable {
     @ApiModelProperty("发布结束时间")
     private String releaseEndTime;
 
+    @ApiModelProperty("开课类型:1-非固定课程,2-固定课程")
+    private Integer offerCourseType;
+
 }

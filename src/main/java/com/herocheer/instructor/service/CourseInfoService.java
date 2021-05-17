@@ -88,4 +88,20 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
      */
     Page<CourseInfo> findtaskByPage(CourseInfoQueryVo queryVo, UserEntity currentUser);
 
+
+    /**
+     * 添加课程信息
+     *
+     * @param courseInfoVO 课程信息签证官
+     * @return {@link CourseInfoVo}
+     */
+    CourseInfoVo addCourseInfo(CourseInfoVo courseInfoVO);
+
+    /**
+     * 更新课程信息
+     *
+     * @param courseInfoVO 课程信息签证官
+     * @return {@link CourseInfoVo}
+     */
+    CourseInfoVo updateCourseInfo(CourseInfoVo courseInfoVO);
 }

@@ -10,6 +10,7 @@ import com.herocheer.instructor.aspect.SysMessageEvent;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
+import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.SysMessageVO;
 import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.enums.SysMessageEnums;
@@ -20,6 +21,7 @@ import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +45,7 @@ import java.util.List;
  * @date 2021-02-22 11:33:19
  * @company 厦门熙重电子科技有限公司
  */
+@Slf4j
 @RestController
 @RequestMapping("/course")
 @Api(tags = "课程管理")
@@ -51,6 +55,7 @@ public class CourseInfoController extends BaseController{
 
     @Autowired
     private SysMessageService sysMessageService;
+
 
     @PostMapping("/queryPage")
     @ApiOperation("课程信息列表查询")
@@ -84,25 +89,21 @@ public class CourseInfoController extends BaseController{
 
     @PostMapping("/add")
     @ApiOperation("新增课程信息")
-    public ResponseResult add(@RequestBody CourseInfo courseInfo){
-        courseInfo.setSignNumber(0);
-        courseInfo=courseInfoService.verificationDate(courseInfo);
-        Integer count=courseInfoService.insert(courseInfo);
-
+    public ResponseResult<CourseInfoVo> createCourseInfo(@RequestBody CourseInfoVo courseInfoVO){
+        courseInfoVO.setSignNumber(0);
+        courseInfoService.addCourseInfo(courseInfoVO);
         // 采集系统消息
-        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getType(),SysMessageEnums.COURSE_CHECK.getCode(),courseInfo.getId())));
-        return ResponseResult.isSuccess(count);
+        SpringUtil.publishEvent(new SysMessageEvent(new SysMessageVO(SysMessageEnums.COURSE_CHECK.getText(),SysMessageEnums.COURSE_CHECK.getType(),SysMessageEnums.COURSE_CHECK.getCode(),courseInfoVO.getId())));
+        return ResponseResult.ok(courseInfoVO);
     }
 
     @PostMapping("/update")
     @ApiOperation("更新课程信息")
-    public ResponseResult update(@RequestBody CourseInfo courseInfo){
-        courseInfo=courseInfoService.verificationDate(courseInfo);
-        Integer count=courseInfoService.update(courseInfo);
-
+    public ResponseResult updateCourseInfo(@RequestBody CourseInfoVo courseInfoVO){
+        courseInfoService.updateCourseInfo(courseInfoVO);
         // 同步系统消息状态(不区别审核通过和驳回)
-        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseInfo.getId(),false,false);
-        return ResponseResult.isSuccess(count);
+        sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseInfoVO.getId(),false,false);
+        return ResponseResult.ok();
     }
     @PostMapping("/approval")
     @ApiOperation("课程审批")
@@ -137,6 +138,19 @@ public class CourseInfoController extends BaseController{
         config.setMargin(0);
         // 高纠错级别
         config.setErrorCorrection(ErrorCorrectionLevel.H);
+        // logo
+//        log.debug("Logo路径2：{}",new ClassPathResource("static/images/logo.jpg").getFile().getPath());
+
+        // TODO 问题还没有解决
+        log.debug("Logo路径21：{}","/static"+File.separator+"images"+File.separator+"logo.jpg");
+        log.debug("Logo路径22：{}",ClassLoader.getSystemResource("/static"+File.separator+"images"+File.separator+"logo.jpg"));
+        log.debug("Logo路径23：{}",ClassLoader.getSystemResource("/static"+File.separator+"images"+File.separator+"logo.jpg").getPath());
+
+//        config.setImg(URLDecoder.decode(FileUtil.getAbsolutePath("static"+ File.separatorChar+"images"+File.separatorChar+"logo.jpg"),"utf-8"));
+//        config.setImg(new File("src/main/resources/static/images/logo.jpg").getCanonicalPath());
+        config.setImg(ClassLoader.getSystemResource("/static"+File.separator+"images"+File.separator+"logo.jpg").getPath());
+//        config.setImg(new ClassPathResource("static/images/logo.jpg").getFile().getPath());
+
         // 生成二维码到文件，也可以到流
         QrCodeUtil.generate(url, config, "PNG",response.getOutputStream());
     }

@@ -3,8 +3,8 @@
 <mapper namespace="com.herocheer.instructor.dao.CourseInfoDao">
 
     <sql id="table_field">
-        id, title, type, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-        approvalId,approvalBy,approvalTime,releaseTime,
+        id, title, type, offerCourseType, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
+        approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,
         CASE
             WHEN approvalStatus != 1 THEN null
             WHEN `state`=5 THEN `state`
@@ -100,6 +100,17 @@
         <if test="releaseTime != null">
             releaseTime,
         </if>
+        <if test="offerCourseType != null">
+            offerCourseType,
+        </if>
+
+        <if test="courseStartZone != null">
+            courseStartZone,
+        </if>
+
+        <if test="courseEndZone != null">
+            courseEndZone,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -181,6 +192,16 @@
         </if>
         <if test="releaseTime != null">
             #{releaseTime},
+        </if>
+        <if test="offerCourseType != null">
+            #{offerCourseType},
+        </if>
+
+        <if test="courseStartZone != null">
+            #{courseStartZone},
+        </if>
+        <if test="courseEndZone != null">
+            #{courseEndZone},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -274,6 +295,15 @@
             <if test="releaseTime != null">
                 releaseTime = #{releaseTime},
             </if>
+            <if test="offerCourseType != null">
+                offerCourseType = #{offerCourseType},
+            </if>
+            <if test="courseStartZone != null">
+                courseStartZone = #{courseStartZone},
+            </if>
+            <if test="courseEndZone != null">
+                courseEndZone = #{courseEndZone},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
         where id = #{id}
@@ -364,6 +394,9 @@
             </if>
             <if test="releaseTime != null">
                 and releaseTime = #{releaseTime},
+            </if>
+            <if test="offerCourseType != null">
+                and offerCourseType = #{offerCourseType},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
@@ -456,6 +489,9 @@
             <if test="releaseTime != null">
                 and releaseTime = #{releaseTime},
             </if>
+            <if test="offerCourseType != null">
+                and offerCourseType = #{offerCourseType},
+            </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
@@ -474,6 +510,9 @@
             </if>
             <if test="type!=null">
                 and type=#{type}
+            </if>
+            <if test="offerCourseType!=null">
+                and offerCourseType=#{offerCourseType}
             </if>
             <if test="createdBy!=null and createdBy!=''">
                 and createdBy like concat('%',#{createdBy},'%')

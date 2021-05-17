@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.CourseScheduleDao">
+
+    <sql id="table_field">
+      id, courseId, configType, courseDay, courseDate, startTime, endTime, limitNumber, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.CourseSchedule">
+        insert into course_schedule (
+        <trim suffixOverrides=",">
+            <if test="courseId != null">
+                courseId,
+            </if>
+            <if test="configType != null">
+                configType,
+            </if>
+            <if test="courseDay != null">
+                courseDay,
+            </if>
+            <if test="courseDate != null">
+                courseDate,
+            </if>
+            <if test="startTime != null">
+                startTime,
+            </if>
+            <if test="endTime != null">
+                endTime,
+            </if>
+            <if test="limitNumber != null">
+                limitNumber,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="courseId != null">
+                #{courseId},
+            </if>
+            <if test="configType != null">
+                #{configType},
+            </if>
+            <if test="courseDay != null">
+                #{courseDay},
+            </if>
+            <if test="courseDate != null">
+                #{courseDate},
+            </if>
+            <if test="startTime != null">
+                #{startTime},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            <if test="limitNumber != null">
+                #{limitNumber},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from course_schedule where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.CourseSchedule">
+        update course_schedule
+        <set>
+            <if test="courseId != null">
+                courseId = #{courseId},
+            </if>
+            <if test="configType != null">
+                configType = #{configType},
+            </if>
+            <if test="courseDay != null">
+                courseDay = #{courseDay},
+            </if>
+            <if test="courseDate != null">
+                courseDate = #{courseDate},
+            </if>
+            <if test="startTime != null">
+                startTime = #{startTime},
+            </if>
+            <if test="endTime != null">
+                endTime = #{endTime},
+            </if>
+            <if test="limitNumber != null">
+                limitNumber = #{limitNumber},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourseSchedule">
+        select
+        <include refid="table_field"/>
+        from course_schedule where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.vo.CourseScheduleInfoVO">
+        select
+            <include refid="table_field"/>,
+            CASE
+            WHEN concat(FROM_UNIXTIME(courseDate/1000,'%Y-%m-%d '),endTime,':00') <![CDATA[ < ]]> <![CDATA[ now() ]]>  THEN
+            '时间已过'
+            WHEN limitNumber !=0 THEN
+            CONCAT('剩余',limitNumber,'个')
+            ELSE
+            '已满'
+            END as courseScheduleStatus
+        from course_schedule
+        <where>
+            <if test="courseId != null">
+                and courseId = #{courseId}
+            </if>
+            <if test="configType != null">
+                and configType = #{configType}
+            </if>
+            <if test="courseDay != null">
+                and courseDay = #{courseDay}
+            </if>
+            <if test="courseDate != null">
+                and courseDate = #{courseDate}
+            </if>
+            <if test="startTime != null">
+                and startTime = #{startTime}
+            </if>
+            <if test="endTime != null">
+                and endTime = #{endTime}
+            </if>
+            <if test="limitNumber != null">
+                and limitNumber = #{limitNumber}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!--批量插入-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="java.util.List">
+        INSERT INTO course_schedule (<include refid="table_field"/>)
+        VALUES
+        <foreach collection="list" item="courseSchedule" index="index" separator=",">
+            (#{courseSchedule.id}, #{courseSchedule.courseId}, #{courseSchedule.configType}, #{courseSchedule.courseDay}, #{courseSchedule.courseDate}, #{courseSchedule.startTime}, #{courseSchedule.endTime},
+            #{courseSchedule.limitNumber}, #{courseSchedule.remark}, #{courseSchedule.createdId}, #{courseSchedule.createdBy}, #{courseSchedule.createdTime},
+            #{courseSchedule.updateTime}, #{courseSchedule.updateId}, #{courseSchedule.updateBy})
+        </foreach >
+    </insert>
+
+
+    <!--  批量更新，用ON DUPLICATE KEY UPDATE-->
+    <insert id="updateBatch" parameterType="java.util.List">
+        INSERT INTO course_schedule (<include refid="table_field"/>)
+        VALUES
+        <foreach collection="list" item="courseSchedule" index="index" separator=",">
+            (#{courseSchedule.id}, #{courseSchedule.courseId}, #{courseSchedule.configType}, #{courseSchedule.courseDay}, #{courseSchedule.courseDate}, #{courseSchedule.startTime}, #{courseSchedule.endTime},
+            #{courseSchedule.limitNumber}, #{courseSchedule.remark}, #{courseSchedule.createdId}, #{courseSchedule.createdBy}, #{courseSchedule.createdTime},
+            #{courseSchedule.updateTime}, #{courseSchedule.updateId}, #{courseSchedule.updateBy})
+        </foreach >
+        ON DUPLICATE KEY UPDATE
+        id=VALUES(id),courseId = VALUES(courseId),configType = VALUES(configType),courseDay = VALUES(courseDay),
+        courseDate = VALUES(courseDate),startTime = VALUES(startTime),endTime = VALUES(endTime),limitNumber = VALUES(limitNumber),remark = VALUES(remark),
+        createdId = VALUES(createdId),createdBy = VALUES(createdBy),createdTime = VALUES(createdTime),updateTime = VALUES(updateTime),updateId = VALUES(updateId),updateBy = VALUES(updateBy)
+    </insert>
+</mapper>

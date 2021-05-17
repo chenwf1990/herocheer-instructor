@@ -20,6 +20,7 @@ import com.herocheer.instructor.enums.RecruitTypeEunms;
 import com.herocheer.instructor.enums.ReserveStatusEnums;
 import com.herocheer.instructor.service.CourseApprovalService;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.service.CourseScheduleService;
 import com.herocheer.instructor.service.CourseTearcherService;
 import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.UserService;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -47,7 +49,6 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
 @Slf4j
 public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, CourseInfo,Long> implements CourseInfoService {
 
@@ -62,6 +63,9 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     private CourseTearcherService courseTearcherService;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CourseScheduleService courseScheduleService;
 
     @Override
     public Page<CourseInfo> queryPage(CourseInfoQueryVo queryVo, Long userId) {
@@ -82,7 +86,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         return list;
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer withdraw(Long id) {
         CourseInfo courseInfo=new CourseInfo();
@@ -91,6 +95,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         return this.dao.update(courseInfo);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer revoke(Long id) {
         CourseInfo courseInfo=this.dao.getCourseInfo(id);
@@ -107,6 +112,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         return this.dao.update(courseInfo);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer approval(CourseApproval courseApproval,UserEntity userEntity) {
         courseApprovalService.insert(courseApproval);
@@ -231,5 +237,51 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             page.setDataList(instructors);
         }
         return page;
+    }
+
+    /**
+     * 添加课程信息
+     *
+     * @param courseInfoVO 课程信息签证官
+     * @return {@link CourseInfoVo}
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public CourseInfoVo addCourseInfo(CourseInfoVo courseInfoVO) {
+        CourseInfo courseInfo = new CourseInfo();
+        BeanCopier.create(courseInfoVO.getClass(),courseInfo.getClass(),false).copy(courseInfoVO,courseInfo,null);
+        courseInfo = verificationDate(courseInfo);
+
+        // 新增课程信息
+        this.dao.insert(courseInfo);
+        if(!CollectionUtils.isEmpty(courseInfoVO.getCourseScheduleList())){
+            // 新增课表信息
+            courseScheduleService.batchAddCourseSchedules(courseInfoVO.getCourseScheduleList());
+        }
+        courseInfoVO.setId(courseInfo.getId());
+        return courseInfoVO;
+    }
+
+    /**
+     * 更新课程信息
+     *
+     * @param courseInfoVO 课程信息签证官
+     * @return {@link CourseInfoVo}
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public CourseInfoVo updateCourseInfo(CourseInfoVo courseInfoVO) {
+        CourseInfo courseInfo = new CourseInfo();
+        BeanCopier.create(courseInfoVO.getClass(),courseInfo.getClass(),false).copy(courseInfoVO,courseInfo,null);
+        courseInfo = verificationDate(courseInfo);
+        // 新增课程信息
+        this.dao.update(courseInfo);
+
+        // 批量更新课表信息
+        if(!CollectionUtils.isEmpty(courseInfoVO.getCourseScheduleList())){
+            courseScheduleService.batchupdateCourseSchedules(courseInfoVO.getCourseScheduleList());
+        }
+        courseInfoVO.setId(courseInfo.getId());
+        return courseInfoVO;
     }
 }
