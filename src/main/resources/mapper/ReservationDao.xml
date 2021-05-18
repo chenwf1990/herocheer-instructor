@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ReservationDao">
     <sql id="table_field">
-      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone, signTime, signType, signStatus, source,
+      id, relevanceId, type, workingId, title, image, startTime, endTime, address, longitude, latitude, userId, name, identityNumber, phone, signTime, signType, signStatus, source, courseScheduleId, courseDate,
       <if test="queryType==1">
           case
           when `status`=2 then 0
@@ -75,6 +75,13 @@
         <if test="signStatus != null">
             signStatus,
         </if>
+
+        <if test="courseScheduleId != null">
+            courseScheduleId,
+        </if>
+        <if test="courseDate != null">
+            courseDate,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -135,6 +142,12 @@
         </if>
         <if test="signStatus != null">
             #{signStatus},
+        </if>
+        <if test="courseScheduleId != null">
+            #{courseScheduleId},
+        </if>
+        <if test="courseDate != null">
+            #{courseDate},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -206,6 +219,12 @@
             </if>
             <if test="signStatus != null">
                 signStatus = #{signStatus},
+            </if>
+            <if test="courseScheduleId != null">
+                courseScheduleId = #{courseScheduleId},
+            </if>
+            <if test="courseDate != null">
+                courseDate = #{courseDate},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -396,6 +415,9 @@
             <if test="userId!=null">
                 and userId = #{userId}
             </if>
+            <if test="courseDate != null">
+                and courseDate = #{courseDate}
+            </if>
         </where>
         order by startTime desc,endTime desc
     </select>
@@ -459,6 +481,9 @@
             </if>
             <if test="signStatus != null">
                 and signStatus = #{signStatus}
+            </if>
+            <if test="courseDate != null">
+                and courseDate = #{courseDate}
             </if>
         </where>
         order by signTime desc

@@ -6,6 +6,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.ReservationDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitDetail;
 import com.herocheer.instructor.domain.entity.CourseInfo;
+import com.herocheer.instructor.domain.entity.CourseSchedule;
 import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.entity.User;
@@ -14,6 +15,7 @@ import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
+import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
@@ -25,6 +27,7 @@ import com.herocheer.instructor.enums.SignType;
 import com.herocheer.instructor.service.ActivityRecruitDetailService;
 import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.CourseInfoService;
+import com.herocheer.instructor.service.CourseScheduleService;
 import com.herocheer.instructor.service.ReservationMemberService;
 import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.UserService;
@@ -52,7 +55,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@Transactional
 public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Reservation,Long> implements ReservationService {
 
     @Resource
@@ -76,15 +78,20 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     @Autowired
     private ReservationMemberService reservationMemberService;
 
+    @Resource
+    private CourseScheduleService courseScheduleService;
+
     /**
      * 课程预约
      *
-     * @param reservationList 预订单
+     * @param reservationMemberVO 预订单
      * @param userId          用户id
      * @return {@link Reservation}
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public Reservation reservation(List<ReservationVO> reservationList, Long userId) {
+    public Reservation reservation(ReservationMemberVO reservationMemberVO, Long userId) {
+        List<ReservationVO> reservationList = reservationMemberVO.getReservationList();
         if(CollectionUtils.isEmpty(reservationList)){
             throw new CommonException("报名信息为空");
         }
@@ -144,9 +151,15 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setLatitude(courseInfo.getLatitude());
         reservation.setStatus(ReserveStatusEnums.ALREADY_RESERVE.getState());
         reservation.setUserId(userId);
+
+        // 固定课程场景
+        if(reservationMemberVO.getCourseScheduleId() != null){
+            reservation.setCourseScheduleId(reservationMemberVO.getCourseScheduleId());
+            reservation.setCourseDate(reservationMemberVO.getCourseDate());
+        }
         this.dao.insert(reservation);
 
-        // 报名人员
+        // 报名人员（多人）
         ReservationMember reservationMember = null;
         Set<Integer> intSet = reservationList.stream().map((ReservationVO reservationVO)->reservationVO.getRelationType()).collect(Collectors.toSet());
         for (ReservationVO reservationVO:reservationList){
@@ -169,12 +182,24 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             reservationMemberService.insert(reservationMember);
         }
 
-        // 更新报名人数
+        // 固定课程（扣减库存）
+        if(reservationMemberVO.getCourseScheduleId() != null){
+            // 数据库行锁，防止超卖
+            CourseSchedule courseSchedule = courseScheduleService.findCourseSchedulesById(reservationMemberVO.getCourseScheduleId());
+            if(courseSchedule.getLimitNumber() > 0){
+                courseSchedule.setLimitNumber(courseSchedule.getLimitNumber()-1);
+                courseScheduleService.update(courseSchedule);
+            }
+            return reservation;
+        }
+
+        // 非固定课程更新报名人数
         courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
         courseInfoService.update(courseInfo);
         return reservation;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer webReservation(Reservation reservation) {
         CourseInfo courseInfo=courseInfoService.get(reservation.getRelevanceId());
@@ -234,6 +259,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         return courseInfoService.update(courseInfo);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void cancel(Long id) {
         Reservation reservation = this.dao.get(id);
@@ -332,6 +358,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         return courseInfoVo;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer updateReservationStatus(Integer status, Long relevanceId, Integer type) {
         return this.dao.updateReservationStatus(status,relevanceId,type);
@@ -532,6 +559,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
      * @param userId   用户id
      * @return {@link Long}
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Long addOnlineSignInfo(Long courseId, Long userId) {
         Map<String,Object> map=new HashMap<>();

@@ -41,4 +41,15 @@ public class CourseScheduleServiceImpl extends BaseServiceImpl<CourseScheduleDao
     public int batchupdateCourseSchedules(List<CourseSchedule> courseScheduleList) {
         return this.dao.updateBatch(courseScheduleList);
     }
+
+    /**
+     * 通过id找到课程时间表
+     *
+     * @param id id
+     * @return {@link CourseSchedule}
+     */
+    @Override
+    public CourseSchedule findCourseSchedulesById(Long id) {
+        return this.dao.selectCourseSchedule(id);
+    }
 }

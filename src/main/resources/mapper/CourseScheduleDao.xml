@@ -190,4 +190,10 @@
         courseDate = VALUES(courseDate),startTime = VALUES(startTime),endTime = VALUES(endTime),limitNumber = VALUES(limitNumber),remark = VALUES(remark),
         createdId = VALUES(createdId),createdBy = VALUES(createdBy),createdTime = VALUES(createdTime),updateTime = VALUES(updateTime),updateId = VALUES(updateId),updateBy = VALUES(updateBy)
     </insert>
+
+    <!--使用行锁锁定库存-->
+    <select id="selectCourseSchedule" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourseSchedule">
+        select <include refid="table_field"/> from course_schedule where id = #{id} for update;
+    </select>
+
 </mapper>

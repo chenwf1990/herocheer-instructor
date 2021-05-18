@@ -7,6 +7,7 @@ import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
+import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
@@ -43,8 +44,8 @@ public class ReservationController extends BaseController{
 
     @PostMapping("/course")
     @ApiOperation("线上预约")
-    public ResponseResult<Reservation> reservation( @ApiParam("预约信息") @RequestBody List<ReservationVO> reservationList, HttpServletRequest request){
-        return ResponseResult.ok(reservationService.reservation(reservationList,getCurUserId(request)));
+    public ResponseResult<Reservation> reservation(@ApiParam("预约信息") @RequestBody ReservationMemberVO reservationMemberVO, HttpServletRequest request){
+        return ResponseResult.ok(reservationService.reservation(reservationMemberVO,getCurUserId(request)));
     }
     @PostMapping("/web/course")
     @ApiOperation("老年人预约")

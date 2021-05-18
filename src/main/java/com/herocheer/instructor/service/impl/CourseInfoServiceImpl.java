@@ -148,12 +148,14 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             throw new CommonException("课程报名开始时间{}不能小于当前时间!",
                     DateUtil.timeStamp2Date(courseInfo.getSignStartTime()));
         }
-        if(courseInfo.getSignStartTime()>courseInfo.getCourseStartTime()){
+
+        if(courseInfo.getCourseStartTime() != null && courseInfo.getSignStartTime()>courseInfo.getCourseStartTime()){
             throw new CommonException("课程开始时间{}不能小于课程开始报名时间{}!",
                     DateUtil.timeStamp2Date(courseInfo.getSignStartTime()),
                     DateUtil.timeStamp2Date(courseInfo.getCourseStartTime()));
         }
-        if(courseInfo.getSignEndTime()>courseInfo.getCourseEndTime()){
+
+        if(courseInfo.getCourseEndTime() != null &&courseInfo.getSignEndTime()>courseInfo.getCourseEndTime()){
             throw new CommonException("课程结束时间{}不能小于课程结束报名时间{}!",
                     DateUtil.timeStamp2Date(courseInfo.getSignEndTime()),
                     DateUtil.timeStamp2Date(courseInfo.getCourseEndTime()));

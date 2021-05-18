@@ -29,4 +29,12 @@ public interface CourseScheduleService extends BaseService<CourseSchedule, Long>
      */
     int batchupdateCourseSchedules(List<CourseSchedule> courseScheduleList);
 
+
+    /**
+     * 通过id找到课程时间表
+     *
+     * @param id id
+     * @return {@link CourseSchedule}
+     */
+    CourseSchedule findCourseSchedulesById(Long id);
 }

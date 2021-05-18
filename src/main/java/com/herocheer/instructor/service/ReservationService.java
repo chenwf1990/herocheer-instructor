@@ -7,6 +7,7 @@ import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
+import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
@@ -24,11 +25,11 @@ public interface ReservationService extends BaseService<Reservation,Long> {
     /**
      * 课程预约
      *
-     * @param reservationList 预订单
+     * @param reservationMemberVO 预订单
      * @param userId          用户id
      * @return {@link Reservation}
      */
-    Reservation reservation(List<ReservationVO> reservationList, Long userId);
+    Reservation reservation(ReservationMemberVO reservationMemberVO, Long userId);
 
     /**
      * web端预约

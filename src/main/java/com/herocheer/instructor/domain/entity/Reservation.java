@@ -63,4 +63,9 @@ public class Reservation extends BaseEntity {
     private Integer signType;
     @ApiModelProperty("签到状态：0-未签到，1-已签到，2-签到失败")
     private Integer signStatus;
+
+    @ApiModelProperty("课表ID")
+    private Long courseScheduleId;
+    @ApiModelProperty("课表预约的上课日期")
+    private Long courseDate;
 }

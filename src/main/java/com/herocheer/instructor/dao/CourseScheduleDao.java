@@ -30,4 +30,12 @@ public interface CourseScheduleDao extends BaseDao<CourseSchedule, Long> {
      * @return int
      */
     int updateBatch(List<CourseSchedule> courseScheduleList);
+
+    /**
+     * 选择课程安排
+     *
+     * @param id id
+     * @return {@link CourseSchedule}
+     */
+    CourseSchedule selectCourseSchedule(Long id);
 }
