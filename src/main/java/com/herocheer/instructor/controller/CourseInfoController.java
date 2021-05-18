@@ -75,6 +75,13 @@ public class CourseInfoController extends BaseController{
         return ResponseResult.ok(courseInfoService.revoke(id));
     }
 
+    /**
+     *
+     * @param id      id
+     * @param request 请求
+     * @param flag
+     * @return {@link ResponseResult<CourseInfo>}
+     */
     @GetMapping("/get")
     @ApiOperation("根据id查询课程详情")
     public ResponseResult<CourseInfo> get(@ApiParam("招募信息id") @RequestParam Long id,@ApiParam("扫二维码标识") @RequestParam(value="flag",required=false) String flag,HttpServletRequest request){

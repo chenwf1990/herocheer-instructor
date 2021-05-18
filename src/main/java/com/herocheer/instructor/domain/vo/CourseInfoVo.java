@@ -29,4 +29,7 @@ public class CourseInfoVo extends CourseInfo {
 
     @ApiModelProperty("课表信息")
     private List<CourseSchedule> CourseScheduleList;
+
+    @ApiModelProperty("预约信息")
+    private ReservationListVO Reservation;
 }

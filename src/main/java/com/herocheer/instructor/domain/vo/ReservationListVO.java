@@ -27,4 +27,7 @@ import lombok.experimental.SuperBuilder;
 public class ReservationListVO extends Reservation {
     @ApiModelProperty("携带关系：0-本人，1-儿子，2-女儿")
     private String relationType;
+
+
+
 }

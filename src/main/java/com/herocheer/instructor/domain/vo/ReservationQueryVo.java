@@ -1,7 +1,11 @@
 package com.herocheer.instructor.domain.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,7 +15,11 @@ import java.io.Serializable;
  * @author: Linjf
  * @create date: 2021-02-24 19:04
  **/
+@ApiModel(description = "预约查询Vo")
+@Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ReservationQueryVo implements Serializable {
 
     @ApiModelProperty("姓名")

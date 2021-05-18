@@ -586,4 +586,15 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         this.onLineSign(list.get(0),currentLong);
         return currentLong;
     }
+
+    /**
+     * 根据当前用户id获取预约信息
+     *
+     * @param queryVo 查询签证官
+     * @return {@link ReservationListVO}
+     */
+    @Override
+    public ReservationListVO findReservationByCurUserId(ReservationQueryVo queryVo) {
+        return this.dao.selectByCurUserId(queryVo);
+    }
 }

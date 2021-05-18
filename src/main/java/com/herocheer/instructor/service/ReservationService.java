@@ -117,4 +117,12 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @return {@link Long}
      */
     Long addOnlineSignInfo(Long courseId,Long userId);
+
+    /**
+     * 根据当前用户id获取预约信息
+     *
+     * @param queryVo 查询签证官
+     * @return {@link ReservationListVO}
+     */
+    ReservationListVO findReservationByCurUserId(ReservationQueryVo queryVo);
 }

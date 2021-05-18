@@ -23,6 +23,7 @@ public interface ReservationDao extends BaseDao<Reservation,Long>{
      */
     List<ReservationListVO> findList(ReservationQueryVo queryVo);
 
+
     Integer updateReservationStatus(@Param("status")Integer status,@Param("relevanceId")Long relevanceId,
                                     @Param("type")Integer type);
 
@@ -36,4 +37,12 @@ public interface ReservationDao extends BaseDao<Reservation,Long>{
      * @return {@link List<Reservation>}
      */
     List<ReservationListVO> selectSignInfoByPage(SignInfoVO signInfoVO);
+
+    /**
+     * 根据当前用户id获取最新预约信息
+     *
+     * @param queryVo 查询签证官
+     * @return {@link ReservationListVO}
+     */
+    ReservationListVO selectByCurUserId(ReservationQueryVo queryVo);
 }

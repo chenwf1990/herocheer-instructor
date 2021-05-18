@@ -488,4 +488,67 @@
         </where>
         order by signTime desc
     </select>
+
+
+    <select id="selectByCurUserId" parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo" resultType="com.herocheer.instructor.domain.vo.ReservationListVO">
+        select
+            id,
+            relevanceId,
+            type,
+            workingId,
+            title,
+            image,
+            startTime,
+            endTime,
+            address,
+            longitude,
+            latitude,
+            userId,
+            IFNULL(a.`name`,(select GROUP_CONCAT( concat( b.userName, '（', CASE WHEN b.relationType=0 THEN '大人' ELSE '孩子' END, '）') SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
+            IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `identityNumber`,
+            (select GROUP_CONCAT( b.relationType SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId) as relationType,
+            IFNULL(a.phone,(select GROUP_CONCAT( b.phone SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as phone,
+            signTime,
+            signType,
+            signStatus,
+            source,
+            STATUS,
+            createdId,
+            createdBy,
+            createdTime,
+            updateId,
+            updateBy,
+            updateTime
+        from reservation a
+        <where>
+            <if test="name!=null and name!=''">
+                and `name` like concat('%',#{name},'%')
+            </if>
+            <if test="identityNumber!=null">
+                and identityNumber=#{identityNumber}
+            </if>
+            <if test="title!=null and title!=''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="type!=null">
+                and `type` = #{type}
+            </if>
+            <if test="startTime!=null">
+                and createdTime <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and createdTime <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="relevanceId!=null">
+                and relevanceId=#{relevanceId}
+            </if>
+            <if test="userId!=null">
+                and userId = #{userId}
+            </if>
+            <if test="courseDate != null and courseDate != '' ">
+                and courseDate = #{courseDate} and !ISNULL(courseDate)
+            </if>
+        </where>
+        order by createdTime desc limit 1;
+    </select>
 </mapper>

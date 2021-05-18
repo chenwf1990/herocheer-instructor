@@ -14,6 +14,8 @@ import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.ReservationListVO;
+import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.TearcherVO;
 import com.herocheer.instructor.enums.ActivityApprovalStateEnums;
 import com.herocheer.instructor.enums.CourseApprovalState;
@@ -67,6 +69,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
     @Autowired
     private CourseScheduleService courseScheduleService;
+
 
     @Override
     public Page<CourseInfo> queryPage(CourseInfoQueryVo queryVo, Long userId) {
@@ -174,16 +177,25 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
      */
     @Override
     public CourseInfo findCourseInfoById(Long id,String flag,Long userId) {
+        // 获取课程信息
         CourseInfo courseInfo  = this.dao.get(id);
+
         if(StringUtils.isBlank(flag)){
             return courseInfo;
         }
+
         // 扫码签到场景
         CourseInfoVo courseInfoVo = new CourseInfoVo();
         if(ObjectUtils.isEmpty(courseInfo)){
             return courseInfoVo;
         }
         BeanCopier.create(courseInfo.getClass(),courseInfoVo.getClass(),false).copy(courseInfo,courseInfoVo,null);
+
+        // 当前用户的预约信息
+        ReservationListVO reservationListVO = reservationService.findReservationByCurUserId(ReservationQueryVo.builder().userId(userId).build());
+        if(!ObjectUtils.isEmpty(reservationListVO)){
+            courseInfoVo.setReservation(reservationListVO);
+        }
 
         // 否签到和预约
         log.debug("扫码签到当前用户ID:{}",userId);
