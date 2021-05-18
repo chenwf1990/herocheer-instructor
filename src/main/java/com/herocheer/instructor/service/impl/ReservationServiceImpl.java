@@ -124,7 +124,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }
 
         // 重复报名需要在限制人数之前
-        if(courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
+        if(courseInfo.getLimitNumber() !=null && courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
             throw new CommonException(ResponseCode.SERVER_ERROR,"抱歉，已达到报名人数上限，无法报名");
         }
 
@@ -373,13 +373,14 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
      * 添加签名信息
      *
      * @param userId          用户id
-     * @param reservationList 预订单
+     * @param reservationMemberVO 预订单
      * @return {@link Long}
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Long addSignInfo(List<ReservationVO> reservationList, Long userId) {
+    public Long addSignInfo(ReservationMemberVO reservationMemberVO, Long userId) {
         // 是否预约过
+        List<ReservationVO> reservationList = reservationMemberVO.getReservationList();
         if(null == reservationList.get(0).getCourseId()){
             throw new CommonException("预约课程ID不能为空");
         }
@@ -398,7 +399,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         }
 
         // 未预约签到(线下签到)
-        this.offLineSign(reservationList,userId,currentLong);
+        this.offLineSign(reservationMemberVO,userId,currentLong);
         return currentLong;
     }
 
@@ -407,11 +408,12 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
      * 线下签到
      *
      * @param userId          用户id
-     * @param reservationList 预订单
+     * @param reservationMemberVO 预订单
      * @param currentLong     目前的长
      * @return {@link Integer}
      */
-    private void offLineSign(List<ReservationVO> reservationList, Long userId, Long currentLong) {
+    private void offLineSign(ReservationMemberVO reservationMemberVO, Long userId, Long currentLong) {
+        List<ReservationVO> reservationList = reservationMemberVO.getReservationList();
         CourseInfo courseInfo = courseInfoService.get(reservationList.get(0).getCourseId());
         if(courseInfo != null){
             if(!courseInfo.getApprovalStatus().equals(CourseApprovalState.PASSED.getState())){
@@ -464,6 +466,12 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservation.setSignTime(currentLong);
         reservation.setSignType(SignType.SIGN_OFFLINE.getType());
         reservation.setSignStatus(SignStatusEnums.SIGN_DONE.getStatus());
+
+        // 固定课程字段
+        if(reservationMemberVO.getCourseScheduleId() != null){
+            reservation.setCourseScheduleId(reservationMemberVO.getCourseScheduleId());
+            reservation.setCourseDate(reservationMemberVO.getCourseDate());
+        }
 
         this.dao.insert(reservation);
 

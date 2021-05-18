@@ -9,7 +9,6 @@ import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
 import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
-import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
 
 import java.util.List;
@@ -88,10 +87,10 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * 添加签名信息
      *
      * @param userId          用户id
-     * @param reservationList 预订单
+     * @param reservationMemberVO 预订单
      * @return {@link Long}
      */
-    Long addSignInfo(List<ReservationVO> reservationList, Long userId);
+    Long addSignInfo(ReservationMemberVO reservationMemberVO, Long userId);
 
     /**
      * 签到信息列表

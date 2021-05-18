@@ -9,7 +9,6 @@ import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
 import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
-import com.herocheer.instructor.domain.vo.ReservationVO;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
 import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.web.base.BaseController;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -83,15 +81,15 @@ public class ReservationController extends BaseController{
     /**
      * 创建签名信息
      *
-     * @param reservationList 预订单
+     * @param reservationMemberVO 预订单
      * @param request         请求
      * @return {@link ResponseResult}
      */
     @PostMapping("/sign/info")
     @ApiOperation("线下预约及签到")
-    public ResponseResult createSignInfo(@ApiParam("预约信息") @Valid @RequestBody List<ReservationVO> reservationList, HttpServletRequest request){
+    public ResponseResult createSignInfo(@ApiParam("预约信息") @RequestBody ReservationMemberVO reservationMemberVO, HttpServletRequest request){
         // 返回签到时间
-        Long signTime = reservationService.addSignInfo(reservationList,getCurUserId(request));
+        Long signTime = reservationService.addSignInfo(reservationMemberVO,getCurUserId(request));
         return ResponseResult.ok(signTime);
     }
 

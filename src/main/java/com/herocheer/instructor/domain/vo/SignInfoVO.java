@@ -46,4 +46,7 @@ public class SignInfoVO {
     private int pageNo = 1;
     @ApiModelProperty("页数")
     private int pageSize = 10;
+
+    @ApiModelProperty("课表预约的上课日期")
+    private Long courseDate;
 }

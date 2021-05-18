@@ -49,4 +49,7 @@ public class ReservationQueryVo implements Serializable {
 
     @ApiModelProperty("页数")
     private int pageSize;
+
+    @ApiModelProperty("课表预约的上课日期")
+    private Long courseDate;
 }

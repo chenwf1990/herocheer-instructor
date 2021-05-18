@@ -415,8 +415,8 @@
             <if test="userId!=null">
                 and userId = #{userId}
             </if>
-            <if test="courseDate != null">
-                and courseDate = #{courseDate}
+            <if test="courseDate != null and courseDate != '' ">
+                and courseDate = #{courseDate} and !ISNULL(courseDate)
             </if>
         </where>
         order by startTime desc,endTime desc
@@ -482,8 +482,8 @@
             <if test="signStatus != null">
                 and signStatus = #{signStatus}
             </if>
-            <if test="courseDate != null">
-                and courseDate = #{courseDate}
+            <if test="courseDate != null and courseDate != ''">
+                and courseDate = #{courseDate} and !ISNULL(courseDate)
             </if>
         </where>
         order by signTime desc
