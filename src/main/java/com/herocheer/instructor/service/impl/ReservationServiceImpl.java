@@ -36,9 +36,11 @@ import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -80,6 +82,10 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
 
     @Resource
     private CourseScheduleService courseScheduleService;
+
+    @Resource
+    private ReservationService reservationService;
+
 
     /**
      * 课程预约
@@ -363,6 +369,19 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取招募信息失败!");
         }
         courseInfoVo.setReservationStatus(reservation.getStatus());
+
+        // 当前用户的预约信息
+        ReservationListVO reservationListVO = ReservationListVO.builder().build();
+        BeanCopier.create(reservation.getClass(),reservationListVO.getClass(),false).copy(reservation,reservationListVO,null);
+        if(reservation.getCourseScheduleId() !=null){
+            CourseSchedule courseSchedule = courseScheduleService.get(reservation.getCourseScheduleId());
+            if(!ObjectUtils.isEmpty(courseSchedule)){
+                reservationListVO.setCourseDate(courseSchedule.getCourseDate());
+                reservationListVO.setCourseStartTime(courseSchedule.getStartTime());
+                reservationListVO.setCourseEndTime(courseSchedule.getEndTime());
+            }
+        }
+        courseInfoVo.setReservation(reservationListVO);
         return courseInfoVo;
     }
 
