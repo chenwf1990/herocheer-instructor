@@ -10,6 +10,7 @@ import com.herocheer.instructor.dao.CourseInfoDao;
 import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.entity.CourseSchedule;
+import com.herocheer.instructor.domain.entity.CourseTearcher;
 import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
@@ -179,17 +180,21 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     public CourseInfo findCourseInfoById(Long id,String flag,Long userId) {
         // 获取课程信息
         CourseInfo courseInfo  = this.dao.get(id);
-
-        if(StringUtils.isBlank(flag)){
-            return courseInfo;
-        }
-
-        // 扫码签到场景
         CourseInfoVo courseInfoVo = new CourseInfoVo();
+        // 扫码签到场景
         if(ObjectUtils.isEmpty(courseInfo)){
             return courseInfoVo;
         }
         BeanCopier.create(courseInfo.getClass(),courseInfoVo.getClass(),false).copy(courseInfo,courseInfoVo,null);
+
+        // 获取指导项目
+        CourseTearcher courseTearcher = courseTearcherService.get(courseInfo.getLecturerTeacherId());
+        if(!ObjectUtils.isEmpty(courseTearcher)){
+            courseInfoVo.setGuideProject(courseTearcher.getGuideProject());
+        }
+        if(StringUtils.isBlank(flag)){
+            return courseInfoVo;
+        }
 
         // 当前用户的预约信息
         ReservationListVO reservationListVO = reservationService.findReservationByCurUserId(ReservationQueryVo.builder().relevanceId(id).userId(userId).build());
