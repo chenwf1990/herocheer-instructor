@@ -517,6 +517,8 @@
             createdBy,
             createdTime,
             updateId,
+            courseScheduleId,
+            courseDate,
             updateBy,
             updateTime
         from reservation a

@@ -18,6 +18,14 @@ public interface CourseInfoDao extends BaseDao<CourseInfo,Long>{
 
     List<CourseInfo> queryList(CourseInfoQueryVo queryVo);
 
+
     CourseInfoVo getCourseInfo(@Param("id") Long id);
 
+    /**
+     * 固定课程和非固定课程的培训任务
+     *
+     * @param queryVo 查询签证官
+     * @return {@link List<CourseInfo>}
+     */
+    List<CourseInfo> selectCourseInfoByPage(CourseInfoQueryVo queryVo);
 }

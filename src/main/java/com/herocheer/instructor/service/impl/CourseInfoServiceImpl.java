@@ -192,8 +192,16 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         BeanCopier.create(courseInfo.getClass(),courseInfoVo.getClass(),false).copy(courseInfo,courseInfoVo,null);
 
         // 当前用户的预约信息
-        ReservationListVO reservationListVO = reservationService.findReservationByCurUserId(ReservationQueryVo.builder().userId(userId).build());
+        ReservationListVO reservationListVO = reservationService.findReservationByCurUserId(ReservationQueryVo.builder().relevanceId(id).userId(userId).build());
         if(!ObjectUtils.isEmpty(reservationListVO)){
+            if(reservationListVO.getCourseScheduleId() !=null){
+                CourseSchedule courseSchedule = courseScheduleService.get(reservationListVO.getCourseScheduleId());
+                if(!ObjectUtils.isEmpty(courseSchedule)){
+                    reservationListVO.setCourseDate(courseSchedule.getCourseDate());
+                    reservationListVO.setCourseStartTime(courseSchedule.getStartTime());
+                    reservationListVO.setCourseEndTime(courseSchedule.getEndTime());
+                }
+            }
             courseInfoVo.setReservation(reservationListVO);
         }
 
@@ -230,7 +238,6 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
      */
     @Override
     public Page<CourseInfo> findtaskByPage(CourseInfoQueryVo queryVo, UserEntity currentUser) {
-        // TODO 业务场景：知道自己是授课老师，进入公众号后直接到个人中心的培训任务，怎么办？
         if(StringUtils.isBlank(currentUser.getOtherId())){
             throw new CommonException("您未绑定身份，请使用手机绑定功能");
         }
@@ -244,13 +251,13 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             throw new CommonException("您还不是公众号用户");
         }
 
+        // 授课老师自身的培训任务
         List<TearcherVO> tearcherVOList = courseTearcherService.findCourseTearcherByPhone(user.getPhone());
         Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         if(CollectionUtil.isNotEmpty(tearcherVOList)){
-            // 授课老师自身的培训任务
             log.debug("授课老师ID:{}",tearcherVOList.get(0).getId());
             queryVo.setLecturerTeacherId(tearcherVOList.get(0).getId());
-            List<CourseInfo> instructors = this.dao.queryList(queryVo);
+            List<CourseInfo> instructors = this.dao.selectCourseInfoByPage(queryVo);
             page.setDataList(instructors);
         }
         return page;

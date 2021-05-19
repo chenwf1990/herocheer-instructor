@@ -601,4 +601,143 @@
             </otherwise>
         </choose>
     </select>
+
+    <!-- 固定课程和非固定课程的培训任务-->
+    <select id="selectCourseInfoByPage" resultType="com.herocheer.instructor.domain.entity.CourseInfo"
+            parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
+        SELECT
+            a.id,
+            a.title,
+            a.type,
+            a.offerCourseType,
+            a.lecturerTeacherId,
+            a.lecturerTeacherName,
+            SUBSTRING(IFNULL(a.courseStartTime,UNIX_TIMESTAMP(CONCAT(FROM_UNIXTIME(b.courseDate/1000,'%Y-%m-%d'),' ',b.startTime,':00'))*1000),1,13)	as courseStartTime,	  SUBSTRING(IFNULL(a.courseEndTime,UNIX_TIMESTAMP(CONCAT(FROM_UNIXTIME(b.courseDate/1000,'%Y-%m-%d'),' ',b.endTime,':00'))*1000),1,13) as courseEndTime,
+            a.address,
+            a.longitude,
+            a.latitude,
+            a.limitNumber,
+            a.signNumber,
+            a.signStartTime,
+            a.signEndTime,
+            a.description,
+            a.image,
+            a.approvalStatus,
+            a.approvalComments,
+            a.showBanner,
+            a.placedTop,
+            a.deptName,
+            a.deptId,
+            a.createdId,
+            a.createdBy,
+            a.createdTime,
+            a.updateId,
+            a.updateBy,
+            a.updateTime,
+            a.approvalId,
+            a.approvalBy,
+            a.approvalTime,
+            a.releaseTime,
+            a.courseStartZone,
+            a.courseEndZone,
+            a.state
+        from course_info a LEFT JOIN course_schedule b ON a.id = b.courseId
+        <where>
+            <if test="title!=null and title!=''">
+                and a.title like concat('%',#{title},'%')
+            </if>
+            <if test="type!=null">
+                and a.type=#{type}
+            </if>
+            <if test="offerCourseType!=null">
+                and a.offerCourseType=#{offerCourseType}
+            </if>
+            <if test="createdBy!=null and createdBy!=''">
+                and a.createdBy like concat('%',#{createdBy},'%')
+            </if>
+            <if test="startTime!=null">
+                and a.createdTime <![CDATA[ > ]]> #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and a.createdTime <![CDATA[ < ]]> #{endTime}+24*60*60*1000-1
+            </if>
+            <if test="approvalStatus!=null">
+                and a.approvalStatus=#{approvalStatus}
+            </if>
+            <if test="state!=null and state==5">
+                and a.state=#{state}
+            </if>
+            <if test="state!=null and state==4">
+                AND a.state!=5 AND a.approvalStatus = 1 AND a.courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+            </if>
+            <if test="state!=null and state==3">
+                AND a.state!=5 AND a.approvalStatus = 1 AND a.courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.courseEndTime
+            </if>
+            <if test="state!=null and state==2">
+                AND a.state!=5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> a.signEndTime
+                AND a.courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+            </if>
+            <if test="state!=null and state==1">
+                AND a.state!=5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.signStartTime
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime
+                AND a.courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+            </if>
+            <if test="state!=null and state==0">
+                AND a.state!=5 AND (a.approvalStatus != 1 OR (a.signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND a.courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000))
+            </if>
+            <if test="queryType!=null and queryType==1">
+                AND a.approvalStatus=0
+            </if>
+            <if test="queryType!=null and queryType==2">
+                AND (a.approvalStatus=1 or a.approvalStatus=3)
+            </if>
+            <if test="queryType!=null and queryType==3 and createdId!=null">
+                AND a.createdId=#{createdId}
+            </if>
+            <if test="queryType!=null and queryType==4">
+                AND a.approvalStatus=1 AND a.state!=5 AND a.releaseTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+            </if>
+            <if test="approvalStartTime!=null">
+                and a.updateTime <![CDATA[ > ]]> #{approvalStartTime}
+            </if>
+            <if test="approvalEndTime!=null">
+                and a.updateTime <![CDATA[ < ]]> #{approvalEndTime}+24*60*60*1000-1
+            </if>
+            <if test="signStartTime!=null and signEndTime!=null">
+                and (a.signStartTime between #{signStartTime} and #{signEndTime} or
+                a.signEndTime between #{signStartTime} and #{signEndTime})
+            </if>
+
+            <if test="lecturerTeacherId != null and lecturerTeacherId !='' ">
+                and a.lecturerTeacherId=#{lecturerTeacherId}
+            </if>
+            <if test="releaseStartTime!=null">
+                and a.releaseTime <![CDATA[ >= ]]> #{releaseStartTime}
+            </if>
+            <if test="releaseEndTime!=null">
+                and a.releaseTime <![CDATA[ <= ]]> #{releaseEndTime}
+            </if>
+        </where>
+        <choose>
+            <when test="queryType!=null and queryType==4">
+                order by  CASE
+                WHEN a.approvalStatus != 1 THEN null
+                WHEN a.state =5 THEN a.state
+                WHEN a.approvalStatus = 1 AND a.courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+                WHEN a.approvalStatus = 1 AND a.courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.courseEndTime THEN 3
+                WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 0
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1 END ASC
+                ,a.placedTop DESC,a.releaseTime DESC
+            </when>
+            <otherwise>
+                order by a.placedTop DESC,a.releaseTime DESC
+            </otherwise>
+        </choose>
+    </select>
+
 </mapper>
