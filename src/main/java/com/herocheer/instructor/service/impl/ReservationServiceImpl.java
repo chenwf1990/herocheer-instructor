@@ -300,12 +300,20 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
                 throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
             }
 
-            // 线上预约取消
-            if(reservation.getSource().equals(1)){
-                if(courseInfo.getSignNumber()>=1){
-                    //已预约数减一
-                    courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
-                    courseInfoService.update(courseInfo);
+            // 固定课程线程取消预约
+            if(reservation.getSource().equals(1) && reservation.getCourseScheduleId() != null){
+                // 数据库行锁，防止超卖
+                CourseSchedule courseSchedule = courseScheduleService.findCourseSchedulesById(reservation.getCourseScheduleId());
+                courseSchedule.setLimitNumber(courseSchedule.getLimitNumber() + 1);
+                courseScheduleService.update(courseSchedule);
+            }else {
+                // 线上预约取消(非固定课程)
+                if(reservation.getSource().equals(1)){
+                    if(courseInfo.getSignNumber() >= 1){
+                        //已预约数减一
+                        courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
+                        courseInfoService.update(courseInfo);
+                    }
                 }
             }
             reservation.setStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
