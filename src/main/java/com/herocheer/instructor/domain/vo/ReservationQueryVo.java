@@ -21,6 +21,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationQueryVo implements Serializable {
+    @ApiModelProperty("主键")
+    private Long id;
 
     @ApiModelProperty("姓名")
     private String name;

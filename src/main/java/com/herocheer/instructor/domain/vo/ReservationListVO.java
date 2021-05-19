@@ -28,8 +28,6 @@ public class ReservationListVO extends Reservation {
     @ApiModelProperty("携带关系：0-本人，1-儿子，2-女儿")
     private String relationType;
 
-    @ApiModelProperty("课表预约的上课日期")
-    private Long courseDate;
     @ApiModelProperty("课表预约的开始时间")
     private String courseStartTime;
     @ApiModelProperty("课表预约的结束时间")

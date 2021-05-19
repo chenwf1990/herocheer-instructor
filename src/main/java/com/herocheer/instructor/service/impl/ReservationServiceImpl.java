@@ -36,7 +36,6 @@ import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -307,19 +306,17 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             }
 
             // 固定课程线程取消预约
-            if(reservation.getSource().equals(1) && reservation.getCourseScheduleId() != null){
-                // 数据库行锁，防止超卖
-                CourseSchedule courseSchedule = courseScheduleService.findCourseSchedulesById(reservation.getCourseScheduleId());
-                courseSchedule.setLimitNumber(courseSchedule.getLimitNumber() + 1);
-                courseScheduleService.update(courseSchedule);
-            }else {
-                // 线上预约取消(非固定课程)
-                if(reservation.getSource().equals(1)){
-                    if(courseInfo.getSignNumber() >= 1){
-                        //已预约数减一
-                        courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
-                        courseInfoService.update(courseInfo);
-                    }
+            if(reservation.getSource().equals(1)){
+                if(reservation.getCourseScheduleId() != null){
+                    // 数据库行锁，防止超卖
+                    CourseSchedule courseSchedule = courseScheduleService.findCourseSchedulesById(reservation.getCourseScheduleId());
+                    courseSchedule.setLimitNumber(courseSchedule.getLimitNumber() + 1);
+                    courseScheduleService.update(courseSchedule);
+                }else if(courseInfo.getSignNumber() >= 1){
+                    // 线上预约取消(非固定课程)
+                    //已预约数减一
+                    courseInfo.setSignNumber(courseInfo.getSignNumber()-1);
+                    courseInfoService.update(courseInfo);
                 }
             }
             reservation.setStatus(ReserveStatusEnums.CANCEL_RESERVE.getState());
@@ -360,21 +357,19 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
 
     @Override
     public CourseInfoVo getCourse(Long id) {
-        Reservation reservation=this.dao.get(id);
-        if(reservation==null){
+        ReservationListVO reservationListVO = this.dao.selectByCurUserId(ReservationQueryVo.builder().id(id).build());
+        if(reservationListVO == null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"无效的预约信息!");
         }
-        CourseInfoVo courseInfoVo=courseInfoService.getCourseInfo(reservation.getRelevanceId());
+        CourseInfoVo courseInfoVo=courseInfoService.getCourseInfo(reservationListVO.getRelevanceId());
         if(courseInfoVo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取招募信息失败!");
         }
-        courseInfoVo.setReservationStatus(reservation.getStatus());
+        courseInfoVo.setReservationStatus(reservationListVO.getStatus());
 
         // 当前用户的预约信息
-        ReservationListVO reservationListVO = ReservationListVO.builder().build();
-        BeanCopier.create(reservation.getClass(),reservationListVO.getClass(),false).copy(reservation,reservationListVO,null);
-        if(reservation.getCourseScheduleId() !=null){
-            CourseSchedule courseSchedule = courseScheduleService.get(reservation.getCourseScheduleId());
+        if(reservationListVO.getCourseScheduleId() !=null){
+            CourseSchedule courseSchedule = courseScheduleService.get(reservationListVO.getCourseScheduleId());
             if(!ObjectUtils.isEmpty(courseSchedule)){
                 reservationListVO.setCourseDate(courseSchedule.getCourseDate());
                 reservationListVO.setCourseStartTime(courseSchedule.getStartTime());

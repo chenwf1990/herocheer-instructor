@@ -353,73 +353,75 @@
 
     <select id="findList" resultType="com.herocheer.instructor.domain.vo.ReservationListVO" parameterType="com.herocheer.instructor.domain.vo.ReservationQueryVo">
         select
-            id,
-            relevanceId,
-            type,
-            workingId,
-            title,
-            image,
-            startTime,
-            endTime,
-            address,
-            longitude,
-            latitude,
-            userId,
-            IFNULL(a.`name`,(select GROUP_CONCAT( b.userName SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
+            a.id,
+            a.relevanceId,
+            a.type,
+            a.workingId,
+            a.title,
+            a.image,
+            SUBSTRING(IFNULL(a.startTime,UNIX_TIMESTAMP(CONCAT(FROM_UNIXTIME(c.courseDate/1000,'%Y-%m-%d'),' ',c.startTime,':00'))*1000),1,13)	as startTime,
+            SUBSTRING(IFNULL(a.endTime,UNIX_TIMESTAMP(CONCAT(FROM_UNIXTIME(c.courseDate/1000,'%Y-%m-%d'),' ',c.endTime,':00'))*1000),1,13)	as endTime,
+            a.address,
+            a.longitude,
+            a.latitude,
+            a.userId,
+            IFNULL(a.`name`,(select GROUP_CONCAT( concat( b.userName, '（', CASE WHEN b.relationType=0 THEN '大人' ELSE '孩子' END, '）') SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `name`,
             IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as `identityNumber`,
             (select GROUP_CONCAT( b.relationType SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId) as relationType,
             IFNULL(a.phone,(select GROUP_CONCAT( b.phone SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) as phone,
-            signTime,
-            signType,
-            signStatus,
-            source,
-            STATUS,
-            createdId,
-            createdBy,
-            createdTime,
-            updateId,
-            updateBy,
-            updateTime
-        from reservation a
+            a.signTime,
+            a.signType,
+            a.signStatus,
+            a.source,
+            a.`STATUS`,
+            a.createdId,
+            a.createdBy,
+            a.createdTime,
+            a.updateId,
+            a.courseScheduleId,
+            a.courseDate,
+            a.updateBy,
+            a.updateTime
+        from reservation a left join  course_schedule c  on a.courseScheduleId = c.id
         <where>
             <if test="name!=null and name!=''">
-                and `name` like concat('%',#{name},'%')
+                and a.`name` like concat('%',#{name},'%')
             </if>
             <if test="identityNumber!=null">
-                and identityNumber=#{identityNumber}
+                and a.identityNumber=#{identityNumber}
             </if>
             <if test="title!=null and title!=''">
-                and title like concat('%',#{title},'%')
+                and a.title like concat('%',#{title},'%')
             </if>
             <if test="type!=null">
-                and `type` = #{type}
+                and a.`type` = #{type}
             </if>
             <if test="status != null and queryType!=1">
-                and status = #{status}
+                and a.status = #{status}
             </if>
             <if test="status != null and queryType==1 and status==0">
-                and (status = #{status} or status=2)
+                and (a.status = #{status} or a.status=2)
             </if>
             <if test="status != null and queryType==1 and status==1">
-                and status = #{status}
+                and a.status = #{status}
             </if>
             <if test="startTime!=null">
-                and createdTime <![CDATA[ >= ]]> #{startTime}
+                and a.createdTime <![CDATA[ >= ]]> #{startTime}
             </if>
             <if test="endTime!=null">
-                and createdTime <![CDATA[ <= ]]> #{endTime}
+                and a.createdTime <![CDATA[ <= ]]> #{endTime}
             </if>
             <if test="relevanceId!=null">
-                and relevanceId=#{relevanceId}
+                and a.relevanceId=#{relevanceId}
             </if>
             <if test="userId!=null">
-                and userId = #{userId}
+                and a.userId = #{userId}
             </if>
             <if test="courseDate != null and courseDate != '' ">
-                and courseDate = #{courseDate} and !ISNULL(courseDate)
+                and a.courseDate = #{courseDate} and !ISNULL(a.courseDate)
             </if>
         </where>
-        order by startTime desc,endTime desc
+        order by a.startTime desc,a.endTime desc
     </select>
 
     <update id="updateReservationStatus">
@@ -523,7 +525,10 @@
             updateTime
         from reservation a
         <where>
-            <if test="name!=null and name!=''">
+            <if test="id != null and id != ''">
+                and `id` = #{id}
+            </if>
+            <if test="name != null and name != ''">
                 and `name` like concat('%',#{name},'%')
             </if>
             <if test="identityNumber!=null">
