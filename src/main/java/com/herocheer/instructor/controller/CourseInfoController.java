@@ -159,18 +159,8 @@ public class CourseInfoController extends BaseController{
         // 高纠错级别
         config.setErrorCorrection(ErrorCorrectionLevel.H);
         // logo
-//        log.debug("Logo路径2：{}",new ClassPathResource("static/images/logo.jpg").getFile().getPath());
-
-        // TODO 问题还没有解决
-        log.debug("Logo路径21：{}","/static"+File.separator+"images"+File.separator+"logo.jpg");
-        log.debug("Logo路径22：{}",ClassLoader.getSystemResource("/static"+File.separator+"images"+File.separator+"logo.jpg"));
-        log.debug("Logo路径23：{}",ClassLoader.getSystemResource("/static"+File.separator+"images"+File.separator+"logo.jpg").getPath());
-
-//        config.setImg(URLDecoder.decode(FileUtil.getAbsolutePath("static"+ File.separatorChar+"images"+File.separatorChar+"logo.jpg"),"utf-8"));
-//        config.setImg(new File("src/main/resources/static/images/logo.jpg").getCanonicalPath());
-        config.setImg(ClassLoader.getSystemResource("/static"+File.separator+"images"+File.separator+"logo.jpg").getPath());
-//        config.setImg(new ClassPathResource("static/images/logo.jpg").getFile().getPath());
-
+        log.debug("Logo路径：{}", new File("imgs"+File.separator+"logo.png").getCanonicalPath());
+        config.setImg(new File("imgs"+File.separator+"logo.png").getCanonicalPath());
         // 生成二维码到文件，也可以到流
         QrCodeUtil.generate(url, config, "PNG",response.getOutputStream());
     }
