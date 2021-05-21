@@ -1,8 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -29,4 +29,8 @@ public class EquipmentInfo extends BaseEntity {
     @ApiModelProperty("备注")   
     private String remarks;
 
+    @ApiModelProperty("单价")
+    private Long price;
+    @ApiModelProperty("单位")
+    private String unit;
 }

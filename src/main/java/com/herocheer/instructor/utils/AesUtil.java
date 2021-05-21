@@ -1,19 +1,11 @@
 package com.herocheer.instructor.utils;
 
-import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Base64Utils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.security.Security;
 
 /**
@@ -73,48 +65,8 @@ public class AesUtil {
     }
 
     public static void main(String[] args) {
-//        String str = "PmwOukoG5/*GhhLUgkrhyDXrC6omB3eMSlMI+pZB1D2Qw=";
-//        String a = decrypt(str);
-//        System.out.println(a);*/
-//        System.out.println(decrypt(a));
-
-        File directory = new File("src/main/resources/static/images/logo.jpg");
-        ClassPathResource resource = new ClassPathResource("static/images/logo.jpg");
-        try {
-            resource.getURL().getPath();
-            System.out.println(resource.getPath());
-            System.out.println(resource.getURL().getPath());
-
-            String reportPath = directory.getCanonicalPath();
-            System.out.println(reportPath);
-
-//            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("static/images/logo.jpg");
-//            System.out.println(reportPath);
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        ClassPathResource classPathResource = new ClassPathResource("static/images/logo.jpg");
-        try {
-            log.info("---{}",classPathResource.getPath());
-            log.info("---{}",classPathResource.getFile().getPath());
-            InputStream inputStream = classPathResource.getInputStream();
-            log.info("--22-{}",inputStream);
-
-            URL url = ClassLoader.getSystemResource("static/images/logo.jpg");
-            log.info("--33-{}",url.getPath());
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            System.out.println( URLDecoder.decode(FileUtil.getAbsolutePath("static"+ File.separatorChar+"images"+File.separatorChar+"logo.jpg"),"utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String str = "350823198807174613";
+        String a = encrypt(str);
+        System.out.println(a);
     }
 }

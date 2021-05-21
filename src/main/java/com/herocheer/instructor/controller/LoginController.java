@@ -6,15 +6,30 @@ import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.InstructorApply;
 import com.herocheer.instructor.domain.entity.InstructorApplyAuditLog;
 import com.herocheer.instructor.domain.entity.User;
-import com.herocheer.instructor.service.*;
+import com.herocheer.instructor.service.InstructorApplyAuditLogService;
+import com.herocheer.instructor.service.InstructorApplyService;
+import com.herocheer.instructor.service.InstructorService;
+import com.herocheer.instructor.service.LoginService;
+import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.utils.AesUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,4 +146,37 @@ public class LoginController {
         }
         return ResponseResult.ok(map);
     }
+
+    /**
+     * 模板下载
+     * @param request
+     * @return
+     */
+    @GetMapping("/downloadTemplate")
+    @ApiOperation("模板下载")
+    @AllowAnonymous
+    public ResponseEntity<byte[]> downloadTemplate(HttpServletRequest request){
+        ResponseEntity<byte[]> entity = null;
+        try {
+//            ClassPathResource resource = new ClassPathResource("建行订单状态为成功订单但赛事报名的支付状态已关闭名单.xlsx");
+//            InputStream is = resource.getInputStream();
+
+//            InputStream is = this.getClass().getResourceAsStream("/建行订单状态为成功订单但赛事报名的支付状态已关闭名单.xlsx");
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("建行订单状态为成功订单但赛事报名的支付状态已关闭名单.xlsx");
+            byte[] body =  new byte[is.available()];
+            is.read(body);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attchement;filename=" + URLEncoder.encode("文件名.xlsx","utf-8"));
+            headers.add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            HttpStatus statusCode = HttpStatus.OK;
+            entity = new ResponseEntity<byte[]>(body, headers, statusCode);
+            is.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return entity;
+    }
+
 }

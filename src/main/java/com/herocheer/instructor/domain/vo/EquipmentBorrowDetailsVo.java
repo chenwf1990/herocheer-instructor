@@ -17,4 +17,7 @@ import java.util.List;
 public class EquipmentBorrowDetailsVo extends EquipmentBorrowDetails {
     @ApiModelProperty("器材归还记录")
     List<EquipmentRemand> remands;
+
+    @ApiModelProperty("单价")
+    private Long price;
 }

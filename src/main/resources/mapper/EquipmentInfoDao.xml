@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.EquipmentInfoDao">
     <sql id="table_field">
-      id, courierId, courierName, equipmentName, model, brandId, brandName, stockNumber, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, courierId, courierName, equipmentName, model, brandId, brandName, stockNumber, price, unit, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -33,6 +33,12 @@
         <if test="remarks != null">
             remarks,
         </if>
+        <if test="price != null">
+            price,
+        </if>
+        <if test="unit != null">
+            unit,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -60,6 +66,12 @@
         </if>
         <if test="remarks != null">
             #{remarks},
+        </if>
+        <if test="price != null">
+            #{price},
+        </if>
+        <if test="unit != null">
+            #{unit},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -98,6 +110,12 @@
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="unit != null">
+                unit = #{unit},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

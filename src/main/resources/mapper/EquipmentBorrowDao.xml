@@ -341,7 +341,7 @@
 
     <select id="getEquipmentBorrow"
             resultType="com.herocheer.instructor.domain.vo.EquipmentBorrowVo">
-        select * from equipment_borrow where id=#{id}
+        select <include refid="table_field"/>,UNIX_TIMESTAMP(FROM_UNIXTIME(borrowStartTime/1000,'%Y-%m-%d'))*1000 as borrowDate,CONCAT('',FROM_UNIXTIME(borrowStartTime/1000,'%H:%i'),'~',FROM_UNIXTIME(borrowEndTime/1000,'%H:%i')) as borrowTimeRange from equipment_borrow where id=#{id}
     </select>
 
     <select id="getCountByReceipt" resultType="java.lang.Integer">
