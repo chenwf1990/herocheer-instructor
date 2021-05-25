@@ -20,4 +20,7 @@ public class EquipmentDamageDetailsVo extends EquipmentDamageDetails {
     private String model;
     @ApiModelProperty("未归还数量")
     private Integer unreturnedQuantity;
+
+    @ApiModelProperty("单价")
+    private Long price;
 }

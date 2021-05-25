@@ -16,11 +16,4 @@ import java.util.List;
 public class EquipmentBorrowVo extends EquipmentBorrow {
     @ApiModelProperty("器材借用记录")
     List<EquipmentBorrowDetailsVo> borrowDetails;
-
-
-    @ApiModelProperty("借用日期")
-    private Long borrowDate;
-    @ApiModelProperty("借用时段")
-    private String borrowTimeRange;
-
 }

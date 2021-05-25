@@ -4,6 +4,7 @@ import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
 import com.herocheer.instructor.domain.entity.EquipmentRemand;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.List;
 
@@ -20,4 +21,10 @@ public class EquipmentBorrowDetailsVo extends EquipmentBorrowDetails {
 
     @ApiModelProperty("单价")
     private Long price;
+
+    public EquipmentBorrowDetails voToEntity(EquipmentBorrowDetailsVo vo){
+        EquipmentBorrowDetails entity =new EquipmentBorrowDetails();
+        BeanCopier.create(vo.getClass(),entity.getClass(),false).copy(vo,entity,null);
+        return entity;
+    }
 }

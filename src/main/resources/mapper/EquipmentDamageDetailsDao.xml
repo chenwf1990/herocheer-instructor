@@ -107,10 +107,12 @@
             b.equipmentName,
             b.model,
             b.brandName,
-            b.unreturnedQuantity
+            b.unreturnedQuantity,
+						c.price
         FROM
             equipment_damage_details d
             LEFT JOIN equipment_borrow_details b ON d.borrowDetailsId = b.id
+            LEFT JOIN equipment_info c  on b.equipmentId=c.id
         where d.damageId=#{damageId}
     </select>
 </mapper>

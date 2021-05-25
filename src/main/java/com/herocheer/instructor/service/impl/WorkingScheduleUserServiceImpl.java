@@ -7,6 +7,7 @@ import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.dao.WorkingScheduleUserDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
 import com.herocheer.instructor.domain.entity.CourierStation;
+import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
@@ -26,6 +27,7 @@ import com.herocheer.instructor.service.ActivityRecruitInfoService;
 import com.herocheer.instructor.service.CommonService;
 import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.instructor.service.SysMessageService;
+import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
 import com.herocheer.instructor.service.WorkingSignRecordService;
 import com.herocheer.instructor.utils.DateUtil;
@@ -64,6 +66,8 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
     @Autowired
     private SysMessageService sysMessageService;
 
+    @Autowired
+    private WorkingScheduleService workingScheduleService;
     /**
      * @param workingScheduleUserQueryVo
      * @param userEntity
@@ -363,5 +367,21 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         //值班日期
         map.put("scheduleTime",System.currentTimeMillis()/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset());
         return this.dao.findCourierStationId(map);
+    }
+
+    /**
+     * 根据借用日期获取驿站值班时段信息
+     *
+     * @param courierStationId 驿站id
+     * @param borrowDate       借款日期
+     * @return {@link List<WorkingSchedule>}
+     */
+    @Override
+    public List<WorkingSchedule> fetchTimeRangeByBorrowDate(Long courierStationId,Long borrowDate) {
+        Map<String, Object> paramMap =  new HashMap<>();
+        paramMap.put("activityType",1);
+        paramMap.put("courierStationId",courierStationId);
+        paramMap.put("scheduleTime",borrowDate);
+        return workingScheduleService.findByLimit(paramMap);
     }
 }

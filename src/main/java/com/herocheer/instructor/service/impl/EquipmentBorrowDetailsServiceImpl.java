@@ -2,14 +2,14 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
 import com.herocheer.instructor.dao.EquipmentBorrowDetailsDao;
+import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
 import com.herocheer.instructor.domain.entity.EquipmentInfo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowDetailsVo;
 import com.herocheer.instructor.service.EquipmentBorrowDetailsService;
 import com.herocheer.instructor.service.EquipmentInfoService;
-import org.springframework.stereotype.Service;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -40,25 +40,32 @@ public class EquipmentBorrowDetailsServiceImpl extends BaseServiceImpl<Equipment
     @Override
     public Integer saveBorrowDetails(EquipmentBorrowDetails equipmentBorrowDetails,Integer flag) {
         EquipmentInfo equipmentInfo=equipmentInfoService.get(equipmentBorrowDetails.getEquipmentId());
-        //待归还数量
-        Integer unreturnedQuantity=this.dao.getUnreturnedQuantity(equipmentBorrowDetails.getEquipmentId());
-        if(unreturnedQuantity==null){
-            unreturnedQuantity=0;
-        }
-        if(equipmentInfo==null){
+        if(equipmentInfo == null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取器材失败!");
         }
+
+        //借出--待归还的数量
+        Integer unreturnedQuantity=this.dao.getUnreturnedQuantity(equipmentBorrowDetails.getEquipmentId());
+        if(unreturnedQuantity == null){
+            unreturnedQuantity=0;
+        }
+
+        // 判断各个器材的库存
         if (flag.equals(0)){
-            if(equipmentInfo.getStockNumber()-unreturnedQuantity<equipmentBorrowDetails.getBorrowQuantity()){
-                throw new CommonException("{}已库存不足",equipmentBorrowDetails.getEquipmentName());
+            // 用户借用器材场景
+            if(equipmentInfo.getStockNumber()-unreturnedQuantity < equipmentBorrowDetails.getBorrowQuantity()){
+                throw new CommonException("{}已库存不足,请重新选择器材",equipmentBorrowDetails.getEquipmentName());
             }
         }else if(flag.equals(1)){
-            if(equipmentInfo.getStockNumber()-unreturnedQuantity<equipmentBorrowDetails.getActualBorrowQuantity()){
-                throw new CommonException("{}已库存不足",equipmentBorrowDetails.getEquipmentName());
+            // 值班人员确认借出场景
+            if(equipmentInfo.getStockNumber()-unreturnedQuantity < equipmentBorrowDetails.getActualBorrowQuantity()){
+                throw new CommonException("{}已库存不足,请重新选择器材",equipmentBorrowDetails.getEquipmentName());
             }
         }
+
+        // 保存器材借用明细
         Integer count;
-        if(equipmentBorrowDetails.getId()==null){
+        if(equipmentBorrowDetails.getId() == null){
             count=this.dao.insert(equipmentBorrowDetails);
         }else {
             count=this.dao.update(equipmentBorrowDetails);

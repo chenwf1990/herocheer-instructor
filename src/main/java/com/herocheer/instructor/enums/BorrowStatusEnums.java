@@ -5,7 +5,9 @@ public enum BorrowStatusEnums {
     to_remand(1,"待签收"),
     to_borrow(2,"待归还"),
     already_borrow(3,"已归还"),
-    overrule(4,"驳回");
+    overrule(4,"驳回"),
+    overdue(5,"已过期"),
+    cancel(6,"已取消");
 
 
     private int status;

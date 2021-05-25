@@ -1,11 +1,9 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
-import com.herocheer.common.base.entity.UserEntity;
-import com.herocheer.instructor.domain.entity.EquipmentBorrow;
 import com.herocheer.common.base.service.BaseService;
+import com.herocheer.instructor.domain.entity.EquipmentBorrow;
 import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
-import com.herocheer.instructor.domain.entity.EquipmentDamage;
 import com.herocheer.instructor.domain.entity.EquipmentRemand;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowSaveVo;
@@ -53,11 +51,14 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
     Integer userReceipt(Long id);
 
     /**
+     * 否决
      * 驳回
-     * @param id
-     * @return
+     *
+     * @param id     id
+     * @param reason 原因
+     * @return {@link Integer}
      */
-    Integer overrule(Long id);
+    Integer overrule(Long id,String reason);
 
     /**
      * 器材申请归还 必要参数:关联借用器材id,借用单据id
@@ -127,4 +128,12 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      * @return
      */
     List<EquipmentDamageVo> getDamage(Long borrowId);
+
+    /**
+     * 取消借用预约并释放库存
+     *
+     * @param borrowId 借身份证
+     * @return {@link EquipmentBorrow}
+     */
+    EquipmentBorrow modifyBorrowInfoByInfo(Long borrowId);
 }

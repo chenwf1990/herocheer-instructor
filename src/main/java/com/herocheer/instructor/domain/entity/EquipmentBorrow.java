@@ -1,8 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -26,11 +26,15 @@ public class EquipmentBorrow extends BaseEntity {
     private String identityNumber;
     @ApiModelProperty("手机号")   
     private String phoneNumber;
-    @ApiModelProperty("借用开始时间")   
-    private Long borrowStartTime;
-    @ApiModelProperty("借用结束时间")   
-    private Long borrowEndTime;
-    @ApiModelProperty("状态 (0.待审核 1.待借出 2.待归还 3.已归还 4.驳回)")
+
+    @ApiModelProperty("借用日期")
+    private Long borrowDate;
+    @ApiModelProperty("借用时段开始")
+    private String borrowTimeRangeStart;
+    @ApiModelProperty("借用时段结束")
+    private String borrowTimeRangeEnd;
+
+    @ApiModelProperty("状态 (0.待审核 1.待签收 2.待归还 3.已归还 4.驳回 5.已过期 6.已取消)")
     private Integer status;
     @ApiModelProperty("归还状态 (0.默认 1.申请归还 2.已归还待用户确认 3.已确认)")
     private Integer remandStatus;
@@ -42,4 +46,7 @@ public class EquipmentBorrow extends BaseEntity {
     private String remandEquipment;
     @ApiModelProperty("借出人id")
     private Long lenderId;
+
+    @ApiModelProperty("驳回原因")
+    private String rejectReason;
 }

@@ -106,4 +106,15 @@ public class WorkingScheduleUserController extends BaseController{
         return ResponseResult.ok(list);
     }
 
+    /**
+     * 根据借用日期获取驿站值班时段信息
+     *
+     * @param courierStationId 驿站id
+     * @return {@link ResponseResult<List<WorkingSchedulsUserVo>>}
+     */
+    @GetMapping("/current/time/range")
+    @ApiOperation("根据借用日期获取驿站值班时段信息")
+    public ResponseResult<List<WorkingSchedule>> fetchTimeRangeByBorrowDate(@ApiParam("驿站id") @RequestParam Long courierStationId,@ApiParam("借用日期") @RequestParam Long borrowDate){
+        return ResponseResult.ok(workingScheduleUserService.fetchTimeRangeByBorrowDate(courierStationId,borrowDate));
+    }
 }

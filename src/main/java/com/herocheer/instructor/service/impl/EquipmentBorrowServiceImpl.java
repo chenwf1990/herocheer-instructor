@@ -3,12 +3,10 @@ package com.herocheer.instructor.service.impl;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.dao.EquipmentBorrowDao;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.EquipmentBorrow;
-import com.herocheer.instructor.dao.EquipmentBorrowDao;
 import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
-import com.herocheer.instructor.domain.entity.EquipmentDamage;
-import com.herocheer.instructor.domain.entity.EquipmentDamageDetails;
 import com.herocheer.instructor.domain.entity.EquipmentInfo;
 import com.herocheer.instructor.domain.entity.EquipmentRemand;
 import com.herocheer.instructor.domain.entity.User;
@@ -30,16 +28,15 @@ import com.herocheer.instructor.service.EquipmentInfoService;
 import com.herocheer.instructor.service.EquipmentRemandService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
-import com.sun.org.apache.xalan.internal.res.XSLTErrorResources;
+import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
-import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +47,7 @@ import java.util.Map;
  * @company 厦门熙重电子科技有限公司
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowDao, EquipmentBorrow,Long> implements EquipmentBorrowService {
 
     @Resource
@@ -83,11 +80,11 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if (user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
         }
+
         //后台管理员 查询不做限制
         if(user.getUserType()==4){
             queryVo.setQueryType(3);
         }
-        Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(2)){
             queryVo.setUserId(userId);
         }
@@ -96,6 +93,9 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             queryVo.setCourierStationIds(courierStationIds);
             queryVo.setUserId(userId);
         }
+
+        // 分页
+        Page page = Page.startPage(queryVo.getPageNo(),queryVo.getPageSize());
         List<EquipmentBorrow> list=this.dao.findList(queryVo);
         page.setDataList(list);
         return page;
@@ -119,6 +119,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         vo.setGender(user.getSex());
         vo.setIdentityNumber(user.getCertificateNo());
         vo.setPhoneNumber(user.getPhone());
+
         //拼接借用器材
         StringBuffer borrowEquipment=new StringBuffer();
         if (vo.getBorrowDetails().isEmpty()){
@@ -138,13 +139,20 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             detailsList.get(i).setEquipmentName(equipmentInfo.getEquipmentName());
             detailsList.get(i).setBrandName(equipmentInfo.getBrandName());
             detailsList.get(i).setModel(equipmentInfo.getModel());
+
+            // 占用库存
+            detailsList.get(i).setUnreturnedQuantity(detailsList.get(i).getBorrowQuantity());
         }
+        vo.setBorrowEquipment(borrowEquipment.toString().substring(0,borrowEquipment.length()-1));
+
+        // 生成借用单号(QCJY2021010001)
         SimpleDateFormat dateFormat=new SimpleDateFormat("yyyyMM");
         String borrowReceipt="QCJY"+dateFormat.format(new Date());
         Integer receiptCount=this.dao.getCountByReceipt(borrowReceipt);
         vo.setBorrowReceipt(String.format(borrowReceipt+ "%04d",receiptCount+1));
-        vo.setBorrowEquipment(borrowEquipment.toString().substring(0,borrowEquipment.length()-1));
         Integer count=this.dao.insert(vo);
+
+        // 保存器材借用明细
         for(EquipmentBorrowDetails details:vo.getBorrowDetails()){
             details.setBorrowId(vo.getId());
             equipmentBorrowDetailsService.saveBorrowDetails(details,0);
@@ -165,7 +173,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             borrowEquipment.append("*");
             borrowEquipment.append(borrowDetails.getActualBorrowQuantity());
             borrowEquipment.append(",");
-            //待归还数量等于实际借用数量
+            //待归还数量 == 实际借用数量
             borrowDetails.setUnreturnedQuantity(borrowDetails.getActualBorrowQuantity());
             //保存借出人信息
             borrowDetails.setBorrowBy(user.getUserName());
@@ -196,10 +204,13 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     }
 
     @Override
-    public Integer overrule(Long id) {
+    public Integer overrule(Long id,String reason) {
         EquipmentBorrow equipmentBorrow=new EquipmentBorrow();
         equipmentBorrow.setId(id);
         equipmentBorrow.setStatus(BorrowStatusEnums.overrule.getStatus());
+        equipmentBorrow.setRejectReason(reason);
+
+        // TODO 驳回要释放库存吧
         return this.dao.update(equipmentBorrow);
     }
 
@@ -238,16 +249,20 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if(user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
         }
-        for(EquipmentRemand equipmentRemand:remand){
-            Integer remandQuantity=equipmentRemand.getRemandQuantity();
-            equipmentRemand=equipmentRemandService.get(equipmentRemand.getId());
+
+        for(EquipmentRemand equipmentRemand : remand){
+            Integer remandQuantity = equipmentRemand.getRemandQuantity();
+            equipmentRemand = equipmentRemandService.get(equipmentRemand.getId());
             if(equipmentRemand==null){
                 throw new CommonException(ResponseCode.SERVER_ERROR, "获取归还申请失败!");
             }
+
+            // 值班人员确认归还更新借用记录
             borrowDetails=equipmentBorrowDetailsService.get(equipmentRemand.getBorrowDetailsId());
             if(borrowDetails.getUnreturnedQuantity()<remandQuantity){
                 throw new CommonException("{}超过待归还数量!",borrowDetails.getEquipmentName());
             }
+            // 影响库存数
             borrowDetails.setUnreturnedQuantity(borrowDetails.getUnreturnedQuantity()-remandQuantity);
             borrowDetails.setRemandQuantity(borrowDetails.getRemandQuantity()+remandQuantity);
             //没有待归还数量,设置器材为已归还
@@ -255,6 +270,8 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
                 borrowDetails.setRemandStatus(1);
             }
             equipmentBorrowDetailsService.update(borrowDetails);
+
+            // 值班人员确认归还更新归还记录
             equipmentRemand.setRemandQuantity(remandQuantity);
             equipmentRemand.setRemandStatus(RemandStatusEnums.to_confirmed.getStatus());
             equipmentRemand.setReceiveBy(user.getUserName());
@@ -262,10 +279,12 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             equipmentRemand.setReceiveTime(System.currentTimeMillis());
             equipmentRemand.setPhoneNumber(user.getPhone());
             equipmentRemandService.update(equipmentRemand);
+
             if(equipmentRemand.getBorrowId()!=null){
                 borrowId=equipmentRemand.getBorrowId();
             }
         }
+
         EquipmentBorrow equipmentBorrow=this.dao.get(borrowId);
         equipmentBorrow.setRemandStatus(RemandStatusEnums.to_confirmed.getStatus());
         equipmentBorrow.setRemandTime(System.currentTimeMillis());
@@ -435,5 +454,32 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             }
         }
         return damageVos;
+    }
+
+    /**
+     * 取消借用预约并释放库存
+     *
+     * @param borrowId 借身份证
+     * @return {@link EquipmentBorrow}
+     */
+    @Override
+    public EquipmentBorrow modifyBorrowInfoByInfo(Long borrowId) {
+        EquipmentBorrow equipmentBorrow = this.dao.get(borrowId);
+        if(ObjectUtils.isEmpty(equipmentBorrow)){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
+        }
+        // 释放库存
+        List<EquipmentBorrowDetailsVo> equipmentBorrowDetailsList = equipmentBorrowDetailsService.getDetailsByBorrowId(borrowId);
+        for (EquipmentBorrowDetailsVo equipmentBorrowDetailsVO:equipmentBorrowDetailsList){
+            EquipmentBorrowDetails equipmentBorrowDetails = equipmentBorrowDetailsVO.voToEntity(equipmentBorrowDetailsVO);
+            // 取消借用时设置待归还数量为0，即释放库存
+            equipmentBorrowDetails.setUnreturnedQuantity(0);
+            equipmentBorrowDetailsService.update(equipmentBorrowDetails);
+        }
+
+        // 更新状态
+        equipmentBorrow.setStatus(BorrowStatusEnums.cancel.getStatus());
+        this.dao.update(equipmentBorrow);
+        return equipmentBorrow;
     }
 }

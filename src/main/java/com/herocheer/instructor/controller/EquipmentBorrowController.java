@@ -2,11 +2,8 @@ package com.herocheer.instructor.controller;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.instructor.domain.entity.AssociationMember;
-import com.herocheer.instructor.domain.entity.BrandInfo;
 import com.herocheer.instructor.domain.entity.EquipmentBorrow;
 import com.herocheer.instructor.domain.entity.EquipmentBorrowDetails;
-import com.herocheer.instructor.domain.entity.EquipmentInfo;
 import com.herocheer.instructor.domain.entity.EquipmentRemand;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowQueryVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowSaveVo;
@@ -14,11 +11,18 @@ import com.herocheer.instructor.domain.vo.EquipmentBorrowVo;
 import com.herocheer.instructor.domain.vo.EquipmentDamageVo;
 import com.herocheer.instructor.domain.vo.EquipmentRemandVo;
 import com.herocheer.instructor.service.EquipmentBorrowService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -37,7 +41,7 @@ public class EquipmentBorrowController extends BaseController{
     private EquipmentBorrowService equipmentBorrowService;
 
     @PostMapping("/queryPage")
-    @ApiOperation("器材借用查询")
+    @ApiOperation("器材借用查询（我的借用）")
     public ResponseResult<Page<EquipmentBorrow>> queryPage(@RequestBody EquipmentBorrowQueryVo queryVo,HttpServletRequest request){
         Page<EquipmentBorrow> page = equipmentBorrowService.queryPage(queryVo,getCurUserId(request));
         return ResponseResult.ok(page);
@@ -67,8 +71,8 @@ public class EquipmentBorrowController extends BaseController{
 
     @GetMapping("/borrow/overrule")
     @ApiOperation("借用驳回")
-    public ResponseResult overrule(@ApiParam("借用id") @RequestParam Long id){
-        Integer count=equipmentBorrowService.overrule(id);
+    public ResponseResult overrule(@ApiParam("借用id") @RequestParam Long id,@ApiParam("驳回理由") @RequestParam String reason){
+        Integer count=equipmentBorrowService.overrule(id,reason);
         return ResponseResult.isSuccess(count);
     }
 
@@ -133,5 +137,18 @@ public class EquipmentBorrowController extends BaseController{
     public ResponseResult<List<EquipmentDamageVo>> getDamage(@ApiParam("借用id") @RequestParam Long id){
         List<EquipmentDamageVo> list= equipmentBorrowService.getDamage(id);
         return ResponseResult.ok(list);
+    }
+
+
+    /**
+     * 取消借用预约并释放库存
+     *
+     * @param id id
+     * @return {@link ResponseResult<EquipmentBorrowVo>}
+     */
+    @GetMapping("/info/cancel/{id:\\w+}")
+    @ApiOperation("取消借用预约")
+    public ResponseResult<EquipmentBorrow> cancelBorrowInfoByInfo(@ApiParam("借用id") @PathVariable Long id,HttpServletRequest request){
+        return ResponseResult.ok(equipmentBorrowService.modifyBorrowInfoByInfo(id));
     }
 }
