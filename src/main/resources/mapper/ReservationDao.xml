@@ -384,11 +384,19 @@
             a.updateTime
         from reservation a left join  course_schedule c  on a.courseScheduleId = c.id
         <where>
-            <if test="name!=null and name!=''">
-                and a.`name` like concat('%',#{name},'%')
+            <if test="name != null and name != ''">
+                and IFNULL(
+                    a.`name`,(
+                    SELECT
+                    GROUP_CONCAT( concat( b.userName, '（', CASE WHEN b.relationType = 0 THEN '大人' ELSE '孩子' END, '）' ) SEPARATOR ',' )
+                    FROM
+                    reservation_member b
+                    WHERE
+                    a.id = b.relevanceId
+                )) like concat('%',#{name},'%')
             </if>
-            <if test="identityNumber!=null">
-                and a.identityNumber=#{identityNumber}
+            <if test="identityNumber != null">
+                and IFNULL(a.`identityNumber`,(select GROUP_CONCAT( b.identityNumber SEPARATOR ',' ) from  reservation_member b where a.id = b.relevanceId)) like concat('%',#{identityNumber},'%')
             </if>
             <if test="title!=null and title!=''">
                 and a.title like concat('%',#{title},'%')

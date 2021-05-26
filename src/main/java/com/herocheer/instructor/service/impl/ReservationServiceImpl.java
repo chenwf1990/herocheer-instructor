@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -176,7 +177,11 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
 
             // 是否有家长一起报名
             if (intSet.contains(0)){
-                reservationMember.setPhone(reservationVO.getPhone());
+                if(StringUtils.hasText(reservationVO.getPhone())){
+                    reservationMember.setPhone(reservationVO.getPhone());
+                }else{
+                    reservationMember.setPhone(null);
+                }
             }else {
                 reservationMember.setPhone(userService.get(userId).getPhone());
             }

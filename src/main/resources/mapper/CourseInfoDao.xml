@@ -508,6 +508,9 @@
             <if test="title!=null and title!=''">
                 and title like concat('%',#{title},'%')
             </if>
+            <if test="lecturerTeacherName != null and lecturerTeacherName != ''">
+                and lecturerTeacherName like concat('%',#{lecturerTeacherName},'%')
+            </if>
             <if test="type!=null">
                 and type=#{type}
             </if>
