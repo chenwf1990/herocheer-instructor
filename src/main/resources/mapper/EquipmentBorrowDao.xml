@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.EquipmentBorrowDao">
     <sql id="table_field">
-      id, borrowReceipt, courierId, courierName, borrower, gender, identityNumber, phoneNumber, borrowDate, borrowTimeRangeStart, borrowTimeRangeEnd, status, remandStatus, remandTime, borrowEquipment, remandEquipment, lenderId, createdId, createdBy, createdTime, updateId, updateBy, updateTime, rejectReason
+      id, borrowReceipt, courierId, courierName, source, borrower, gender, identityNumber, phoneNumber, borrowDate, borrowTimeRangeStart, borrowTimeRangeEnd, status, remandStatus, remandTime, borrowEquipment, remandEquipment, lenderId, createdId, createdBy, createdTime, updateId, updateBy, updateTime, rejectReason
     </sql>
     
     <!--单表新增-->
@@ -60,6 +60,9 @@
         <if test="borrowTimeRangeEnd != null">
             borrowTimeRangeEnd,
         </if>
+        <if test="source != null">
+            source,
+        </if>
 
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
@@ -115,6 +118,9 @@
         </if>
         <if test="borrowTimeRangeEnd != null">
             #{borrowTimeRangeEnd},
+        </if>
+        <if test="source != null">
+            #{source},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -180,6 +186,9 @@
             </if>
             <if test="borrowTimeRangeEnd != null">
                 borrowTimeRangeEnd = #{borrowTimeRangeEnd},
+            </if>
+            <if test="source != null">
+                source = #{source},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

@@ -3,6 +3,7 @@ package com.herocheer.instructor.service.impl;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.constants.ResponseCode;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.config.DelayTaskProducer;
 import com.herocheer.instructor.dao.EquipmentBorrowDao;
 import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.EquipmentBorrow;
@@ -18,6 +19,7 @@ import com.herocheer.instructor.domain.vo.EquipmentDamageDetailsVo;
 import com.herocheer.instructor.domain.vo.EquipmentDamageVo;
 import com.herocheer.instructor.domain.vo.EquipmentRemandVo;
 import com.herocheer.instructor.enums.BorrowStatusEnums;
+import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.enums.RemandStatusEnums;
 import com.herocheer.instructor.service.CourierStationService;
 import com.herocheer.instructor.service.EquipmentBorrowDetailsService;
@@ -28,11 +30,14 @@ import com.herocheer.instructor.service.EquipmentInfoService;
 import com.herocheer.instructor.service.EquipmentRemandService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -46,6 +51,7 @@ import java.util.Map;
  * @date 2021-04-20 15:22:50
  * @company 厦门熙重电子科技有限公司
  */
+@Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowDao, EquipmentBorrow,Long> implements EquipmentBorrowService {
@@ -73,6 +79,9 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
 
     @Resource
     private WorkingScheduleUserService workingScheduleUserService;
+
+    @Resource
+    private DelayTaskProducer delayTaskProducer;
 
     @Override
     public Page<EquipmentBorrow> queryPage(EquipmentBorrowQueryVo queryVo,Long userId) {
@@ -135,11 +144,11 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             borrowEquipment.append("*");
             borrowEquipment.append(detailsList.get(i).getBorrowQuantity());
             borrowEquipment.append(",");
+
             //保存器材信息
             detailsList.get(i).setEquipmentName(equipmentInfo.getEquipmentName());
             detailsList.get(i).setBrandName(equipmentInfo.getBrandName());
             detailsList.get(i).setModel(equipmentInfo.getModel());
-
             // 占用库存
             detailsList.get(i).setUnreturnedQuantity(detailsList.get(i).getBorrowQuantity());
         }
@@ -156,6 +165,13 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         for(EquipmentBorrowDetails details:vo.getBorrowDetails()){
             details.setBorrowId(vo.getId());
             equipmentBorrowDetailsService.saveBorrowDetails(details,0);
+        }
+
+        // 线上借用需在规定时间内领取，否则自动取消借用
+        if(vo.getSource() != null && "2".equals(vo.getSource()) && StringUtils.hasText(vo.getBorrowTimeRangeStart())){
+            log.debug("发送自动取消预约队列:{}",vo.getId());
+            // 借用日期的开始时段 + 自动取消预约时段
+            delayTaskProducer.produce(vo.getId(),vo.getBorrowDate()+ DateUtil.timeToUnix(vo.getBorrowTimeRangeStart()) + CacheKeyConst.AUTO_EXPIRETIME);
         }
         return count;
     }
@@ -204,14 +220,25 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     }
 
     @Override
-    public Integer overrule(Long id,String reason) {
-        EquipmentBorrow equipmentBorrow=new EquipmentBorrow();
-        equipmentBorrow.setId(id);
-        equipmentBorrow.setStatus(BorrowStatusEnums.overrule.getStatus());
+    public EquipmentBorrow overrule(Long id,String reason) {
+        EquipmentBorrow equipmentBorrow = this.dao.get(id);
+        if(ObjectUtils.isEmpty(equipmentBorrow)){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
+        }
         equipmentBorrow.setRejectReason(reason);
+        // 更新状态
+        equipmentBorrow.setStatus(BorrowStatusEnums.overrule.getStatus());
+        this.dao.update(equipmentBorrow);
 
-        // TODO 驳回要释放库存吧
-        return this.dao.update(equipmentBorrow);
+        // 驳回要释放库存
+        List<EquipmentBorrowDetailsVo> equipmentBorrowDetailsList = equipmentBorrowDetailsService.getDetailsByBorrowId(id);
+        for (EquipmentBorrowDetailsVo equipmentBorrowDetailsVO:equipmentBorrowDetailsList){
+            EquipmentBorrowDetails equipmentBorrowDetails = equipmentBorrowDetailsVO.voToEntity(equipmentBorrowDetailsVO);
+            // 取消借用时设置待归还数量为0，即释放库存
+            equipmentBorrowDetails.setUnreturnedQuantity(0);
+            equipmentBorrowDetailsService.update(equipmentBorrowDetails);
+        }
+        return equipmentBorrow;
     }
 
     @Override
@@ -460,14 +487,19 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
      * 取消借用预约并释放库存
      *
      * @param borrowId 借身份证
+     * @param status   状态
      * @return {@link EquipmentBorrow}
      */
     @Override
-    public EquipmentBorrow modifyBorrowInfoByInfo(Long borrowId) {
+    public EquipmentBorrow modifyBorrowInfoByInfo(Long borrowId,Integer status) {
         EquipmentBorrow equipmentBorrow = this.dao.get(borrowId);
         if(ObjectUtils.isEmpty(equipmentBorrow)){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
         }
+        // 更新状态
+        equipmentBorrow.setStatus(status);
+        this.dao.update(equipmentBorrow);
+
         // 释放库存
         List<EquipmentBorrowDetailsVo> equipmentBorrowDetailsList = equipmentBorrowDetailsService.getDetailsByBorrowId(borrowId);
         for (EquipmentBorrowDetailsVo equipmentBorrowDetailsVO:equipmentBorrowDetailsList){
@@ -476,10 +508,6 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             equipmentBorrowDetails.setUnreturnedQuantity(0);
             equipmentBorrowDetailsService.update(equipmentBorrowDetails);
         }
-
-        // 更新状态
-        equipmentBorrow.setStatus(BorrowStatusEnums.cancel.getStatus());
-        this.dao.update(equipmentBorrow);
         return equipmentBorrow;
     }
 }

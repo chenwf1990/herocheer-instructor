@@ -56,9 +56,9 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      *
      * @param id     id
      * @param reason 原因
-     * @return {@link Integer}
+     * @return {@link EquipmentBorrow}
      */
-    Integer overrule(Long id,String reason);
+    EquipmentBorrow overrule(Long id,String reason);
 
     /**
      * 器材申请归还 必要参数:关联借用器材id,借用单据id
@@ -133,7 +133,8 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      * 取消借用预约并释放库存
      *
      * @param borrowId 借身份证
+     * @param status   状态
      * @return {@link EquipmentBorrow}
      */
-    EquipmentBorrow modifyBorrowInfoByInfo(Long borrowId);
+    EquipmentBorrow modifyBorrowInfoByInfo(Long borrowId,Integer status);
 }

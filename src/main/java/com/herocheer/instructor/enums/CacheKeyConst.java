@@ -29,4 +29,14 @@ public class CacheKeyConst {
      * accesstoken 失效时间 (2个小时)
      */
     public static final Long ACCESSTOKEN_EXPIRETIME = 2L * 60L * 60L;
+
+    /**
+     * 自动取消预约器材借用的KEY
+     */
+    public static final String DELAY_AUTO_KEY = "key:equipment:borrow";
+
+    /**
+     * 自动取消预约时间 (30分钟)
+     */
+    public static final Long AUTO_EXPIRETIME =  30L * 60L * 1000;
 }

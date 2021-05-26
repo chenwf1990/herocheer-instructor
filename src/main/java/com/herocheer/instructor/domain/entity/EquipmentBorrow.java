@@ -49,4 +49,7 @@ public class EquipmentBorrow extends BaseEntity {
 
     @ApiModelProperty("驳回原因")
     private String rejectReason;
+
+    @ApiModelProperty("数据来源：1-线下借出，2-线上借出")
+    private Integer source;
 }

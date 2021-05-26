@@ -10,6 +10,7 @@ import com.herocheer.instructor.domain.vo.EquipmentBorrowSaveVo;
 import com.herocheer.instructor.domain.vo.EquipmentBorrowVo;
 import com.herocheer.instructor.domain.vo.EquipmentDamageVo;
 import com.herocheer.instructor.domain.vo.EquipmentRemandVo;
+import com.herocheer.instructor.enums.BorrowStatusEnums;
 import com.herocheer.instructor.service.EquipmentBorrowService;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -71,9 +72,8 @@ public class EquipmentBorrowController extends BaseController{
 
     @GetMapping("/borrow/overrule")
     @ApiOperation("借用驳回")
-    public ResponseResult overrule(@ApiParam("借用id") @RequestParam Long id,@ApiParam("驳回理由") @RequestParam String reason){
-        Integer count=equipmentBorrowService.overrule(id,reason);
-        return ResponseResult.isSuccess(count);
+    public ResponseResult<EquipmentBorrow> overrule(@ApiParam("借用id") @RequestParam Long id,@ApiParam("驳回理由") @RequestParam String reason){
+        return ResponseResult.ok(equipmentBorrowService.overrule(id,reason));
     }
 
     @PostMapping("/remand/apply")
@@ -149,6 +149,6 @@ public class EquipmentBorrowController extends BaseController{
     @GetMapping("/info/cancel/{id:\\w+}")
     @ApiOperation("取消借用预约")
     public ResponseResult<EquipmentBorrow> cancelBorrowInfoByInfo(@ApiParam("借用id") @PathVariable Long id,HttpServletRequest request){
-        return ResponseResult.ok(equipmentBorrowService.modifyBorrowInfoByInfo(id));
+        return ResponseResult.ok(equipmentBorrowService.modifyBorrowInfoByInfo(id, BorrowStatusEnums.cancel.getStatus()));
     }
 }
