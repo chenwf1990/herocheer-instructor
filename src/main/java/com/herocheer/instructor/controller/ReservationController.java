@@ -48,7 +48,7 @@ public class ReservationController extends BaseController{
     @PostMapping("/web/course")
     @ApiOperation("老年人预约")
     public ResponseResult webReservation(@RequestBody Reservation reservation){
-        Integer count=reservationService.webReservation(reservation);
+        Integer count = reservationService.webReservation(reservation);
         return ResponseResult.isSuccess(count);
     }
 

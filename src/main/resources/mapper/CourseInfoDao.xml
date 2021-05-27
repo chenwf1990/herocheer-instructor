@@ -599,6 +599,12 @@
                 WHEN approvalStatus = 1 AND signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1 END ASC
                 ,placedTop DESC,releaseTime DESC
             </when>
+            <when test="queryType != null and queryType == 1">
+                order by createdTime DESC
+            </when>
+            <when test="queryType != null and queryType == 2">
+                order by approvalTime DESC
+            </when>
             <otherwise>
                 order by placedTop DESC,releaseTime DESC
             </otherwise>

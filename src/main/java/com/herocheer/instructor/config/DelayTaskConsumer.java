@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 延迟任务消费者
- * 器材线上借用需在规定时间内领取，否则取消
+ * 器材线上借用需在规定时间内领取，否则自动取消
  *
  * @author gaorh
  * @create 2021-05-25
@@ -62,7 +62,7 @@ public class DelayTaskConsumer implements ApplicationRunner {
                     });
                 }
                 try {
-                    TimeUnit.MILLISECONDS.sleep(500);
+                    TimeUnit.MILLISECONDS.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -213,7 +213,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Integer webReservation(Reservation reservation) {
-        CourseInfo courseInfo=courseInfoService.get(reservation.getRelevanceId());
+        CourseInfo courseInfo = courseInfoService.get(reservation.getRelevanceId());
         if (courseInfo == null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
         }
@@ -233,10 +233,32 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             throw new CommonException(ResponseCode.SERVER_ERROR,"您已预约该课程,无需重复预约!");
         }
 
-        // 重复报名需要在限制人数之前
-        if(courseInfo.getSignNumber()>=courseInfo.getLimitNumber()){
-            throw new CommonException(ResponseCode.SERVER_ERROR,"报名人数已满，无法报名");
+        // 非固定课程
+        if(courseInfo.getOfferCourseType().equals(1)){
+            // 重复报名需要在限制人数之前
+            if(courseInfo.getSignNumber() >= courseInfo.getLimitNumber()){
+                throw new CommonException(ResponseCode.SERVER_ERROR,"报名人数已满，无法报名");
+            }
+        }else {
+            // 固定课程
+            if(reservation.getCourseScheduleId() != null){
+                CourseSchedule courseSchedule = courseScheduleService.get(reservation.getCourseScheduleId());
+
+                if (courseSchedule == null){
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"获取固定课程的课表失败!");
+                }
+                reservation.setCourseDate(courseSchedule.getCourseDate());
+
+                if(courseSchedule.getLimitNumber() < 1){
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"报名人数已满，无法报名");
+                }
+            }else{
+                    throw new CommonException(ResponseCode.SERVER_ERROR,"固定课程的课表ID不为空!");
+            }
+
         }
+
+
 
         //保存招募信息
         reservation.setRelevanceId(courseInfo.getId());
@@ -264,10 +286,23 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         reservationMember.setIdentityNumber(reservation.getIdentityNumber());
         reservationMember.setInsuranceStatus(4);
         reservationMember.setRelationType(0);
-
         reservationMemberService.insert(reservationMember);
-        courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
-        return courseInfoService.update(courseInfo);
+
+        // 非固定课程
+        if(courseInfo.getOfferCourseType().equals(1)){
+            courseInfo.setSignNumber(courseInfo.getSignNumber()+1);
+            return courseInfoService.update(courseInfo);
+        }else {
+            /*
+             * 固定课程
+             * 数据库行锁，防止高并发超卖
+             **/
+            CourseSchedule schedule = courseScheduleService.findCourseSchedulesById(reservation.getCourseScheduleId());
+            if(schedule.getLimitNumber() > 0){
+                schedule.setLimitNumber(schedule.getLimitNumber()-1L);
+            }
+            return courseScheduleService.update(schedule);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
