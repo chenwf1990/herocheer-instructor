@@ -28,11 +28,11 @@ public class EquipmentBorrowQueryVo implements Serializable {
     @ApiModelProperty("手机号")
     private String phoneNumber;
 
-    @ApiModelProperty("借用开始时间")
-    private Long borrowStartTime;
+    @ApiModelProperty("借用日期开始")
+    private Long borrowDateStart;
 
-    @ApiModelProperty("借用结束时间")
-    private Long borrowEndTime;
+    @ApiModelProperty("借用日期结束")
+    private Long borrowDateEnd;
 
     @ApiModelProperty("归还开始时间")
     private Long remandStartTime;
@@ -57,4 +57,6 @@ public class EquipmentBorrowQueryVo implements Serializable {
 
     @ApiModelProperty("页数")
     private int pageSize;
+
+
 }

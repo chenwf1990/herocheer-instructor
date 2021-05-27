@@ -290,9 +290,13 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="courseScheduleId != null">
+                and courseScheduleId = #{courseScheduleId}
+            </if>
+
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
-        order by id DESC
+        order by createdTime DESC
     </select>
     
     <!--查询条数-->

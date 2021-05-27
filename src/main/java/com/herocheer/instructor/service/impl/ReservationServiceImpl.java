@@ -33,6 +33,7 @@ import com.herocheer.instructor.service.ReservationService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WorkingScheduleService;
 import com.herocheer.instructor.service.WorkingScheduleUserService;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -411,20 +412,41 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if(null == reservationList.get(0).getCourseId()){
             throw new CommonException("预约课程ID不能为空");
         }
-        Map<String,Object> map=new HashMap<>();
+
+        Map<String,Object> map = new HashMap<>();
         map.put("relevanceId",reservationList.get(0).getCourseId());
         map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
         List<Reservation> list= this.dao.findByLimit(map);
 
-        Long currentLong = System.currentTimeMillis();
+        // 区分固定课程和非固定课程
+        if(reservationMemberVO.getCourseScheduleId() == null){
+            // 预约过签到(线上签到)
+            if(!list.isEmpty()){
+                throw new CommonException("您已线上预约过非固定课程，无法线下签到");
+            }
+        }else {
 
-        // 预约过签到(线上签到)
-        if(!list.isEmpty()){
-            throw new CommonException("您已线上预约过，无法线下签到");
+            // 每节课只需报名一次
+            map.put("courseScheduleId",reservationMemberVO.getCourseScheduleId());
+            List<Reservation> reservationedList= this.dao.findByLimit(map);
+            if(!reservationedList.isEmpty()){
+                throw new CommonException("您已报名过此节课了,无需再预约");
+            }
+
+            //  固定课程只有你报名的上一节课结束了才能再报名
+            if(!list.isEmpty() && list.get(0).getCourseScheduleId() != null){
+                // 取出最新的一条预约记录
+                CourseSchedule courseSchedule=  courseScheduleService.get(list.get(0).getCourseScheduleId());
+                Long coursetime = courseSchedule.getCourseDate() + DateUtil.timeToUnix(courseSchedule.getEndTime());
+                if(coursetime > System.currentTimeMillis()){
+                    throw new CommonException("您之前已报名的课时还未结束，暂无法预约");
+                }
+            }
         }
 
+        Long currentLong = System.currentTimeMillis();
         // 未预约签到(线下签到)
         this.offLineSign(reservationMemberVO,userId,currentLong);
         return currentLong;

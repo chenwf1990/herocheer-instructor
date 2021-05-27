@@ -313,6 +313,14 @@
                 <if test="phoneNumber != null">
                     and phoneNumber = #{phoneNumber}
                 </if>
+
+                <if test="borrowDateStart != null">
+                    and borrowDate <![CDATA[ >= ]]> #{borrowDateStart}
+                </if>
+                <if test="borrowDateEnd != null">
+                    and borrowDate <![CDATA[ <= ]]> #{borrowDateEnd}
+                </if>
+
                 <if test="remandStartTime != null">
                     and remandTime <![CDATA[ > ]]> #{remandStartTime}
                 </if>
