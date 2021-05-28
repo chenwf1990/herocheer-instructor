@@ -90,8 +90,8 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
         }
 
-        //后台管理员 查询不做限制
-        if(user.getUserType()==4){
+        //后台管理员 查询不做限制   (给陈以翔开通借用归还审核所有权限，公众号上所有数据)
+        if(user.getUserType().equals(4) || "PmwOukoG5GhhLUgkrhyDXrC6omB3eMSlMI+pZB1D2Qw=".equalsIgnoreCase(user.getCertificateNo())){
             queryVo.setQueryType(3);
         }
         if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(2)){
@@ -400,7 +400,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
 
     @Override
     public EquipmentBorrowVo getEquipmentBorrow(Long id) {
-        EquipmentBorrowVo borrowVo=this.dao.getEquipmentBorrow(id);
+        EquipmentBorrowVo borrowVo = this.dao.getEquipmentBorrow(id);
         if(borrowVo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据不存在!");
         }
