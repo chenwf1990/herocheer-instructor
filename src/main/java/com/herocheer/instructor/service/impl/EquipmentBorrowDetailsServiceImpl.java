@@ -58,12 +58,12 @@ public class EquipmentBorrowDetailsServiceImpl extends BaseServiceImpl<Equipment
             }
         }
         // 审批人员确认借出时无需判断库存了，因用户申请借出时已暂用库存
-        /*else if(flag.equals(1)){
+        else if(flag.equals(1)){
             // 值班人员确认借出场景
-            if(equipmentInfo.getStockNumber()-unreturnedQuantity < equipmentBorrowDetails.getActualBorrowQuantity()){
+            if(equipmentInfo.getStockNumber() -unreturnedQuantity + equipmentBorrowDetails.getBorrowQuantity() < equipmentBorrowDetails.getActualBorrowQuantity()){
                 throw new CommonException("{}已库存不足,请重新选择器材",equipmentBorrowDetails.getEquipmentName());
             }
-        }*/
+        }
 
         // 保存器材借用明细
         Integer count;

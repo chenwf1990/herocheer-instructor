@@ -217,6 +217,13 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         if (courseInfo == null){
             throw new CommonException(ResponseCode.SERVER_ERROR,"获取课程信息失败!");
         }
+        if (courseInfo.getApprovalStatus() != null && courseInfo.getApprovalStatus().equals(0)){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"课程还在审批中，暂无法报名");
+        }
+        if (courseInfo.getApprovalStatus() != null && (courseInfo.getApprovalStatus().equals(2) || courseInfo.getApprovalStatus().equals(3))){
+            throw new CommonException(ResponseCode.SERVER_ERROR,"课程已驳回或已撤回，暂无法报名");
+        }
+
         User user=userService.findUserByPhone(reservation.getPhone());
         log.debug("老年人预约用户手机：{}",reservation.getPhone());
         log.debug("老年人预约用户：{}",user);
@@ -255,10 +262,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             }else{
                     throw new CommonException(ResponseCode.SERVER_ERROR,"固定课程的课表ID不为空!");
             }
-
         }
-
-
 
         //保存招募信息
         reservation.setRelevanceId(courseInfo.getId());
