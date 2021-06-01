@@ -94,6 +94,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if(user.getUserType().equals(4) || "PmwOukoG5GhhLUgkrhyDXrC6omB3eMSlMI+pZB1D2Qw=".equalsIgnoreCase(user.getCertificateNo())){
             queryVo.setQueryType(3);
         }
+
         if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(2)){
             queryVo.setUserId(userId);
         }

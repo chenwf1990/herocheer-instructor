@@ -3,7 +3,6 @@ package com.herocheer.instructor.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.ResponseResult;
-import com.herocheer.instructor.domain.entity.FieldMember;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.service.FieldMemberService;
 import com.herocheer.web.base.BaseController;
@@ -12,13 +11,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,10 +48,13 @@ public class FieldMemberController extends BaseController {
         log.debug("当前用户信息ID：{}",infoVo.getId());
         Map paramMap = new HashMap<String,Object>();
         paramMap.put("phone",infoVo.getPhone());
+
 //        paramMap.put("phone","tHw/l6vrLXJ74H+GRyupCQ==");
         log.debug("当前用户信息手机:{}",infoVo.getPhone());
-        List<FieldMember> fieldMemberes=  fieldMemberService.findByLimit(paramMap);
-        if(CollectionUtils.isEmpty(fieldMemberes)){
+        if(!StringUtils.hasText(infoVo.getPhone())){
+            return ResponseResult.ok(Boolean.FALSE);
+        }
+        if( CollectionUtils.isEmpty(fieldMemberService.findByLimit(paramMap))){
             return ResponseResult.ok(Boolean.FALSE);
         }
         return ResponseResult.ok(Boolean.TRUE);
