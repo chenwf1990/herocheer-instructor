@@ -162,7 +162,7 @@ public class LoginController {
 //            InputStream is = resource.getInputStream();
 
 //            InputStream is = this.getClass().getResourceAsStream("/建行订单状态为成功订单但赛事报名的支付状态已关闭名单.xlsx");
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("建行订单状态为成功订单但赛事报名的支付状态已关闭名单.xlsx");
+            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("建行订单状态为成功订单但赛事报名的支付状态已关闭名单.xlsx");
             byte[] body =  new byte[is.available()];
             is.read(body);
             HttpHeaders headers = new HttpHeaders();
