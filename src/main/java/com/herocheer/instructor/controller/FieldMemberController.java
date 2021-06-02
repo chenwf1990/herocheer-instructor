@@ -76,8 +76,8 @@ public class FieldMemberController extends BaseController {
         String result= HttpUtil.post(InsuranceConst.BASE_URL+"/familyManage/members", paramMap);
         JSONObject JSONObj = JSONObject.parseObject(result);
         if(JSONObj == null || JSONObj.getInteger("code") != 200){
-            log.error("请求家庭信息失败:{}",JSONObj);
-            throw new CommonException("请求家庭信息失败");
+            log.error("请求i健身用户信息失败:{}",JSONObj);
+            throw new CommonException("请求i健身用户信息失败");
         }
 
         // 获取信息为空
