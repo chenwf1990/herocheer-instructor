@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.FieldMemberDao">
 
     <sql id="table_field">
-      id, memberId, memberName, sex, certificateNo, phone, email, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, memberId, memberName, area, street, village, grade, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
     </sql>
 
     <!--单表新增-->
@@ -17,17 +17,20 @@
             <if test="memberName != null">
                 memberName,
             </if>
-            <if test="sex != null">
-                sex,
+            <if test="area != null">
+                area,
             </if>
-            <if test="certificateNo != null">
-                certificateNo,
+            <if test="street != null">
+                street,
             </if>
-            <if test="phone != null">
-                phone,
+            <if test="village != null">
+                village,
             </if>
-            <if test="email != null">
-                email,
+            <if test="grade != null">
+                grade,
+            </if>
+            <if test="remark != null">
+                remark,
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
@@ -39,17 +42,20 @@
             <if test="memberName != null">
                 #{memberName},
             </if>
-            <if test="sex != null">
-                #{sex},
+            <if test="area != null">
+                #{area},
             </if>
-            <if test="certificateNo != null">
-                #{certificateNo},
+            <if test="street != null">
+                #{street},
             </if>
-            <if test="phone != null">
-                #{phone},
+            <if test="village != null">
+                #{village},
             </if>
-            <if test="email != null">
-                #{email},
+            <if test="grade != null">
+                #{grade},
+            </if>
+            <if test="remark != null">
+                #{remark},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -71,17 +77,20 @@
             <if test="memberName != null">
                 memberName = #{memberName},
             </if>
-            <if test="sex != null">
-                sex = #{sex},
+            <if test="area != null">
+                area = #{area},
             </if>
-            <if test="certificateNo != null">
-                certificateNo = #{certificateNo},
+            <if test="street != null">
+                street = #{street},
             </if>
-            <if test="phone != null">
-                phone = #{phone},
+            <if test="village != null">
+                village = #{village},
             </if>
-            <if test="email != null">
-                email = #{email},
+            <if test="grade != null">
+                grade = #{grade},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -108,17 +117,20 @@
             <if test="memberName != null">
                 and memberName = #{memberName}
             </if>
-            <if test="sex != null">
-                and sex = #{sex}
+            <if test="area != null">
+                and area = #{area}
             </if>
-            <if test="certificateNo != null">
-                and certificateNo = #{certificateNo}
+            <if test="street != null">
+                and street = #{street}
             </if>
-            <if test="phone != null">
-                and phone = #{phone}
+            <if test="village != null">
+                and village = #{village}
             </if>
-            <if test="email != null">
-                and email = #{email}
+            <if test="grade != null">
+                and grade = #{grade}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>

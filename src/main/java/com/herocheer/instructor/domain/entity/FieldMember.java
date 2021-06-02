@@ -12,8 +12,8 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * @author gaorh
- * @desc 场地采集人员
- * @date 2021/04/21
+ * @desc 场地采集人员表
+ * @date 2021/06/01
  * @company 厦门熙重电子科技有限公司
  */
 @ApiModel(description = "场地采集人员表")
@@ -28,12 +28,14 @@ public class FieldMember extends BaseEntity {
     private String memberId;
     @ApiModelProperty("采集人姓名")
     private String memberName;
-    @ApiModelProperty("性别：0-未知、1-男、2-女")
-    private String sex;
-    @ApiModelProperty("身份证号")
-    private String certificateNo;
-    @ApiModelProperty("手机")
-    private String phone;
-    @ApiModelProperty("邮箱")
-    private String email;
+    @ApiModelProperty("所属区")
+    private String area;
+    @ApiModelProperty("所属街镇")
+    private String street;
+    @ApiModelProperty("所属村居")
+    private String village;
+    @ApiModelProperty("信息员分级")
+    private String grade;
+    @ApiModelProperty("负责范围简略说明（5级息员填写）")
+    private String remark;
 }
