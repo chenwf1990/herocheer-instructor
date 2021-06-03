@@ -4,7 +4,6 @@ import com.herocheer.instructor.enums.BorrowStatusEnums;
 import com.herocheer.instructor.enums.CacheKeyConst;
 import com.herocheer.instructor.service.EquipmentBorrowService;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.LocalDateTime;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,6 +15,8 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static java.time.LocalDate.now;
 
 /**
  * 延迟任务消费者
@@ -57,7 +58,7 @@ public class DelayTaskConsumer implements ApplicationRunner {
                         if (result == 1L) {
                             // 更新状态和释放库存
                             equipmentBorrowService.modifyBorrowInfoByInfo(id, BorrowStatusEnums.overdue.getStatus());
-                            log.info("当前时间：{}，未在规定时间内借出ID：{}，自动取消预约", LocalDateTime.now(),id);
+                            log.info("当前时间：{}，未在规定时间内借出ID：{}，自动取消预约", now(),id);
                         }
                     });
                 }
