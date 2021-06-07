@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.EquipmentInfoDao">
     <sql id="table_field">
-      id, courierId, courierName, equipmentName, model, brandId, brandName, stockNumber, price, unit, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, courierId, courierName, equipmentName, model, brandId, brandName, stockNumber, price, unit, image, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -39,6 +39,9 @@
         <if test="unit != null">
             unit,
         </if>
+        <if test="image != null">
+            image,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -72,6 +75,9 @@
         </if>
         <if test="unit != null">
             #{unit},
+        </if>
+        <if test="image != null">
+            #{image},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -116,6 +122,9 @@
             </if>
             <if test="unit != null">
                 unit = #{unit},
+            </if>
+            <if test="image != null">
+                image = #{image},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

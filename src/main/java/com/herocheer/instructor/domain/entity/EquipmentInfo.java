@@ -33,4 +33,7 @@ public class EquipmentInfo extends BaseEntity {
     private Long price;
     @ApiModelProperty("单位")
     private String unit;
+
+    @ApiModelProperty("器材图片")
+    private String image;
 }
