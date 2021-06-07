@@ -6,12 +6,14 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.MsgCodeVO;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.domain.vo.WeChatUserVO;
 import com.herocheer.instructor.domain.vo.WxInfoVO;
+import com.herocheer.instructor.service.CourseInfoService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
 import com.herocheer.instructor.utils.AesUtil;
@@ -68,6 +70,9 @@ public class WechatController extends BaseController {
 
     @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    private CourseInfoService courseInfoService;
 
     @GetMapping("/getWxInfo")
     @ApiOperation("获取微信信息")
@@ -331,24 +336,13 @@ public class WechatController extends BaseController {
     @ApiOperation("公众号消息")
     @AllowAnonymous
     public ResponseResult test(HttpServletRequest request) {
-
-        // 熙信科技公众号
-//        String appid = "wx5e3449374c04489c";
-//        String secret = "82fdb32c5c4c461481545c42b93ffc46";
-//
-//        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
-//        JSONObject JSONObj = JSONObject.parseObject(result);
-//        String accessToken = JSONObj.getString("access_token");
-//        String accessToken = "43_ALKzXZK1lb8xORyXyMqpcrALQhIPMjKX-rwrji26Bh6_CvDGnBumDaBsp49JlFiPHwQZiN1PeBQUq403kNoBs9xID2T1U5zh90FoTf3FRhw9SHOIUrqjTrxMaZdvfAuqav6wX9s6vI3QQsGTOFCcAJAHYV";
-
-//        String ticket = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
-//        String ticketStr = "kgt8ON7yVITDhtdwci0qedR-T-YYTdByyuzKfEfkreL91wELUAtfYMwcFXMF8_w2ZGCbcNQL2P4iPf2B1WrzPA";
-//        System.out.println(ticket);
         List<String> userList = new ArrayList<>();
         userList.add("obOp1s11wNrrTTi4OOqevC-0MhBU");
+//        userList.add("obOp1s_lmgFvmAacfg3hs0s2wHVU");
 //        userList.add("obOp1s-Sj22VggP-wBYff1KBvnvo");
-        String title = "某某课程";
-        wechatService.sendWechatMessages(userList,title);
+//        CourseInfo courseInfo = courseInfoService.get(6L);
+        CourseInfo courseInfo = courseInfoService.get(142L);
+        wechatService.sendWechatMessages(userList,courseInfo);
         return ResponseResult.ok();
     }
 

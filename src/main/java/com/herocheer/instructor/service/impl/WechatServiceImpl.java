@@ -2,7 +2,6 @@ package com.herocheer.instructor.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -12,6 +11,7 @@ import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.UserDao;
+import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
@@ -40,7 +40,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -501,61 +500,78 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     /**
      * 发送微信消息
      *
-     * @param userList 订阅课程的用户名单
-     * @param title    标题
+     * @param userList   订阅课程的用户名单
+     * @param courseInfo 课程信息
      */
-    @Async
     @Override
-    public void sendWechatMessages(List<String> userList,String title) {
+    public void sendWechatMessages(List<String> userList, CourseInfo courseInfo) {
         // 每日access_token次数有限：每日限额：2000次
-        String key = StrUtil.format(CacheKeyConst.ACCESSTOKEN, appid, secret);
-        String accessToken = null;
-        if (!redisClient.hasKey(key)) {
-//             获取I健身的access_token（正式环境）
-            String result = findJsapiTicket();
-            JSONObject json = JSONObject.parseObject(result);
-            accessToken = json.getString("token");
+        // 微信公众号配置(测试环境)
+//        String appid = "wxf6c55bc2f36ca69b";
+//        String secret = "0f7eceb412da0a68b533ad303774da89";
+//        String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
+//        JSONObject JSONObj = JSONObject.parseObject(result);
+//        accessToken = JSONObj.getString("access_token");
 
-            // 微信公众号配置(测试环境)
-//            String appid = "wxf6c55bc2f36ca69b";
-//            String secret = "0f7eceb412da0a68b533ad303774da89";
-//            String result = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appid+"&secret="+secret);
-//            JSONObject JSONObj = JSONObject.parseObject(result);
-//            accessToken = JSONObj.getString("access_token");
 
-            if(StringUtils.isBlank(accessToken)){
-                throw new CommonException("获取公众号accessToken失败");
-            }
-            // 失效时间为2个小时
-            redisClient.set(key,accessToken,CacheKeyConst.ACCESSTOKEN_EXPIRETIME);
-        }else {
-            accessToken  = redisClient.get(key);
-        }
+        // 获取I健身的access_token
+        String result = findJsapiTicket();
+        JSONObject json = JSONObject.parseObject(result);
+        String accessToken = json.getString("token");
+        log.debug("I健身的access_token:{}",accessToken);
 
         JSONObject sendData = null;
         for (String openid : userList){
+            log.debug("发送课程取消通知给openid:{}",openid);
             sendData = new JSONObject();
             // 报名某课程的用户
             sendData.put("touser", openid);
             // 固定的tempelteId
-//            sendData.put("template_id", "403SUrqcDVJF5ICyxExtmEWWK13p0jhKJhPqeBnFdBs");
             sendData.put("template_id", InsuranceConst.TEMPLATE_ID);
             JSONObject content = new JSONObject();
             JSONObject first = new JSONObject();
-            first.put("value", StrUtil.format("您好，您之前报名的”{}“已取消，给你造成不便，敬请谅解！",title));
+            first.put("value", "尊敬的用户，您好！");
             content.put("first", first);
 
             JSONObject keyword1 = new JSONObject();
             // 当前时间
-            keyword1.put("value", DateUtil.now());
-            content.put("keyword1", keyword1);
+            keyword1.put("value", courseInfo.getTitle());
+            content.put("keyword1",keyword1);
 
-            JSONObject keyword2 = new JSONObject();
-            keyword2.put("value", "熙重电子");
-            content.put("keyword2", keyword2);
+            // 非固定课程
+            if(courseInfo.getOfferCourseType().equals(1)){
+                JSONObject keyword2 = new JSONObject();
+                keyword2.put("value",  DateUtil.format(DateUtil.date(courseInfo.getCourseStartTime()), "yyyy年MM月dd日")+"（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseInfo.getCourseStartTime()))+"）");
+                content.put("keyword2", keyword2);
+
+                JSONObject keyword3 = new JSONObject();
+                keyword3.put("value", courseInfo.getLecturerTeacherName());
+                content.put("keyword3", keyword3);
+
+                JSONObject keyword4 = new JSONObject();
+                keyword4.put("value",  DateUtil.format(DateUtil.date(courseInfo.getCourseEndTime()), "yyyy年MM月dd日")+
+                        "（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseInfo.getCourseEndTime()))+"）"+
+                        DateUtil.format(DateUtil.date(courseInfo.getCourseStartTime()), "HH:mm")+ " - " + DateUtil.format(DateUtil.date(courseInfo.getCourseEndTime()), "HH:mm"));
+                content.put("keyword4", keyword4);
+            }else {
+                // 课程时间
+                JSONObject keyword2 = new JSONObject();
+                keyword2.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())))+"）");
+                content.put("keyword2", keyword2);
+
+                // 授课时间
+                JSONObject keyword3 = new JSONObject();
+                keyword3.put("value", courseInfo.getLecturerTeacherName());
+                content.put("keyword3", keyword3);
+
+                // 授课时间段
+                JSONObject keyword4 = new JSONObject();
+                keyword4.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"~"+ DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseEndZone())), "yyyy年MM月dd日"));
+                content.put("keyword4", keyword4);
+            }
 
             JSONObject remark = new JSONObject();
-            remark.put("value", "");
+            remark.put("value", "您预约的课程已取消。感谢您的关注！关注'厦门i健身'公众号，报名参加公益课程。");
             content.put("remark", remark);
             sendData.put("data",content);
 
@@ -814,5 +830,24 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         // 用户信息放入Redis
         redisClient.set(instructorToken,JSONObject.toJSONString(userInfo), CacheKeyConst.EXPIRETIME);
         return userInfo;
+    }
+
+    public static void main(String[] args) {
+
+        //结果 2017/03/01
+        String format = DateUtil.format(DateUtil.date(1615824000000L), "yyyy年MM月dd日");
+        System.out.println(format);
+        int week = DateUtil.dayOfWeek(DateUtil.date(1623034715226L));
+
+        System.out.println(week);
+
+        int week1 = DateUtil.dayOfWeek(DateUtil.date(1622948353000L));
+        System.out.println(week1);
+
+
+        String format1 = DateUtil.format(DateUtil.date(1622948353000L), "HH:mm");
+        System.out.println(format1);
+
+        System.out.println(com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(1622948353000L)));
     }
 }

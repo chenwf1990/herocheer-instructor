@@ -53,7 +53,7 @@ wechat:
 #i健身保险
 ijs:
   baseUrl: http://192.168.147.133/sports/wechat/api
-  templateId: 2b8LbGUFPSCgLvbUyjaJ7HggjBh4Uc6dmp8-zBEQERI
+  templateId: XXANxtmaa0iCWAbO29h5eeh7T-QoRw95pKgVMWSBiJM
   QrCodeUrl: https://ijs.sports.xm.gov.cn/instructor/#/training/trainingDetail?id={}&type=5
 
 

@@ -2,6 +2,7 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
+import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
@@ -62,10 +63,10 @@ public interface WechatService {
     /**
      * 发送微信消息
      *
-     * @param userList 订阅课程的用户名单
-     * @param title    标题
+     * @param userList   订阅课程的用户名单
+     * @param courseInfo 课程信息
      */
-    void sendWechatMessages(List<String> userList,String title);
+    void sendWechatMessages(List<String> userList, CourseInfo courseInfo);
 
     /**
      * ixmAPP应用登录网址

@@ -107,12 +107,13 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         if(courseInfo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取课程信息失败!");
         }
-        reservationService.updateReservationStatus(ReserveStatusEnums.EVENT_CANCELED.getState(),
-                courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
 
         // 课程取消时，发送微信消息通知
-        List<String> openids=reservationService.findReservationOpenid(courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
-        wechatService.sendWechatMessages(openids,courseInfo.getTitle());
+        List<String> openids = reservationService.findReservationOpenid(courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
+        wechatService.sendWechatMessages(openids,courseInfo);
+
+        // 课程取消时更新预约状态为已关闭
+        reservationService.updateReservationStatus(ReserveStatusEnums.EVENT_CANCELED.getState(), courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
 
         //设置课程状态 5=课程取消
         courseInfo.setState(5);
