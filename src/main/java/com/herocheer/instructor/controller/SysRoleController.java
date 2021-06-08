@@ -50,7 +50,6 @@ public class SysRoleController extends BaseController {
      */
     @PostMapping
     @ApiOperation("新增角色")
-    @AllowAnonymous
     public ResponseResult<SysRole> createRole(@ApiParam("系统角色") @Valid @RequestBody SysRoleVO sysRoleVO, HttpServletRequest request){
         return ResponseResult.ok(sysRoleService.addRole(sysRoleVO));
     }
@@ -119,7 +118,6 @@ public class SysRoleController extends BaseController {
      */
     @PutMapping
     @ApiOperation("编辑角色")
-    @AllowAnonymous
     public ResponseResult<SysRole> editRole(@ApiParam("系统角色") @Valid @RequestBody SysRoleVO sysRoleVO, HttpServletRequest request){
         return ResponseResult.ok(sysRoleService.modifyRole(sysRoleVO));
     }
@@ -133,7 +131,6 @@ public class SysRoleController extends BaseController {
      */
     @PostMapping("/page")
     @ApiOperation("角色列表")
-    @AllowAnonymous
     public ResponseResult<Page<SysRole>> fecthRoleByPage(@ApiParam("系统角色") @RequestBody SysRoleVO sysRoleVO,HttpServletRequest request){
         return ResponseResult.ok(sysRoleService.findRoleByPage(sysRoleVO));
     }
@@ -146,7 +143,6 @@ public class SysRoleController extends BaseController {
      */
     @GetMapping("/name")
     @ApiOperation("角色名称")
-    @AllowAnonymous
     public ResponseResult<List<SysRole>> fetchRole(HttpServletRequest request){
         return ResponseResult.ok( sysRoleService.findRole());
     }

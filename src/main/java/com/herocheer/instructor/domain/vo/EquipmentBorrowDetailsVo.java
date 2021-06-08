@@ -22,6 +22,9 @@ public class EquipmentBorrowDetailsVo extends EquipmentBorrowDetails {
     @ApiModelProperty("单价")
     private Long price;
 
+    @ApiModelProperty("器材图片")
+    private String image;
+
     public EquipmentBorrowDetails voToEntity(EquipmentBorrowDetailsVo vo){
         EquipmentBorrowDetails entity =new EquipmentBorrowDetails();
         BeanCopier.create(vo.getClass(),entity.getClass(),false).copy(vo,entity,null);

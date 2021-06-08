@@ -17,4 +17,7 @@ public class EquipmentRemandVo extends EquipmentBorrowDetails {
 
     @ApiModelProperty("本次归还数量")
     private Integer thisRemandQuantity;
+
+    @ApiModelProperty("器材图片")
+    private String image;
 }

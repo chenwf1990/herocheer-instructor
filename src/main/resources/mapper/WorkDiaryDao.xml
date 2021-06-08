@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.herocheer.instructor.dao.WorkDiaryDao">
+
+    <sql id="table_field">
+      id, registerName, diaryType, workingDate, objectId, objectInfo, workDescribe, images, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+    </sql>
+
+    <!--单表新增-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.herocheer.instructor.domain.entity.WorkDiary">
+        insert into work_diary (
+        <trim suffixOverrides=",">
+            <if test="registerName != null">
+                registerName,
+            </if>
+            <if test="diaryType != null">
+                diaryType,
+            </if>
+            <if test="workingDate != null">
+                workingDate,
+            </if>
+            <if test="objectId != null">
+                objectId,
+            </if>
+            <if test="objectInfo != null">
+                objectInfo,
+            </if>
+            <if test="workDescribe != null">
+                workDescribe,
+            </if>
+            <if test="images != null">
+                images,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test="registerName != null">
+                #{registerName},
+            </if>
+            <if test="diaryType != null">
+                #{diaryType},
+            </if>
+            <if test="workingDate != null">
+                #{workingDate},
+            </if>
+            <if test="objectId != null">
+                #{objectId},
+            </if>
+            <if test="objectInfo != null">
+                #{objectInfo},
+            </if>
+            <if test="workDescribe != null">
+                #{workDescribe},
+            </if>
+            <if test="images != null">
+                #{images},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+        </trim>
+        )
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="delete" parameterType="long">
+        delete from work_diary where id = #{id}
+    </delete>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.herocheer.instructor.domain.entity.WorkDiary">
+        update work_diary
+        <set>
+            <if test="registerName != null">
+                registerName = #{registerName},
+            </if>
+            <if test="diaryType != null">
+                diaryType = #{diaryType},
+            </if>
+            <if test="workingDate != null">
+                workingDate = #{workingDate},
+            </if>
+            <if test="objectId != null">
+                objectId = #{objectId},
+            </if>
+            <if test="objectInfo != null">
+                objectInfo = #{objectInfo},
+            </if>
+            <if test="workDescribe != null">
+                workDescribe = #{workDescribe},
+            </if>
+            <if test="images != null">
+                images = #{images},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--主键id单表查询-->
+    <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.WorkDiary">
+        select
+        <include refid="table_field"/>
+        from work_diary where id = #{id}
+    </select>
+
+
+    <!--查询指定行数据-->
+    <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkDiary">
+        select
+        <include refid="table_field"/>
+        from work_diary
+        <where>
+            <if test="registerName != null">
+                and registerName = #{registerName}
+            </if>
+            <if test="diaryType != null">
+                and diaryType = #{diaryType}
+            </if>
+            <if test="workingDate != null">
+                and workingDate = #{workingDate}
+            </if>
+            <if test="objectId != null">
+                and objectId = #{objectId}
+            </if>
+            <if test="objectInfo != null">
+                and objectInfo = #{objectInfo}
+            </if>
+            <if test="workDescribe != null">
+                and workDescribe = #{workDescribe}
+            </if>
+            <if test="images != null">
+                and images = #{images}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
+        </where>
+    </select>
+
+    <!-- 工作日志列表 -->
+    <select id="selectDiaryByPage" parameterType="com.herocheer.instructor.domain.vo.WorkDiaryVO" resultType="com.herocheer.instructor.domain.entity.WorkDiary">
+        select <include refid="table_field"/> from work_diary
+        <where>
+            <if test="registerName != null">
+                and registerName = #{registerName}
+            </if>
+            <if test="diaryType != null">
+                and diaryType = #{diaryType}
+            </if>
+            <if test="workingDate != null">
+                and workingDate = #{workingDate}
+            </if>
+            <if test="objectInfo != null">
+                and objectInfo = #{objectInfo}
+            </if>
+        </where>
+    </select>
+</mapper>

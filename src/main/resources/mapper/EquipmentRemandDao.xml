@@ -177,8 +177,8 @@
     </select>
 
     <select id="findRemandList" resultType="com.herocheer.instructor.domain.vo.EquipmentRemandVo">
-        SELECT b.*,r.id as 'remandId',r.remandQuantity as 'thisRemandQuantity' from equipment_borrow_details b
-            LEFT JOIN equipment_remand r on b.id=r.borrowDetailsId
+        SELECT b.*,r.id as 'remandId',r.remandQuantity as 'thisRemandQuantity',a.image as 'image' from equipment_borrow_details b
+            LEFT JOIN equipment_remand r on b.id=r.borrowDetailsId LEFT JOIN  equipment_info a on b.equipmentId=a.id
         where b.borrowId=#{borrowId} and r.remandStatus=#{remandStatus}
     </select>
 
