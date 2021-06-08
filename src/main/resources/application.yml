@@ -56,7 +56,7 @@ file:
 #i健身保险(test)
 ijs:
   baseUrl: http://tycd.herocheer.com/sports/wechat/api
-  templateId: 2b8LbGUFPSCgLvbUyjaJ7HggjBh4Uc6dmp8-zBEQERI
+  templateId: J1XrAfrpV-SfeeKuLEX91e6MNIPy72zoYX6iRhJLrcc
   QrCodeUrl: http://tycd.herocheer.com/instructor/#/training/trainingDetail?id={}&type=5
 
 
