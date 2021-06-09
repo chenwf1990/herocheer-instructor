@@ -108,16 +108,16 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取课程信息失败!");
         }
 
-        // 课程取消时，发送微信消息通知
-        List<String> openids = reservationService.findReservationOpenid(courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
-        wechatService.sendWechatMessages(openids,courseInfo);
-
         // 课程取消时更新预约状态为已关闭
         reservationService.updateReservationStatus(ReserveStatusEnums.EVENT_CANCELED.getState(), courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
 
         //设置课程状态 5=课程取消
         courseInfo.setState(5);
-        return this.dao.update(courseInfo);
+        int count = this.dao.update(courseInfo);
+        // 课程取消时，发送微信消息通知
+        List<String> openids = reservationService.findReservationOpenid(courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
+        wechatService.sendWechatMessages(openids,courseInfo);
+        return count;
     }
 
     @Transactional(rollbackFor = Exception.class)

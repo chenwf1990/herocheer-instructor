@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.CourseScheduleDao">
 
     <sql id="table_field">
-      id, courseId, configType, courseDay, courseDate, startTime, endTime, limitNumber, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, courseId, configType, courseDay, courseDate, startTime, endTime, cancelStatus, cancelReason, cancelTime, limitNumber, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
 
     <!--单表新增-->
@@ -35,6 +35,15 @@
             <if test="remark != null">
                 remark,
             </if>
+            <if test="cancelStatus != null">
+                cancelStatus,
+            </if>
+            <if test="cancelReason != null">
+                cancelReason,
+            </if>
+            <if test="cancelTime != null">
+                cancelTime,
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
         ) VALUES (
@@ -62,6 +71,15 @@
             </if>
             <if test="remark != null">
                 #{remark},
+            </if>
+            <if test="cancelStatus != null">
+                #{cancelStatus},
+            </if>
+            <if test="cancelReason != null">
+                #{cancelReason},
+            </if>
+            <if test="cancelTime != null">
+                #{cancelTime},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -101,6 +119,15 @@
             <if test="remark != null">
                 remark = #{remark},
             </if>
+            <if test="cancelStatus != null">
+                cancelStatus = #{cancelStatus},
+            </if>
+            <if test="cancelReason != null">
+                cancelReason = #{cancelReason},
+            </if>
+            <if test="cancelTime != null">
+                cancelTime = #{cancelTime},
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
         where id = #{id}
@@ -119,20 +146,15 @@
         select
             <include refid="table_field"/>,
             CASE
-            WHEN concat(FROM_UNIXTIME(courseDate/1000,'%Y-%m-%d '),endTime,':00') <![CDATA[ < ]]> <![CDATA[ now() ]]>  THEN
-            '时间已过'
-            WHEN limitNumber !=0 THEN
-            CONCAT('剩余',limitNumber,'个')
-            ELSE
-            '已满'
+                WHEN concat_ws('',FROM_UNIXTIME( courseDate / 1000, '%Y-%m-%d ' ), endTime, ':00' ) <![CDATA[ < ]]> <![CDATA[ now() ]]>  THEN '时间已过'
+                WHEN cancelStatus = 2 THEN '已取消'
+                WHEN limitNumber != 0 THEN concat_ws('','剩余', limitNumber, '个')
+                ELSE '已满'
             END as courseScheduleStatus,
             CASE
-            WHEN concat(FROM_UNIXTIME(courseDate/1000,'%Y-%m-%d '),endTime,':00') <![CDATA[ < ]]> <![CDATA[ now() ]]> THEN
-            1
-            WHEN limitNumber !=0 THEN
-            0
-            ELSE
-            1
+                WHEN concat_ws('',FROM_UNIXTIME( courseDate / 1000, '%Y-%m-%d ' ), endTime, ':00' ) <![CDATA[ < ]]> <![CDATA[ now() ]]> THEN 1
+                WHEN limitNumber !=0 THEN 0
+                ELSE 1
             END as edited
         from course_schedule
         <where>
@@ -159,6 +181,9 @@
             </if>
             <if test="remark != null">
                 and remark = #{remark}
+            </if>
+            <if test="cancelStatus != null">
+                and cancelStatus = #{cancelStatus}
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>

@@ -44,8 +44,10 @@ public class SysUserVO {
     @ApiModelProperty("手机号")
     @NotBlank(message = "手机号不能为空")
     private String phone;
+
     @ApiModelProperty("用户类型：1：公众号用户、2：指导员、3：后台用户、4：后台管理员")
-    private String userType;
+    private Integer userType;
+
     @ApiModelProperty("更新者ID")
     private Long updateId;
     @ApiModelProperty("更新者")

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -86,8 +87,21 @@ public class CourseScheduleController extends BaseController {
      */
     @PutMapping("/many/courseSchedules")
     @ApiOperation("批量更新课表信息")
-    public ResponseResult<List<CourseSchedule>> batchEditCourseSchedules(@RequestBody List<CourseSchedule> courseScheduleList){
+    public ResponseResult<List<CourseSchedule>> batchEditCourseSchedules(@ApiParam("课表信息") @RequestBody List<CourseSchedule> courseScheduleList){
         return ResponseResult.ok().setData(courseScheduleService.batchupdateCourseSchedules(courseScheduleList));
     }
 
+
+    /**
+     * 取消课表
+     *
+     * @param id           id
+     * @param cancelReason 取消的原因
+     * @return {@link ResponseResult<CourseSchedule>}
+     */
+    @PutMapping("/courseSchedules/cancel")
+    @ApiOperation("取消课表")
+    public ResponseResult<CourseSchedule> cancelCourseSchedulesById(@ApiParam("课表ID") @RequestParam Long id,@ApiParam("取消原因") @RequestParam String cancelReason ){
+        return ResponseResult.ok().setData(courseScheduleService.cancelCourseSchedulesById(id,cancelReason));
+    }
 }

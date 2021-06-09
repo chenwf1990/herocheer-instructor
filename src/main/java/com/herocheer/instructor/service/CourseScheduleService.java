@@ -37,4 +37,13 @@ public interface CourseScheduleService extends BaseService<CourseSchedule, Long>
      * @return {@link CourseSchedule}
      */
     CourseSchedule findCourseSchedulesById(Long id);
+
+    /**
+     * 取消课表
+     *
+     * @param id           id
+     * @param cancelReason 取消的原因
+     * @return {@link CourseSchedule}
+     */
+    CourseSchedule cancelCourseSchedulesById(Long id,String cancelReason);
 }

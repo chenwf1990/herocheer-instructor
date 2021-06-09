@@ -99,6 +99,7 @@ public class UserController extends BaseController {
     @PostMapping("/user/page")
     @ApiOperation("用户列表")
     public ResponseResult<Page<User>> queryUsers(@RequestBody SysUserVO sysUserVO, HttpServletRequest request){
+        log.debug("用户列表入参信息：{}",sysUserVO);
         Page<User> page = userService.findUserByPage(sysUserVO);
         return ResponseResult.ok(page);
     }

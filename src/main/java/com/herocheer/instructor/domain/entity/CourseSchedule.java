@@ -41,4 +41,11 @@ public class CourseSchedule extends BaseEntity {
     @ApiModelProperty("备注")
     private String remark;
 
+    @ApiModelProperty("取消状态: 1-未取消，2-已取消")
+    private Integer cancelStatus;
+    @ApiModelProperty("取消原因")
+    private String cancelReason;
+    @ApiModelProperty("取消时间")
+    private Long cancelTime;
+
 }

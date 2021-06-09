@@ -24,6 +24,12 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class WorkDiaryVO extends WorkDiary {
+
+    @ApiModelProperty("值班日期(开始时间)")
+    private Long dutyBeginTime;
+    @ApiModelProperty("值班日期(结束时间)")
+    private Long dutyEndTime;
+
     @ApiModelProperty("创建时间(开始时间)")
     private Long beginTime;
     @ApiModelProperty("创建时间(结束时间)")

@@ -119,8 +119,9 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         map.put("reserveStatus",ReserveStatusEnums.EVENT_CANCELED.getState());
         map.put("activityId",activityRecruitInfo.getId());
         workingScheduleUserService.updateReserveStatus(map);
-        List<String> openids=reservationService.findReservationOpenid(activityRecruitInfo.getId(),
-                activityRecruitInfo.getRecruitType());
+
+//        List<String> openids=reservationService.findReservationOpenid(activityRecruitInfo.getId(),
+//                activityRecruitInfo.getRecruitType());
         // 没有统一的消息模板，暂不发送
 //        wechatService.sendWechatMessages(openids,activityRecruitInfo.getTitle());
         activityRecruitInfo.setStatus(RecruitStateEnums.EVENT_CANCELED.getState());

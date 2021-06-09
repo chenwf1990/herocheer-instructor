@@ -441,9 +441,10 @@
         where relevanceId=#{relevanceId} and `type` = #{type} and status=0
     </update>
 
+    <!-- 课程取消（预约已关闭）发送微信消息干系人-->
     <select id="findReservationOpenid" resultType="java.lang.String">
         SELECT u.openid FROM `reservation` r LEFT JOIN `user` u on r.userId=u.id where r.relevanceId=#{relevanceId}
-        and r.status=0 and r.type=#{type}
+        and r.status = 2 and r.type=#{type}
     </select>
 
     <!-- 签到信息列表 -->

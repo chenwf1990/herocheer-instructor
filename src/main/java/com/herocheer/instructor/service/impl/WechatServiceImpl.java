@@ -40,6 +40,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -503,6 +504,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
      * @param userList   订阅课程的用户名单
      * @param courseInfo 课程信息
      */
+    @Async
     @Override
     public void sendWechatMessages(List<String> userList, CourseInfo courseInfo) {
         // 每日access_token次数有限：每日限额：2000次

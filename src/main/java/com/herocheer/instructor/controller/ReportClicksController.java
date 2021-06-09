@@ -55,7 +55,7 @@ public class ReportClicksController extends BaseController {
      * @return {@link ResponseResult<Page<ReportClicksStatisVO>>}
      */
     @PostMapping("/clicks/page")
-    @ApiOperation("工作日志列表")
+    @ApiOperation("点击量列表")
     public ResponseResult<Page<ReportClicksStatisVO>> fetchClicksByPage(@ApiParam("点击量信息") @RequestBody ReportClicksVO reportClicksVO, HttpServletRequest request){
         // 新增工作日志
         return ResponseResult.ok(reportClicksService.findReportClicksByPage(reportClicksVO));

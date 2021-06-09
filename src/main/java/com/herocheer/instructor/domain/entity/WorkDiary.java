@@ -27,13 +27,13 @@ public class WorkDiary extends BaseEntity {
     @ApiModelProperty("登记人")
     private String registerName;
     @ApiModelProperty("日志类型:1-驿站值班，2-公益课程")
-    private Object diaryType;
+    private Integer diaryType;
     @ApiModelProperty("值班日期")
     private Long workingDate;
     @ApiModelProperty("业务ID（根据日志类型变动）")
     private Long objectId;
     @ApiModelProperty("业务信息（驿站名，课程名）")
-    private Long objectInfo;
+    private String objectInfo;
     @ApiModelProperty("工作内容描述")
     private String workDescribe;
     @ApiModelProperty("照片上传")

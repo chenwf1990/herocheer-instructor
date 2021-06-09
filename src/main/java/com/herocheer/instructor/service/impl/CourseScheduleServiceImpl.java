@@ -1,11 +1,13 @@
 package com.herocheer.instructor.service.impl;
 
+import com.herocheer.common.exception.CommonException;
 import com.herocheer.instructor.dao.CourseScheduleDao;
 import com.herocheer.instructor.domain.entity.CourseSchedule;
 import com.herocheer.instructor.service.CourseScheduleService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -51,5 +53,30 @@ public class CourseScheduleServiceImpl extends BaseServiceImpl<CourseScheduleDao
     @Override
     public CourseSchedule findCourseSchedulesById(Long id) {
         return this.dao.selectCourseSchedule(id);
+    }
+
+    /**
+     * 取消课表
+     *
+     * @param id           id
+     * @param cancelReason 取消的原因
+     * @return {@link CourseSchedule}
+     */
+    @Override
+    public CourseSchedule cancelCourseSchedulesById(Long id, String cancelReason) {
+        CourseSchedule courseSchedule  = this.dao.get(id);
+        if(ObjectUtils.isEmpty(courseSchedule)){
+            throw new CommonException("课表信息不存在");
+        }
+
+        // TODO 被动关闭预约信息
+
+        // TODO 发送微信消息
+
+        courseSchedule.setCancelReason(cancelReason);
+        courseSchedule.setCancelTime(System.currentTimeMillis());
+        // 取消课表
+        this.dao.update(courseSchedule);
+        return courseSchedule;
     }
 }
