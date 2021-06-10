@@ -342,7 +342,7 @@ public class WechatController extends BaseController {
 //        userList.add("obOp1s-Sj22VggP-wBYff1KBvnvo");
 //        CourseInfo courseInfo = courseInfoService.get(6L);
         CourseInfo courseInfo = courseInfoService.get(142L);
-        wechatService.sendWechatMessages(userList,courseInfo);
+        wechatService.sendWechatMessages(userList,courseInfo,null);
         return ResponseResult.ok();
     }
 

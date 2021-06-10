@@ -240,12 +240,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
             }
         }
 
-        User user = User.builder().userType(UserTypeEnums.sysUser.getCode()).build();
+        User user = User.builder().build();
         BeanCopier.create(sysUserVO.getClass(),user.getClass(),false).copy(sysUserVO,user,null);
 
         // 用户密码加密
         user.setPassword(encoder.encode(AesUtil.decrypt(sysUserVO.getPassword().trim())));
-
+        user.setUserType(UserTypeEnums.sysUser.getCode());
         // 插入用户信息
         this.insert(user);
 

@@ -612,7 +612,7 @@
     </select>
 
     <!-- 固定课程和非固定课程的培训任务-->
-    <select id="selectCourseInfoByPage" resultType="com.herocheer.instructor.domain.entity.CourseInfo"
+    <select id="selectCourseInfoByPage" resultType="com.herocheer.instructor.domain.vo.CourseInfoVo"
             parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
         SELECT
             a.id,
@@ -649,7 +649,9 @@
             a.releaseTime,
             a.courseStartZone,
             a.courseEndZone,
-            a.state
+            --  课表取消：6
+            IF(b.cancelStatus = 2,6,a.state) state,
+            b.cancelReason
         from course_info a LEFT JOIN course_schedule b ON a.id = b.courseId
         <where>
             <if test="title!=null and title!=''">
@@ -752,23 +754,23 @@
     <!--查询指定行数据-->
     <select id="selectCourseStatisByPage" parameterType="com.herocheer.instructor.domain.vo.CourseStatisVO" resultType="com.herocheer.instructor.domain.vo.CourseStatisVO">
         <!--非固定课程-->
-        SELECT c.id as courseId,c.title,c.lecturerTeacherId,c.lecturerTeacherName,c.courseStartTime,d.certificateGrade,d.guideProject,ROUND( IF ( c.courseEndTime > c.courseStartTime,( c.courseEndTime - c.courseStartTime )/ 1000 / 60,0 )) serviceTimeTotal
+        SELECT c.id as courseId,c.title,c.lecturerTeacherId,c.lecturerTeacherName,c.courseStartTime,d.certificateGrade,d.guideProject,ROUND( IF ( c.courseEndTime <![CDATA[ > ]]> c.courseStartTime,( c.courseEndTime - c.courseStartTime )/ 1000 / 60,0 )) serviceTimeTotal
         FROM
         `course_info` c LEFT JOIN course_tearcher d on c.lecturerTeacherId = d.id
         <where>
             <trim prefixOverrides="AND | OR">
-                and c.offerCourseType = 1
+                and c.offerCourseType = 1 and c.state = 4
                 <if test="title != null">
                     and c.title = #{title}
                 </if>
                 <if test="lecturerTeacherName != null">
                     and c.lecturerTeacherName = #{lecturerTeacherName}
                 </if>
-                <if test="startTime != null">
-                    and c.courseStartTime <![CDATA[ > ]]> #{startTime}
+                <if test="beginTime != null">
+                    and c.courseStartTime <![CDATA[ >= ]]> #{beginTime}
                 </if>
                 <if test="endTime != null">
-                    and c.courseStartTime <![CDATA[ < ]]> #{endTime}
+                    and c.courseStartTime <![CDATA[ <= ]]> #{endTime}
                 </if>
             </trim>
         </where>
@@ -800,11 +802,11 @@
                 <if test="lecturerTeacherName != null">
                     and b.lecturerTeacherName = #{lecturerTeacherName}
                 </if>
-                <if test="startTime != null">
-                    and b.courseStartTime <![CDATA[ > ]]> #{startTime}
+                <if test="beginTime != null">
+                    and b.courseStartTime <![CDATA[ >= ]]> #{beginTime}
                 </if>
-                <if test="endTime != null">
-                    and b.courseStartTime <![CDATA[ < ]]> #{endTime}
+                <if test="beginTime != null">
+                    and b.courseStartTime <![CDATA[ <= ]]> #{beginTime}
                 </if>
             </trim>
         </where>

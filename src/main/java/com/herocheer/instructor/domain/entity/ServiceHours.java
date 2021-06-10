@@ -1,9 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.experimental.SuperBuilder;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -19,4 +18,7 @@ public class ServiceHours extends BaseEntity {
     private String stationNames;
     @ApiModelProperty("服务时间段")   
     private String serviceTimes;
+
+    @ApiModelProperty("借用时间段")
+    private String borrowTimes;
 }

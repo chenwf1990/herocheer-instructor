@@ -117,7 +117,9 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         int count = this.dao.update(courseInfo);
         // 课程取消时，发送微信消息通知
         List<String> openids = reservationService.findReservationOpenid(courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
-        wechatService.sendWechatMessages(openids,courseInfo);
+        if(!CollectionUtils.isEmpty(openids)){
+            wechatService.sendWechatMessages(openids,courseInfo,null);
+        }
         return count;
     }
 
@@ -150,7 +152,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
     @Override
     public CourseInfo verificationDate(CourseInfo courseInfo) {
-        if(courseInfo.getSignStartTime()< DateUtil.beginOfDay(new Date()).getTime()){
+        if(courseInfo.getSignStartTime() < DateUtil.beginOfDay(new Date()).getTime()){
             throw new CommonException("课程报名开始时间{}不能小于当前时间!",
                     DateUtil.timeStamp2Date(courseInfo.getSignStartTime()));
         }
@@ -207,6 +209,9 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
                     reservationListVO.setCourseDate(courseSchedule.getCourseDate());
                     reservationListVO.setCourseStartTime(courseSchedule.getStartTime());
                     reservationListVO.setCourseEndTime(courseSchedule.getEndTime());
+
+                    // 课表取消原因
+                    reservationListVO.setCancelReason(courseSchedule.getCancelReason());
                 }
             }
             courseInfoVo.setReservation(reservationListVO);
@@ -264,7 +269,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         if(CollectionUtil.isNotEmpty(tearcherVOList)){
             log.debug("授课老师ID:{}",tearcherVOList.get(0).getId());
             queryVo.setLecturerTeacherId(tearcherVOList.get(0).getId());
-            List<CourseInfo> instructors = this.dao.selectCourseInfoByPage(queryVo);
+            List<CourseInfoVo> instructors = this.dao.selectCourseInfoByPage(queryVo);
             page.setDataList(instructors);
         }
         return page;

@@ -54,7 +54,7 @@ public class Reservation extends BaseEntity {
     private String identityNumber;
     @ApiModelProperty("手机号")   
     private String phone;
-    @ApiModelProperty("状态 (0.已预约 1.取消预约 2.活动撤销)")
+    @ApiModelProperty("状态 (0.已预约 1.取消预约 2.活动撤销 3.课表撤销)")
     private Integer status;
 
     @ApiModelProperty("签到时间")

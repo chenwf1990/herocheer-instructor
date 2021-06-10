@@ -12,6 +12,7 @@ import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author chenwf
@@ -143,4 +144,12 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      * @return {@link List<WorkingSchedule>}
      */
     List<WorkingSchedule> fetchTimeRangeByBorrowDate(Long courierStationId,Long borrowDate);
+
+    /**
+     * 可借用日期(排班)
+     *
+     * @param courierStationId
+     * @return {@link Set<Long>}
+     */
+    Set<Long> findBorrowDate(Long courierStationId);
 }

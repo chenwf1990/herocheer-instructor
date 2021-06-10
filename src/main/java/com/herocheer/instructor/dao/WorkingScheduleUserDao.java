@@ -7,6 +7,7 @@ import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
+import com.herocheer.instructor.domain.vo.ServiceTotalVO;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 import com.herocheer.mybatis.base.dao.BaseDao;
@@ -129,4 +130,12 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return {@link List<MatchStatisVO>}
      */
     List<MatchStatisVO> selectMatchStatisByPage(MatchStatisVO matchStatisVO);
+
+    /**
+     * 服务时长汇总
+     *
+     * @param serviceTotalVO 服务总签证官
+     * @return {@link List<ServiceTotalVO>}
+     */
+    List<ServiceTotalVO> selectTotalStatisByPage(ServiceTotalVO serviceTotalVO);
 }

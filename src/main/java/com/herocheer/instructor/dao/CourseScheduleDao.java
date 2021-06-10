@@ -24,7 +24,6 @@ public interface CourseScheduleDao extends BaseDao<CourseSchedule, Long> {
 
     /**
      * 批处理更新
-     * 如果不存在，就新增，如果存在，则更新
      *
      * @param courseScheduleList 课程安排列表
      * @return int

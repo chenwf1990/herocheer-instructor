@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.vo.DutyStatisVO;
 import com.herocheer.instructor.domain.vo.MatchStatisVO;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
+import com.herocheer.instructor.domain.vo.ServiceTotalVO;
 
 /**
  * @author chenwf
@@ -47,4 +48,12 @@ public interface ReportService {
      * @return {@link Page<CourseStatisVO>}
      */
     Page<CourseStatisVO> findCourseStatisByPage(CourseStatisVO courseStatisVO);
+
+    /**
+     * 服务时长汇总
+     *
+     * @param serviceTotalVO 服务总签证官
+     * @return {@link Page<ServiceTotalVO>}
+     */
+    Page<ServiceTotalVO> findTotalStatisByPage(ServiceTotalVO serviceTotalVO);
 }

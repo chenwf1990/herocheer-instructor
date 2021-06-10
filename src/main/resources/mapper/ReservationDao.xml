@@ -438,7 +438,7 @@
 
     <update id="updateReservationStatus">
         update reservation set status=#{status}
-        where relevanceId=#{relevanceId} and `type` = #{type} and status=0
+        where relevanceId=#{relevanceId} and `type` = #{type} and status = 0
     </update>
 
     <!-- 课程取消（预约已关闭）发送微信消息干系人-->
@@ -571,4 +571,18 @@
         </where>
         order by createdTime desc limit 1;
     </select>
+
+    <!-- 课表取消时更新预约记录状态 -->
+    <update id="updateReservationStatusByCourseScheduleId" parameterType="map">
+        update reservation set status = #{status}
+        where courseScheduleId = #{courseScheduleId} and `type` = #{type} and status = 0
+    </update>
+
+    <!-- 课表取消（预约已关闭）发送微信消息干系人-->
+    <select id="selectReservationOpenidByCourseScheduleId" parameterType="map" resultType="java.lang.String">
+        SELECT u.openid FROM `reservation` r
+        LEFT JOIN `user` u on r.userId = u.id
+        where r.relevanceId = #{relevanceId} and r.status = 3 and r.type = #{type} and r.courseScheduleId = #{courseScheduleId}
+    </select>
+
 </mapper>

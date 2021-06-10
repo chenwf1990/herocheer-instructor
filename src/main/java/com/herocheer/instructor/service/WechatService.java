@@ -11,7 +11,7 @@ import com.herocheer.instructor.domain.vo.WxInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author chenwf
@@ -63,10 +63,11 @@ public interface WechatService {
     /**
      * 发送微信消息
      *
-     * @param userList   订阅课程的用户名单
-     * @param courseInfo 课程信息
+     * @param userList         订阅课程的用户名单
+     * @param courseInfo       课程信息
+     * @param courseScheduleId 课程安排id
      */
-    void sendWechatMessages(List<String> userList, CourseInfo courseInfo);
+    void sendWechatMessages(Collection<String> userList, CourseInfo courseInfo, Long courseScheduleId );
 
     /**
      * ixmAPP应用登录网址

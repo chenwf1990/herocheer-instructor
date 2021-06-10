@@ -9,6 +9,7 @@ import com.herocheer.instructor.domain.vo.DutyStatisVO;
 import com.herocheer.instructor.domain.vo.MatchStatisVO;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
+import com.herocheer.instructor.domain.vo.ServiceTotalVO;
 import com.herocheer.instructor.service.ReportService;
 import com.herocheer.instructor.utils.DateUtil;
 import io.swagger.annotations.Api;
@@ -89,5 +90,18 @@ public class ReportController {
     @ApiOperation("课程服务时长统计")
     public ResponseResult<Page<CourseStatisVO>> fecthCourseStatisByPage(@ApiParam("课程服务时长") @RequestBody CourseStatisVO courseStatisVO, HttpServletRequest request){
         return ResponseResult.ok(reportService.findCourseStatisByPage(courseStatisVO));
+    }
+
+    /**
+     * 服务时长汇总统计
+     *
+     * @param serviceTotalVO 服务总签证官
+     * @param request        请求
+     * @return {@link ResponseResult<Page<ServiceTotalVO>>}
+     */
+    @PostMapping("/total/statistics/page")
+    @ApiOperation("服务时长汇总统计")
+    public ResponseResult<Page<ServiceTotalVO>> fecthTotalStatisByPage(@ApiParam("服务时长汇总统计") @RequestBody ServiceTotalVO serviceTotalVO, HttpServletRequest request){
+        return ResponseResult.ok(reportService.findTotalStatisByPage(serviceTotalVO));
     }
 }

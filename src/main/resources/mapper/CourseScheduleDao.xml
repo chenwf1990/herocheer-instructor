@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.CourseScheduleDao">
 
     <sql id="table_field">
-      id, courseId, configType, courseDay, courseDate, startTime, endTime, cancelStatus, cancelReason, cancelTime, limitNumber, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, courseId, configType, courseDay, courseDate, startTime, endTime, limitNumber, cancelStatus, cancelReason, cancelTime, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
 
     <!--单表新增-->
@@ -152,8 +152,9 @@
                 ELSE '已满'
             END as courseScheduleStatus,
             CASE
-                WHEN concat_ws('',FROM_UNIXTIME( courseDate / 1000, '%Y-%m-%d ' ), endTime, ':00' ) <![CDATA[ < ]]> <![CDATA[ now() ]]> THEN 1
-                WHEN limitNumber !=0 THEN 0
+                WHEN concat_ws('',FROM_UNIXTIME( courseDate / 1000, '%Y-%m-%d ' ), endTime, ':00' ) <![CDATA[ < ]]> <![CDATA[ now() ]]> THEN 0
+                WHEN cancelStatus = 2 THEN 0
+                WHEN limitNumber = 0 THEN 0
                 ELSE 1
             END as edited
         from course_schedule
@@ -191,11 +192,11 @@
 
     <!--批量插入-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="java.util.List">
-        INSERT INTO course_schedule (<include refid="table_field"/>)
+        INSERT INTO course_schedule (id, courseId, configType, courseDay, courseDate, startTime, endTime, limitNumber, cancelReason, cancelTime, remark, createdId, createdBy, createdTime, updateId, updateBy, updateTime)
         VALUES
         <foreach collection="list" item="courseSchedule" index="index" separator=",">
             (#{courseSchedule.id}, #{courseSchedule.courseId}, #{courseSchedule.configType}, #{courseSchedule.courseDay}, #{courseSchedule.courseDate}, #{courseSchedule.startTime}, #{courseSchedule.endTime},
-            #{courseSchedule.limitNumber}, #{courseSchedule.remark}, #{courseSchedule.createdId}, #{courseSchedule.createdBy}, #{courseSchedule.createdTime},
+            #{courseSchedule.limitNumber} ,#{courseSchedule.cancelReason},#{courseSchedule.cancelTime}, #{courseSchedule.remark}, #{courseSchedule.createdId}, #{courseSchedule.createdBy}, #{courseSchedule.createdTime},
             #{courseSchedule.updateTime}, #{courseSchedule.updateId}, #{courseSchedule.updateBy})
         </foreach >
     </insert>
@@ -207,12 +208,12 @@
         VALUES
         <foreach collection="list" item="courseSchedule" index="index" separator=",">
             (#{courseSchedule.id}, #{courseSchedule.courseId}, #{courseSchedule.configType}, #{courseSchedule.courseDay}, #{courseSchedule.courseDate}, #{courseSchedule.startTime}, #{courseSchedule.endTime},
-            #{courseSchedule.limitNumber}, #{courseSchedule.remark}, #{courseSchedule.createdId}, #{courseSchedule.createdBy}, #{courseSchedule.createdTime},
+            #{courseSchedule.limitNumber}, #{courseSchedule.cancelStatus},#{courseSchedule.cancelReason},#{courseSchedule.cancelTime},#{courseSchedule.remark}, #{courseSchedule.createdId}, #{courseSchedule.createdBy}, #{courseSchedule.createdTime},
             #{courseSchedule.updateTime}, #{courseSchedule.updateId}, #{courseSchedule.updateBy})
         </foreach >
         ON DUPLICATE KEY UPDATE
         id=VALUES(id),courseId = VALUES(courseId),configType = VALUES(configType),courseDay = VALUES(courseDay),
-        courseDate = VALUES(courseDate),startTime = VALUES(startTime),endTime = VALUES(endTime),limitNumber = VALUES(limitNumber),remark = VALUES(remark),
+        courseDate = VALUES(courseDate),startTime = VALUES(startTime),endTime = VALUES(endTime),limitNumber = VALUES(limitNumber),cancelStatus = VALUES(cancelStatus),cancelReason = VALUES(cancelReason),cancelTime = VALUES(cancelTime),remark = VALUES(remark),
         createdId = VALUES(createdId),createdBy = VALUES(createdBy),createdTime = VALUES(createdTime),updateTime = VALUES(updateTime),updateId = VALUES(updateId),updateBy = VALUES(updateBy)
     </insert>
 

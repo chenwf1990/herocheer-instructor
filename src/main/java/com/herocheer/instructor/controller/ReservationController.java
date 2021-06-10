@@ -3,10 +3,10 @@ package com.herocheer.instructor.controller;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.Reservation;
-import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
+import com.herocheer.instructor.domain.vo.ReservationMemberInfoVO;
 import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
@@ -130,7 +130,7 @@ public class ReservationController extends BaseController{
      */
     @GetMapping("/info/{relevanceId:\\w+}")
     @ApiOperation("已参与人员")
-    public ResponseResult<List<ReservationMember>> fecthReservationBycurrentUserId(@ApiParam("预约ID") @PathVariable Long relevanceId, HttpServletRequest request){
+    public ResponseResult<List<ReservationMemberInfoVO>> fecthReservationBycurrentUserId(@ApiParam("预约ID") @PathVariable Long relevanceId, HttpServletRequest request){
         return ResponseResult.ok(reservationService.findReservationByCurrentUserId(relevanceId,getCurUserId(request)));
     }
 }

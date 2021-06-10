@@ -36,4 +36,7 @@ public class CourseInfoVo extends CourseInfo {
     @ApiModelProperty("指导项目")
     private String guideProject;
 
+    @ApiModelProperty("取消原因")
+    private String cancelReason;
+
 }

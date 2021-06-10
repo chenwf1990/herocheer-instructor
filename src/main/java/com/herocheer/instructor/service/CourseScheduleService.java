@@ -2,6 +2,7 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.CourseSchedule;
+import com.herocheer.instructor.domain.vo.CourseScheduleCancelVO;
 
 import java.util.List;
 
@@ -41,9 +42,8 @@ public interface CourseScheduleService extends BaseService<CourseSchedule, Long>
     /**
      * 取消课表
      *
-     * @param id           id
-     * @param cancelReason 取消的原因
+     * @param courseScheduleCancelVO 课程安排取消签证官
      * @return {@link CourseSchedule}
      */
-    CourseSchedule cancelCourseSchedulesById(Long id,String cancelReason);
+    CourseSchedule cancelCourseSchedulesById(CourseScheduleCancelVO courseScheduleCancelVO);
 }

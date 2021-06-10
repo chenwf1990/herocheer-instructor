@@ -7,6 +7,7 @@ import com.herocheer.instructor.domain.vo.DutyStatisVO;
 import com.herocheer.instructor.domain.vo.MatchStatisVO;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
+import com.herocheer.instructor.domain.vo.ServiceTotalVO;
 import com.herocheer.instructor.service.CourseInfoService;
 import com.herocheer.instructor.service.ReportService;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,20 @@ public class ReportServiceImpl implements ReportService {
         Page page = Page.startPage(courseStatisVO.getPageNo(),courseStatisVO.getPageSize());
         List<CourseStatisVO> courseStatisList = courseInfoService.findCourseStatisByPage(courseStatisVO);
         page.setDataList(courseStatisList);
+        return page;
+    }
+
+    /**
+     * 服务时长汇总
+     *
+     * @param serviceTotalVO 服务总签证官
+     * @return {@link Page< ServiceTotalVO >}
+     */
+    @Override
+    public Page<ServiceTotalVO> findTotalStatisByPage(ServiceTotalVO serviceTotalVO) {
+        Page page = Page.startPage(serviceTotalVO.getPageNo(),serviceTotalVO.getPageSize());
+        List<ServiceTotalVO> serviceTotalList = workingScheduleUserDao.selectTotalStatisByPage(serviceTotalVO);
+        page.setDataList(serviceTotalList);
         return page;
     }
 }

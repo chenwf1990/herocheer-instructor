@@ -12,6 +12,7 @@ import com.herocheer.common.exception.CommonException;
 import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.UserDao;
 import com.herocheer.instructor.domain.entity.CourseInfo;
+import com.herocheer.instructor.domain.entity.CourseSchedule;
 import com.herocheer.instructor.domain.entity.Instructor;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.SysUserVO;
@@ -23,6 +24,7 @@ import com.herocheer.instructor.enums.InsuranceConst;
 import com.herocheer.instructor.enums.SourceEnums;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.enums.WechatConst;
+import com.herocheer.instructor.service.CourseScheduleService;
 import com.herocheer.instructor.service.InstructorService;
 import com.herocheer.instructor.service.UserService;
 import com.herocheer.instructor.service.WechatService;
@@ -35,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.beans.BeanCopier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -50,6 +53,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +113,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
     @Autowired
     private InstructorService instructorService;
+
+    @Autowired
+    @Lazy
+    private CourseScheduleService courseScheduleService;
+
 
     //验证微信交互是否正常
     /**
@@ -506,7 +515,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
      */
     @Async
     @Override
-    public void sendWechatMessages(List<String> userList, CourseInfo courseInfo) {
+    public void sendWechatMessages(Collection<String> userList, CourseInfo courseInfo, Long courseScheduleId) {
         // 每日access_token次数有限：每日限额：2000次
         // 微信公众号配置(测试环境)
 //        String appid = "wxf6c55bc2f36ca69b";
@@ -561,15 +570,26 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
                 keyword2.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())))+"）");
                 content.put("keyword2", keyword2);
 
-                // 授课时间
+                // 授课老师
                 JSONObject keyword3 = new JSONObject();
                 keyword3.put("value", courseInfo.getLecturerTeacherName());
                 content.put("keyword3", keyword3);
 
-                // 授课时间段
-                JSONObject keyword4 = new JSONObject();
-                keyword4.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"~"+ DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseEndZone())), "yyyy年MM月dd日"));
-                content.put("keyword4", keyword4);
+                // 固定课程
+                if(courseScheduleId != null){
+                    // 授课时间段(课表取消通知)
+                    CourseSchedule courseSchedule = courseScheduleService.get(courseScheduleId);
+                    JSONObject keyword4 = new JSONObject();
+                    keyword4.put("value",  DateUtil.format(DateUtil.date(courseSchedule.getCourseDate()), "yyyy年MM月dd日")+
+                            "（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseSchedule.getCourseDate()))+"）"+
+                            courseSchedule.getStartTime()+ " - " + courseSchedule.getEndTime());
+                    content.put("keyword4", keyword4);
+                }else {
+                    // 授课时间段(课程取消通知)
+                    JSONObject keyword4 = new JSONObject();
+                    keyword4.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"~"+ DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseEndZone())), "yyyy年MM月dd日"));
+                    content.put("keyword4", keyword4);
+                }
             }
 
             JSONObject remark = new JSONObject();

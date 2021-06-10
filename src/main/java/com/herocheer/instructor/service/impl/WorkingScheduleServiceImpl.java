@@ -720,4 +720,19 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         }
         return workingScheduleUserService.update(workingScheduleUser);
     }
+
+    /**
+     * 可借用日期
+     *
+     * @param currentTime 当前时间
+     * @return {@link List<WorkingSchedule>}
+     */
+    @Override
+    public List<WorkingSchedule> findBorrowDate(Long courierStationId,Long currentTime) {
+        Map<String, Object> paramMap =  new HashMap<>();
+        paramMap.put("activityType",1);
+        paramMap.put("courierStationId",courierStationId);
+        paramMap.put("scheduleTime",DateUtil.today()+  " 00:00:00");
+        return this.dao.selectBorrowDate(paramMap);
+    }
 }

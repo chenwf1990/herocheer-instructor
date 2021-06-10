@@ -696,11 +696,11 @@
                 <if test="courierStationName!=null">
                     and a.courierStationName = #{courierStationName}
                 </if>
-                <if test="startTime != null">
-                    and a.scheduleTime <![CDATA[ > ]]> #{startTime}
+                <if test="beginTime != null">
+                    and a.scheduleTime <![CDATA[ >= ]]> #{beginTime}
                 </if>
                 <if test="endTime != null">
-                    and a.scheduleTime <![CDATA[ < ]]> #{endTime}
+                    and a.scheduleTime <![CDATA[ <= ]]> #{endTime}
                 </if>
             </trim>
         </where>
@@ -741,11 +741,162 @@
                 <if test="activityTitle != null">
                     and a.activityTitle = #{activityTitle}
                 </if>
-                <if test="startTime != null">
-                    and a.scheduleTime <![CDATA[ > ]]> #{startTime}
+                <if test="beginTime != null">
+                    and a.scheduleTime <![CDATA[ >= ]]> #{beginTime}
                 </if>
                 <if test="endTime != null">
-                    and a.scheduleTime <![CDATA[ < ]]> #{endTime}
+                    and a.scheduleTime <![CDATA[ <= ]]> #{endTime}
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <!-- 服务时长汇总表 -->
+    <select id="selectTotalStatisByPage" parameterType="com.herocheer.instructor.domain.vo.ServiceTotalVO" resultType="com.herocheer.instructor.domain.vo.ServiceTotalVO">
+
+        SELECT ee.name,ee.certificateGrade,ee.guideProject,cc.matchServiceCount,cc.matchServiceTimeTotal,cc.dutyServiceCount,cc.dutyServiceTimeTotal,cc.courseServiceCount,cc.courseServiceTimeTotal FROM
+        (
+            SELECT mm.phone,SUM(matchServiceCount) matchServiceCount,SUM(matchServiceTimeTotal) matchServiceTimeTotal,SUM(dutyServiceCount) dutyServiceCount,SUM(dutyServiceTimeTotal) dutyServiceTimeTotal,SUM(courseServiceCount) courseServiceCount,SUM(courseServiceTimeTotal) courseServiceTimeTotal FROM
+            (
+                -- 1 非固定课程
+                SELECT
+                    TRIM(d.phone) phone,
+                    0 as matchServiceCount,
+                    0 as matchServiceTimeTotal,
+                    0 as dutyServiceCount ,
+                    0 as dutyServiceTimeTotal,
+                    aa.serviceTimeCount courseServiceCount,
+                    aa.serviceTimeTotal courseServiceTimeTotal
+                FROM
+                (
+                    SELECT j.lecturerTeacherId,COUNT(*) serviceTimeCount,SUM(total) serviceTimeTotal FROM
+                    (
+                        SELECT c.lecturerTeacherId,ROUND( IF ( c.courseEndTime <![CDATA[ > ]]> c.courseStartTime,( c.courseEndTime - c.courseStartTime )/ 1000 / 60,0 )) total
+                        FROM
+                        `course_info` c
+                        WHERE
+                        c.offerCourseType = 1
+                    ) j
+                    GROUP BY j.lecturerTeacherId
+                ) aa LEFT JOIN course_tearcher d on aa.lecturerTeacherId=d.id
+
+                UNION ALL
+
+                -- 	2 固定课程
+                SELECT
+                    TRIM(d.phone) phone,
+                    0 as matchServiceCount,
+                    0 as matchServiceTimeTotal,
+                    0 as dutyServiceCount ,
+                    0 as dutyServiceTimeTotal,
+                    bb.serviceTimeCount courseServiceCount,
+                    bb.serviceTimeTotal courseServiceTimeTotal
+                FROM
+                (
+                    SELECT jj.lecturerTeacherId, COUNT(*) serviceTimeCount,SUM(total) serviceTimeTotal FROM
+                    (
+                        SELECT
+                            b.lecturerTeacherId,
+                            SUM(
+                                IF(
+                                    ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60 )   <![CDATA[ > ]]> ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60 ),
+                                    (ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60))-(ROUND(
+                                    ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60
+                                    )),0
+                                )
+                            ) total
+                        FROM `course_schedule` a
+                        LEFT JOIN course_info b on a.courseId = b.id
+                        WHERE a.cancelStatus = 1 and   a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
+                        GROUP BY a.courseId
+                    ) jj
+                    GROUP BY jj.lecturerTeacherId
+                ) bb LEFT JOIN course_tearcher d on bb.lecturerTeacherId = d.id
+
+                UNION ALL
+
+                -- 3 值班和赛事服务时长统计
+                SELECT
+                    TRIM(m.phone) phone,
+                    t.matchServiceCount,
+                    t.matchServiceTimeTotal,
+                    t.dutyServiceCount,
+                    t.dutyServiceTimeTotal,
+                    0 as courseServiceCount,
+                    0 as courseServiceTimeTotal
+                FROM
+                (
+                    SELECT q.userId,SUM(q.matchServiceCount) matchServiceCount,SUM(q.matchServiceTimeTotal) matchServiceTimeTotal,SUM(q.dutyServiceCount) dutyServiceCount,SUM(q.dutyServiceTimeTotal) dutyServiceTimeTotal from
+                    (
+                        SELECT * from
+                        -- 			3.1值班
+                        (
+                            SELECT d.userId,   0 as matchServiceCount,  0 as matchServiceTimeTotal, count(*) dutyServiceCount,SUM(total) dutyServiceTimeTotal FROM
+                            (
+                                SELECT
+                                b.userId,
+                                IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) total
+                                FROM working_schedule a
+                                INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
+                                WHERE a.activityType = 1
+                            ) d
+                            GROUP BY d.userId
+                        ) w
+
+                        UNION ALL
+
+                        -- 			3.2赛事
+                        SELECT * FROM
+                        (
+                            SELECT e.userId,count(*) matchServiceCount,sum(total) matchServiceTimeTotal , 0 as dutyServiceCount , 0 as dutyServiceTimeTotal FROM
+                            (
+                                SELECT
+                                b.userId,
+                                IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) total
+                                FROM working_schedule a
+                                INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
+                                WHERE a.activityType = 2
+                            ) e
+                            GROUP BY e.userId
+                        ) y
+                    ) q
+                    GROUP BY q.userId
+                ) t
+                LEFT JOIN (
+                    SELECT
+                    ins.userId,
+                    h.phone
+                    FROM
+                    instructor ins
+                    INNER JOIN `user` h ON h.id = ins.userId
+                ) m ON t.userid = m.userId
+
+                ) mm
+                GROUP BY mm.phone
+        ) cc
+        LEFT JOIN
+        (
+            SELECT
+            ff.NAME,
+            ff.certificateGrade,
+            ff.guideProject,
+            ff.userId,
+            hhh.phone
+            FROM
+            instructor ff
+            INNER JOIN `user` hhh ON hhh.id = ff.userId
+        ) ee
+        on cc.phone = ee.phone
+        <where>
+            <trim prefixOverrides="AND | OR">
+                <if test="name != null">
+                    and ee.name like concat(#{name},'%')
+                </if>
+                <if test="guideProject != null">
+                    and ee.guideProject = #{guideProject}
+                </if>
+                <if test="certificateGrade != null">
+                    and ee.certificateGrade = #{certificateGrade}
                 </if>
             </trim>
         </where>

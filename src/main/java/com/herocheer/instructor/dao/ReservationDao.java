@@ -8,6 +8,8 @@ import com.herocheer.mybatis.base.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author makejava
@@ -45,4 +47,21 @@ public interface ReservationDao extends BaseDao<Reservation,Long>{
      * @return {@link ReservationListVO}
      */
     ReservationListVO selectByCurUserId(ReservationQueryVo queryVo);
+
+    /**
+     * 课表取消时更新预约记录状态
+     *
+     * @param paramMap 参数映射
+     * @return {@link Integer}
+     */
+    Integer updateReservationStatusByCourseScheduleId(Map<String, Object> paramMap);
+
+    /**
+     * 选择课表取消时得干系人
+     *
+     * @param paramMap 参数映射
+     * @return {@link List<String>}
+     */
+    Set<String> selectReservationOpenidByCourseScheduleId(Map<String, Object> paramMap);
+
 }

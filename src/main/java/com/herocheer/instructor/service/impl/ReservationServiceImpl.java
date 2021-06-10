@@ -15,6 +15,7 @@ import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
+import com.herocheer.instructor.domain.vo.ReservationMemberInfoVO;
 import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationVO;
@@ -419,6 +420,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
                 reservationListVO.setCourseDate(courseSchedule.getCourseDate());
                 reservationListVO.setCourseStartTime(courseSchedule.getStartTime());
                 reservationListVO.setCourseEndTime(courseSchedule.getEndTime());
+                reservationListVO.setCancelReason(courseSchedule.getCancelReason());
             }
         }
         courseInfoVo.setReservation(reservationListVO);
@@ -622,11 +624,11 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
      * @return {@link List<Reservation>}
      */
     @Override
-    public List<ReservationMember> findReservationByCurrentUserId(Long relevanceId, Long userId) {
+    public List<ReservationMemberInfoVO> findReservationByCurrentUserId(Long relevanceId, Long userId) {
         Map<String,Object> map=new HashMap<>();
         map.put("relevanceId",relevanceId);
         map.put("userId",userId);
-        List<ReservationMember> list = reservationMemberService.findByLimit(map);
+        List<ReservationMemberInfoVO> list = reservationMemberService.findReservationMemberByCourseScheduleId(map);
         return list;
     }
 
@@ -684,5 +686,28 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     @Override
     public ReservationListVO findReservationByCurUserId(ReservationQueryVo queryVo) {
         return this.dao.selectByCurUserId(queryVo);
+    }
+
+    /**
+     * 按课程课表id修改预订状态
+     *
+     * @param paramMap 参数映射
+     * @return {@link Integer}
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Integer modifyReservationStatusByCourseScheduleId(Map<String, Object> paramMap) {
+        return this.dao.updateReservationStatusByCourseScheduleId(paramMap);
+    }
+
+    /**
+     * 找到课表取消时的预约人
+     *
+     * @param paramMap 参数映射
+     * @return {@link List<String>}
+     */
+    @Override
+    public Set<String> findReservationOpenidByCourseScheduleId(Map<String, Object> paramMap) {
+        return this.dao.selectReservationOpenidByCourseScheduleId(paramMap);
     }
 }

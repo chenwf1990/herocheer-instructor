@@ -65,4 +65,20 @@ public interface WorkingScheduleDao extends BaseDao<WorkingSchedule,Long>{
      * @return
      */
     WorkingSchedule getUserWorking(Map<String,Object> map);
+
+    /**
+     * 可借用日期
+     *
+     * @param map 地图
+     * @return {@link List<WorkingSchedule>}
+     */
+    List<WorkingSchedule> selectBorrowDate(Map<String,Object> map);
+
+    /**
+     * 可借用时段
+     *
+     * @param map 地图
+     * @return {@link List<WorkingSchedule>}
+     */
+    List<WorkingSchedule> selectBorrowRange(Map<String,Object> map);
 }

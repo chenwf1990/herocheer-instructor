@@ -160,4 +160,26 @@
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
     </select>
+
+    <!--预约人信息-->
+    <select id="selectReservationMemberByCourseScheduleId" parameterType="map" resultType="com.herocheer.instructor.domain.vo.ReservationMemberInfoVO">
+        SELECT
+            a.id,
+            a.userId,
+            a.relevanceId relevanceIdb,
+            b.relevanceId,
+            c.cancelReason
+        FROM
+            `reservation_member` a
+            LEFT JOIN reservation b ON a.relevanceId = b.id
+            LEFT JOIN course_schedule c on  b.courseScheduleId = c.id
+        <where>
+            <if test="relevanceId != null">
+                and a.relevanceId = #{relevanceId}
+            </if>
+            <if test="userId != null">
+                and a.userId = #{userId}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -2,9 +2,13 @@ package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.common.base.service.BaseService;
-import com.herocheer.instructor.domain.vo.*;
+import com.herocheer.instructor.domain.entity.WorkingSchedule;
+import com.herocheer.instructor.domain.vo.ActivityReservationVo;
+import com.herocheer.instructor.domain.vo.WorkingScheduleListVo;
+import com.herocheer.instructor.domain.vo.WorkingScheduleQueryVo;
+import com.herocheer.instructor.domain.vo.WorkingUserVo;
+import com.herocheer.instructor.domain.vo.WorkingVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -118,4 +122,12 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @return
      */
     Integer cancelReservation(Long id);
+
+    /**
+     * 可借用日期
+     *
+     * @param currentTime 当前时间
+     * @return {@link List<WorkingSchedule>}
+     */
+    List<WorkingSchedule> findBorrowDate(Long courierStationId,Long currentTime);
 }

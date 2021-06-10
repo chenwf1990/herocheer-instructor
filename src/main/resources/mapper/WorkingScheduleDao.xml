@@ -391,4 +391,69 @@
         and a.serviceEndTime >= #{serviceTime}
         and b.userId=#{userId}
     </select>
+
+
+    <!--可借用日期-->
+    <select id="selectBorrowDate" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        select <include refid="table_field"/> from working_schedule
+        <where>
+            <if test="courierStationId != null">
+                and courierStationId = #{courierStationId}
+            </if>
+            <if test="activityType != null">
+                and activityType = #{activityType}
+            </if>
+            <if test="scheduleTime != null">
+                and scheduleTime <![CDATA[ >= ]]>  unix_timestamp( #{scheduleTime} ) * 1000
+            </if>
+        </where>
+    </select>
+
+    <!-- 可借用时段 -->
+    <select id="selectBorrowRange" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
+        select
+            id,
+            activityId,
+            activityTitle,
+            activityAddress,
+            activityDetailId,
+            activityType,
+            courierStationId,
+            courierStationName,
+            scheduleTime,
+            serviceTimeId,
+            serviceBeginTime,
+            serviceEndTime,
+            remarks,
+            createdId,
+            createdBy,
+            createdTime,
+            updateId,
+            updateBy,
+            updateTime
+        from working_schedule
+        <where>
+            <if test="activityType != null">
+                and activityType = #{activityType}
+            </if>
+            <if test="courierStationId != null">
+                and courierStationId = #{courierStationId}
+            </if>
+            <if test="courierStationName != null">
+                and courierStationName = #{courierStationName}
+            </if>
+            <if test="scheduleTime != null">
+                and scheduleTime = #{scheduleTime}
+            </if>
+            <if test="serviceTimeId != null">
+                and serviceTimeId = #{serviceTimeId}
+            </if>
+            <if test="serviceBeginTime != null">
+                and serviceBeginTime = #{serviceBeginTime}
+            </if>
+            <if test="serviceEndTime != null">
+                and serviceEndTime = #{serviceEndTime}
+            </if>
+        </where>
+    </select>
 </mapper>

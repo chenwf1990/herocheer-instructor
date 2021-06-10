@@ -28,7 +28,7 @@ public interface CourseInfoDao extends BaseDao<CourseInfo,Long>{
      * @param queryVo 查询签证官
      * @return {@link List<CourseInfo>}
      */
-    List<CourseInfo> selectCourseInfoByPage(CourseInfoQueryVo queryVo);
+    List<CourseInfoVo> selectCourseInfoByPage(CourseInfoQueryVo queryVo);
 
 
     /**

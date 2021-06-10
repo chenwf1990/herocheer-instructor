@@ -42,7 +42,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * @author chenwf
@@ -384,4 +386,18 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         paramMap.put("scheduleTime",borrowDate);
         return workingScheduleService.findByLimit(paramMap);
     }
+
+    /**
+     * 可借用日期(排班)
+     *
+     * @param courierStationId 驿站id
+     * @return {@link Set<Long>}
+     */
+    @Override
+    public Set<Long> findBorrowDate(Long courierStationId) {
+        List<WorkingSchedule>  WorkingScheduleList = workingScheduleService.findBorrowDate(courierStationId,System.currentTimeMillis());
+        Set<Long> longList = WorkingScheduleList.stream().map((WorkingSchedule workingSchedule)->workingSchedule.getScheduleTime()).collect(Collectors.toSet());
+        return longList;
+    }
+
 }

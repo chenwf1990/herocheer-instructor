@@ -3,15 +3,17 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.service.BaseService;
 import com.herocheer.instructor.domain.entity.Reservation;
-import com.herocheer.instructor.domain.entity.ReservationMember;
 import com.herocheer.instructor.domain.vo.ActivityRecruitInfoVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
+import com.herocheer.instructor.domain.vo.ReservationMemberInfoVO;
 import com.herocheer.instructor.domain.vo.ReservationMemberVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.SignInfoVO;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author makejava
@@ -107,7 +109,7 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @param userId   用户id
      * @return {@link List<Reservation>}
      */
-    List<ReservationMember> findReservationByCurrentUserId(Long courseId, Long userId);
+    List<ReservationMemberInfoVO> findReservationByCurrentUserId(Long courseId, Long userId);
 
     /**
      * 线上签到
@@ -125,4 +127,21 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      * @return {@link ReservationListVO}
      */
     ReservationListVO findReservationByCurUserId(ReservationQueryVo queryVo);
+
+    /**
+     * 按课程课表id修改预订状态
+     *
+     * @param paramMap 参数映射
+     * @return {@link Integer}
+     */
+    Integer modifyReservationStatusByCourseScheduleId(Map<String, Object> paramMap);
+
+    /**
+     * 找到课表取消时的预约人
+     *
+     * @param paramMap 参数映射
+     * @return {@link Set<String>}
+     */
+    Set<String> findReservationOpenidByCourseScheduleId(Map<String, Object> paramMap);
+
 }

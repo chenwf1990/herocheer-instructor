@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author chenwf
@@ -107,14 +108,28 @@ public class WorkingScheduleUserController extends BaseController{
     }
 
     /**
+     * 可借用时段
      * 根据借用日期获取驿站值班时段信息
      *
      * @param courierStationId 驿站id
      * @return {@link ResponseResult<List<WorkingSchedulsUserVo>>}
      */
     @GetMapping("/current/time/range")
-    @ApiOperation("根据借用日期获取驿站值班时段信息")
+    @ApiOperation("可借用时段")
     public ResponseResult<List<WorkingSchedule>> fetchTimeRangeByBorrowDate(@ApiParam("驿站id") @RequestParam Long courierStationId,@ApiParam("借用日期") @RequestParam Long borrowDate){
         return ResponseResult.ok(workingScheduleUserService.fetchTimeRangeByBorrowDate(courierStationId,borrowDate));
     }
+
+    /**
+     * 可借用日期(排班)
+     *
+     * @param request 请求
+     * @return {@link ResponseResult<List<Integer>>}
+     */
+    @GetMapping("/current/date/range")
+    @ApiOperation("可借用日期")
+    public ResponseResult<Set<Long>> fetchBorrowDate(@ApiParam("驿站id") @RequestParam Long courierStationId,HttpServletRequest request){
+        return ResponseResult.ok(workingScheduleUserService.findBorrowDate(courierStationId));
+    }
+
 }
