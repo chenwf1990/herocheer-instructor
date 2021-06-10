@@ -15,6 +15,7 @@ import com.herocheer.instructor.domain.entity.Reservation;
 import com.herocheer.instructor.domain.entity.User;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.CourseStatisVO;
 import com.herocheer.instructor.domain.vo.ReservationListVO;
 import com.herocheer.instructor.domain.vo.ReservationQueryVo;
 import com.herocheer.instructor.domain.vo.TearcherVO;
@@ -318,5 +319,16 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         }
         courseInfoVO.setId(courseInfo.getId());
         return courseInfoVO;
+    }
+
+    /**
+     * 课程服务时长统计
+     *
+     * @param courseStatisVO 当然统计学的签证官
+     * @return {@link List< CourseStatisVO >}
+     */
+    @Override
+    public List<CourseStatisVO> findCourseStatisByPage(CourseStatisVO courseStatisVO) {
+        return this.dao.selectCourseStatisByPage(courseStatisVO);
     }
 }

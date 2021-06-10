@@ -3,6 +3,7 @@ package com.herocheer.instructor.dao;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.CourseStatisVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +29,15 @@ public interface CourseInfoDao extends BaseDao<CourseInfo,Long>{
      * @return {@link List<CourseInfo>}
      */
     List<CourseInfo> selectCourseInfoByPage(CourseInfoQueryVo queryVo);
+
+
+    /**
+     * 课程服务时长统计
+     *
+     * @param courseStatisVO 当然统计学的签证官
+     * @return {@link List<CourseStatisVO>}
+     */
+    List<CourseStatisVO> selectCourseStatisByPage(CourseStatisVO courseStatisVO);
+
+
 }

@@ -1,6 +1,8 @@
 package com.herocheer.instructor.dao;
 
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.vo.DutyStatisVO;
+import com.herocheer.instructor.domain.vo.MatchStatisVO;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
@@ -111,4 +113,20 @@ public interface WorkingScheduleUserDao extends BaseDao<WorkingScheduleUser,Long
      * @return
      */
     List<Long> findCourierStationId(Map<String,Object> map);
+
+    /**
+     * 值班服务时长统计
+     *
+     * @param dutyStatisVO 责任统计学的签证官
+     * @return {@link List<DutyStatisVO>}
+     */
+    List<DutyStatisVO> selectDutyStatisByPage(DutyStatisVO dutyStatisVO);
+
+    /**
+     * 赛事服务时长统计
+     *
+     * @param matchStatisVO 与统计学的签证官
+     * @return {@link List<MatchStatisVO>}
+     */
+    List<MatchStatisVO> selectMatchStatisByPage(MatchStatisVO matchStatisVO);
 }

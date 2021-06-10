@@ -659,4 +659,95 @@
             AND s.scheduleTime=#{scheduleTime}
         GROUP BY s.courierStationId
     </select>
+
+    <!--  值班服务时长统计 -->
+    <select id="selectDutyStatisByPage" parameterType="com.herocheer.instructor.domain.vo.DutyStatisVO" resultType="com.herocheer.instructor.domain.vo.DutyStatisVO">
+        SELECT
+            b.userId,
+            k.name,
+            k.certificateGrade,
+            k.guideProject,
+            a.scheduleTime,
+            a.courierStationId,
+            a.courierStationName,
+            IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) serviceTimeTotal
+        FROM working_schedule a
+	    INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
+	    LEFT JOIN (
+            SELECT
+                i.NAME,
+                i.certificateGrade,
+                i.guideProject,
+                i.userId
+            FROM
+                instructor i
+                INNER JOIN `user` u ON u.id = i.userId
+            ) k ON k.userid = b.userId
+
+        <where>
+            <trim prefixOverrides="AND | OR">
+                and a.activityType = 1
+                <if test="name != null">
+                    and k.name like concat(#{name},'%')
+                </if>
+                <if test="courierStationId!=null">
+                    and a.courierStationId = #{courierStationId}
+                </if>
+                <if test="courierStationName!=null">
+                    and a.courierStationName = #{courierStationName}
+                </if>
+                <if test="startTime != null">
+                    and a.scheduleTime <![CDATA[ > ]]> #{startTime}
+                </if>
+                <if test="endTime != null">
+                    and a.scheduleTime <![CDATA[ < ]]> #{endTime}
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <!--  赛事服务时长统计 -->
+    <select id="selectMatchStatisByPage" parameterType="com.herocheer.instructor.domain.vo.MatchStatisVO" resultType="com.herocheer.instructor.domain.vo.MatchStatisVO">
+        SELECT
+        b.userId,
+        k.name,
+        k.certificateGrade,
+        k.guideProject,
+        a.scheduleTime,
+        a.activityId,
+        a.activityTitle,
+        IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) serviceTimeTotal
+        FROM working_schedule a
+        INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
+        LEFT JOIN (
+            SELECT
+            i.NAME,
+            i.certificateGrade,
+            i.guideProject,
+            i.userId
+            FROM
+            instructor i
+            INNER JOIN `user` u ON u.id = i.userId
+        ) k ON k.userid = b.userId
+        <where>
+            <trim prefixOverrides="AND | OR">
+                and a.activityType = 2
+                <if test="name != null">
+                    and k.name like concat(#{name},'%')
+                </if>
+                <if test="activityId != null">
+                    and a.activityId = #{activityId}
+                </if>
+                <if test="activityTitle != null">
+                    and a.activityTitle = #{activityTitle}
+                </if>
+                <if test="startTime != null">
+                    and a.scheduleTime <![CDATA[ > ]]> #{startTime}
+                </if>
+                <if test="endTime != null">
+                    and a.scheduleTime <![CDATA[ < ]]> #{endTime}
+                </if>
+            </trim>
+        </where>
+    </select>
 </mapper>

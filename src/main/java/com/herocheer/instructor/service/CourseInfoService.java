@@ -7,6 +7,7 @@ import com.herocheer.instructor.domain.entity.CourseApproval;
 import com.herocheer.instructor.domain.entity.CourseInfo;
 import com.herocheer.instructor.domain.vo.CourseInfoQueryVo;
 import com.herocheer.instructor.domain.vo.CourseInfoVo;
+import com.herocheer.instructor.domain.vo.CourseStatisVO;
 
 import java.util.List;
 
@@ -104,4 +105,12 @@ public interface CourseInfoService extends BaseService<CourseInfo,Long> {
      * @return {@link CourseInfoVo}
      */
     CourseInfoVo updateCourseInfo(CourseInfoVo courseInfoVO);
+
+    /**
+     * 课程服务时长统计
+     *
+     * @param courseStatisVO 当然统计学的签证官
+     * @return {@link List<CourseStatisVO>}
+     */
+    List<CourseStatisVO> findCourseStatisByPage(CourseStatisVO courseStatisVO);
 }

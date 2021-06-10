@@ -2,8 +2,12 @@ package com.herocheer.instructor.service.impl;
 
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.instructor.dao.WorkingScheduleUserDao;
+import com.herocheer.instructor.domain.vo.CourseStatisVO;
+import com.herocheer.instructor.domain.vo.DutyStatisVO;
+import com.herocheer.instructor.domain.vo.MatchStatisVO;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
+import com.herocheer.instructor.service.CourseInfoService;
 import com.herocheer.instructor.service.ReportService;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,9 @@ import java.util.List;
 public class ReportServiceImpl implements ReportService {
     @Resource
     private WorkingScheduleUserDao workingScheduleUserDao;
+
+    @Resource
+    private CourseInfoService courseInfoService;
     /**
      * @param serviceHoursQueryVo
      * @return
@@ -32,6 +39,48 @@ public class ReportServiceImpl implements ReportService {
         Page page = Page.startPage(serviceHoursQueryVo.getPageNo(),serviceHoursQueryVo.getPageSize());
         List<ServiceHoursReportVo> reportVos = workingScheduleUserDao.serviceHoursReport(serviceHoursQueryVo);
         page.setDataList(reportVos);
+        return page;
+    }
+
+    /**
+     * 值班服务时长统计
+     *
+     * @param dutyStatisVO 责任统计学的签证官
+     * @return {@link Page< DutyStatisVO >}
+     */
+    @Override
+    public Page<DutyStatisVO> findDutyStatisByPage(DutyStatisVO dutyStatisVO) {
+        Page page = Page.startPage(dutyStatisVO.getPageNo(),dutyStatisVO.getPageSize());
+        List<DutyStatisVO> dutyStatisList = workingScheduleUserDao.selectDutyStatisByPage(dutyStatisVO);
+        page.setDataList(dutyStatisList);
+        return page;
+    }
+
+    /**
+     * 赛事服务时长统计
+     *
+     * @param matchStatisVO 与统计学的签证官
+     * @return {@link Page<DutyStatisVO>}
+     */
+    @Override
+    public Page<MatchStatisVO> findMatchStatisByPage(MatchStatisVO matchStatisVO) {
+        Page page = Page.startPage(matchStatisVO.getPageNo(),matchStatisVO.getPageSize());
+        List<MatchStatisVO> matchStatisList = workingScheduleUserDao.selectMatchStatisByPage(matchStatisVO);
+        page.setDataList(matchStatisList);
+        return page;
+    }
+
+    /**
+     * 课程服务时长统计
+     *
+     * @param courseStatisVO 当然统计学的签证官
+     * @return {@link Page< CourseStatisVO >}
+     */
+    @Override
+    public Page<CourseStatisVO> findCourseStatisByPage(CourseStatisVO courseStatisVO) {
+        Page page = Page.startPage(courseStatisVO.getPageNo(),courseStatisVO.getPageSize());
+        List<CourseStatisVO> courseStatisList = courseInfoService.findCourseStatisByPage(courseStatisVO);
+        page.setDataList(courseStatisList);
         return page;
     }
 }

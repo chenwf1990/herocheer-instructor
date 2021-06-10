@@ -1,6 +1,9 @@
 package com.herocheer.instructor.service;
 
 import com.herocheer.common.base.Page.Page;
+import com.herocheer.instructor.domain.vo.CourseStatisVO;
+import com.herocheer.instructor.domain.vo.DutyStatisVO;
+import com.herocheer.instructor.domain.vo.MatchStatisVO;
 import com.herocheer.instructor.domain.vo.ServiceHoursQueryVo;
 import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
 
@@ -19,4 +22,29 @@ public interface ReportService {
      * @return
      */
     Page<ServiceHoursReportVo> serviceHoursReport(ServiceHoursQueryVo serviceHoursQueryVo);
+
+    /**
+     * 值班服务时长统计
+     *
+     * @param dutyStatisVO 责任统计学的签证官
+     * @return {@link Page<DutyStatisVO>}
+     */
+    Page<DutyStatisVO> findDutyStatisByPage(DutyStatisVO dutyStatisVO);
+
+
+    /**
+     * 赛事服务时长统计
+     *
+     * @param matchStatisVO 与统计学的签证官
+     * @return {@link Page<DutyStatisVO>}
+     */
+    Page<MatchStatisVO> findMatchStatisByPage(MatchStatisVO matchStatisVO);
+
+    /**
+     * 课程服务时长统计
+     *
+     * @param courseStatisVO 当然统计学的签证官
+     * @return {@link Page<CourseStatisVO>}
+     */
+    Page<CourseStatisVO> findCourseStatisByPage(CourseStatisVO courseStatisVO);
 }
