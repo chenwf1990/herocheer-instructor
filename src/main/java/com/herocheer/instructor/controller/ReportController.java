@@ -5,7 +5,6 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
-import com.herocheer.instructor.domain.entity.SummaryExcel;
 import com.herocheer.instructor.domain.entity.SysDept;
 import com.herocheer.instructor.domain.vo.CourseStatisVO;
 import com.herocheer.instructor.domain.vo.DutyStatisVO;
@@ -17,6 +16,8 @@ import com.herocheer.instructor.service.ReportService;
 import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.SneakyThrows;
@@ -30,9 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -78,6 +79,41 @@ public class ReportController {
         return ResponseResult.ok(reportService.findDutyStatisByPage(dutyStatisVO));
     }
 
+    @SneakyThrows
+    @GetMapping("/duty/statistics/excel")
+    @ApiOperation("值班服务时长统计导出")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "姓名",dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "courierStationId", value = "所属驿站",dataType = "long",paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "值班开始日期",dataType = "long",paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "值班结束日期",dataType = "long",paramType = "query")
+    })
+    public void dutyStatisticsExcelDownload(String name,Long courierStationId,Long beginTime,Long endTime,HttpServletResponse response) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = "值班服务时长统计信息"+"-"+sdf.format(new Date());
+        // 告诉浏览器用什么软件可以打开此文件
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        // 下载文件的默认名称
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dateStr,"UTF-8") + ".xls");
+        //编码
+        response.setCharacterEncoding("UTF-8");
+
+        // 导出的数据
+        DutyStatisVO dutyStatisVO = DutyStatisVO.builder().build();
+        dutyStatisVO.setName(name);
+        dutyStatisVO.setCourierStationId(courierStationId);
+        dutyStatisVO.setBeginTime(beginTime);
+        dutyStatisVO.setEndTime(endTime);
+
+        List<DutyStatisVO> dutyStatisList = reportService.findDutyStatis(dutyStatisVO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DutyStatisVO.class, dutyStatisList);
+        OutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
+
     /**
      * 赛事服务时长统计
      *
@@ -91,6 +127,39 @@ public class ReportController {
         return ResponseResult.ok(reportService.findMatchStatisByPage(matchStatisVO));
     }
 
+    @SneakyThrows
+    @GetMapping("/match/statistics/excel")
+    @ApiOperation("赛事服务时长统计导出")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "人员姓名",dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "activityTitle", value = "赛事名称",dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "服务开始日期",dataType = "long",paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "服务结束日期",dataType = "long",paramType = "query")
+    })
+    public void matchStatisticsExcelDownload(String name,String activityTitle,Long beginTime,Long endTime,HttpServletResponse response) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = "赛事服务时长统计信息"+"-"+sdf.format(new Date());
+        // 告诉浏览器用什么软件可以打开此文件
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        // 下载文件的默认名称
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dateStr,"UTF-8") + ".xls");
+        //编码
+        response.setCharacterEncoding("UTF-8");
+
+        // 导出的数据
+        MatchStatisVO matchStatisVO = MatchStatisVO.builder().build();
+        matchStatisVO.setName(name);
+        matchStatisVO.setActivityTitle(activityTitle);
+        matchStatisVO.setBeginTime(beginTime);
+        matchStatisVO.setEndTime(endTime);
+        List<MatchStatisVO> matchStatisList = reportService.findMatchStatis(matchStatisVO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), MatchStatisVO.class, matchStatisList);
+        OutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
     /**
      * 课程服务时长统计
      *
@@ -104,6 +173,39 @@ public class ReportController {
         return ResponseResult.ok(reportService.findCourseStatisByPage(courseStatisVO));
     }
 
+    @SneakyThrows
+    @GetMapping("/course/statistics/excel")
+    @ApiOperation("课程服务时长统计导出")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "lecturerTeacherName", value = "姓名",dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "title", value = "课程名称",dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "beginTime", value = "开课开始日期",dataType = "long",paramType = "query"),
+            @ApiImplicitParam(name = "endTime", value = "开课结束日期",dataType = "long",paramType = "query")
+    })
+    public void courseStatisticsExcelDownload(String lecturerTeacherName,String title,Long beginTime,Long endTime,HttpServletResponse response) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = "课程服务时长统计信息"+"-"+sdf.format(new Date());
+        // 告诉浏览器用什么软件可以打开此文件
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        // 下载文件的默认名称
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dateStr,"UTF-8") + ".xls");
+        //编码
+        response.setCharacterEncoding("UTF-8");
+
+        // 导出的数据
+        CourseStatisVO courseStatisVO = CourseStatisVO.builder().build();
+        courseStatisVO.setLecturerTeacherName(lecturerTeacherName);
+        courseStatisVO.setTitle(title);
+        courseStatisVO.setBeginTime(beginTime);
+        courseStatisVO.setEndTime(endTime);
+        List<CourseStatisVO> courseStatisList = reportService.findCourseStatis(courseStatisVO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), CourseStatisVO.class, courseStatisList);
+        OutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
     /**
      * 服务时长汇总统计
      *
@@ -118,27 +220,35 @@ public class ReportController {
     }
 
 
-
     @SneakyThrows
-    @GetMapping("/excel")
-    @ApiOperation("导出")
+    @GetMapping("/total/statistics/excel")
+    @ApiOperation("服务时长汇总统计导出")
     @AllowAnonymous
-    public void download(HttpServletResponse response) {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "姓名",dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "guideProject", value = "指导项目",dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "certificateGrade", value = "证书等级",dataType = "String",paramType = "query")
+    })
+    public void statisticsExcelTotalDownload(String name,String guideProject,String certificateGrade,HttpServletResponse response) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String dateStr = "["+"数据表"+"-"+sdf.format(new Date())+"]";
+        String dateStr = "服务时长汇总统计信息"+"-"+sdf.format(new Date());
         // 告诉浏览器用什么软件可以打开此文件
         response.setHeader("content-Type", "application/vnd.ms-excel");
         // 下载文件的默认名称
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dateStr,"UTF-8") + ".xls");
         //编码
         response.setCharacterEncoding("UTF-8");
-        List<SummaryExcel> list = new ArrayList<>();
-        SummaryExcel tt = new SummaryExcel();
-        tt.setType("ceshi");
-        tt.setDate("2021-06-15");
-        list.add(tt);
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), SummaryExcel.class, list);
-        workbook.write(response.getOutputStream());
-    }
 
+        // 导出的数据
+        ServiceTotalVO serviceTotalVO =  ServiceTotalVO.builder().build();
+        serviceTotalVO.setName(name);
+        serviceTotalVO.setGuideProject(guideProject);
+        serviceTotalVO.setCertificateGrade(certificateGrade);
+        List<ServiceTotalVO> serviceTotalList = reportService.findTotalStatis(serviceTotalVO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), ServiceTotalVO.class, serviceTotalList);
+        OutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
 }

@@ -51,4 +51,9 @@ public class ReportClicksServiceImpl extends BaseServiceImpl<ReportClicksDao, Re
         page.setDataList(clicksList);
         return page;
     }
+
+    @Override
+    public List<ReportClicksStatisVO> findReportClicks(ReportClicksVO reportClicksVO) {
+        return this.dao.selectClicksByPage(reportClicksVO);
+    }
 }

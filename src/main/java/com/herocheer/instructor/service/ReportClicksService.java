@@ -7,6 +7,8 @@ import com.herocheer.instructor.domain.vo.ReportClicksStatisVO;
 import com.herocheer.instructor.domain.vo.ReportClicksVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 
+import java.util.List;
+
 /**
  * @author gaorh
  * @desc 点击量(ReportClicks)表服务接口
@@ -31,4 +33,6 @@ public interface ReportClicksService extends BaseService<ReportClicks, Long> {
      * @return {@link Page<ReportClicksStatisVO>}
      */
     Page<ReportClicksStatisVO> findReportClicksByPage(ReportClicksVO reportClicksVO);
+
+    List<ReportClicksStatisVO> findReportClicks(ReportClicksVO reportClicksVO);
 }

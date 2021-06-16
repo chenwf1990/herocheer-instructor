@@ -1,8 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -36,5 +36,10 @@ public class WorkingSchedule extends BaseEntity {
     private String serviceEndTime;
     @ApiModelProperty("备注")   
     private String remarks;
+
+    @ApiModelProperty("借用开始时段 (时分)")
+    private String borrowBeginTime;
+    @ApiModelProperty("借用结束时段 (时分)")
+    private String borrowEndTime;
 
 }

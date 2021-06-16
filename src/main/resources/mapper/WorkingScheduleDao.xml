@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.WorkingScheduleDao">
     
     <sql id="table_field">
-      id, activityId, activityTitle,activityAddress, activityDetailId, activityType, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
+      id, activityId, activityTitle,activityAddress, activityDetailId, activityType, courierStationId, courierStationName, scheduleTime, serviceTimeId, serviceBeginTime, serviceEndTime, borrowBeginTime, borrowEndTime, remarks, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -46,6 +46,12 @@
         <if test="remarks != null">
             remarks,
         </if>
+        <if test="borrowBeginTime != null">
+            borrowBeginTime,
+        </if>
+        <if test="borrowEndTime != null">
+            borrowEndTime,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -85,6 +91,12 @@
         </if>
         <if test="remarks != null">
             #{remarks},
+        </if>
+        <if test="borrowBeginTime != null">
+            #{borrowBeginTime},
+        </if>
+        <if test="borrowEndTime != null">
+            #{borrowEndTime},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -135,6 +147,12 @@
             </if>
             <if test="remarks != null">
                 remarks = #{remarks},
+            </if>
+            <if test="borrowBeginTime != null">
+                borrowBeginTime = #{borrowBeginTime},
+            </if>
+            <if test="borrowEndTime != null">
+                borrowEndTime = #{borrowEndTime},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -412,47 +430,47 @@
     <!-- 可借用时段 -->
     <select id="selectBorrowRange" parameterType="map" resultType="com.herocheer.instructor.domain.entity.WorkingSchedule">
         select
-            id,
-            activityId,
-            activityTitle,
-            activityAddress,
-            activityDetailId,
-            activityType,
-            courierStationId,
-            courierStationName,
-            scheduleTime,
-            serviceTimeId,
-            serviceBeginTime,
-            serviceEndTime,
-            remarks,
-            createdId,
-            createdBy,
-            createdTime,
-            updateId,
-            updateBy,
-            updateTime
-        from working_schedule
+            a.id,
+            a.activityId,
+            a.activityTitle,
+            a.activityAddress,
+            a.activityDetailId,
+            a.activityType,
+            a.courierStationId,
+            a.courierStationName,
+            a.scheduleTime,
+            a.serviceTimeId,
+            b.borrowTimes serviceBeginTime,
+            '' as serviceEndTime,
+            a.remarks,
+            a.createdId,
+            a.createdBy,
+            a.createdTime,
+            a.updateId,
+            a.updateBy,
+            a.updateTime
+        from working_schedule a  LEFT JOIN service_hours b on a.serviceTimeId = b.id
         <where>
             <if test="activityType != null">
-                and activityType = #{activityType}
+                and a.activityType = #{activityType}
             </if>
             <if test="courierStationId != null">
-                and courierStationId = #{courierStationId}
+                and a.courierStationId = #{courierStationId}
             </if>
             <if test="courierStationName != null">
-                and courierStationName = #{courierStationName}
+                and a.courierStationName = #{courierStationName}
             </if>
             <if test="scheduleTime != null">
-                and scheduleTime = #{scheduleTime}
+                and a.scheduleTime = #{scheduleTime}
             </if>
             <if test="serviceTimeId != null">
-                and serviceTimeId = #{serviceTimeId}
+                and a.serviceTimeId = #{serviceTimeId}
             </if>
             <if test="serviceBeginTime != null">
-                and serviceBeginTime = #{serviceBeginTime}
+                and a.serviceBeginTime = #{serviceBeginTime}
             </if>
             <if test="serviceEndTime != null">
-                and serviceEndTime = #{serviceEndTime}
+                and a.serviceEndTime = #{serviceEndTime}
             </if>
         </where>
     </select>

@@ -1,5 +1,7 @@
 package com.herocheer.instructor.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.alibaba.fastjson.JSONObject;
 import com.herocheer.cache.bean.RedisClient;
 import com.herocheer.common.base.Page.Page;
@@ -9,11 +11,17 @@ import com.herocheer.instructor.domain.vo.ReportClicksStatisVO;
 import com.herocheer.instructor.domain.vo.ReportClicksVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.service.ReportClicksService;
+import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author gaorh
@@ -59,5 +73,43 @@ public class ReportClicksController extends BaseController {
     public ResponseResult<Page<ReportClicksStatisVO>> fetchClicksByPage(@ApiParam("点击量信息") @RequestBody ReportClicksVO reportClicksVO, HttpServletRequest request){
         // 新增工作日志
         return ResponseResult.ok(reportClicksService.findReportClicksByPage(reportClicksVO));
+    }
+
+    /**
+     * 点击量统计导出
+     *
+     * @param response 响应
+     * @param itemType 项目类型
+     * @param itemId   项id
+     */
+    @SneakyThrows
+    @GetMapping("/clicks/excel")
+    @ApiOperation("点击量统计导出")
+    @AllowAnonymous
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "itemType", value = "项目类型",dataType = "int",paramType = "query"),
+            @ApiImplicitParam(name = "itemId", value = "项目名称",dataType = "long",paramType = "query")
+    })
+    public void clicksExcelDownload(Integer itemType, Long itemId, HttpServletResponse response) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = "点击量统计信息"+"-"+sdf.format(new Date());
+        // 告诉浏览器用什么软件可以打开此文件
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        // 下载文件的默认名称
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dateStr,"UTF-8") + ".xls");
+        //编码
+        response.setCharacterEncoding("UTF-8");
+
+        // 导出的数据
+        ReportClicksVO reportClicksVO = ReportClicksVO.builder().build();
+        reportClicksVO.setItemId(itemId);
+        reportClicksVO.setItemType(itemType);
+
+        List<ReportClicksStatisVO> reportClicksList = reportClicksService.findReportClicks(reportClicksVO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), ReportClicksStatisVO.class, reportClicksList);
+        OutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
     }
 }

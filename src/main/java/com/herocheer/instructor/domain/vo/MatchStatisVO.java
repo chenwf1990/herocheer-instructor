@@ -1,5 +1,7 @@
 package com.herocheer.instructor.domain.vo;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
  * @author gaorh
  * @create 2021-06-09
  */
+@ExcelTarget("matchStatis")
 @ApiModel(description = "赛事服务时长统计VO")
 @Builder
 @Data
@@ -23,24 +26,30 @@ public class MatchStatisVO {
     @ApiModelProperty("用户ID")
     private Long userId;
 
+    @Excel(name = "姓名", orderNum = "1")
     @ApiModelProperty("姓名")
     private String name;
 
+    @Excel(name = "证书等级", orderNum = "2")
     @ApiModelProperty("证书等级")
     private String certificateGrade;
 
+    @Excel(name = "指导项目", orderNum = "3")
     @ApiModelProperty("指导项目")
     private String guideProject;
 
+    @Excel(name = "值班日期", orderNum = "4")
     @ApiModelProperty("值班日期")
     private Long scheduleTime;
 
     @ApiModelProperty("赛事ID")
     private Long activityId;
 
+    @Excel(name = "赛事名称", orderNum = "5")
     @ApiModelProperty("赛事名称")
     private String activityTitle;
 
+    @Excel(name = "服务时长", orderNum = "6")
     @ApiModelProperty("服务时长")
     private Integer serviceTimeTotal;
 

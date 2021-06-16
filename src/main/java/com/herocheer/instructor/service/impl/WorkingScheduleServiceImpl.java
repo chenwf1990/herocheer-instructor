@@ -735,4 +735,15 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
         paramMap.put("scheduleTime",DateUtil.today()+  " 00:00:00");
         return this.dao.selectBorrowDate(paramMap);
     }
+
+    /**
+     * 可借用时段
+     *
+     * @param paramMap 参数映射
+     * @return {@link List<WorkingSchedule>}
+     */
+    @Override
+    public List<WorkingSchedule> findBorrowRange(Map<String,Object> paramMap) {
+        return this.dao.selectBorrowRange(paramMap);
+    }
 }

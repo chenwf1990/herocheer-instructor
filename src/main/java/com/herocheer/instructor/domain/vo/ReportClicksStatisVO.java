@@ -1,5 +1,7 @@
 package com.herocheer.instructor.domain.vo;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 import com.herocheer.instructor.domain.entity.ReportClicks;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,6 +19,7 @@ import lombok.experimental.SuperBuilder;
  * @create 2021-06-08
  */
 
+@ExcelTarget("reportClicksStatis")
 @ApiModel(description = "点击量统计VO")
 @SuperBuilder
 @Data
@@ -26,6 +29,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class ReportClicksStatisVO extends ReportClicks{
 
+    @Excel(name = "点击量", orderNum = "5")
     @ApiModelProperty("点击量")
     private Integer clicksNum;
 

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author chenwf
@@ -130,4 +131,13 @@ public interface WorkingScheduleService extends BaseService<WorkingSchedule,Long
      * @return {@link List<WorkingSchedule>}
      */
     List<WorkingSchedule> findBorrowDate(Long courierStationId,Long currentTime);
+
+
+    /**
+     * 可借用时段
+     *
+     * @param paramMap 参数映射
+     * @return {@link List<WorkingSchedule>}
+     */
+    List<WorkingSchedule> findBorrowRange(Map<String,Object> paramMap);
 }

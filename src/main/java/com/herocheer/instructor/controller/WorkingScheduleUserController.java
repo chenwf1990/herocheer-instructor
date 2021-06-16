@@ -109,7 +109,6 @@ public class WorkingScheduleUserController extends BaseController{
 
     /**
      * 可借用时段
-     * 根据借用日期获取驿站值班时段信息
      *
      * @param courierStationId 驿站id
      * @return {@link ResponseResult<List<WorkingSchedulsUserVo>>}
