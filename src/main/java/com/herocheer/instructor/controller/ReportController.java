@@ -1,8 +1,11 @@
 package com.herocheer.instructor.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.instructor.domain.entity.SummaryExcel;
 import com.herocheer.instructor.domain.entity.SysDept;
 import com.herocheer.instructor.domain.vo.CourseStatisVO;
 import com.herocheer.instructor.domain.vo.DutyStatisVO;
@@ -12,9 +15,13 @@ import com.herocheer.instructor.domain.vo.ServiceHoursReportVo;
 import com.herocheer.instructor.domain.vo.ServiceTotalVO;
 import com.herocheer.instructor.service.ReportService;
 import com.herocheer.instructor.utils.DateUtil;
+import com.herocheer.web.annotation.AllowAnonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author chenwf
@@ -104,4 +116,29 @@ public class ReportController {
     public ResponseResult<Page<ServiceTotalVO>> fecthTotalStatisByPage(@ApiParam("服务时长汇总统计") @RequestBody ServiceTotalVO serviceTotalVO, HttpServletRequest request){
         return ResponseResult.ok(reportService.findTotalStatisByPage(serviceTotalVO));
     }
+
+
+
+    @SneakyThrows
+    @GetMapping("/excel")
+    @ApiOperation("导出")
+    @AllowAnonymous
+    public void download(HttpServletResponse response) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = "["+"数据表"+"-"+sdf.format(new Date())+"]";
+        // 告诉浏览器用什么软件可以打开此文件
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        // 下载文件的默认名称
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dateStr,"UTF-8") + ".xls");
+        //编码
+        response.setCharacterEncoding("UTF-8");
+        List<SummaryExcel> list = new ArrayList<>();
+        SummaryExcel tt = new SummaryExcel();
+        tt.setType("ceshi");
+        tt.setDate("2021-06-15");
+        list.add(tt);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), SummaryExcel.class, list);
+        workbook.write(response.getOutputStream());
+    }
+
 }
