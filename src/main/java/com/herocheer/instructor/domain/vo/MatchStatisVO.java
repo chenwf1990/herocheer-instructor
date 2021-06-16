@@ -38,14 +38,14 @@ public class MatchStatisVO {
     @ApiModelProperty("指导项目")
     private String guideProject;
 
-    @Excel(name = "值班日期", orderNum = "4")
+    @Excel(name = "值班日期", orderNum = "4", width = 25 ,format = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("值班日期")
     private Long scheduleTime;
 
     @ApiModelProperty("赛事ID")
     private Long activityId;
 
-    @Excel(name = "赛事名称", orderNum = "5")
+    @Excel(name = "赛事名称", orderNum = "5", width = 25)
     @ApiModelProperty("赛事名称")
     private String activityTitle;
 

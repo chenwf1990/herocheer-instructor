@@ -153,7 +153,7 @@
         select <include refid="table_field"/> from work_diary
         <where>
             <if test="registerName != null">
-                and registerName = #{registerName}
+                and registerName like concat('%',#{registerName},'%')
             </if>
             <if test="diaryType != null">
                 and diaryType = #{diaryType}
@@ -162,21 +162,21 @@
                 and workingDate = #{workingDate}
             </if>
             <if test="objectInfo != null">
-                and objectInfo = #{objectInfo}
+                and objectInfo like concat('%',#{objectInfo},'%')
             </if>
 
             <if test="dutyBeginTime != null">
-                and workingDate <![CDATA[ > ]]> #{dutyBeginTime}
+                and workingDate <![CDATA[ >= ]]> #{dutyBeginTime}
             </if>
             <if test="dutyEndTime != null">
-                and workingDate <![CDATA[ < ]]> #{dutyEndTime}
+                and workingDate <![CDATA[ <= ]]> #{dutyEndTime}
             </if>
 
             <if test="beginTime != null">
-                and createdTime <![CDATA[ > ]]> #{beginTime}
+                and createdTime <![CDATA[ >= ]]> #{beginTime}
             </if>
             <if test="endTime != null">
-                and createdTime <![CDATA[ < ]]> #{endTime}
+                and createdTime <![CDATA[ <= ]]> #{endTime}
             </if>
         </where>
     </select>

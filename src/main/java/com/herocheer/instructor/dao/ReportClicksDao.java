@@ -6,6 +6,7 @@ import com.herocheer.instructor.domain.vo.ReportClicksVO;
 import com.herocheer.mybatis.base.dao.BaseDao;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -22,5 +23,13 @@ public interface ReportClicksDao extends BaseDao<ReportClicks, Long> {
      * @return {@link List<ReportClicksStatisVO>}
      */
     List<ReportClicksStatisVO> selectClicksByPage(ReportClicksVO reportClicksVO);
+
+    /**
+     * 课程点击量数
+     *
+     * @param paramMap 参数映射
+     * @return {@link ReportClicksStatisVO}
+     */
+    ReportClicksStatisVO selectClicksByCourseId(Map<String, Object> paramMap);
 
 }

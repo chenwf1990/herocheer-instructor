@@ -32,11 +32,11 @@ public class CourseStatisVO {
     @ApiModelProperty("授课老师ID")
     private Long lecturerTeacherId;
 
-    @Excel(name = "授课老师姓名", orderNum = "2")
+    @Excel(name = "授课老师姓名", orderNum = "2", width = 25)
     @ApiModelProperty("授课老师姓名")
     private String lecturerTeacherName;
 
-    @Excel(name = "开课日期", orderNum = "3")
+    @Excel(name = "开课日期", orderNum = "3", width = 25,format = "yyyy-MM-dd")
     @ApiModelProperty("开课日期")
     private Long courseStartTime;
 
@@ -44,11 +44,11 @@ public class CourseStatisVO {
     @ApiModelProperty("证书等级")
     private String certificateGrade;
 
-    @Excel(name = "指导项目", orderNum = "5")
+    @Excel(name = "指导项目", orderNum = "5", width = 20)
     @ApiModelProperty("指导项目")
     private String guideProject;
 
-    @Excel(name = "服务时长", orderNum = "6")
+    @Excel(name = "服务时长（分钟）", orderNum = "6")
     @ApiModelProperty("服务时长")
     private Integer serviceTimeTotal;
 

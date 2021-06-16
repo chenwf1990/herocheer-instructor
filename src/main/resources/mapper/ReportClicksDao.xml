@@ -146,11 +146,29 @@
             <if test="itemType != null">
                 and itemType = #{itemType}
             </if>
+            <if test="itemId != null">
+                and itemId = #{itemId}
+            </if>
             <if test="releaseTime != null">
                 and releaseTime = #{releaseTime}
             </if>
         </where>
         GROUP BY itemType,itemId,itemName,releaseTime
         ORDER BY releaseTime
+    </select>
+
+    <!--课程点击量数-->
+    <select id="selectClicksByCourseId" parameterType="map" resultType="com.herocheer.instructor.domain.vo.ReportClicksStatisVO">
+        select itemType,itemId,itemName,releaseTime,count(*) as clicksNum from report_clicks
+        <where>
+            and itemType = 2
+            <if test="itemName != null">
+                and itemName = #{itemName}
+            </if>
+            <if test="itemId != null">
+                and itemId = #{itemId}
+            </if>
+        </where>
+        GROUP BY itemType,itemId,itemName,releaseTime
     </select>
 </mapper>

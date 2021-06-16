@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,6 +76,7 @@ public class ReportClicksController extends BaseController {
         return ResponseResult.ok(reportClicksService.findReportClicksByPage(reportClicksVO));
     }
 
+
     /**
      * 点击量统计导出
      *
@@ -111,5 +113,19 @@ public class ReportClicksController extends BaseController {
         workbook.write(outputStream);
         outputStream.flush();
         outputStream.close();
+    }
+
+    /**
+     * 获取单击进程id
+     *
+     * @param id      id
+     * @param request 请求
+     * @return {@link ResponseResult<Page<ReportClicksStatisVO>>}
+     */
+    @GetMapping("/clicks/course/{id:\\w+}")
+    @ApiOperation("课程点击量")
+    public ResponseResult<ReportClicksStatisVO> fetchClicksByCourseId(@ApiParam("课程ID") @PathVariable Long id, HttpServletRequest request){
+        // 新增工作日志
+        return ResponseResult.ok(reportClicksService.findClicksByCourseId(id));
     }
 }

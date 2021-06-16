@@ -4,6 +4,7 @@ import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.ResponseResult;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.vo.BorrowInfoVO;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -115,7 +117,7 @@ public class WorkingScheduleUserController extends BaseController{
      */
     @GetMapping("/current/time/range")
     @ApiOperation("可借用时段")
-    public ResponseResult<List<WorkingSchedule>> fetchTimeRangeByBorrowDate(@ApiParam("驿站id") @RequestParam Long courierStationId,@ApiParam("借用日期") @RequestParam Long borrowDate){
+    public ResponseResult<Collection<BorrowInfoVO>> fetchTimeRangeByBorrowDate(@ApiParam("驿站id") @RequestParam Long courierStationId, @ApiParam("借用日期") @RequestParam Long borrowDate){
         return ResponseResult.ok(workingScheduleUserService.fetchTimeRangeByBorrowDate(courierStationId,borrowDate));
     }
 

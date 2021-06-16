@@ -503,7 +503,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      */
     @Override
     public List<MemberVO> findUser() {
-        List<User> userList = this.dao.selectSysUserByPage(new SysUserVO());
+        List<User> userList = this.dao.findByLimit(new HashMap<>());
         List<MemberVO> memberList = new ArrayList<>();
         MemberVO memberVO = null;
         if(!CollectionUtils.isEmpty(userList)){

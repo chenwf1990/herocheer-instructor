@@ -1,8 +1,8 @@
 package com.herocheer.instructor.domain.entity;
 
 import com.herocheer.common.base.entity.BaseEntity;
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * @author chenwf
@@ -18,11 +18,17 @@ public class ActivityRecruitDetail extends BaseEntity {
     private String serviceStartTime;
     @ApiModelProperty("结束服务时间-时分")   
     private String serviceEndTime;
-    @ApiModelProperty("服务日期")   
+
+    @ApiModelProperty("服务日期")
     private Long serviceDate;
     @ApiModelProperty("招募人数")   
     private Integer recruitNumber;
     @ApiModelProperty("已招募人数")   
     private Integer hadRecruitNumber;
+
+    @ApiModelProperty("开始借用时间-时分")
+    private String borrowBeginTime;
+    @ApiModelProperty("结束借用时间-时分")
+    private String borrowEndTime;
 
 }

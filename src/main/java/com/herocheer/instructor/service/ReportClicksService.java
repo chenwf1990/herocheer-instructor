@@ -35,4 +35,12 @@ public interface ReportClicksService extends BaseService<ReportClicks, Long> {
     Page<ReportClicksStatisVO> findReportClicksByPage(ReportClicksVO reportClicksVO);
 
     List<ReportClicksStatisVO> findReportClicks(ReportClicksVO reportClicksVO);
+
+    /**
+     * 通过课程id找到点击
+     *
+     * @param courseId 进程id
+     * @return {@link ReportClicksStatisVO}
+     */
+    ReportClicksStatisVO findClicksByCourseId(Long courseId);
 }

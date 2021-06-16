@@ -38,14 +38,14 @@ public class DutyStatisVO {
     @ApiModelProperty("指导项目")
     private String guideProject;
 
-    @Excel(name = "值班日期", orderNum = "4")
+    @Excel(name = "值班日期", orderNum = "4", width = 25,format = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("值班日期")
     private Long scheduleTime;
 
     @ApiModelProperty("驿站ID")
     private Long courierStationId;
 
-    @Excel(name = "驿站名称", orderNum = "5")
+    @Excel(name = "驿站名称", orderNum = "5",width = 25)
     @ApiModelProperty("驿站名称")
     private String courierStationName;
 

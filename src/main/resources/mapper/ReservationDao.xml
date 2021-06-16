@@ -582,7 +582,7 @@
     <select id="selectReservationOpenidByCourseScheduleId" parameterType="map" resultType="java.lang.String">
         SELECT u.openid FROM `reservation` r
         LEFT JOIN `user` u on r.userId = u.id
-        where r.relevanceId = #{relevanceId} and r.status = 3 and r.type = #{type} and r.courseScheduleId = #{courseScheduleId}
+        where r.relevanceId = #{relevanceId} and r.status = 6 and r.type = #{type} and r.courseScheduleId = #{courseScheduleId}
     </select>
 
 </mapper>

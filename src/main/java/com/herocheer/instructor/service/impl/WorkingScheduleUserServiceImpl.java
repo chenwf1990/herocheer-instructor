@@ -3,6 +3,7 @@ package com.herocheer.instructor.service.impl;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.exception.CommonException;
+import com.herocheer.common.utils.StringUtils;
 import com.herocheer.instructor.dao.WorkingScheduleDao;
 import com.herocheer.instructor.dao.WorkingScheduleUserDao;
 import com.herocheer.instructor.domain.entity.ActivityRecruitInfo;
@@ -10,6 +11,7 @@ import com.herocheer.instructor.domain.entity.CourierStation;
 import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
 import com.herocheer.instructor.domain.entity.WorkingSignRecord;
+import com.herocheer.instructor.domain.vo.BorrowInfoVO;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
@@ -38,8 +40,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -376,15 +380,26 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
      *
      * @param courierStationId 驿站id
      * @param borrowDate       借款日期
-     * @return {@link List<WorkingSchedule>}
+     * @return {@link Collection<BorrowInfoVO>}
      */
     @Override
-    public List<WorkingSchedule> fetchTimeRangeByBorrowDate(Long courierStationId,Long borrowDate) {
+    public Collection<BorrowInfoVO> fetchTimeRangeByBorrowDate(Long courierStationId, Long borrowDate) {
         Map<String, Object> paramMap =  new HashMap<>();
         paramMap.put("activityType",1);
         paramMap.put("courierStationId",courierStationId);
         paramMap.put("scheduleTime",borrowDate);
-        return workingScheduleService.findByLimit(paramMap);
+
+        List<WorkingSchedule> list = workingScheduleService.findByLimit(paramMap);
+        Set<BorrowInfoVO> set = new HashSet<>();
+        for (WorkingSchedule workingSchedule:list){
+            BorrowInfoVO  borrowInfo = BorrowInfoVO.builder().build();
+            if(StringUtils.isNotBlank(workingSchedule.getBorrowBeginTime())){
+                borrowInfo.setBorrowBeginTime(workingSchedule.getBorrowBeginTime());
+                borrowInfo.setBorrowEndTime(workingSchedule.getBorrowEndTime());
+            }
+            set.add(borrowInfo);
+        }
+        return set;
     }
 
     /**

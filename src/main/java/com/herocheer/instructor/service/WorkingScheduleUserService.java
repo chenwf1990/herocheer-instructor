@@ -3,13 +3,14 @@ package com.herocheer.instructor.service;
 import com.herocheer.common.base.Page.Page;
 import com.herocheer.common.base.entity.UserEntity;
 import com.herocheer.common.base.service.BaseService;
-import com.herocheer.instructor.domain.entity.WorkingSchedule;
 import com.herocheer.instructor.domain.entity.WorkingScheduleUser;
+import com.herocheer.instructor.domain.vo.BorrowInfoVO;
 import com.herocheer.instructor.domain.vo.ReservationInfoQueryVo;
 import com.herocheer.instructor.domain.vo.ReservationInfoVo;
 import com.herocheer.instructor.domain.vo.WorkingScheduleUserQueryVo;
 import com.herocheer.instructor.domain.vo.WorkingSchedulsUserVo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -141,9 +142,9 @@ public interface WorkingScheduleUserService extends BaseService<WorkingScheduleU
      *
      * @param courierStationId 驿站id
      * @param borrowDate       借款日期
-     * @return {@link List<WorkingSchedule>}
+     * @return {@link Collection<BorrowInfoVO>}
      */
-    List<WorkingSchedule> fetchTimeRangeByBorrowDate(Long courierStationId,Long borrowDate);
+    Collection<BorrowInfoVO> fetchTimeRangeByBorrowDate(Long courierStationId, Long borrowDate);
 
     /**
      * 可借用日期(排班)

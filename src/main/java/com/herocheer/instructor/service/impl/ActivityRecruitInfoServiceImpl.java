@@ -254,6 +254,7 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer approval(ActivityRecruitApproval activityRecruitApproval,UserEntity userEntity) {
+        // 招募信息详情
         ActivityRecruitInfo activityRecruitInfo=this.dao.get(activityRecruitApproval.getRecruitId());
         if(activityRecruitInfo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "招募信息不存在!");
@@ -261,6 +262,8 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
         if(activityRecruitInfo.getApprovalStatus()!=ActivityApprovalStateEnums.PENDING.getState()){
             throw new CommonException(ResponseCode.SERVER_ERROR, "该招募信息非待审核状态!");
         }
+
+        // 招募信息发布审核
         if (activityRecruitApproval.getApprovalStatus()== ActivityApprovalStateEnums.PASSED.getState()){
             //审核通过
             activityRecruitInfo.setApprovalStatus(ActivityApprovalStateEnums.PASSED.getState());
@@ -272,26 +275,39 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             throw new CommonException(ResponseCode.SERVER_ERROR, "审核状态无效!");
         }
         activityRecruitApprovalService.insert(activityRecruitApproval);
+
+        // 更新审批人信息
         activityRecruitInfo.setApprovalStatus(activityRecruitApproval.getApprovalStatus());
         activityRecruitInfo.setApprovalComments(activityRecruitApproval.getApprovalComments());
         activityRecruitInfo.setApprovalId(userEntity.getId());
         activityRecruitInfo.setApprovalBy(userEntity.getUserName());
         activityRecruitInfo.setApprovalTime(System.currentTimeMillis());
         Integer count=this.dao.update(activityRecruitInfo);
-        //生成驿站招募明细
+
+        // 驿站招募明细
         if(activityRecruitInfo.getApprovalStatus()==ActivityApprovalStateEnums.PASSED.getState()
             &&activityRecruitInfo.getRecruitType()==RecruitTypeEunms.STATION_RECRUIT.getType()
             && StringUtils.isNotBlank(activityRecruitInfo.getServiceHours())){
-            String[] serviceHours=activityRecruitInfo.getServiceHours().split(",");
-            ActivityRecruitDetail detail=new ActivityRecruitDetail();
+
+            String[] serviceHours = activityRecruitInfo.getServiceHours().split(",");
+            String[] borrowHours = activityRecruitInfo.getBorrowHours().split(",");
+            ActivityRecruitDetail detail = new ActivityRecruitDetail();
             detail.setRecruitId(activityRecruitInfo.getId());
+            // 招募人数
             detail.setRecruitNumber(activityRecruitInfo.getRecruitNumber());
-            for(Long i=activityRecruitInfo.getServiceStartDate();i<=activityRecruitInfo.getServiceEndDate();i=i+24*60*60*1000){
-                for(String hours:serviceHours){
-                    String[] time=hours.split("-");
+            for(Long i=activityRecruitInfo.getServiceStartDate();i<=activityRecruitInfo.getServiceEndDate();i= i+24*60*60*1000){
+                // 服务时段
+                for(int j = 0 ;j < serviceHours.length; j++){
+                    String[] time = serviceHours[j].split("-");
                     detail.setServiceDate(i);
                     detail.setServiceStartTime(time[0]);
                     detail.setServiceEndTime(time[1]);
+
+                    // 器材借用时段
+                    String[] timerange=borrowHours[j].split("-");
+                    detail.setBorrowBeginTime(timerange[0]);
+                    detail.setBorrowEndTime(timerange[1]);
+
                     activityRecruitDetailService.insert(detail);
                     detail.setId(null);
                 }

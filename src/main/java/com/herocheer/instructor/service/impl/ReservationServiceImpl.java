@@ -125,6 +125,11 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
         map.put("userId",userId);
         map.put("type", RecruitTypeEunms.COURIER_RECRUIT.getType());
         map.put("status",ReserveStatusEnums.ALREADY_RESERVE.getState());
+
+        // 固定课程
+        if(courseInfo.getOfferCourseType().equals(2)){
+            map.put("courseScheduleId",reservationMemberVO.getCourseScheduleId());
+        }
         log.debug("当前用户报名信息:{}",map);
         List<Reservation> list=this.dao.findByLimit(map);
         if(!list.isEmpty()){

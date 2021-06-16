@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.herocheer.instructor.dao.ActivityRecruitDetailDao">
     <sql id="table_field">
-      id, recruitId, serviceStartTime, serviceEndTime, serviceDate, recruitNumber, hadRecruitNumber, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, recruitId, serviceStartTime, serviceEndTime, serviceDate, recruitNumber, hadRecruitNumber, borrowBeginTime, borrowEndTime ,createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
     
     <!--单表新增-->
@@ -27,6 +27,12 @@
         <if test="hadRecruitNumber != null">
             hadRecruitNumber,
         </if>
+        <if test="borrowBeginTime != null">
+            borrowBeginTime,
+        </if>
+        <if test="borrowEndTime != null">
+            borrowEndTime,
+        </if>
         <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
     </trim>
     ) VALUES (
@@ -48,6 +54,12 @@
         </if>
         <if test="hadRecruitNumber != null">
             #{hadRecruitNumber},
+        </if>
+        <if test="borrowBeginTime != null">
+            #{borrowBeginTime},
+        </if>
+        <if test="borrowEndTime != null">
+            #{borrowEndTime},
         </if>
 	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
     </trim>
@@ -80,6 +92,12 @@
             </if>
             <if test="hadRecruitNumber != null">
                 hadRecruitNumber = #{hadRecruitNumber},
+            </if>
+            <if test="borrowBeginTime != null">
+                borrowBeginTime = #{borrowBeginTime},
+            </if>
+            <if test="borrowEndTime != null">
+                borrowEndTime = #{borrowEndTime},
             </if>
 		    <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>

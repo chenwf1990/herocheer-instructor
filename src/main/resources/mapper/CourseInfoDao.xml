@@ -546,7 +546,8 @@
             <if test="state!=null and state==1">
                 AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> signStartTime
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime
-                AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+--                 报名结束到课程开始时间可能有空档
+--                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="state!=null and state==0">
                 AND state!=5 AND (approvalStatus != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000

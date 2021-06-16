@@ -775,7 +775,7 @@
                         FROM
                         `course_info` c
                         WHERE
-                        c.offerCourseType = 1
+                        c.offerCourseType = 1 and c.approvalStatus = 1 and c.state != 5 and  c.courseEndTime <![CDATA[ < ]]> unix_timestamp() * 1000
                     ) j
                     GROUP BY j.lecturerTeacherId
                 ) aa LEFT JOIN course_tearcher d on aa.lecturerTeacherId=d.id
@@ -807,7 +807,7 @@
                             ) total
                         FROM `course_schedule` a
                         LEFT JOIN course_info b on a.courseId = b.id
-                        WHERE a.cancelStatus = 1 and   a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
+                        WHERE a.cancelStatus = 1 and  b.approvalStatus = 1 and   a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
                         GROUP BY a.courseId
                     ) jj
                     GROUP BY jj.lecturerTeacherId
@@ -831,14 +831,15 @@
                         SELECT * from
                         -- 			3.1值班
                         (
-                            SELECT d.userId,   0 as matchServiceCount,  0 as matchServiceTimeTotal, count(*) dutyServiceCount,SUM(total) dutyServiceTimeTotal FROM
+                            SELECT d.userId,   0 as matchServiceCount,  0 as matchServiceTimeTotal, count(actualServiceTime) dutyServiceCount,SUM(total) dutyServiceTimeTotal FROM
                             (
                                 SELECT
                                 b.userId,
+                                b.actualServiceTime,
                                 IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) total
                                 FROM working_schedule a
                                 INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
-                                WHERE a.activityType = 1
+                                WHERE a.activityType = 1 and b.reserveStatus = 0
                             ) d
                             GROUP BY d.userId
                         ) w
@@ -848,14 +849,15 @@
                         -- 			3.2赛事
                         SELECT * FROM
                         (
-                            SELECT e.userId,count(*) matchServiceCount,sum(total) matchServiceTimeTotal , 0 as dutyServiceCount , 0 as dutyServiceTimeTotal FROM
+                            SELECT e.userId,count(actualServiceTime) matchServiceCount,sum(total) matchServiceTimeTotal , 0 as dutyServiceCount , 0 as dutyServiceTimeTotal FROM
                             (
                                 SELECT
                                 b.userId,
+                                b.actualServiceTime,
                                 IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) total
                                 FROM working_schedule a
                                 INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
-                                WHERE a.activityType = 2
+                                WHERE a.activityType = 2 and b.reserveStatus = 0
                             ) e
                             GROUP BY e.userId
                         ) y
@@ -893,7 +895,7 @@
                     and ee.name like concat(#{name},'%')
                 </if>
                 <if test="guideProject != null">
-                    and ee.guideProject = #{guideProject}
+                    and ee.guideProject like concat('%',#{guideProject},'%')
                 </if>
                 <if test="certificateGrade != null">
                     and ee.certificateGrade = #{certificateGrade}

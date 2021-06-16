@@ -11,7 +11,9 @@ import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gaorh
@@ -55,5 +57,18 @@ public class ReportClicksServiceImpl extends BaseServiceImpl<ReportClicksDao, Re
     @Override
     public List<ReportClicksStatisVO> findReportClicks(ReportClicksVO reportClicksVO) {
         return this.dao.selectClicksByPage(reportClicksVO);
+    }
+
+    /**
+     * 通过课程id找到点击
+     *
+     * @param courseId 进程id
+     * @return {@link ReportClicksStatisVO}
+     */
+    @Override
+    public ReportClicksStatisVO findClicksByCourseId(Long courseId) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("itemId",courseId);
+        return this.dao.selectClicksByCourseId(paramMap);
     }
 }

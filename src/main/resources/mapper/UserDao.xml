@@ -325,7 +325,7 @@
     <select id="findByLimit" parameterType="map" resultType="com.herocheer.instructor.domain.entity.User">
         select
         <include refid="table_field"/>
-        from user
+        from `user`
         <where>
             <if test="imgUrl != null">
                 and imgUrl = #{imgUrl}

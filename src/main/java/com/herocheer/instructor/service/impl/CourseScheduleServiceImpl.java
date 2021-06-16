@@ -34,7 +34,7 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class CourseScheduleServiceImpl extends BaseServiceImpl<CourseScheduleDao, CourseSchedule, Long> implements CourseScheduleService {
 
     @Resource
@@ -109,13 +109,28 @@ public class CourseScheduleServiceImpl extends BaseServiceImpl<CourseScheduleDao
         courseSchedule.setCancelTime(System.currentTimeMillis());
         this.dao.update(courseSchedule);
 
-        // 3-发送微信消息
         CourseInfo courseInfo = courseInfoService.get(courseSchedule.getCourseId());
+
+        // 3-课程的课表全部取消时状态更新为已取消
+        Map<String, Object> courseScheduleMap = new HashMap<>();
+        //  1：未取消，2：已取消
+        courseScheduleMap.put("cancelStatus",1);
+        courseScheduleMap.put("courseId",courseSchedule.getCourseId());
+        List<CourseSchedule> courseScheduleList = this.dao.findByLimit(courseScheduleMap);
+        if(CollectionUtils.isEmpty(courseScheduleList)){
+
+            // 3.1-更新课程的状态
+            //设置课程状态：5——课程取消
+            courseInfo.setState(5);
+            courseInfoService.update(courseInfo);
+        }
+
+        // 4-发送微信消息
         if(ObjectUtils.isEmpty(courseInfo)){
             throw new CommonException("课程信息不存在");
         }
 
-        // 3.1-课表已预约人openId
+        // 4.1-课表已预约人openId
         Map<String, Object> openIdMap = new HashMap<>();
         openIdMap.put("courseScheduleId",courseScheduleCancelVO.getScheduleId());
         openIdMap.put("relevanceId",courseInfo.getId());
@@ -123,10 +138,11 @@ public class CourseScheduleServiceImpl extends BaseServiceImpl<CourseScheduleDao
         Set<String> openids = reservationService.findReservationOpenidByCourseScheduleId(openIdMap);
         log.debug("课表取消时消息通知:{}",openids);
 
-        // 3.2-发送微信消息
+        // 4.2-发送微信消息
         if(!CollectionUtils.isEmpty(openids)){
             wechatService.sendWechatMessages(openids,courseInfo,courseScheduleCancelVO.getScheduleId());
         }
+
         return courseSchedule;
     }
 }

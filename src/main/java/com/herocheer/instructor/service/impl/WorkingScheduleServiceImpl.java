@@ -645,6 +645,8 @@ public class WorkingScheduleServiceImpl extends BaseServiceImpl<WorkingScheduleD
                 workingSchedule.setScheduleTime(activityRecruitDetail.getServiceDate());
                 workingSchedule.setServiceBeginTime(activityRecruitDetail.getServiceStartTime());
                 workingSchedule.setServiceEndTime(activityRecruitDetail.getServiceEndTime());
+                workingSchedule.setBorrowBeginTime(activityRecruitDetail.getBorrowBeginTime());
+                workingSchedule.setBorrowEndTime(activityRecruitDetail.getBorrowEndTime());
                 workingSchedule.setRemarks("活动预约记录");
                 this.dao.insert(workingSchedule);
                 workingScheduleId=workingSchedule.getId();
