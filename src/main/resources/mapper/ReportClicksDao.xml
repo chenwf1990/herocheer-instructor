@@ -154,7 +154,7 @@
             </if>
         </where>
         GROUP BY itemType,itemId,itemName,releaseTime
-        ORDER BY releaseTime
+        ORDER BY releaseTime DESC
     </select>
 
     <!--课程点击量数-->

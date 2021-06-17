@@ -185,6 +185,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         // 获取课程信息
         CourseInfo courseInfo  = this.dao.get(id);
         CourseInfoVo courseInfoVo = new CourseInfoVo();
+
         // 扫码签到场景
         if(ObjectUtils.isEmpty(courseInfo)){
             return courseInfoVo;
@@ -201,7 +202,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         }
 
         // 当前用户的预约信息
-        ReservationListVO reservationListVO = reservationService.findReservationByCurUserId(ReservationQueryVo.builder().relevanceId(id).userId(userId).build());
+        ReservationListVO reservationListVO = reservationService.findReservationByCurUserId(ReservationQueryVo.builder().type(3).relevanceId(id).userId(userId).build());
         if(!ObjectUtils.isEmpty(reservationListVO)){
             if(reservationListVO.getCourseScheduleId() !=null){
                 CourseSchedule courseSchedule = courseScheduleService.get(reservationListVO.getCourseScheduleId());

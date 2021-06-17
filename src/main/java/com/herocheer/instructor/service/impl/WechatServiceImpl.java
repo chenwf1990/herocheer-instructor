@@ -533,80 +533,90 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
         JSONObject sendData = null;
         for (String openid : userList){
-            log.debug("发送课程取消通知给openid:{}",openid);
-            sendData = new JSONObject();
-            // 报名某课程的用户
-            sendData.put("touser", openid);
-            // 固定的tempelteId
-            sendData.put("template_id", InsuranceConst.TEMPLATE_ID);
-            JSONObject content = new JSONObject();
-            JSONObject first = new JSONObject();
-            first.put("value", "尊敬的用户，您好！");
-            content.put("first", first);
+            if(StringUtils.isNotBlank(openid)){
+                log.debug("发送课程取消通知给openid:{}",openid);
+                sendData = new JSONObject();
+                // 报名某课程的用户
+                sendData.put("touser", openid);
+                // 固定的tempelteId
+                sendData.put("template_id", InsuranceConst.TEMPLATE_ID);
+                JSONObject content = new JSONObject();
+                JSONObject first = new JSONObject();
+                first.put("value", "尊敬的用户，您好！");
+                content.put("first", first);
 
-            JSONObject keyword1 = new JSONObject();
-            // 当前时间
-            keyword1.put("value", courseInfo.getTitle());
-            content.put("keyword1",keyword1);
+                JSONObject keyword1 = new JSONObject();
+                // 当前时间
+                keyword1.put("value", courseInfo.getTitle());
+                content.put("keyword1",keyword1);
 
-            // 非固定课程
-            if(courseInfo.getOfferCourseType().equals(1)){
-                JSONObject keyword2 = new JSONObject();
-                keyword2.put("value",  DateUtil.format(DateUtil.date(courseInfo.getCourseStartTime()), "yyyy年MM月dd日")+"（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseInfo.getCourseStartTime()))+"）");
-                content.put("keyword2", keyword2);
+                // 非固定课程
+                if(courseInfo.getOfferCourseType().equals(1)){
+                    JSONObject keyword2 = new JSONObject();
+                    keyword2.put("value",  DateUtil.format(DateUtil.date(courseInfo.getCourseStartTime()), "yyyy年MM月dd日")+"（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseInfo.getCourseStartTime()))+"）");
+                    content.put("keyword2", keyword2);
 
-                JSONObject keyword3 = new JSONObject();
-                keyword3.put("value", courseInfo.getLecturerTeacherName());
-                content.put("keyword3", keyword3);
+                    JSONObject keyword3 = new JSONObject();
+                    keyword3.put("value", courseInfo.getLecturerTeacherName());
+                    content.put("keyword3", keyword3);
 
-                JSONObject keyword4 = new JSONObject();
-                keyword4.put("value",  DateUtil.format(DateUtil.date(courseInfo.getCourseEndTime()), "yyyy年MM月dd日")+
-                        "（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseInfo.getCourseEndTime()))+"）"+
-                        DateUtil.format(DateUtil.date(courseInfo.getCourseStartTime()), "HH:mm")+ " - " + DateUtil.format(DateUtil.date(courseInfo.getCourseEndTime()), "HH:mm"));
-                content.put("keyword4", keyword4);
-            }else {
-                // 课程时间
-                JSONObject keyword2 = new JSONObject();
-                keyword2.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())))+"）");
-                content.put("keyword2", keyword2);
-
-                // 授课老师
-                JSONObject keyword3 = new JSONObject();
-                keyword3.put("value", courseInfo.getLecturerTeacherName());
-                content.put("keyword3", keyword3);
-
-                // 固定课程
-                if(courseScheduleId != null){
-                    // 授课时间段(课表取消通知)
-                    CourseSchedule courseSchedule = courseScheduleService.get(courseScheduleId);
                     JSONObject keyword4 = new JSONObject();
-                    keyword4.put("value",  DateUtil.format(DateUtil.date(courseSchedule.getCourseDate()), "yyyy年MM月dd日")+
-                            "（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseSchedule.getCourseDate()))+"）"+
-                            courseSchedule.getStartTime()+ " - " + courseSchedule.getEndTime());
+                    keyword4.put("value",  DateUtil.format(DateUtil.date(courseInfo.getCourseEndTime()), "yyyy年MM月dd日")+
+                            "（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseInfo.getCourseEndTime()))+"）"+
+                            DateUtil.format(DateUtil.date(courseInfo.getCourseStartTime()), "HH:mm")+ " - " + DateUtil.format(DateUtil.date(courseInfo.getCourseEndTime()), "HH:mm"));
                     content.put("keyword4", keyword4);
                 }else {
-                    // 授课时间段(课程取消通知)
-                    JSONObject keyword4 = new JSONObject();
-                    keyword4.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"~"+ DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseEndZone())), "yyyy年MM月dd日"));
-                    content.put("keyword4", keyword4);
+                    // 课程时间
+                    JSONObject keyword2 = new JSONObject();
+                    keyword2.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())))+"）");
+                    content.put("keyword2", keyword2);
+
+                    // 授课老师
+                    JSONObject keyword3 = new JSONObject();
+                    keyword3.put("value", courseInfo.getLecturerTeacherName());
+                    content.put("keyword3", keyword3);
+
+                    // 固定课程
+                    if(courseScheduleId != null){
+                        // 授课时间段(课表取消通知)
+                        CourseSchedule courseSchedule = courseScheduleService.get(courseScheduleId);
+                        JSONObject keyword4 = new JSONObject();
+                        keyword4.put("value",  DateUtil.format(DateUtil.date(courseSchedule.getCourseDate()), "yyyy年MM月dd日")+
+                                "（"+com.herocheer.instructor.utils.DateUtil.getWeekOfDate(DateUtil.date(courseSchedule.getCourseDate()))+"）"+
+                                courseSchedule.getStartTime()+ " - " + courseSchedule.getEndTime());
+                        content.put("keyword4", keyword4);
+                    }else {
+                        // 授课时间段(课程取消通知)
+                        JSONObject keyword4 = new JSONObject();
+                        keyword4.put("value",  DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseStartZone())), "yyyy年MM月dd日")+"~"+ DateUtil.format(DateUtil.date(Long.parseLong(courseInfo.getCourseEndZone())), "yyyy年MM月dd日"));
+                        content.put("keyword4", keyword4);
+                    }
                 }
-            }
 
-            JSONObject remark = new JSONObject();
-            remark.put("value", "您预约的课程已取消。感谢您的关注！关注'厦门i健身'公众号，报名参加公益课程。");
-            content.put("remark", remark);
-            sendData.put("data",content);
+                JSONObject remark = new JSONObject();
+                remark.put("value", "您预约的课程已取消。感谢您的关注！关注'厦门i健身'公众号，报名参加公益课程。");
+                content.put("remark", remark);
+                sendData.put("data",content);
 
-            log.info("课程下架消息内容:{}",JSONObject.toJSONString(sendData));
+                log.info("课程下架消息内容:{}",JSONObject.toJSONString(sendData));
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<JSONObject> entity = new HttpEntity<>(sendData, headers);
-            ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ accessToken, entity, JSONObject.class);
-            // 发送失败时要提醒
-            JSONObject jsonObject = responseEntity.getBody();
-            if (!"ok".equals(jsonObject.getString("errmsg"))) {
-                throw new CommonException("消息发送失败：{}",jsonObject);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<JSONObject> entity = new HttpEntity<>(sendData, headers);
+                ResponseEntity<JSONObject> responseEntity = restTemplate.postForEntity("https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+ accessToken, entity, JSONObject.class);
+
+                // 发送失败时要提醒
+                JSONObject jsonObject = responseEntity.getBody();
+                if (!"ok".equals(jsonObject.getString("errmsg"))) {
+                    throw new CommonException("消息发送失败：{}",jsonObject);
+                }
+
+                // 太快了，休息下（微信端不给力）
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

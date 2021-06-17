@@ -10,6 +10,7 @@ import com.herocheer.instructor.service.ReportClicksService;
 import com.herocheer.mybatis.base.service.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,12 @@ public class ReportClicksServiceImpl extends BaseServiceImpl<ReportClicksDao, Re
     public ReportClicksStatisVO findClicksByCourseId(Long courseId) {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("itemId",courseId);
-        return this.dao.selectClicksByCourseId(paramMap);
+        ReportClicksStatisVO reportClicksStatis = this.dao.selectClicksByCourseId(paramMap);
+        if(ObjectUtils.isEmpty(reportClicksStatis)){
+            reportClicksStatis = ReportClicksStatisVO.builder().build() ;
+            reportClicksStatis.setClicksNum(0);
+            return reportClicksStatis;
+        }
+        return reportClicksStatis;
     }
 }

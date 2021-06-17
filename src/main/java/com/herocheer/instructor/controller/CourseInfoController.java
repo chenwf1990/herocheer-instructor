@@ -84,7 +84,7 @@ public class CourseInfoController extends BaseController{
      */
     @GetMapping("/get")
     @ApiOperation("根据id查询课程详情")
-    public ResponseResult<CourseInfo> get(@ApiParam("招募信息id") @RequestParam Long id,@ApiParam("扫二维码标识") @RequestParam(value="flag",required=false) String flag,HttpServletRequest request){
+    public ResponseResult<CourseInfo> get(@ApiParam("课程信息id") @RequestParam Long id,@ApiParam("扫二维码标识") @RequestParam(value="flag",required=false) String flag,HttpServletRequest request){
         return ResponseResult.ok(courseInfoService.findCourseInfoById(id,flag,getCurUserId(request)));
     }
 

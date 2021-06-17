@@ -396,8 +396,8 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
             if(StringUtils.isNotBlank(workingSchedule.getBorrowBeginTime())){
                 borrowInfo.setBorrowBeginTime(workingSchedule.getBorrowBeginTime());
                 borrowInfo.setBorrowEndTime(workingSchedule.getBorrowEndTime());
+                set.add(borrowInfo);
             }
-            set.add(borrowInfo);
         }
         return set;
     }

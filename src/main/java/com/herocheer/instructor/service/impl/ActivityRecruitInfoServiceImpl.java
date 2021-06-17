@@ -290,7 +290,11 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
             && StringUtils.isNotBlank(activityRecruitInfo.getServiceHours())){
 
             String[] serviceHours = activityRecruitInfo.getServiceHours().split(",");
-            String[] borrowHours = activityRecruitInfo.getBorrowHours().split(",");
+
+            String[] borrowHours = null;
+            if(StringUtils.isNotBlank(activityRecruitInfo.getBorrowHours())){
+                borrowHours = activityRecruitInfo.getBorrowHours().split(",");
+            }
             ActivityRecruitDetail detail = new ActivityRecruitDetail();
             detail.setRecruitId(activityRecruitInfo.getId());
             // 招募人数
@@ -304,10 +308,11 @@ public class ActivityRecruitInfoServiceImpl extends BaseServiceImpl<ActivityRecr
                     detail.setServiceEndTime(time[1]);
 
                     // 器材借用时段
-                    String[] timerange=borrowHours[j].split("-");
-                    detail.setBorrowBeginTime(timerange[0]);
-                    detail.setBorrowEndTime(timerange[1]);
-
+                    if(borrowHours != null){
+                        String[] timerange=borrowHours[j].split("-");
+                        detail.setBorrowBeginTime(timerange[0]);
+                        detail.setBorrowEndTime(timerange[1]);
+                    }
                     activityRecruitDetailService.insert(detail);
                     detail.setId(null);
                 }

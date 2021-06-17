@@ -675,14 +675,13 @@
 	    INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
 	    LEFT JOIN (
             SELECT
-                i.NAME,
+                u.userName `name`,
                 i.certificateGrade,
                 i.guideProject,
-                i.userId
-            FROM
-                instructor i
-                INNER JOIN `user` u ON u.id = i.userId
-            ) k ON k.userid = b.userId
+                u.id userId
+            FROM `user` u
+            LEFT JOIN instructor i ON u.id = i.userId
+        ) k ON k.userid = b.userId
 
         <where>
             <trim prefixOverrides="AND | OR">
@@ -704,6 +703,8 @@
                 </if>
             </trim>
         </where>
+
+        ORDER BY a.scheduleTime DESC
     </select>
 
     <!--  赛事服务时长统计 -->
@@ -721,13 +722,13 @@
         INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
         LEFT JOIN (
             SELECT
-            i.NAME,
-            i.certificateGrade,
-            i.guideProject,
-            i.userId
+                u.userName `name`,
+                i.certificateGrade,
+                i.guideProject,
+                u.id userId
             FROM
-            instructor i
-            INNER JOIN `user` u ON u.id = i.userId
+                `user` u
+            LEFT JOIN instructor i ON u.id = i.userId
         ) k ON k.userid = b.userId
         <where>
             <trim prefixOverrides="AND | OR">
@@ -749,6 +750,7 @@
                 </if>
             </trim>
         </where>
+        ORDER BY a.scheduleTime DESC
     </select>
 
     <!-- 服务时长汇总表 -->
