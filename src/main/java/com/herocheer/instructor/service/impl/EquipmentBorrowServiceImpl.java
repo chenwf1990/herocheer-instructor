@@ -95,9 +95,12 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             queryVo.setQueryType(3);
         }
 
+        // 用户查询
         if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(2)){
             queryVo.setUserId(userId);
         }
+
+        // 驿站值班人员查询，注意：只能获取当天的器材借用记录，当天之后的暂不能获取
         if(queryVo.getQueryType()!=null && queryVo.getQueryType().equals(1)){
             List<Long> courierStationIds= workingScheduleUserService.findCourierStationId(userId);
             queryVo.setCourierStationIds(courierStationIds);

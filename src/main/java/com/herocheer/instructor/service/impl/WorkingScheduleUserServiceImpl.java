@@ -370,7 +370,7 @@ public class WorkingScheduleUserServiceImpl extends BaseServiceImpl<WorkingSched
         map.put("userId",userId);
         //预约状态0
         map.put("reserveStatus",0);
-        //值班日期
+        //值班日期(当前时间)
         map.put("scheduleTime",System.currentTimeMillis()/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset());
         return this.dao.findCourierStationId(map);
     }
