@@ -8,7 +8,6 @@ import com.herocheer.instructor.domain.entity.SysMenu;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.service.SysMenuService;
-import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -52,7 +52,6 @@ public class SysMenuController extends BaseController {
      */
     @PostMapping
     @ApiOperation("新增菜单")
-    @AllowAnonymous
     public ResponseResult<SysMenu> createMenu(@Valid @ApiParam("系统菜单") @RequestBody SysMenuVO sysMenuVO, HttpServletRequest request){
         return ResponseResult.ok(sysMenuService.addMenu(sysMenuVO));
     }
@@ -66,7 +65,6 @@ public class SysMenuController extends BaseController {
      */
     @DeleteMapping("/{id:\\w+}")
     @ApiOperation("删除菜单")
-    @AllowAnonymous
     public ResponseResult dropMenuById(@ApiParam("菜单ID") @PathVariable Long id, HttpServletRequest request){
         sysMenuService.removeMenuById(id);
         return ResponseResult.ok();
@@ -85,7 +83,6 @@ public class SysMenuController extends BaseController {
      */
     @GetMapping("/{id:\\w+}")
     @ApiOperation("回显菜单")
-    @AllowAnonymous
     public ResponseResult<SysMenuVO> fetchMenuById(@ApiParam("菜单ID") @PathVariable Long id, HttpServletRequest request){
         return ResponseResult.ok(sysMenuService.findMenuById(id));
     }
@@ -99,7 +96,6 @@ public class SysMenuController extends BaseController {
      */
     @PutMapping
     @ApiOperation("编辑菜单")
-    @AllowAnonymous
     public ResponseResult<SysMenu> editMenuById(@Valid @ApiParam("系统菜单") @RequestBody SysMenuVO sysMenuVO,HttpServletRequest request){
         return ResponseResult.ok(sysMenuService.modifyMenuById(sysMenuVO));
     }
@@ -113,7 +109,6 @@ public class SysMenuController extends BaseController {
      */
     @PostMapping("/page")
     @ApiOperation("菜单列表")
-    @AllowAnonymous
     public ResponseResult<Page<SysMenu>> fetchMenuByPage(@RequestBody SysMenuVO sysMenuVO,HttpServletRequest request){
         Page<SysMenu> page = sysMenuService.findMenuByPage(sysMenuVO);
         return ResponseResult.ok(page);
@@ -142,10 +137,9 @@ public class SysMenuController extends BaseController {
      * @param id      id
      * @return {@link ResponseResult<OptionTreeVO>}
      */
-    @GetMapping("/tree/role/{id:\\w+}")
+    @GetMapping("/tree/role")
     @ApiOperation("菜单树")
-    @AllowAnonymous
-    public ResponseResult<OptionTreeVO> fetchMenuTreeToRole(@ApiParam("角色ID") @PathVariable Long id, HttpServletRequest request){
-        return ResponseResult.ok(sysMenuService.findMenuTreeToRole(id));
+    public ResponseResult<OptionTreeVO> fetchMenuTreeToRole(@ApiParam("角色ID") @RequestParam Long id, @ApiParam("系统标识") @RequestParam(required = false) Integer mark, HttpServletRequest request){
+        return ResponseResult.ok(sysMenuService.findMenuTreeToRole(id,mark));
     }
 }

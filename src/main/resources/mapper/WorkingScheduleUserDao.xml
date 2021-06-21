@@ -685,7 +685,7 @@
 
         <where>
             <trim prefixOverrides="AND | OR">
-                and a.activityType = 1
+                and a.activityType = 1 and b.reserveStatus = 0
                 <if test="name != null">
                     and k.name like concat(#{name},'%')
                 </if>
@@ -732,7 +732,7 @@
         ) k ON k.userid = b.userId
         <where>
             <trim prefixOverrides="AND | OR">
-                and a.activityType = 2
+                and a.activityType = 2 and b.reserveStatus = 0
                 <if test="name != null">
                     and k.name like concat(#{name},'%')
                 </if>
@@ -809,7 +809,7 @@
                             ) total
                         FROM `course_schedule` a
                         LEFT JOIN course_info b on a.courseId = b.id
-                        WHERE a.cancelStatus = 1 and  b.approvalStatus = 1 and   a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
+                        WHERE a.cancelStatus = 1 and b.offerCourseType = 2 and  b.approvalStatus = 1 and   a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
                         GROUP BY a.courseId
                     ) jj
                     GROUP BY jj.lecturerTeacherId
@@ -866,14 +866,7 @@
                     ) q
                     GROUP BY q.userId
                 ) t
-                LEFT JOIN (
-                    SELECT
-                    ins.userId,
-                    h.phone
-                    FROM
-                    instructor ins
-                    INNER JOIN `user` h ON h.id = ins.userId
-                ) m ON t.userid = m.userId
+                LEFT JOIN `user` m ON t.userid = m.id
 
                 ) mm
                 GROUP BY mm.phone
@@ -881,14 +874,14 @@
         LEFT JOIN
         (
             SELECT
-            ff.NAME,
-            ff.certificateGrade,
-            ff.guideProject,
-            ff.userId,
-            hhh.phone
+                hhh.userName `name`,
+                ff.certificateGrade,
+                ff.guideProject,
+                hhh.id userId,
+                hhh.phone
             FROM
-            instructor ff
-            INNER JOIN `user` hhh ON hhh.id = ff.userId
+            `user` hhh
+            LEFT JOIN  instructor ff ON hhh.id = ff.userId
         ) ee
         on cc.phone = ee.phone
         <where>

@@ -123,9 +123,10 @@ public interface UserService extends BaseService<User, Long> {
     /**
      * 查询用户信息
      *
-     * @return {@link List<SysUserVO>}
+     * @param mark 马克
+     * @return {@link List<MemberVO>}
      */
-    List<MemberVO> findUser();
+    List<MemberVO> findUser(Integer mark);
 
     /**
      * 根据userType查询用户
@@ -133,7 +134,7 @@ public interface UserService extends BaseService<User, Long> {
      * @param userType 用户类型
      * @return {@link List<MemberVO>}
      */
-    List<MemberVO> findUserByUserType(String userType);
+    List<MemberVO> findUserByUserType(String userType,Integer mark);
 
     /**
      * 添加用户信息

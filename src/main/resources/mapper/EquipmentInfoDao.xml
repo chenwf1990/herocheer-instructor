@@ -227,7 +227,8 @@
     <select id="findStockList" parameterType="com.herocheer.instructor.domain.vo.EquipmentInfoQueryVo"
             resultType="com.herocheer.instructor.domain.vo.EquipmentInfoStockVo">
         SELECT
-        i.*,sum(ifnull(b.unreturnedQuantity,0)) AS 'borrowQuantity',i.stockNumber - sum(ifnull(b.unreturnedQuantity,0)) AS 'surplusQuantity'
+        i.*,sum(ifnull(b.unreturnedQuantity,0)) AS 'borrowQuantity',i.stockNumber - sum(ifnull(b.unreturnedQuantity,0)) AS 'surplusQuantity',
+        (select count(*)  from report_clicks where  itemType = 4 and itemId = i.id) as 'clicksNum'
         FROM
         equipment_info i
         LEFT JOIN equipment_borrow_details b ON i.id = b.equipmentId

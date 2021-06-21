@@ -163,7 +163,7 @@
 
     <!--查找用户的菜单权限-->
     <select id="selectMenuTreeToUser" parameterType="map" resultType="com.herocheer.instructor.domain.vo.OptionTreeVO">
-        select id,pid,menuName as `name` from sys_menu where  status = false
+        select id,pid,menuName as `name` from sys_menu where  status = false and  mark = #{mark}
         union all
         select id,pid,operationName as `name` from sys_operation where  status = false
     </select>
@@ -207,6 +207,9 @@
                 </if>
                 <if test="status != null">
                     and status = #{status}
+                </if>
+                <if test="mark != null">
+                    and mark = #{mark}
                 </if>
             </trim>
         </where>

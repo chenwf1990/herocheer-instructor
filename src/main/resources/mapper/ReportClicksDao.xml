@@ -141,7 +141,7 @@
         select itemType,itemId,itemName,releaseTime,count(*) as clicksNum from report_clicks
         <where>
             <if test="itemName != null">
-                and itemName = #{itemName}
+                and itemName like  concat('%',#{itemName},'%')
             </if>
             <if test="itemType != null">
                 and itemType = #{itemType}

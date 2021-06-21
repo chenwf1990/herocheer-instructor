@@ -265,8 +265,8 @@ public class UserController extends BaseController {
      */
     @GetMapping("/user/name")
     @ApiOperation("用户名称")
-    public ResponseResult<List<MemberVO>> fetchUser(HttpServletRequest request){
-        return ResponseResult.ok( userService.findUser());
+    public ResponseResult<List<MemberVO>> fetchUser(@ApiParam("系统标识") @RequestParam(required = false) Integer mark,HttpServletRequest request){
+        return ResponseResult.ok( userService.findUser(mark));
     }
 
     /**
@@ -275,10 +275,10 @@ public class UserController extends BaseController {
      * @param request 请求
      * @return {@link ResponseResult<List<SysUserVO>>}
      */
-    @GetMapping("/user/name/{userType}")
+    @GetMapping("/user/name/type")
     @ApiOperation("根据userType返回用户")
-    public ResponseResult<List<MemberVO>> fetchUserByuserType(@ApiParam("用户类型") @PathVariable String userType,HttpServletRequest request){
-        return ResponseResult.ok(userService.findUserByUserType(userType));
+    public ResponseResult<List<MemberVO>> fetchUserByuserType(@ApiParam("用户类型") @RequestParam String userType,@ApiParam("系统标识") @RequestParam(required = false) Integer mark,HttpServletRequest request){
+        return ResponseResult.ok(userService.findUserByUserType(userType,mark));
     }
 
     /**

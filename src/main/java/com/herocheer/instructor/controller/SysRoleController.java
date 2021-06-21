@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -143,8 +144,8 @@ public class SysRoleController extends BaseController {
      */
     @GetMapping("/name")
     @ApiOperation("角色名称")
-    public ResponseResult<List<SysRole>> fetchRole(HttpServletRequest request){
-        return ResponseResult.ok( sysRoleService.findRole());
+    public ResponseResult<List<SysRole>> fetchRole(@ApiParam("系统标识") @RequestParam(required = false) Integer mark, HttpServletRequest request){
+        return ResponseResult.ok( sysRoleService.findRole(mark));
     }
 
 }

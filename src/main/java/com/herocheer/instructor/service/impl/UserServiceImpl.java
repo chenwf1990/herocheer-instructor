@@ -297,6 +297,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     @Override
     public Page<User> findUserByPage(SysUserVO sysUserVO) {
         Page page = Page.startPage(sysUserVO.getPageNo(), sysUserVO.getPageSize());
+        if(sysUserVO.getMark() == null){
+            sysUserVO.setMark(1);
+        }
         List<User> sysUserList = this.dao.selectSysUserByPage(sysUserVO);
         page.setDataList(sysUserList);
         return page;
@@ -499,11 +502,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
     /**
      * 查询用户信息
      *
-     * @return {@link List<SysUserVO>}
+     * @param mark 马克
+     * @return {@link List<MemberVO>}
      */
     @Override
-    public List<MemberVO> findUser() {
-        List<User> userList = this.dao.findByLimit(new HashMap<>());
+    public List<MemberVO> findUser(Integer mark) {
+        Map<String, Object> paramMap = new HashMap<>();
+        if(mark != null){
+            paramMap.put("mark",mark);
+        }else {
+            paramMap.put("mark",1);
+        }
+        List<User> userList = this.dao.findByLimit(paramMap);
         List<MemberVO> memberList = new ArrayList<>();
         MemberVO memberVO = null;
         if(!CollectionUtils.isEmpty(userList)){
@@ -524,9 +534,16 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @return {@link List<MemberVO>}
      */
     @Override
-    public List<MemberVO> findUserByUserType(String userType) {
+    public List<MemberVO> findUserByUserType(String userType,Integer mark) {
         List<String> stringList = Arrays.asList(userType.split(","));
-        return this.dao.findUserByUserType(stringList);
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("type",stringList);
+        if(mark != null){
+            paramMap.put("mark",mark);
+        }else {
+            paramMap.put("mark",1);
+        }
+        return this.dao.findUserByUserType(paramMap);
     }
 
     /**

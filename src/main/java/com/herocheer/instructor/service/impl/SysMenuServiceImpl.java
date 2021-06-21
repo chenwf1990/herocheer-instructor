@@ -134,17 +134,24 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
     }
 
     /**
-     *  菜单树
+     * 菜单树
      *
-     * @return {@link List<Tree<Long>>}
+     * @param id   id
+     * @param mark 马克
+     * @return {@link OptionTreeVO}
      */
     @Override
-    public OptionTreeVO findMenuTreeToRole(Long id) {
+    public OptionTreeVO findMenuTreeToRole(Long id,Integer mark) {
         // 构建node列表
         List<TreeNode<Long>> nodeList = CollUtil.newArrayList();
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("status", false);
+        if(mark != null){
+            paramMap.put("mark", mark);
+        }else {
+            paramMap.put("mark", 1);
+        }
         List<OptionTreeVO> optionTreeList = this.dao.selectMenuTreeToUser(paramMap);
         Map<String, Object> hashMap = null;
         for (OptionTreeVO optionTree:optionTreeList){
@@ -261,6 +268,9 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
      */
     @Override
     public Page<SysMenu> findMenuByPage(SysMenuVO sysMenuVO) {
+        if(sysMenuVO.getMark() == null){
+            sysMenuVO.setMark(1);
+        }
         Page page = Page.startPage(sysMenuVO.getPageNo(), sysMenuVO.getPageSize());
         List<SysMenu> sysUserList = this.dao.selectMenuByPage(sysMenuVO);
         page.setDataList(sysUserList);

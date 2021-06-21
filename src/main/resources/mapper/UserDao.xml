@@ -613,6 +613,9 @@
                 <if test="status != null">
                     and `status` = #{status}
                 </if>
+                <if test="mark != null">
+                    and `mark` = #{mark}
+                </if>
             </trim>
         </where>
         UNION all
@@ -624,6 +627,9 @@
                 </if>
                 <if test="userType != null">
                     and userType =4
+                </if>
+                <if test="mark != null">
+                    and `mark` = #{mark}
                 </if>
             </trim>
         </where>
@@ -742,15 +748,18 @@
         </where>
     </select>
 
-    <!--通过用户id找到角色ID-->
-    <select id="findUserByUserType" parameterType="java.util.List" resultType="com.herocheer.instructor.domain.vo.MemberVO">
+    <!--通过用户类型找到用户-->
+    <select id="findUserByUserType" parameterType="map" resultType="com.herocheer.instructor.domain.vo.MemberVO">
         select <include refid="table_field"/> from user
         <where>
             <trim prefixOverrides="AND | OR">
                 and userType in
-                <foreach item="userType" index="index" collection="list" open="(" separator="," close=")">
+                <foreach item="userType" index="index" collection="type" open="(" separator="," close=")">
                     #{userType}
                 </foreach>
+                <if test="mark != null">
+                    and `mark` = #{mark}
+                </if>
             </trim>
         </where>
     </select>

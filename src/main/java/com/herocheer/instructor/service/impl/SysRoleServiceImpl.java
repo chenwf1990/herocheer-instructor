@@ -217,6 +217,9 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      */
     @Override
     public Page<SysRole> findRoleByPage(SysRoleVO sysRoleVO) {
+        if(sysRoleVO.getMark() == null){
+            sysRoleVO.setMark(1);
+        }
         Page<SysRole> page = Page.startPage(sysRoleVO.getPageNo(), sysRoleVO.getPageSize());
         List<SysRole> sysUserList = this.dao.selectRoleByPage(sysRoleVO);
         page.setDataList(sysUserList);
@@ -229,8 +232,11 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRoleDao, SysRole, Lon
      * @return {@link List <SysRole>}
      */
     @Override
-    public List<SysRole> findRole() {
-        return this.dao.selectRoleByPage(new SysRoleVO());
+    public List<SysRole> findRole(Integer mark) {
+        if(mark == null){
+            mark = 1;
+        }
+        return this.dao.selectRoleByPage(SysRoleVO.builder().mark(mark).build());
     }
 
     /**

@@ -33,7 +33,7 @@ public interface SysMenuService extends BaseService<SysMenu, Long> {
      * @param id id
      * @return {@link OptionTreeVO}
      */
-    OptionTreeVO findMenuTreeToRole(Long id);
+    OptionTreeVO findMenuTreeToRole(Long id,Integer mark);
 
     /**
      * 添加菜单

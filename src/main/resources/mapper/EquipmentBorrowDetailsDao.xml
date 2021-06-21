@@ -286,6 +286,6 @@
     </select>
 
     <select id="getDetailsByBorrowId" resultType="com.herocheer.instructor.domain.vo.EquipmentBorrowDetailsVo">
-        select a.*, b.price,b.image from  equipment_borrow_details a left join equipment_info b on a.equipmentId=b.id where a.borrowId = #{borrowId}
+        select a.*, b.price,b.image,b.unit from  equipment_borrow_details a left join equipment_info b on a.equipmentId=b.id where a.borrowId = #{borrowId}
     </select>
 </mapper>

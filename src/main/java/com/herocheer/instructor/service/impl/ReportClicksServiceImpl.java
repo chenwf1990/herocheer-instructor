@@ -71,6 +71,8 @@ public class ReportClicksServiceImpl extends BaseServiceImpl<ReportClicksDao, Re
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("itemId",courseId);
         ReportClicksStatisVO reportClicksStatis = this.dao.selectClicksByCourseId(paramMap);
+
+        // 点击量为空
         if(ObjectUtils.isEmpty(reportClicksStatis)){
             reportClicksStatis = ReportClicksStatisVO.builder().build() ;
             reportClicksStatis.setClicksNum(0);

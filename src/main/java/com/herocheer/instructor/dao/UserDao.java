@@ -113,12 +113,13 @@ public interface UserDao extends BaseDao<User, Long> {
     List<String> findRoleByUserId(Long userId);
 
     /**
+     * 找到用户,用户类型
      * 根据userType查询用户
      *
-     * @param userType 用户类型
-     * @return {@link List<User>}
+     * @param paramMap 参数映射
+     * @return {@link List<MemberVO>}
      */
-    List<MemberVO> findUserByUserType(List<String> userType);
+    List<MemberVO> findUserByUserType(Map<String, Object> paramMap);
 
     /**
      * 微信用户列表

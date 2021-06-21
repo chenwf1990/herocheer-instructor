@@ -58,9 +58,10 @@ public interface SysRoleService extends BaseService<SysRole, Long> {
     /**
      * 下拉框角色名
      *
+     * @param mark 马克
      * @return {@link List<SysRole>}
      */
-    List<SysRole>  findRole();
+    List<SysRole>  findRole(Integer mark);
 
     /**
      * 设置角色菜单关联表

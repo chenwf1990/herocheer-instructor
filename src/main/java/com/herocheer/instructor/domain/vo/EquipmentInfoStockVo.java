@@ -17,4 +17,9 @@ public class EquipmentInfoStockVo extends EquipmentInfo {
 
     @ApiModelProperty("剩余数量")
     private Integer surplusQuantity;
+
+    @ApiModelProperty("器材点击量")
+    private Integer clicksNum;
+
+
 }
