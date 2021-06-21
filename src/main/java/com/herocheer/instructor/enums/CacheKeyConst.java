@@ -25,6 +25,7 @@ public class CacheKeyConst {
      * 访问令牌   token:appid:secret
      */
     public static final String ACCESSTOKEN = "token:{}:{}";
+
     /**
      * accesstoken 失效时间 (2个小时)
      */

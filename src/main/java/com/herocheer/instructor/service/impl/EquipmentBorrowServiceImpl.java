@@ -172,10 +172,26 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         }
 
         // 线上借用需在规定时间内领取，否则自动取消借用
-        if(vo.getSource() != null && "2".equals(vo.getSource()) && StringUtils.hasText(vo.getBorrowTimeRangeStart())){
+        log.debug("当前借用信息：{}",vo);
+        log.debug("当前借用信息ID：{}",vo.getId());
+        log.debug("当前借用信息数据源：{}",vo.getSource());
+        log.debug("当前借用信息借用时间开始：{}",vo.getBorrowTimeRangeStart());
+
+        if(vo.getSource() != null && vo.getSource().equals(2) && StringUtils.hasText(vo.getBorrowTimeRangeStart())){
             log.debug("发送自动取消预约队列:{}",vo.getId());
-            // 借用日期的开始时段 + 自动取消预约时段
-            delayTaskProducer.produce(vo.getId(),vo.getBorrowDate()+ DateUtil.timeToUnix(vo.getBorrowTimeRangeStart()) + CacheKeyConst.AUTO_EXPIRETIME);
+
+            // 放入延时队列
+            boolean delayBorrowStart = vo.getBorrowDate() + DateUtil.timeToUnix(vo.getBorrowTimeRangeStart()) <= System.currentTimeMillis();
+            boolean delayBorrowEnd = vo.getBorrowDate() + DateUtil.timeToUnix(vo.getBorrowTimeRangeEnd()) >= System.currentTimeMillis();
+            if(delayBorrowStart && delayBorrowEnd ){
+                // 借用时段内借用的，释放库存时间按照当前借用时间+半小时后释放
+                log.debug("借用时段内");
+                delayTaskProducer.produce(vo.getId(),System.currentTimeMillis() + CacheKeyConst.AUTO_EXPIRETIME);
+            }else {
+                log.debug("借用时段外",vo);
+                // 借用时段外借用的，释放库存时间按照借用开始时间后半个小时进行释放
+                delayTaskProducer.produce(vo.getId(),vo.getBorrowDate()+ DateUtil.timeToUnix(vo.getBorrowTimeRangeStart()) + CacheKeyConst.AUTO_EXPIRETIME);
+            }
         }
         return count;
     }
