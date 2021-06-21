@@ -92,6 +92,9 @@ public class User extends BaseEntity {
     @ApiModelProperty("工作单位")
     private String workUnit;
 
+    @ApiModelProperty("系统标识：1-社会体育指导员，2-全民健身设施场地")
+    private Integer mark;
+
     public User(WeChatUserVO userPO) {
         this.setId(userPO.getId());
         this.setIxmUserId(userPO.getIxmUserId());

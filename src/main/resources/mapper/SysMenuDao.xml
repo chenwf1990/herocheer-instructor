@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.SysMenuDao">
 
     <sql id="table_field">
-      id, pid, menuName, code, url, orderNo, icon, remark, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, pid, menuName, code, url, orderNo, icon, remark, mark,status, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
 
     <!--单表新增-->
@@ -35,6 +35,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="mark != null">
+                mark,
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
         ) VALUES (
@@ -62,6 +65,9 @@
             </if>
             <if test="status != null">
                 #{status},
+            </if>
+            <if test="mark != null">
+                #{mark},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -100,6 +106,9 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="mark != null">
+                mark = #{mark},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -143,6 +152,9 @@
             </if>
             <if test="status != null">
                 and status = #{status}
+            </if>
+            <if test="mark != null">
+                and mark = #{mark}
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>

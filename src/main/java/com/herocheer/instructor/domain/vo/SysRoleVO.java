@@ -48,4 +48,7 @@ public class SysRoleVO {
     private int pageNo = 1;
     @ApiModelProperty("页数")
     private int pageSize = 10;
+
+    @ApiModelProperty("系统标识：1-社会体育指导员，2-全民健身设施场地")
+    private Integer mark;
 }

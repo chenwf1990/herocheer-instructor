@@ -32,4 +32,7 @@ public class SysRole extends BaseEntity {
     private String description;
     @ApiModelProperty("0：关闭、1：启用")
     private Boolean status;
+
+    @ApiModelProperty("系统标识：1-社会体育指导员，2-全民健身设施场地")
+    private Integer mark;
 }

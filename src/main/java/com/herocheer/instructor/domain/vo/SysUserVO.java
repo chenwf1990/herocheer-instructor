@@ -70,4 +70,8 @@ public class SysUserVO {
 
     @ApiModelProperty("指导项目")
     private String guideProject;
+
+
+    @ApiModelProperty("系统标识：1-社会体育指导员，2-全民健身设施场地")
+    private Integer mark;
 }

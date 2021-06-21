@@ -3,7 +3,7 @@
 <mapper namespace="com.herocheer.instructor.dao.SysRoleDao">
 
     <sql id="table_field">
-      id, roleName, code, description, status, createdId, createdBy, createdTime, updateId, updateBy, updateTime      
+      id, roleName, code, description, status, mark, createdId, createdBy, createdTime, updateId, updateBy, updateTime
     </sql>
 
     <!--单表新增-->
@@ -23,6 +23,9 @@
             <if test="status != null">
                 status,
             </if>
+            <if test="mark != null">
+                mark,
+            </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
         </trim>
         ) VALUES (
@@ -38,6 +41,9 @@
             </if>
             <if test="status != null">
                 #{status},
+            </if>
+            <if test="mark != null">
+                #{mark},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
         </trim>
@@ -64,6 +70,9 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="mark != null">
+                mark = #{mark},
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.update"/>
         </set>
@@ -95,6 +104,9 @@
                 <if test="endTime != null">
                     and createdTime &lt;= #{endTime}
                 </if>
+                <if test="mark != null">
+                    and mark = #{mark}
+                </if>
             </where>
         </trim>
     </select>
@@ -116,6 +128,9 @@
             </if>
             <if test="status != null">
                 and status = #{status}
+            </if>
+            <if test="mark != null">
+                and mark = #{mark}
             </if>
             <include refid="com.herocheer.mybatis.base.dao.CommonDao.condition"/>
         </where>
