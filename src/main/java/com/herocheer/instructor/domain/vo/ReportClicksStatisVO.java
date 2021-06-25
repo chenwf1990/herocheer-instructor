@@ -29,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class ReportClicksStatisVO extends ReportClicks{
 
-    @Excel(name = "点击量", orderNum = "5")
+    @Excel(name = "点击量", orderNum = "4")
     @ApiModelProperty("点击量")
     private Integer clicksNum;
 

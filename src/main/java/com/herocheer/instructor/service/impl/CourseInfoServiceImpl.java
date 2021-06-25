@@ -117,6 +117,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         int count = this.dao.update(courseInfo);
         // 课程取消时，发送微信消息通知
         List<String> openids = reservationService.findReservationOpenid(courseInfo.getId(), RecruitTypeEunms.COURIER_RECRUIT.getType());
+        log.debug("课程取消时消息通知:{}",openids);
         if(!CollectionUtils.isEmpty(openids)){
             wechatService.sendWechatMessages(openids,courseInfo,null);
         }
@@ -321,7 +322,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
         // 批量更新课表信息
         if(!CollectionUtils.isEmpty(courseInfoVO.getCourseScheduleList())){
-            courseScheduleService.batchupdateCourseSchedules(courseInfoVO.getCourseScheduleList());
+            courseScheduleService.batchupdateCourseSchedules(courseInfo.getId(),courseInfoVO.getCourseScheduleList());
         }
         courseInfoVO.setId(courseInfo.getId());
         return courseInfoVO;

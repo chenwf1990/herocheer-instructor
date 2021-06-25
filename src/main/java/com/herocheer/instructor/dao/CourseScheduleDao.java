@@ -37,4 +37,13 @@ public interface CourseScheduleDao extends BaseDao<CourseSchedule, Long> {
      * @return {@link CourseSchedule}
      */
     CourseSchedule selectCourseSchedule(Long id);
+
+
+    /**
+     * 按课程删除id
+     *
+     * @param courseId 进程id
+     * @return int
+     */
+    int deleteByCourseId(Long courseId);
 }

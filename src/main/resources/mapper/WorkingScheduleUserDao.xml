@@ -756,7 +756,7 @@
     <!-- 服务时长汇总表 -->
     <select id="selectTotalStatisByPage" parameterType="com.herocheer.instructor.domain.vo.ServiceTotalVO" resultType="com.herocheer.instructor.domain.vo.ServiceTotalVO">
 
-        SELECT ee.name,ee.certificateGrade,ee.guideProject,cc.matchServiceCount,cc.matchServiceTimeTotal,cc.dutyServiceCount,cc.dutyServiceTimeTotal,cc.courseServiceCount,cc.courseServiceTimeTotal FROM
+        SELECT IF(ISNULL(ee.name),(SELECT b.tearcherName FROM course_tearcher b WHERE b.phone = cc.phone LIMIT 1),ee.name) as `name`,ee.certificateGrade,ee.guideProject,cc.matchServiceCount,cc.matchServiceTimeTotal,cc.dutyServiceCount,cc.dutyServiceTimeTotal,cc.courseServiceCount,cc.courseServiceTimeTotal FROM
         (
             SELECT mm.phone,SUM(matchServiceCount) matchServiceCount,SUM(matchServiceTimeTotal) matchServiceTimeTotal,SUM(dutyServiceCount) dutyServiceCount,SUM(dutyServiceTimeTotal) dutyServiceTimeTotal,SUM(courseServiceCount) courseServiceCount,SUM(courseServiceTimeTotal) courseServiceTimeTotal FROM
             (
@@ -833,11 +833,12 @@
                         SELECT * from
                         -- 			3.1值班
                         (
-                            SELECT d.userId,   0 as matchServiceCount,  0 as matchServiceTimeTotal, count(actualServiceTime) dutyServiceCount,SUM(total) dutyServiceTimeTotal FROM
+                            SELECT d.userId,   0 as matchServiceCount,  0 as matchServiceTimeTotal, count(CASE WHEN ISNULL( actualServiceTime ) OR actualServiceTime = 0 THEN serviceTime ELSE actualServiceTime END) dutyServiceCount,SUM(total) dutyServiceTimeTotal FROM
                             (
                                 SELECT
                                 b.userId,
                                 b.actualServiceTime,
+                                b.serviceTime,
                                 IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) total
                                 FROM working_schedule a
                                 INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId
@@ -851,11 +852,12 @@
                         -- 			3.2赛事
                         SELECT * FROM
                         (
-                            SELECT e.userId,count(actualServiceTime) matchServiceCount,sum(total) matchServiceTimeTotal , 0 as dutyServiceCount , 0 as dutyServiceTimeTotal FROM
+                            SELECT e.userId,count(CASE WHEN ISNULL( actualServiceTime ) OR actualServiceTime = 0 THEN serviceTime ELSE actualServiceTime END) matchServiceCount,sum(total) matchServiceTimeTotal , 0 as dutyServiceCount , 0 as dutyServiceTimeTotal FROM
                             (
                                 SELECT
                                 b.userId,
                                 b.actualServiceTime,
+                                b.serviceTime,
                                 IFNULL( CASE WHEN ISNULL( b.actualServiceTime ) OR b.actualServiceTime = 0 THEN b.serviceTime ELSE b.actualServiceTime END, 0 ) total
                                 FROM working_schedule a
                                 INNER JOIN working_schedule_user b ON a.id = b.workingScheduleId

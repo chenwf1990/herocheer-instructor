@@ -612,11 +612,12 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
                 }
 
                 // 太快了，休息下（微信端不给力）
-                try {
-                    Thread.sleep(1000L);
+                /*try {
+                    log.debug("太快了，休息下({})",openid);
+                    Thread.sleep(2000L);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
         }
     }

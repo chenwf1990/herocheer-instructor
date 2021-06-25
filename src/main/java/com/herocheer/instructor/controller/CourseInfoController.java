@@ -120,6 +120,7 @@ public class CourseInfoController extends BaseController{
     @ApiOperation("更新课程信息")
     public ResponseResult updateCourseInfo(@RequestBody CourseInfoVo courseInfoVO){
         courseInfoService.updateCourseInfo(courseInfoVO);
+
         // 同步系统消息状态(不区别审核通过和驳回)
         sysMessageService.modifyMessage(Arrays.asList(SysMessageEnums.COURSE_CHECK.getCode()), courseInfoVO.getId(),false,false);
         return ResponseResult.ok();

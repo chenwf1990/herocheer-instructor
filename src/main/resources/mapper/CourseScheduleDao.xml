@@ -213,8 +213,7 @@
         </foreach >
         ON DUPLICATE KEY UPDATE
         id=VALUES(id),courseId = VALUES(courseId),configType = VALUES(configType),courseDay = VALUES(courseDay),
-        courseDate = VALUES(courseDate),startTime = VALUES(startTime),endTime = VALUES(endTime),limitNumber = VALUES(limitNumber),cancelStatus = VALUES(cancelStatus),cancelReason = VALUES(cancelReason),cancelTime = VALUES(cancelTime),remark = VALUES(remark),
-        createdId = VALUES(createdId),createdBy = VALUES(createdBy),createdTime = VALUES(createdTime),updateTime = VALUES(updateTime),updateId = VALUES(updateId),updateBy = VALUES(updateBy)
+        courseDate = VALUES(courseDate),startTime = VALUES(startTime),endTime = VALUES(endTime)
     </insert>
 
     <!--使用行锁锁定库存-->
@@ -222,4 +221,8 @@
         select <include refid="table_field"/> from course_schedule where id = #{id} for update;
     </select>
 
+    <!--通过课程ID删除-->
+    <delete id="deleteByCourseId" parameterType="long">
+        delete from course_schedule where courseId = #{courseId}
+    </delete>
 </mapper>

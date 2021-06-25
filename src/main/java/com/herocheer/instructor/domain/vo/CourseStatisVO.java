@@ -36,9 +36,15 @@ public class CourseStatisVO {
     @ApiModelProperty("授课老师姓名")
     private String lecturerTeacherName;
 
-    @Excel(name = "开课日期", orderNum = "3", width = 25,format = "yyyy-MM-dd")
     @ApiModelProperty("开课日期")
     private Long courseStartTime;
+
+    /**
+     * 导出功能使用
+     **/
+    @Excel(name = "开课日期", orderNum = "3", width = 25,format = "yyyy-MM-dd")
+    @ApiModelProperty("开课日期(excel)")
+    private String excelCourseStartTime;
 
     @Excel(name = "证书等级", orderNum = "4")
     @ApiModelProperty("证书等级")

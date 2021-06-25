@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,20 +76,6 @@ public class CourseScheduleController extends BaseController {
         paramMap.put("courseId",courseId);
         return ResponseResult.ok().setData(courseScheduleService.findByLimit(paramMap));
     }
-
-
-    /**
-     * 批量编辑课程时间表
-     *
-     * @param courseScheduleList 课程安排列表
-     * @return {@link ResponseResult<List<CourseSchedule>>}
-     */
-    @PutMapping("/many/courseSchedules")
-    @ApiOperation("批量更新课表信息")
-    public ResponseResult<List<CourseSchedule>> batchEditCourseSchedules(@ApiParam("课表信息") @RequestBody List<CourseSchedule> courseScheduleList,HttpServletRequest request){
-        return ResponseResult.ok().setData(courseScheduleService.batchupdateCourseSchedules(courseScheduleList));
-    }
-
 
     /**
      * 取消课表

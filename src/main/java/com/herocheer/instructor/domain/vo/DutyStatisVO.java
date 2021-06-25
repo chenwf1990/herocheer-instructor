@@ -26,28 +26,31 @@ public class DutyStatisVO {
     @ApiModelProperty("用户ID")
     private Long userId;
 
-    @Excel(name = "姓名", orderNum = "1")
+    @Excel(name = "驿站名称", orderNum = "1",width = 25)
+    @ApiModelProperty("驿站名称")
+    private String courierStationName;
+
+    @Excel(name = "姓名", orderNum = "2")
     @ApiModelProperty("姓名")
     private String name;
 
-    @Excel(name = "证书等级", orderNum = "2")
+    @Excel(name = "证书等级", orderNum = "3")
     @ApiModelProperty("证书等级")
     private String certificateGrade;
 
-    @Excel(name = "指导项目", orderNum = "3")
+    @Excel(name = "指导项目", orderNum = "4")
     @ApiModelProperty("指导项目")
     private String guideProject;
 
-    @Excel(name = "值班日期", orderNum = "4", width = 25,format = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("值班日期")
     private Long scheduleTime;
 
+    @Excel(name = "值班日期", orderNum = "5", width = 25,format = "yyyy-MM-dd")
+    @ApiModelProperty("值班日期(excel)")
+    private String excelScheduleTime;
+
     @ApiModelProperty("驿站ID")
     private Long courierStationId;
-
-    @Excel(name = "驿站名称", orderNum = "5",width = 25)
-    @ApiModelProperty("驿站名称")
-    private String courierStationName;
 
     @Excel(name = "服务时长", orderNum = "6")
     @ApiModelProperty("服务时长")

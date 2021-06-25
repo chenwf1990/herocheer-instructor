@@ -107,7 +107,8 @@ public class ReportController {
         dutyStatisVO.setEndTime(endTime);
 
         List<DutyStatisVO> dutyStatisList = reportService.findDutyStatis(dutyStatisVO);
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DutyStatisVO.class, dutyStatisList);
+        dutyStatisList.forEach(e->e.setExcelScheduleTime(DateUtil.timeStamp2DateTime(e.getScheduleTime())));
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("值班服务时长统计信息","值班服务时长统计"), DutyStatisVO.class, dutyStatisList);
         OutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         outputStream.flush();
@@ -154,7 +155,8 @@ public class ReportController {
         matchStatisVO.setBeginTime(beginTime);
         matchStatisVO.setEndTime(endTime);
         List<MatchStatisVO> matchStatisList = reportService.findMatchStatis(matchStatisVO);
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), MatchStatisVO.class, matchStatisList);
+        matchStatisList.forEach(e->e.setExcelScheduleTime(DateUtil.timeStamp2DateTime(e.getScheduleTime())));
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("赛事服务时长统计信息","赛事服务时长统计"), MatchStatisVO.class, matchStatisList);
         OutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         outputStream.flush();
@@ -200,7 +202,8 @@ public class ReportController {
         courseStatisVO.setBeginTime(beginTime);
         courseStatisVO.setEndTime(endTime);
         List<CourseStatisVO> courseStatisList = reportService.findCourseStatis(courseStatisVO);
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), CourseStatisVO.class, courseStatisList);
+        courseStatisList.forEach(e->e.setExcelCourseStartTime(DateUtil.timeStamp2DateTime(e.getCourseStartTime())));
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("课程服务时长统计信息","课程服务时长统计"), CourseStatisVO.class, courseStatisList);
         OutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         outputStream.flush();
@@ -245,7 +248,7 @@ public class ReportController {
         serviceTotalVO.setGuideProject(guideProject);
         serviceTotalVO.setCertificateGrade(certificateGrade);
         List<ServiceTotalVO> serviceTotalList = reportService.findTotalStatis(serviceTotalVO);
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), ServiceTotalVO.class, serviceTotalList);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("服务时长汇总统计信息","服务时长汇总统计"), ServiceTotalVO.class, serviceTotalList);
         OutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         outputStream.flush();

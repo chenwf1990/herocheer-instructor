@@ -11,6 +11,7 @@ import com.herocheer.instructor.domain.vo.ReportClicksStatisVO;
 import com.herocheer.instructor.domain.vo.ReportClicksVO;
 import com.herocheer.instructor.domain.vo.UserInfoVo;
 import com.herocheer.instructor.service.ReportClicksService;
+import com.herocheer.instructor.utils.DateUtil;
 import com.herocheer.web.annotation.AllowAnonymous;
 import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
@@ -108,7 +109,9 @@ public class ReportClicksController extends BaseController {
         reportClicksVO.setItemType(itemType);
 
         List<ReportClicksStatisVO> reportClicksList = reportClicksService.findReportClicks(reportClicksVO);
-        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), ReportClicksStatisVO.class, reportClicksList);
+        reportClicksList.forEach(e->e.setReleaseExcelTime(DateUtil.timeStamp2DateTime(e.getReleaseTime())));
+        //标题  表名  导出类型  HSSF xls  XSSF xlsx
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("点击量统计信息","点击量统计"), ReportClicksStatisVO.class, reportClicksList);
         OutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         outputStream.flush();

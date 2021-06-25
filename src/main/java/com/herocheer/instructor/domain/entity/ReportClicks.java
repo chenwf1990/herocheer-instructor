@@ -29,24 +29,28 @@ import lombok.experimental.SuperBuilder;
 public class ReportClicks extends BaseEntity {
     @ApiModelProperty("用户ID")
     private Long userId;
-    @Excel(name = "用户名", orderNum = "1")
+
     @ApiModelProperty("用户名")
     private String userName;
 
     @ApiModelProperty("项目ID")
     private Long itemId;
 
-    @Excel(name = "项目名称", orderNum = "2")
+    @Excel(name = "项目名称", orderNum = "1",width = 30)
     @ApiModelProperty("项目名称")
     private String itemName;
 
-    @Excel(name = "项目类型", orderNum = "3")
-    @ApiModelProperty("项目类型:1-活动新闻，2-公益课程，3-健身视频")
+    @Excel(name = "项目类型", orderNum = "2",replace = { "活动新闻_1", "公益课程_2", "健身视频_3","器材借用_4"})
+    @ApiModelProperty("项目类型:1-活动新闻，2-公益课程，3-健身视频，4-器材借用")
     private Integer itemType;
 
-    @Excel(name = "发布时间", orderNum = "4")
     @ApiModelProperty("发布时间")
     private Long releaseTime;
+
+    @Excel(name = "发布时间", orderNum = "3", exportFormat="yyyy-MM-dd HH:mm",width = 25)
+    @ApiModelProperty("发布时间(excel)")
+    private String releaseExcelTime;
+
     @ApiModelProperty("备注")
     private String remark;
 

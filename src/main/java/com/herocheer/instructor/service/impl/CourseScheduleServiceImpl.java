@@ -68,8 +68,11 @@ public class CourseScheduleServiceImpl extends BaseServiceImpl<CourseScheduleDao
      * @return int
      */
     @Override
-    public int batchupdateCourseSchedules(List<CourseSchedule> courseScheduleList) {
-        return this.dao.updateBatch(courseScheduleList);
+    public int batchupdateCourseSchedules(Long courseId,List<CourseSchedule> courseScheduleList) {
+        // 批量删除
+        this.dao.deleteByCourseId(courseId);
+        courseScheduleList.forEach(e->e.setCourseId(courseId));
+        return this.dao.insertBatch(courseScheduleList);
     }
 
     /**
