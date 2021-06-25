@@ -778,25 +778,35 @@
         union all
         <!--固定课程-->
         SELECT
-            a.courseId,
+            c.courseId,
             b.title,
             b.lecturerTeacherId,
             b.lecturerTeacherName,
-            a.courseDate courseStartTime,
+            b.courseStartZone courseStartTime,
             d.certificateGrade,
             d.guideProject,
-            SUM(IF(ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60 )   <![CDATA[ > ]]> ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60 ),(
-            ROUND(
-            ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60
-            ))-(ROUND(
-            ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60
-            )),0)) serviceTimeTotal
-        FROM `course_schedule` a
-        LEFT JOIN course_info b on a.courseId = b.id
-        LEFT JOIN course_tearcher d on b.lecturerTeacherId = d.id
+            c.serviceTimeTotal
+        FROM
+        (
+            SELECT
+                a.courseId,
+                SUM(IF(ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60 )   <![CDATA[ > ]]> ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60 ),(
+                ROUND(
+                ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60
+                ))-(ROUND(
+                ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60
+                )),0)) serviceTimeTotal
+            FROM
+                `course_schedule` a
+            WHERE
+                a.cancelStatus = 1 AND a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
+            GROUP BY a.courseId
+        ) c
+        LEFT JOIN course_info b ON c.courseId = b.id
+        LEFT JOIN course_tearcher d ON b.lecturerTeacherId = d.id
         <where>
             <trim prefixOverrides="AND | OR">
-                and b.offerCourseType = 2 and a.cancelStatus = 1 and  a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
+                and b.offerCourseType = 2
                 <if test="title != null">
                     and b.title = #{title}
                 </if>
@@ -811,6 +821,5 @@
                 </if>
             </trim>
         </where>
-        GROUP BY a.courseId
     </select>
 </mapper>
