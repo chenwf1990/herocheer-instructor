@@ -7,17 +7,26 @@
         approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,
         CASE
             WHEN approvalStatus != 1 THEN null
-            WHEN `state`=5 THEN `state`
-            WHEN approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-            WHEN approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime THEN 3
-            WHEN approvalStatus = 1 AND signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-            WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 1
-            WHEN UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> releaseTime THEN 0
-            ELSE `state` END AS 'state'
+            WHEN `state`=5 THEN `state` /*课程取消*/
+            WHEN approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4 /*已结课*/
+            WHEN approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime THEN 3 /*上课中*/
+            WHEN approvalStatus = 1 AND signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2 /*报名截止*/
+            WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 1 /*报名中*/
+            WHEN UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signStartTime THEN 0 /*未开始*/
+            ELSE `state`
+        END AS 'state'
     </sql>
-    
+
+    <!-- 固定课程的课表的最后一个课表 -->
+    <sql id="courseEndTime">
+        IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1))
+    </sql>
+
+    <!-- 固定课程的课表的第一个课表 -->
+    <sql id="courseStartTime">
+        IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1))
+    </sql>
+
     <!--单表新增-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.CourseInfo">
         insert into course_info (
@@ -311,7 +320,20 @@
        
     <!--主键id单表查询-->
     <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourseInfo">
-        select <include refid="table_field"/> from course_info where id = #{id}
+        select
+            id, title, type, offerCourseType, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
+            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,
+            CASE
+                WHEN a.approvalStatus != 1 THEN null
+                WHEN a.`state`=5 THEN `state` /*课程取消*/
+                WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4 /*已结课*/
+                WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3 /*上课中*/
+                WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2 /*报名截止*/
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /*报名中*/
+                WHEN UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signStartTime THEN 0 /*未开始*/
+                ELSE `state`
+            END AS 'state'
+        from course_info a where a.id = #{id}
     </select>
     
     
@@ -501,113 +523,128 @@
         select <include refid="table_field"/> from course_info where id=#{id}
     </select>
 
-    <select id="queryList" resultType="com.herocheer.instructor.domain.entity.CourseInfo"
-            parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
-        select <include refid="table_field"/> from course_info
+
+    <select id="queryList" resultType="com.herocheer.instructor.domain.entity.CourseInfo" parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
+        select
+            id, title, type, offerCourseType, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
+            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,
+            CASE
+                WHEN a.approvalStatus != 1 THEN null
+                WHEN a.`state`=5 THEN `state`
+                WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+                WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3
+                WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1
+                WHEN UNIX_TIMESTAMP(NOW())* 1000 > a.releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signStartTime THEN 0
+                ELSE a.`state`
+            END AS 'state'
+        from course_info a
         <where>
             <if test="title!=null and title!=''">
-                and title like concat('%',#{title},'%')
+                and a.title like concat('%',#{title},'%')
             </if>
             <if test="lecturerTeacherName != null and lecturerTeacherName != ''">
-                and lecturerTeacherName like concat('%',#{lecturerTeacherName},'%')
+                and a.lecturerTeacherName like concat('%',#{lecturerTeacherName},'%')
             </if>
             <if test="type!=null">
-                and type=#{type}
+                and a.type=#{type}
             </if>
             <if test="offerCourseType!=null">
-                and offerCourseType=#{offerCourseType}
+                and a.offerCourseType=#{offerCourseType}
             </if>
             <if test="createdBy!=null and createdBy!=''">
-                and createdBy like concat('%',#{createdBy},'%')
+                and a.createdBy like concat('%',#{createdBy},'%')
             </if>
             <if test="startTime!=null">
-                and createdTime <![CDATA[ > ]]> #{startTime}
+                and a.createdTime <![CDATA[ > ]]> #{startTime}
             </if>
             <if test="endTime!=null">
-                and createdTime <![CDATA[ < ]]> #{endTime}+24*60*60*1000-1
+                and a.createdTime <![CDATA[ < ]]> #{endTime}+24*60*60*1000-1
             </if>
             <if test="approvalStatus!=null">
-                and approvalStatus=#{approvalStatus}
+                and a.approvalStatus=#{approvalStatus}
             </if>
             <if test="state!=null and state==5">
-                and state=#{state}
+                and a.state=#{state}
             </if>
             <if test="state!=null and state==4">
-                AND state!=5 AND approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND a.state!=5 AND a.approvalStatus = 1 AND IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="state!=null and state==3">
-                AND state!=5 AND approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime
+                AND a.state!=5 AND a.approvalStatus = 1 AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1))
             </if>
             <if test="state!=null and state==2">
-                AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> signEndTime
-                AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND a.state!=5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> a.signEndTime
+                AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="state!=null and state==1">
-                AND state!=5 AND approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> signStartTime
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime
---                 报名结束到课程开始时间可能有空档
---                 AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND a.state!=5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.signStartTime
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime
+                /*报名结束到课程开始时间可能有空档*/
+                /* AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 */
             </if>
-            <if test="state!=null and state==0">
-                AND state!=5 AND (approvalStatus != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND courseStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000))
+
+            <if test="state!=null and state == 0">
+                AND a.state != 5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.releaseTime AND  a.signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 /* 未开始：发布时间之后，报名开始时间之前*/
+                /*AND state != 5 AND (approvalStatus != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000*/
+                /*AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000))*/
             </if>
             <if test="queryType!=null and queryType==1">
-                AND approvalStatus=0
+                AND a.approvalStatus=0
             </if>
             <if test="queryType!=null and queryType==2">
-                AND (approvalStatus=1 or approvalStatus=3)
+                AND (a.approvalStatus=1 or a.approvalStatus=3)
             </if>
             <if test="queryType!=null and queryType==3 and createdId!=null">
-                AND createdId=#{createdId}
+                AND a.createdId=#{createdId}
             </if>
             <if test="queryType!=null and queryType==4">
-                AND approvalStatus=1 AND state!=5 AND releaseTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND a.approvalStatus=1 AND a.state!=5 AND a.releaseTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="approvalStartTime!=null">
-                and updateTime <![CDATA[ > ]]> #{approvalStartTime}
+                and a.updateTime <![CDATA[ > ]]> #{approvalStartTime}
             </if>
             <if test="approvalEndTime!=null">
-                and updateTime <![CDATA[ < ]]> #{approvalEndTime}+24*60*60*1000-1
+                and a.updateTime <![CDATA[ < ]]> #{approvalEndTime}+24*60*60*1000-1
             </if>
             <if test="signStartTime!=null and signEndTime!=null">
-                and (signStartTime between #{signStartTime} and #{signEndTime} or
-                     signEndTime between #{signStartTime} and #{signEndTime})
+                and (a.signStartTime between #{signStartTime} and #{signEndTime} or
+                    a.signEndTime between #{signStartTime} and #{signEndTime})
             </if>
 
             <if test="lecturerTeacherId != null and lecturerTeacherId !='' ">
-                and lecturerTeacherId=#{lecturerTeacherId}
+                and a.lecturerTeacherId=#{lecturerTeacherId}
             </if>
             <if test="releaseStartTime!=null">
-                and releaseTime <![CDATA[ >= ]]> #{releaseStartTime}
+                and a.releaseTime <![CDATA[ >= ]]> #{releaseStartTime}
             </if>
             <if test="releaseEndTime!=null">
-                and releaseTime <![CDATA[ <= ]]> #{releaseEndTime}
+                and a.releaseTime <![CDATA[ <= ]]> #{releaseEndTime}
             </if>
         </where>
         <choose>
             <when test="queryType!=null and queryType==4">
-                order by  CASE
-                WHEN approvalStatus != 1 THEN null
-                WHEN `state`=5 THEN `state`
-                WHEN approvalStatus = 1 AND courseEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-                WHEN approvalStatus = 1 AND courseStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> courseEndTime THEN 3
-                WHEN approvalStatus = 1 AND signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-                WHEN approvalStatus = 1 AND signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> signEndTime THEN 0
-                WHEN approvalStatus = 1 AND signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1 END ASC
-                ,placedTop DESC,releaseTime DESC
+                order by
+                    CASE
+                        WHEN a.approvalStatus != 1 THEN null
+                        WHEN a.`state`=5 THEN a.`state`
+                        WHEN a.approvalStatus = 1 AND IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+                        WHEN a.approvalStatus = 1 AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1)) THEN 3
+                        WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                        WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 0
+                        WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1
+                    END ASC
+                ,a.placedTop DESC,a.releaseTime DESC
             </when>
             <when test="queryType != null and queryType == 1">
-                order by createdTime DESC
+                order by a.createdTime DESC
             </when>
             <when test="queryType != null and queryType == 2">
-                order by approvalTime DESC
+                order by a.approvalTime DESC
             </when>
             <otherwise>
-                order by placedTop DESC,releaseTime DESC
+                order by a.placedTop DESC,a.releaseTime DESC
             </otherwise>
         </choose>
     </select>
@@ -752,7 +789,7 @@
         </choose>
     </select>
 
-    <!--查询指定行数据-->
+    <!-- 固定课程和非固定课程的服务时长统计 -->
     <select id="selectCourseStatisByPage" parameterType="com.herocheer.instructor.domain.vo.CourseStatisVO" resultType="com.herocheer.instructor.domain.vo.CourseStatisVO">
         <!--非固定课程-->
         SELECT c.id as courseId,c.title,c.lecturerTeacherId,c.lecturerTeacherName,c.courseStartTime,d.certificateGrade,d.guideProject,ROUND( IF ( c.courseEndTime <![CDATA[ > ]]> c.courseStartTime,( c.courseEndTime - c.courseStartTime )/ 1000 / 60,0 )) serviceTimeTotal
@@ -778,25 +815,35 @@
         union all
         <!--固定课程-->
         SELECT
-            a.courseId,
+            c.courseId,
             b.title,
             b.lecturerTeacherId,
             b.lecturerTeacherName,
-            a.courseDate courseStartTime,
+            b.courseStartZone courseStartTime,
             d.certificateGrade,
             d.guideProject,
-            SUM(IF(ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60 )   <![CDATA[ > ]]> ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60 ),(
-            ROUND(
-            ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60
-            ))-(ROUND(
-            ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60
-            )),0)) serviceTimeTotal
-        FROM `course_schedule` a
-        LEFT JOIN course_info b on a.courseId = b.id
-        LEFT JOIN course_tearcher d on b.lecturerTeacherId = d.id
+            c.serviceTimeTotal
+        FROM
+        (
+            SELECT
+                a.courseId,
+                SUM(IF(ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60 )   <![CDATA[ > ]]> ROUND(ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60 ),(
+                ROUND(
+                ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.endTime, ':00' ))* 1000 )/ 1000 / 60
+                ))-(ROUND(
+                ROUND( UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( a.courseDate / 1000, '%Y-%m-%d' ), ' ', a.startTime, ':00' ))* 1000 )/ 1000 / 60
+                )),0)) serviceTimeTotal
+            FROM
+                `course_schedule` a
+            WHERE
+                a.cancelStatus = 1 AND a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
+            GROUP BY a.courseId
+        ) c
+        LEFT JOIN course_info b ON c.courseId = b.id
+        LEFT JOIN course_tearcher d ON b.lecturerTeacherId = d.id
         <where>
             <trim prefixOverrides="AND | OR">
-                and b.offerCourseType = 2 and a.cancelStatus = 1 and  a.courseDate <![CDATA[ < ]]> unix_timestamp() * 1000
+                and b.offerCourseType = 2
                 <if test="title != null">
                     and b.title = #{title}
                 </if>
@@ -804,13 +851,12 @@
                     and b.lecturerTeacherName = #{lecturerTeacherName}
                 </if>
                 <if test="beginTime != null">
-                    and b.courseStartTime <![CDATA[ >= ]]> #{beginTime}
+                    and b.courseStartZone <![CDATA[ >= ]]> #{beginTime}
                 </if>
-                <if test="beginTime != null">
-                    and b.courseStartTime <![CDATA[ <= ]]> #{beginTime}
+                <if test="endTime != null">
+                    and b.courseStartZone <![CDATA[ <= ]]> #{endTime}
                 </if>
             </trim>
         </where>
-        GROUP BY a.courseId
     </select>
 </mapper>
