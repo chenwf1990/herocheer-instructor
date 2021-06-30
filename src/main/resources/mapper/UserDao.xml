@@ -578,6 +578,9 @@
                 <if test="certificateNo != null">
                     and a.certificateNo = #{certificateNo}
                 </if>
+                <if test="mark != null">
+                    and a.mark = #{mark}
+                </if>
                 limit 1
             </trim>
         </where>

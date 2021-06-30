@@ -96,8 +96,8 @@ public class WechatController extends BaseController {
             @ApiImplicitParam(name = "code", value = "微信公众号code"),
             @ApiImplicitParam(name = "openid", value = "微信用户openid")
     })
-    public ResponseResult<UserInfoVo> ixmLoginUserIsExist(HttpSession session, String code, String openid) {
-        return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code,openid));
+    public ResponseResult<UserInfoVo> ixmLoginUserIsExist(HttpSession session, String code, String openid,Integer mark) {
+        return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code,openid,mark));
     }
 
     /**
@@ -130,14 +130,15 @@ public class WechatController extends BaseController {
     @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openid", value = "微信用户openid"),
-            @ApiImplicitParam(name = "token", value = "i厦门token")
+            @ApiImplicitParam(name = "token", value = "i厦门token"),
+            @ApiImplicitParam(name = "mark", value = "系统标记")
     })
     public ResponseResult<User> ixmLogin(HttpServletRequest request, HttpSession session, @NotBlank(message = "微信用户openid不能为空") String openid,
-                                               @NotBlank(message = "i厦门token不能为空") String token) {
+                                               @NotBlank(message = "i厦门token不能为空") String token,Integer mark) {
         // 获取当前用户信息
         String userInfo = redisClient.get(getCurTokenId(request));
         UserInfoVo infoVo = JSONObject.parseObject(userInfo,UserInfoVo.class);
-        return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token,infoVo));
+        return ResponseResult.ok(wechatService.ixmLogin(request, session, openid, token,infoVo,mark));
     }
 
 

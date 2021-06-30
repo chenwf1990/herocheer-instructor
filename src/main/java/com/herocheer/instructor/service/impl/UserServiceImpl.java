@@ -216,6 +216,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
 
         Map<String, Object> map = new HashMap();
         map.put("phone", sysUserVO.getPhone());
+        if(sysUserVO.getMark() != null){
+            map.put("mark", sysUserVO.getMark());
+        }else {
+            map.put("mark", 1);
+        }
         User u = this.dao.selectSysUserOne(map);
 
         if(!ObjectUtils.isEmpty(u)){
@@ -246,6 +251,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
         // 用户密码加密
         user.setPassword(encoder.encode(AesUtil.decrypt(sysUserVO.getPassword().trim())));
         user.setUserType(UserTypeEnums.sysUser.getCode());
+
         // 插入用户信息
         this.insert(user);
 

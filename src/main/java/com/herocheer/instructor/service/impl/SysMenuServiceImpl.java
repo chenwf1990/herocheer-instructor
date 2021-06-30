@@ -17,6 +17,7 @@ import com.herocheer.instructor.domain.vo.MetaVO;
 import com.herocheer.instructor.domain.vo.OptionTreeVO;
 import com.herocheer.instructor.domain.vo.SysMenuVO;
 import com.herocheer.instructor.enums.CacheKeyConst;
+import com.herocheer.instructor.enums.UserMarkEnums;
 import com.herocheer.instructor.enums.UserTypeEnums;
 import com.herocheer.instructor.service.SysMenuService;
 import com.herocheer.instructor.service.SysOperationService;
@@ -92,7 +93,7 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuDao, SysMenu, Lon
                 throw new CommonException("请联系管理员，分配菜单权限给您");
             }
         }else {
-            sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().build());
+            sysMenus = this.dao.selectMenuByPage(SysMenuVO.builder().mark(UserMarkEnums.INSTRUCTOR.getCode()).build());
         }
 
         // 获取子节点的pid

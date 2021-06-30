@@ -29,11 +29,11 @@ public interface WechatService {
      */
     WxInfoVO getWxInfo(String pageUrl);
 
-    UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid);
+    UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid,Integer mark);
 
     String ixmLoginUrl(String callBackUrl);
 
-    User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token,UserInfoVo currentUser);
+    User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token,UserInfoVo currentUse,Integer mark);
 
     /**
      * 绑定用户

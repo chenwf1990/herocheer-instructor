@@ -192,7 +192,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
 
 
     @Override
-    public UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid) {
+    public UserInfoVo ixmUserIsLogin(HttpSession session, String code,String openid,Integer mark) {
         log.debug("微信用户openid：{}",openid);
         // 获取微信群众信息，方便统计用户及展示个人中心信息显示
         JSONObject jsonStr = new JSONObject();
@@ -223,6 +223,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         // 根据openid获取用户信息
         Map map = new HashMap();
         map.put("openid", openid);
+        if(mark != null){
+            map.put("mark", mark);
+        }else {
+            map.put("mark", 1);
+        }
         User user  = this.dao.selectSysUserOne(map);
 
         if (user == null) {
@@ -312,7 +317,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
      * @return {@link User}
      */
     @Override
-    public User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token,UserInfoVo currentUser) {
+    public User ixmLogin(HttpServletRequest request, HttpSession session, String openid, String token,UserInfoVo currentUser,Integer mark) {
         String result = "";
         String ssoSessionId = "";
         try {
@@ -343,10 +348,14 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         Map map = new HashMap();
         map.put("phone",AesUtil.encrypt(user.getString("mobile")));
 
+        if(mark != null){
+            map.put("mark",mark);
+        }else {
+            map.put("mark",1);
+        }
         User sysUser  = this.dao.selectSysUserOne(map);
 
         String certificateNum = user.getString("certificateNum");
-
         if (sysUser == null) {
             sysUser = User.builder().build();
             sysUser.setIxmUserId(user.getString("uuid").replace("-", ""));
@@ -374,6 +383,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setOpenid(openid);
             sysUser.setUserType(UserTypeEnums.weChatUser.getCode());
             sysUser.setSource(SourceEnums.ixm.getCode().toString());
+            if (mark != null) {
+                sysUser.setMark(mark);
+            } else {
+                sysUser.setMark(1);
+            }
             this.insert(sysUser);
 
             // 异步同步用户数据
