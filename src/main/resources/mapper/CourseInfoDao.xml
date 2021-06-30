@@ -17,14 +17,26 @@
         END AS 'state'
     </sql>
 
+
+
+    <!-- 拼接课表的上课时间：courseDate + startTime -->
+    <sql id="courseScheduleStartTime">
+        ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.startTime, ':00' ))* 1000)
+    </sql>
+
+    <!-- 拼接课表的下课时间：courseDate + endTime -->
+    <sql id="courseScheduleEndTime">
+        ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.endTime, ':00' ))* 1000)
+    </sql>
+
     <!-- 固定课程的课表的最后一个课表 -->
     <sql id="courseEndTime">
-        IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1))
+        IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(<include refid="courseScheduleEndTime"/> ORDER BY <include refid="courseScheduleEndTime"/> DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1))
     </sql>
 
     <!-- 固定课程的课表的第一个课表 -->
     <sql id="courseStartTime">
-        IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1))
+        IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(<include refid="courseScheduleStartTime"/> ORDER BY <include refid="courseScheduleStartTime"/> DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1))
     </sql>
 
     <!--单表新增-->
@@ -327,9 +339,9 @@
                 WHEN a.approvalStatus != 1 THEN null
                 WHEN a.`state`=5 THEN `state` /*课程取消*/
                 WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4 /*已结课*/
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /* 报名中（1）优先于上课中（3）*/
                 WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3 /*上课中*/
                 WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2 /*报名截止*/
-                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /*报名中*/
                 WHEN UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signStartTime THEN 0 /*未开始*/
                 ELSE `state`
             END AS 'state'
@@ -532,9 +544,9 @@
                 WHEN a.approvalStatus != 1 THEN null
                 WHEN a.`state`=5 THEN `state`
                 WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /* 报名中（1）优先于上课中（3）*/
                 WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3
                 WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1
                 WHEN UNIX_TIMESTAMP(NOW())* 1000 > a.releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signStartTime THEN 0
                 ELSE a.`state`
             END AS 'state'
