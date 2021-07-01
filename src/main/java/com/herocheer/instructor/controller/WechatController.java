@@ -94,7 +94,8 @@ public class WechatController extends BaseController {
     @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "微信公众号code"),
-            @ApiImplicitParam(name = "openid", value = "微信用户openid")
+            @ApiImplicitParam(name = "openid", value = "微信用户openid"),
+            @ApiImplicitParam(name = "mark", value = "系统标识")
     })
     public ResponseResult<UserInfoVo> ixmLoginUserIsExist(HttpSession session, String code, String openid,Integer mark) {
         return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code,openid,mark));
@@ -172,12 +173,13 @@ public class WechatController extends BaseController {
     @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "微信用户openid"),
-            @ApiImplicitParam(name = "redirectUri", value = "i厦门APP登录页回调地址")
+            @ApiImplicitParam(name = "redirectUri", value = "i厦门APP登录页回调地址"),
+            @ApiImplicitParam(name = "mark", value = "系统标识")
     })
     public ResponseResult<UserInfoVo> ixmAppLogin(HttpServletRequest request, HttpSession session,
                                                   @NotBlank(message = "i厦门APP code不能为空") String code,
-                                                  @NotBlank(message = "i厦门APP登录页回调地址不能为空") String redirectUri) {
-        return  ResponseResult.ok(wechatService.ixmAppLogin(request, session, code, redirectUri));
+                                                  @NotBlank(message = "i厦门APP登录页回调地址不能为空") String redirectUri, Integer mark) {
+        return  ResponseResult.ok(wechatService.ixmAppLogin(request, session, code, redirectUri,mark));
     }
 
     /**
@@ -192,9 +194,10 @@ public class WechatController extends BaseController {
     @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "市民卡token"),
+            @ApiImplicitParam(name = "mark", value = "系统标识")
     })
-    public ResponseResult<UserInfoVo> smkLogin(HttpSession session, @NotBlank(message = "市民卡token不能为空") String token) {
-        return ResponseResult.ok(wechatService.smkLogin(session, token));
+    public ResponseResult<UserInfoVo> smkLogin(HttpSession session, @NotBlank(message = "市民卡token不能为空") String token,Integer mark) {
+        return ResponseResult.ok(wechatService.smkLogin(session, token, mark));
     }
 
     /**

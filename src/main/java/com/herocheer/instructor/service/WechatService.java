@@ -86,7 +86,7 @@ public interface WechatService {
      * @param redirectUri 重定向的uri
      * @return {@link UserInfoVo}
      */
-    UserInfoVo ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri);
+    UserInfoVo ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri, Integer mark);
 
     /**
      * 烟登录
@@ -95,5 +95,5 @@ public interface WechatService {
      * @param token   令牌
      * @return {@link UserInfoVo}
      */
-    UserInfoVo smkLogin(HttpSession session, String token);
+    UserInfoVo smkLogin(HttpSession session, String token,Integer mark);
 }

@@ -646,7 +646,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     }
 
     @Override
-    public UserInfoVo ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri) {
+    public UserInfoVo ixmAppLogin(HttpServletRequest request, HttpSession session, String code, String redirectUri, Integer mark) {
         String authUrl = ixmAppAuthUrl + "/oauth/token?code=" + code + "&client_id=" + ixmAppClientId
                 + "&client_secret=" + ixmAppClientSecret +
                 "&grant_type=authorization_code&redirect_uri=" + redirectUri;
@@ -689,6 +689,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         //根据phone判断用户本地数据是否存在
         Map map = new HashMap();
         map.put("phone",AesUtil.encrypt(jsonObject1.getString("phone")));
+        if(mark != null){
+            map.put("mark",mark);
+        }else {
+            map.put("mark",1);
+        }
         User sysUser  = this.dao.selectSysUserOne(map);
 
         String certificateNum = jsonObject2.getString("cardId");
@@ -716,6 +721,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setIxmLoginStatus(true);
             sysUser.setUserType(UserTypeEnums.weChatUser.getCode());
             sysUser.setSource(SourceEnums.ixmApp.getCode().toString());
+            if (mark != null) {
+                sysUser.setMark(mark);
+            } else {
+                sysUser.setMark(1);
+            }
             this.insert(sysUser);
 
             // 异步同步用户数据
@@ -772,7 +782,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     }
 
     @Override
-    public UserInfoVo smkLogin(HttpSession session, String token) {
+    public UserInfoVo smkLogin(HttpSession session, String token,Integer mark) {
         log.debug("smk token:{}", token);
         HttpHeaders headers = new HttpHeaders();
         Long timestamp = System.currentTimeMillis();
@@ -798,6 +808,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
         //根据phone判断用户本地数据是否存在
         Map map = new HashMap();
         map.put("phone",AesUtil.encrypt(jsonObject.getString("mobile")));
+        if(mark != null){
+            map.put("mark",mark);
+        }else {
+            map.put("mark",1);
+        }
         User sysUser  = this.dao.selectSysUserOne(map);
 
         String certificateNum = jsonObject.getString("certifId");
@@ -825,6 +840,11 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setIxmLoginStatus(true);
             sysUser.setUserType(UserTypeEnums.weChatUser.getCode());
             sysUser.setSource(SourceEnums.smk.getCode().toString());
+            if (mark != null) {
+                sysUser.setMark(mark);
+            } else {
+                sysUser.setMark(1);
+            }
             this.insert(sysUser);
 
             // 异步同步用户数据
