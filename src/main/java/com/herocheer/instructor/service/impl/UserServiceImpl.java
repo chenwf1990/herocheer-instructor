@@ -418,9 +418,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @return {@link User}
      */
     @Override
-    public User findUserByOpenId(String openId) {
+    public User findUserByOpenId(String openId,Integer mark) {
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("openid", openId);
+        if(mark != null){
+            objectMap.put("mark", mark);
+        }else {
+            objectMap.put("mark", 1);
+        }
         return this.dao.selectSysUserOne(objectMap);
     }
 
@@ -431,9 +436,14 @@ public class UserServiceImpl extends BaseServiceImpl<UserDao, User, Long> implem
      * @return {@link User}
      */
     @Override
-    public User findUserByPhone(String phone) {
+    public User findUserByPhone(String phone,Integer mark) {
         Map<String, Object> objectMap = new HashMap();
         objectMap.put("phone", phone);
+        if(mark != null){
+            objectMap.put("mark", mark);
+        }else {
+            objectMap.put("mark", 1);
+        }
         return this.dao.selectSysUserOne(objectMap);
     }
 

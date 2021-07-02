@@ -95,7 +95,7 @@ public class WechatController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "微信公众号code"),
             @ApiImplicitParam(name = "openid", value = "微信用户openid"),
-            @ApiImplicitParam(name = "mark", value = "系统标识")
+            @ApiImplicitParam(name = "mark", value = "系统标识：1-社会体育指导员，2-全民健身设施场地")
     })
     public ResponseResult<UserInfoVo> ixmLoginUserIsExist(HttpSession session, String code, String openid,Integer mark) {
         return ResponseResult.ok(wechatService.ixmUserIsLogin(session, code,openid,mark));
@@ -132,7 +132,7 @@ public class WechatController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "openid", value = "微信用户openid"),
             @ApiImplicitParam(name = "token", value = "i厦门token"),
-            @ApiImplicitParam(name = "mark", value = "系统标记")
+            @ApiImplicitParam(name = "mark", value = "系统标识：1-社会体育指导员，2-全民健身设施场地")
     })
     public ResponseResult<User> ixmLogin(HttpServletRequest request, HttpSession session, @NotBlank(message = "微信用户openid不能为空") String openid,
                                                @NotBlank(message = "i厦门token不能为空") String token,Integer mark) {
@@ -174,7 +174,7 @@ public class WechatController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "微信用户openid"),
             @ApiImplicitParam(name = "redirectUri", value = "i厦门APP登录页回调地址"),
-            @ApiImplicitParam(name = "mark", value = "系统标识")
+            @ApiImplicitParam(name = "mark", value = "系统标识：1-社会体育指导员，2-全民健身设施场地")
     })
     public ResponseResult<UserInfoVo> ixmAppLogin(HttpServletRequest request, HttpSession session,
                                                   @NotBlank(message = "i厦门APP code不能为空") String code,
@@ -194,7 +194,7 @@ public class WechatController extends BaseController {
     @AllowAnonymous
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "市民卡token"),
-            @ApiImplicitParam(name = "mark", value = "系统标识")
+            @ApiImplicitParam(name = "mark", value = "系统标识：1-社会体育指导员，2-全民健身设施场地")
     })
     public ResponseResult<UserInfoVo> smkLogin(HttpSession session, @NotBlank(message = "市民卡token不能为空") String token,Integer mark) {
         return ResponseResult.ok(wechatService.smkLogin(session, token, mark));
@@ -211,7 +211,7 @@ public class WechatController extends BaseController {
     @ApiOperation(value = "短信验证码")
     public ResponseResult fetchSmsCode( @ApiParam("短信验证码VO") @RequestBody MsgCodeVO msgCodeVO, HttpServletRequest request) {
         // 限制短信验证码的使用（很贵）
-        User user = userService.findUserByPhone(msgCodeVO.getPhone());
+        User user = userService.findUserByPhone(msgCodeVO.getPhone(),null);
         if(ObjectUtils.isEmpty(user)){
             // 后台无记录，请前往社会指导员认证或联系管理员。
             throw new CommonException("您未注册指导员，请联系管理员");
@@ -260,7 +260,7 @@ public class WechatController extends BaseController {
     @GetMapping("/{openId:\\w+}")
     @ApiOperation("获取微信用户信息(openid)")
     public ResponseResult<User> fetchUserByOpenId(@ApiParam("用户ID") @PathVariable String openId,HttpServletRequest request){
-        return ResponseResult.ok(userService.findUserByOpenId(openId));
+        return ResponseResult.ok(userService.findUserByOpenId(openId,null));
     }
 
     /**
@@ -272,7 +272,7 @@ public class WechatController extends BaseController {
     @GetMapping("/phone/{phone:\\w+}")
     @ApiOperation("获取微信用户信息(phone)")
     public ResponseResult<User> fetchUserByPhone(@ApiParam("电话号码") @PathVariable String phone,HttpServletRequest request){
-        return ResponseResult.ok(userService.findUserByPhone(phone));
+        return ResponseResult.ok(userService.findUserByPhone(phone,null));
     }
 
 

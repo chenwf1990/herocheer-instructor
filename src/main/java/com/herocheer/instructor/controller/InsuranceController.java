@@ -64,7 +64,7 @@ public class InsuranceController extends BaseController {
     @ApiOperation("当前用户的身份证号码")
     public ResponseResult<String> fecthInsuranceInfoByCorrentUser(HttpServletRequest request){
         UserEntity correntUser = getUser(request);
-        User user =  userService.findUserByOpenId(correntUser.getOtherId());
+        User user =  userService.findUserByOpenId(correntUser.getOtherId(),null);
 
         if(ObjectUtils.isEmpty(user) || StringUtils.isEmpty(user.getCertificateNo())){
             throw new CommonException("您未购买保险,请返回首页购买保险");

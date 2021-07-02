@@ -62,7 +62,7 @@ public class FieldMemberController extends BaseController {
         log.debug("当前用户信息ID：{}",infoVo.getId());
 
         // 身份证号为空，说明未登入
-        User user  = userService.findUserByOpenId(infoVo.getOtherId());
+        User user  = userService.findUserByOpenId(infoVo.getOtherId(),null);
         if(!StringUtils.hasText(user.getCertificateNo())){
             return ResponseResult.ok(Boolean.FALSE);
         }

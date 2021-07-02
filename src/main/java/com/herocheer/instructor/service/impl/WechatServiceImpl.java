@@ -375,6 +375,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
             sysUser.setIxmRealNameLevel(user.getString("realNameStatus"));
             sysUser.setIxmUserRealName(user.getString("certificateName"));
             sysUser.setPhone(AesUtil.encrypt(user.getString("mobile")));
+            currentUser.setPhone(AesUtil.encrypt(user.getString("mobile")));
             sysUser.setInsuranceStatus(0);
             sysUser.setCommitmentStatus(false);
             sysUser.setSource("1");
@@ -459,7 +460,7 @@ public class WechatServiceImpl extends BaseServiceImpl<UserDao, User, Long> impl
     @Override
     public UserInfoVo bindingWeChat(UserEntity correntUser, String phone) {
         // 验证成功后绑定手机和openid
-        User user = userService.findUserByPhone(phone);
+        User user = userService.findUserByPhone(phone,null);
         if(ObjectUtils.isEmpty(user)){
             // 后台无记录，请前往社会指导员认证或联系管理员。
             throw new CommonException("绑定失败，查无此手机号用户");

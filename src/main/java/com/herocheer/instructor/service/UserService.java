@@ -91,18 +91,20 @@ public interface UserService extends BaseService<User, Long> {
      * 根据openId获取微信用户信息
      *
      * @param openId id
+     * @param mark   null
      * @return {@link User}
      */
-    User findUserByOpenId(String openId);
+    User findUserByOpenId(String openId,Integer mark);
 
 
     /**
      * 根据电话获取微信用户信息
      *
      * @param phone 电话
+     * @param mark  系统标识：1-社会体育指导员，2-全民健身设施场地
      * @return {@link User}
      */
-    User findUserByPhone(String phone);
+    User findUserByPhone(String phone,Integer mark);
 
     /**
      * 添加微信用户

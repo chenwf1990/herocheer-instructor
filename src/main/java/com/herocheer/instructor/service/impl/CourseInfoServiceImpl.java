@@ -258,7 +258,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
 
         //获取授课老师的ID
         log.debug("当前用户的OpenId:{}",currentUser.getOtherId());
-        User user = userService.findUserByOpenId(currentUser.getOtherId());
+        User user = userService.findUserByOpenId(currentUser.getOtherId(),null);
 //        User user = userService.findUserByOpenId("obOp1s2fGwPvYxvtkljRkMdtGRx4
 
         if(ObjectUtils.isEmpty(user)){

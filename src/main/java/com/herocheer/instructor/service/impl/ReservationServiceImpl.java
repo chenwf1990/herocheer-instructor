@@ -230,7 +230,7 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
             throw new CommonException(ResponseCode.SERVER_ERROR,"课程已驳回或已撤回，暂无法报名");
         }
 
-        User user=userService.findUserByPhone(reservation.getPhone());
+        User user=userService.findUserByPhone(reservation.getPhone(),null);
         log.debug("老年人预约用户手机：{}",reservation.getPhone());
         log.debug("老年人预约用户：{}",user);
         if (user==null){
