@@ -198,12 +198,14 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
 
     @Override
     public Integer confirmBorrow(List<EquipmentBorrowDetails> details, Long userId) {
-        StringBuffer borrowEquipment=new StringBuffer();
-        User user=userService.get(userId);
-        if(user==null){
+        User user = userService.get(userId);
+        if(user == null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
         }
-        Long borrowId=0L;
+
+        // 确认借用记录详情
+        Long borrowId = 0L;
+        StringBuffer borrowEquipment = new StringBuffer();
         for (EquipmentBorrowDetails borrowDetails:details){
             borrowEquipment.append(borrowDetails.getEquipmentName());
             borrowEquipment.append("*");
@@ -217,14 +219,23 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             borrowDetails.setBorrowTime(System.currentTimeMillis());
             borrowDetails.setPhoneNumber(user.getPhone());
             equipmentBorrowDetailsService.saveBorrowDetails(borrowDetails,1);
-            if(borrowDetails.getBorrowId()!=null){
+
+            if(borrowDetails.getBorrowId() != null){
                 borrowId=borrowDetails.getBorrowId();
             }
         }
+
+        // 更新借用记录状态为待归还
         EquipmentBorrow equipmentBorrow=this.dao.get(borrowId);
         if(equipmentBorrow==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
         }
+
+        // 驳回必须在状态为待审核（0）时才能操作
+        if(!equipmentBorrow.getStatus().equals(0)){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "确认借出失败，此状态下无法确认借出");
+        }
+
         equipmentBorrow.setStatus(BorrowStatusEnums.to_borrow.getStatus());
         equipmentBorrow.setBorrowEquipment(borrowEquipment.toString().substring(0,borrowEquipment.length()-1));
         equipmentBorrow.setLenderId(user.getId());
@@ -240,13 +251,25 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
     }
 
     @Override
-    public EquipmentBorrow overrule(Long id,String reason) {
+    public EquipmentBorrow overrule(Long id,String reason,Long userId) {
+        // 用户信息
+        User user = userService.get(userId);
+        if(user == null){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
+        }
+
         EquipmentBorrow equipmentBorrow = this.dao.get(id);
         if(ObjectUtils.isEmpty(equipmentBorrow)){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
         }
-        equipmentBorrow.setRejectReason(reason);
+
+        // 驳回必须在状态为待审核（0）时才能操作
+        if(!equipmentBorrow.getStatus().equals(0)){
+            throw new CommonException(ResponseCode.SERVER_ERROR, "驳回失败，此状态下无法驳回!");
+        }
+
         // 更新状态
+        equipmentBorrow.setRejectReason(reason);
         equipmentBorrow.setStatus(BorrowStatusEnums.overrule.getStatus());
         this.dao.update(equipmentBorrow);
 
@@ -256,6 +279,11 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             EquipmentBorrowDetails equipmentBorrowDetails = equipmentBorrowDetailsVO.voToEntity(equipmentBorrowDetailsVO);
             // 取消借用时设置待归还数量为0，即释放库存
             equipmentBorrowDetails.setUnreturnedQuantity(0);
+
+            // 更新驳回人信息和驳回时间
+            equipmentBorrowDetails.setBorrowBy(user.getUserName());
+            equipmentBorrowDetails.setBorrowUserId(user.getId());
+            equipmentBorrowDetails.setBorrowTime(System.currentTimeMillis());
             equipmentBorrowDetailsService.update(equipmentBorrowDetails);
         }
         return equipmentBorrow;
@@ -290,13 +318,13 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
 
     @Override
     public Integer confirmRemand(List<EquipmentRemand> remand,Long userId) {
-        EquipmentBorrowDetails borrowDetails;
-        Long borrowId=0L;
-        User user=userService.get(userId);
+        User user = userService.get(userId);
         if(user==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取用户信息失败!");
         }
 
+        Long borrowId=0L;
+        EquipmentBorrowDetails borrowDetails;
         for(EquipmentRemand equipmentRemand : remand){
             Integer remandQuantity = equipmentRemand.getRemandQuantity();
             equipmentRemand = equipmentRemandService.get(equipmentRemand.getId());
@@ -424,11 +452,10 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if(borrowVo==null){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据不存在!");
         }
-        List<EquipmentBorrowDetailsVo> detailsVoList=equipmentBorrowDetailsService.getDetailsByBorrowId(id);
+        List<EquipmentBorrowDetailsVo> detailsVoList = equipmentBorrowDetailsService.getDetailsByBorrowId(id);
         if(!detailsVoList.isEmpty()){
             for(int i=0;i<detailsVoList.size();i++){
-                List<EquipmentRemand> remands=
-                        equipmentRemandService.getRemandByDetailsId(detailsVoList.get(i).getId());
+                List<EquipmentRemand> remands = equipmentRemandService.getRemandByDetailsId(detailsVoList.get(i).getId());
                 if (!remands.isEmpty()){
                     detailsVoList.get(i).setRemands(remands);
                 }
@@ -516,7 +543,13 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
         if(ObjectUtils.isEmpty(equipmentBorrow)){
             throw new CommonException(ResponseCode.SERVER_ERROR, "获取借用单据失败!");
         }
-        // 更新状态
+
+        // 只有器材借用预约30分钟后还是待审核状态才需更新状态为已过期
+        if(equipmentBorrow.getStatus().equals(0)){
+            throw new CommonException( "您已在规定时间借出器材，无法取消预约！");
+        }
+
+        // 更新状态为已过期
         equipmentBorrow.setStatus(status);
         this.dao.update(equipmentBorrow);
 
@@ -528,6 +561,7 @@ public class EquipmentBorrowServiceImpl extends BaseServiceImpl<EquipmentBorrowD
             equipmentBorrowDetails.setUnreturnedQuantity(0);
             equipmentBorrowDetailsService.update(equipmentBorrowDetails);
         }
+
         return equipmentBorrow;
     }
 }

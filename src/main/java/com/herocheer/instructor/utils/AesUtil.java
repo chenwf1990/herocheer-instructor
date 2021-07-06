@@ -65,8 +65,8 @@ public class AesUtil {
     }
 
     public static void main(String[] args) {
-        String str = "q8zY1E97Go/cy1RiniKXRrmWVGseg/IumQt1a35kYGk=";
-        String a = decrypt(str);
+        String str = "xizhong@123";
+        String a = encrypt(str);
         System.out.println(a);
     }
 }

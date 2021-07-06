@@ -34,7 +34,7 @@ public class CacheKeyConst {
     /**
      * 自动取消预约器材借用的KEY
      */
-    public static final String DELAY_AUTO_KEY = "key:equipment:borrow";
+    public static final String DELAY_AUTO_KEY = "key:equipment:borrow01";
 
     /**
      * 自动取消预约时间 (30分钟)

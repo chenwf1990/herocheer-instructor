@@ -72,8 +72,8 @@ public class EquipmentBorrowController extends BaseController{
 
     @GetMapping("/borrow/overrule")
     @ApiOperation("借用驳回")
-    public ResponseResult<EquipmentBorrow> overrule(@ApiParam("借用id") @RequestParam Long id,@ApiParam("驳回理由") @RequestParam String reason){
-        return ResponseResult.ok(equipmentBorrowService.overrule(id,reason));
+    public ResponseResult<EquipmentBorrow> overrule(@ApiParam("借用id") @RequestParam Long id,@ApiParam("驳回理由") @RequestParam String reason, HttpServletRequest request){
+        return ResponseResult.ok(equipmentBorrowService.overrule(id,reason,getCurUserId(request)));
     }
 
     @PostMapping("/remand/apply")

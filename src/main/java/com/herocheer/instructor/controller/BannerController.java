@@ -9,9 +9,19 @@ import com.herocheer.web.base.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author chenwf
@@ -22,6 +32,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/banner")
 @Api(tags = "banner管理")
+@Slf4j
 public class BannerController extends BaseController{
     @Resource
     private BannerService bannerService;
@@ -70,4 +81,23 @@ public class BannerController extends BaseController{
     public ResponseResult add(@RequestBody Banner banner){
         return ResponseResult.isSuccess(bannerService.insert(banner));
     }
+
+    private static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1, 10L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(500));
+
+    @GetMapping("/KK")
+    @ApiOperation("TEST")
+    public ResponseResult updateState(){
+        threadPoolExecutor.execute(() -> {
+            log.debug("k");
+            for (int i = 0; i < 100; i++) {
+                log.debug(String.valueOf(i));
+                if(i == 20){
+                    log.debug("test");
+                    throw new RuntimeException("test");
+                }
+            }
+        });
+        return ResponseResult.ok();
+    }
+
 }

@@ -144,4 +144,12 @@ public interface ReservationService extends BaseService<Reservation,Long> {
      */
     Set<String> findReservationOpenidByCourseScheduleId(Map<String, Object> paramMap);
 
+
+    /**
+     * 找到预订信息
+     *
+     * @param queryVO 查询签证官
+     * @return {@link List<ReservationListVO>}
+     */
+    List<ReservationListVO> findReservationInfo(ReservationQueryVo queryVO);
 }

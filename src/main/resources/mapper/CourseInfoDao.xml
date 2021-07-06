@@ -17,8 +17,6 @@
         END AS 'state'
     </sql>
 
-
-
     <!-- 拼接课表的上课时间：courseDate + startTime -->
     <sql id="courseScheduleStartTime">
         ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.startTime, ':00' ))* 1000)
@@ -29,9 +27,9 @@
         ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.endTime, ':00' ))* 1000)
     </sql>
 
-    <!-- 固定课程的课表的最后一个课表 -->
-    <sql id="courseEndTime">
-        IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(<include refid="courseScheduleEndTime"/> ORDER BY <include refid="courseScheduleEndTime"/> DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1))
+    <!-- 拼接课表的上课时间和下课时间：courseDate startTime ~ courseDate endTime -->
+    <sql id="courseScheduleStartTimeAndEndTime">
+        CONCAT_WS('~',ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.startTime, ':00' ))* 1000),ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.endTime, ':00' ))* 1000))
     </sql>
 
     <!-- 固定课程的课表的第一个课表 -->
@@ -39,193 +37,198 @@
         IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(<include refid="courseScheduleStartTime"/> ORDER BY <include refid="courseScheduleStartTime"/> DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1))
     </sql>
 
+    <!-- 固定课程的课表的最后一个课表 -->
+    <sql id="courseEndTime">
+        IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(<include refid="courseScheduleEndTime"/> ORDER BY <include refid="courseScheduleEndTime"/> DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1))
+    </sql>
+
     <!--单表新增-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.herocheer.instructor.domain.entity.CourseInfo">
         insert into course_info (
-    <trim suffixOverrides=",">
-        <if test="title != null">
-            title,
-        </if>
-        <if test="type != null">
-            type,
-        </if>
-        <if test="lecturerTeacherId != null">
-            lecturerTeacherId,
-        </if>
-        <if test="lecturerTeacherName != null">
-            lecturerTeacherName,
-        </if>
-        <if test="courseStartTime != null">
-            courseStartTime,
-        </if>
-        <if test="courseEndTime != null">
-            courseEndTime,
-        </if>
-        <if test="address != null">
-            address,
-        </if>
-        <if test="longitude != null">
-            longitude,
-        </if>
-        <if test="latitude != null">
-            latitude,
-        </if>
-        <if test="limitNumber != null">
-            limitNumber,
-        </if>
-        <if test="signNumber != null">
-            signNumber,
-        </if>
-        <if test="signStartTime != null">
-            signStartTime,
-        </if>
-        <if test="signEndTime != null">
-            signEndTime,
-        </if>
-        <if test="description != null">
-            description,
-        </if>
-        <if test="image != null">
-            image,
-        </if>
-        <if test="approvalStatus != null">
-            approvalStatus,
-        </if>
-        <if test="approvalComments != null">
-            approvalComments,
-        </if>
-        <if test="showBanner != null">
-            showBanner,
-        </if>
-        <if test="placedTop != null">
-            placedTop,
-        </if>
-        <if test="deptName != null">
-            deptName,
-        </if>
-        <if test="deptId != null">
-            deptId,
-        </if>
-        <if test="state != null">
-            state,
-        </if>
-        <if test="approvalId != null">
-            approvalId,
-        </if>
-        <if test="approvalBy != null">
-            approvalBy,
-        </if>
-        <if test="approvalTime != null">
-            approvalTime,
-        </if>
-        <if test="releaseTime != null">
-            releaseTime,
-        </if>
-        <if test="offerCourseType != null">
-            offerCourseType,
-        </if>
+            <trim suffixOverrides=",">
+                <if test="title != null">
+                    title,
+                </if>
+                <if test="type != null">
+                    type,
+                </if>
+                <if test="lecturerTeacherId != null">
+                    lecturerTeacherId,
+                </if>
+                <if test="lecturerTeacherName != null">
+                    lecturerTeacherName,
+                </if>
+                <if test="courseStartTime != null">
+                    courseStartTime,
+                </if>
+                <if test="courseEndTime != null">
+                    courseEndTime,
+                </if>
+                <if test="address != null">
+                    address,
+                </if>
+                <if test="longitude != null">
+                    longitude,
+                </if>
+                <if test="latitude != null">
+                    latitude,
+                </if>
+                <if test="limitNumber != null">
+                    limitNumber,
+                </if>
+                <if test="signNumber != null">
+                    signNumber,
+                </if>
+                <if test="signStartTime != null">
+                    signStartTime,
+                </if>
+                <if test="signEndTime != null">
+                    signEndTime,
+                </if>
+                <if test="description != null">
+                    description,
+                </if>
+                <if test="image != null">
+                    image,
+                </if>
+                <if test="approvalStatus != null">
+                    approvalStatus,
+                </if>
+                <if test="approvalComments != null">
+                    approvalComments,
+                </if>
+                <if test="showBanner != null">
+                    showBanner,
+                </if>
+                <if test="placedTop != null">
+                    placedTop,
+                </if>
+                <if test="deptName != null">
+                    deptName,
+                </if>
+                <if test="deptId != null">
+                    deptId,
+                </if>
+                <if test="state != null">
+                    state,
+                </if>
+                <if test="approvalId != null">
+                    approvalId,
+                </if>
+                <if test="approvalBy != null">
+                    approvalBy,
+                </if>
+                <if test="approvalTime != null">
+                    approvalTime,
+                </if>
+                <if test="releaseTime != null">
+                    releaseTime,
+                </if>
+                <if test="offerCourseType != null">
+                    offerCourseType,
+                </if>
 
-        <if test="courseStartZone != null">
-            courseStartZone,
-        </if>
+                <if test="courseStartZone != null">
+                    courseStartZone,
+                </if>
 
-        <if test="courseEndZone != null">
-            courseEndZone,
-        </if>
-        <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
-    </trim>
+                <if test="courseEndZone != null">
+                    courseEndZone,
+                </if>
+                <include refid="com.herocheer.mybatis.base.dao.CommonDao.inscolumn"/>
+            </trim>
     ) VALUES (
-    <trim suffixOverrides=",">
-        <if test="title != null">
-            #{title},
-        </if>
-        <if test="type != null">
-            #{type},
-        </if>
-        <if test="lecturerTeacherId != null">
-            #{lecturerTeacherId},
-        </if>
-        <if test="lecturerTeacherName != null">
-            #{lecturerTeacherName},
-        </if>
-        <if test="courseStartTime != null">
-            #{courseStartTime},
-        </if>
-        <if test="courseEndTime != null">
-            #{courseEndTime},
-        </if>
-        <if test="address != null">
-            #{address},
-        </if>
-        <if test="longitude != null">
-            #{longitude},
-        </if>
-        <if test="latitude != null">
-            #{latitude},
-        </if>
-        <if test="limitNumber != null">
-            #{limitNumber},
-        </if>
-        <if test="signNumber != null">
-            #{signNumber},
-        </if>
-        <if test="signStartTime != null">
-            #{signStartTime},
-        </if>
-        <if test="signEndTime != null">
-            #{signEndTime},
-        </if>
-        <if test="description != null">
-            #{description},
-        </if>
-        <if test="image != null">
-            #{image},
-        </if>
-        <if test="approvalStatus != null">
-            #{approvalStatus},
-        </if>
-        <if test="approvalComments != null">
-            #{approvalComments},
-        </if>
-        <if test="showBanner != null">
-            #{showBanner},
-        </if>
-        <if test="placedTop != null">
-            #{placedTop},
-        </if>
-        <if test="deptName != null">
-            #{deptName},
-        </if>
-        <if test="deptId != null">
-            #{deptId},
-        </if>
-        <if test="state != null">
-            #{state},
-        </if>
-        <if test="approvalId != null">
-            #{approvalId},
-        </if>
-        <if test="approvalBy != null">
-            #{approvalBy},
-        </if>
-        <if test="approvalTime != null">
-            #{approvalTime},
-        </if>
-        <if test="releaseTime != null">
-            #{releaseTime},
-        </if>
-        <if test="offerCourseType != null">
-            #{offerCourseType},
-        </if>
+            <trim suffixOverrides=",">
+                <if test="title != null">
+                    #{title},
+                </if>
+                <if test="type != null">
+                    #{type},
+                </if>
+                <if test="lecturerTeacherId != null">
+                    #{lecturerTeacherId},
+                </if>
+                <if test="lecturerTeacherName != null">
+                    #{lecturerTeacherName},
+                </if>
+                <if test="courseStartTime != null">
+                    #{courseStartTime},
+                </if>
+                <if test="courseEndTime != null">
+                    #{courseEndTime},
+                </if>
+                <if test="address != null">
+                    #{address},
+                </if>
+                <if test="longitude != null">
+                    #{longitude},
+                </if>
+                <if test="latitude != null">
+                    #{latitude},
+                </if>
+                <if test="limitNumber != null">
+                    #{limitNumber},
+                </if>
+                <if test="signNumber != null">
+                    #{signNumber},
+                </if>
+                <if test="signStartTime != null">
+                    #{signStartTime},
+                </if>
+                <if test="signEndTime != null">
+                    #{signEndTime},
+                </if>
+                <if test="description != null">
+                    #{description},
+                </if>
+                <if test="image != null">
+                    #{image},
+                </if>
+                <if test="approvalStatus != null">
+                    #{approvalStatus},
+                </if>
+                <if test="approvalComments != null">
+                    #{approvalComments},
+                </if>
+                <if test="showBanner != null">
+                    #{showBanner},
+                </if>
+                <if test="placedTop != null">
+                    #{placedTop},
+                </if>
+                <if test="deptName != null">
+                    #{deptName},
+                </if>
+                <if test="deptId != null">
+                    #{deptId},
+                </if>
+                <if test="state != null">
+                    #{state},
+                </if>
+                <if test="approvalId != null">
+                    #{approvalId},
+                </if>
+                <if test="approvalBy != null">
+                    #{approvalBy},
+                </if>
+                <if test="approvalTime != null">
+                    #{approvalTime},
+                </if>
+                <if test="releaseTime != null">
+                    #{releaseTime},
+                </if>
+                <if test="offerCourseType != null">
+                    #{offerCourseType},
+                </if>
 
-        <if test="courseStartZone != null">
-            #{courseStartZone},
-        </if>
-        <if test="courseEndZone != null">
-            #{courseEndZone},
-        </if>
-	    <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
-    </trim>
+                <if test="courseStartZone != null">
+                    #{courseStartZone},
+                </if>
+                <if test="courseEndZone != null">
+                    #{courseEndZone},
+                </if>
+                <include refid="com.herocheer.mybatis.base.dao.CommonDao.insparam"/>
+            </trim>
     )
     </insert>
     
@@ -334,7 +337,7 @@
     <select id="get" parameterType="java.lang.Long" resultType="com.herocheer.instructor.domain.entity.CourseInfo">
         select
             id, title, type, offerCourseType, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,
+            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,(SELECT GROUP_CONCAT(<include refid="courseScheduleStartTimeAndEndTime"/> SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id) as courseScheduleStr,
             CASE
                 WHEN a.approvalStatus != 1 THEN null
                 WHEN a.`state`=5 THEN `state` /*课程取消*/
@@ -539,7 +542,7 @@
     <select id="queryList" resultType="com.herocheer.instructor.domain.entity.CourseInfo" parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
         select
             id, title, type, offerCourseType, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,
+            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,(SELECT GROUP_CONCAT(<include refid="courseScheduleStartTimeAndEndTime"/> SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id) as courseScheduleStr,
             CASE
                 WHEN a.approvalStatus != 1 THEN null
                 WHEN a.`state`=5 THEN `state`
@@ -580,27 +583,23 @@
                 and a.state=#{state}
             </if>
             <if test="state!=null and state==4">
-                AND a.state!=5 AND a.approvalStatus = 1 AND IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
+                AND a.state!=5 AND a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="state!=null and state==3">
-                AND a.state!=5 AND a.approvalStatus = 1 AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1))
+                AND a.state!=5 AND a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/>
             </if>
             <if test="state!=null and state==2">
                 AND a.state!=5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> a.signEndTime
-                AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
+                AND <include refid="courseStartTime"/> <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000
             </if>
             <if test="state!=null and state==1">
                 AND a.state!=5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.signStartTime
                 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime
-                /*报名结束到课程开始时间可能有空档*/
-                /* AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 */
             </if>
 
             <if test="state!=null and state == 0">
                 AND a.state != 5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.releaseTime AND  a.signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 /* 未开始：发布时间之后，报名开始时间之前*/
-                /*AND state != 5 AND (approvalStatus != 1 OR (signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000*/
-                /*AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000))*/
             </if>
             <if test="queryType!=null and queryType==1">
                 AND a.approvalStatus=0
@@ -641,8 +640,8 @@
                     CASE
                         WHEN a.approvalStatus != 1 THEN null
                         WHEN a.`state`=5 THEN a.`state`
-                        WHEN a.approvalStatus = 1 AND IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-                        WHEN a.approvalStatus = 1 AND IFNULL(a.courseStartTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',-1)) <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> IFNULL(a.courseEndTime,substring_index((SELECT GROUP_CONCAT(b.courseDate ORDER BY b.courseDate DESC SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id ),'_',1)) THEN 3
+                        WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
+                        WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3
                         WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
                         WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 0
                         WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1

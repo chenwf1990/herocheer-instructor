@@ -715,4 +715,15 @@ public class ReservationServiceImpl extends BaseServiceImpl<ReservationDao, Rese
     public Set<String> findReservationOpenidByCourseScheduleId(Map<String, Object> paramMap) {
         return this.dao.selectReservationOpenidByCourseScheduleId(paramMap);
     }
+
+    /**
+     * 找到预订信息
+     *
+     * @param queryVO 查询签证官
+     * @return {@link List<ReservationListVO>}
+     */
+    @Override
+    public List<ReservationListVO> findReservationInfo(ReservationQueryVo queryVO) {
+        return this.dao.findList(queryVO);
+    }
 }

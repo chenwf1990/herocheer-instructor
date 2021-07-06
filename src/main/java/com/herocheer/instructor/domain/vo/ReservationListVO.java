@@ -1,5 +1,7 @@
 package com.herocheer.instructor.domain.vo;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 import com.herocheer.instructor.domain.entity.Reservation;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,6 +20,7 @@ import lombok.experimental.SuperBuilder;
  */
 
 @ApiModel(description = "预约列表VO")
+@ExcelTarget("reservationList")
 @SuperBuilder
 @Data
 @AllArgsConstructor
@@ -35,5 +38,9 @@ public class ReservationListVO extends Reservation {
 
     @ApiModelProperty("取消原因")
     private String cancelReason;
+
+    @Excel(name = "预约时间", orderNum = "5", width = 25)
+    @ApiModelProperty("预约时间(excel)")
+    private String excelCreatedTime;
 
 }

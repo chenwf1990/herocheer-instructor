@@ -58,7 +58,7 @@ public interface EquipmentBorrowService extends BaseService<EquipmentBorrow,Long
      * @param reason 原因
      * @return {@link EquipmentBorrow}
      */
-    EquipmentBorrow overrule(Long id,String reason);
+    EquipmentBorrow overrule(Long id,String reason,Long userId);
 
     /**
      * 器材申请归还 必要参数:关联借用器材id,借用单据id
