@@ -17,6 +17,11 @@
         END AS 'state'
     </sql>
 
+    <!-- 判断当前时间是否在上课期间-->
+    <sql id="makingCourseByCurrentTime">
+        (SELECT (FIND_IN_SET(1,GROUP_CONCAT(if(((ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.startTime, ':00' ))* 1000)) <![CDATA[ <= ]]> (UNIX_TIMESTAMP() * 1000)  AND  (UNIX_TIMESTAMP() * 1000) <![CDATA[ <= ]]> (ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.endTime, ':00' ))* 1000))),1,0)  SEPARATOR ',')) != 0)  FROM course_schedule b WHERE b.cancelStatus=1 AND b.courseId=a.id)
+    </sql>
+
     <!-- 拼接课表的上课时间：courseDate + startTime -->
     <sql id="courseScheduleStartTime">
         ROUND(UNIX_TIMESTAMP( CONCAT_WS( '', FROM_UNIXTIME( b.courseDate / 1000, '%Y-%m-%d' ), ' ', b.startTime, ':00' ))* 1000)
@@ -342,9 +347,9 @@
                 WHEN a.approvalStatus != 1 THEN null
                 WHEN a.`state`=5 THEN `state` /*课程取消*/
                 WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4 /*已结课*/
-                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /* 报名中（1）优先于上课中（3）*/
-                WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3 /*上课中*/
+                WHEN a.approvalStatus = 1 AND <include refid="makingCourseByCurrentTime"/> THEN 3 /*上课中*/
                 WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2 /*报名截止*/
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /* 报名中 */
                 WHEN UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ > ]]> a.releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signStartTime THEN 0 /*未开始*/
                 ELSE `state`
             END AS 'state'
@@ -539,17 +544,17 @@
     </select>
 
 
-    <select id="queryList" resultType="com.herocheer.instructor.domain.entity.CourseInfo" parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo">
+    <select id="queryList" parameterType="com.herocheer.instructor.domain.vo.CourseInfoQueryVo" resultType="com.herocheer.instructor.domain.entity.CourseInfo">
         select
             id, title, type, offerCourseType, lecturerTeacherId, lecturerTeacherName, courseStartTime, courseEndTime, address, longitude, latitude, limitNumber, signNumber, signStartTime, signEndTime, description, image, approvalStatus, approvalComments, showBanner, placedTop, deptName, deptId, createdId, createdBy, createdTime, updateId, updateBy, updateTime,
-            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,(SELECT GROUP_CONCAT(<include refid="courseScheduleStartTimeAndEndTime"/> SEPARATOR '_') FROM course_schedule b WHERE b.cancelStatus=1 and b.courseId=a.id) as courseScheduleStr,
+            approvalId,approvalBy,approvalTime,releaseTime, courseStartZone, courseEndZone,
             CASE
                 WHEN a.approvalStatus != 1 THEN null
                 WHEN a.`state`=5 THEN `state`
                 WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /* 报名中（1）优先于上课中（3）*/
-                WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3
+                WHEN a.approvalStatus = 1 AND <include refid="makingCourseByCurrentTime"/> THEN 3
                 WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
+                WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1
                 WHEN UNIX_TIMESTAMP(NOW())* 1000 > a.releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signStartTime THEN 0
                 ELSE a.`state`
             END AS 'state'
@@ -586,8 +591,7 @@
                 AND a.state!=5 AND a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000
             </if>
             <if test="state!=null and state==3">
-                AND a.state!=5 AND a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000
-                AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/>
+                AND a.state!=5 AND a.approvalStatus = 1 AND <include refid="makingCourseByCurrentTime"/> = 1
             </if>
             <if test="state!=null and state==2">
                 AND a.state!=5 AND a.approvalStatus = 1 AND UNIX_TIMESTAMP(NOW())*1000 <![CDATA[ > ]]> a.signEndTime
@@ -639,12 +643,12 @@
                 order by
                     CASE
                         WHEN a.approvalStatus != 1 THEN null
-                        WHEN a.`state`=5 THEN a.`state`
+                        WHEN a.`state`=5 THEN `state`
                         WHEN a.approvalStatus = 1 AND <include refid="courseEndTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 4
-                        WHEN a.approvalStatus = 1 AND <include refid="courseStartTime"/> <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> <include refid="courseEndTime"/> THEN 3
+                        WHEN a.approvalStatus = 1 AND <include refid="makingCourseByCurrentTime"/> THEN 3
                         WHEN a.approvalStatus = 1 AND a.signEndTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())*1000 THEN 2
-                        WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 0
-                        WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ > ]]> UNIX_TIMESTAMP(NOW())* 1000 THEN 1
+                        WHEN a.approvalStatus = 1 AND a.signStartTime <![CDATA[ < ]]> UNIX_TIMESTAMP(NOW())* 1000 AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signEndTime THEN 1 /* 报名中 */
+                        WHEN UNIX_TIMESTAMP(NOW())* 1000 > a.releaseTime AND UNIX_TIMESTAMP(NOW())* 1000 <![CDATA[ < ]]> a.signStartTime THEN 0
                     END ASC
                 ,a.placedTop DESC,a.releaseTime DESC
             </when>

@@ -72,8 +72,4 @@ public class CourseInfo extends BaseEntity {
     private String courseStartZone;
     @ApiModelProperty("课程结束时区")
     private String courseEndZone;
-
-
-    @ApiModelProperty("课表字符串(非库表字段)")
-    private String courseScheduleStr;
     }

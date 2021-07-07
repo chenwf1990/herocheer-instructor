@@ -80,25 +80,6 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
             queryVo.setCreatedId(userId);
         }
         List<CourseInfo> instructors = this.dao.queryList(queryVo);
-        instructors.forEach((e)->{
-            // 固定课程才有课表
-            if(e.getOfferCourseType().equals(2)){
-                if(StringUtils.isNotBlank(e.getCourseScheduleStr())){
-                    String[]  courseScheduleArr = e.getCourseScheduleStr().split("_");
-                    for (int i = 0; i < courseScheduleArr.length; i++) {
-                        //每节课的上课时间
-                        String[] perCourseSchedule = courseScheduleArr[i].split("~");
-
-                        // 是否在上课中
-                        boolean isCourse = Long.parseLong(perCourseSchedule[0]) <= System.currentTimeMillis() && System.currentTimeMillis() <= Long.parseLong(perCourseSchedule[1]);
-                        if(isCourse){
-                            e.setState(3);
-                            break;
-                        }
-                    }
-                }
-            }
-        });
         page.setDataList(instructors);
         return page;
     }
@@ -194,35 +175,6 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
         return courseInfo;
     }
 
-
-    /**
-     * 通过id发现课程
-     *
-     * @param courseId 进程id
-     * @return {@link CourseInfo}
-     */
-    private CourseInfo findCourseById(Long courseId){
-        CourseInfo courseInfo  = this.dao.get(courseId);
-
-        // 固定课程才有课表
-        if(courseInfo.getOfferCourseType().equals(2)){
-            if(StringUtils.isNotBlank(courseInfo.getCourseScheduleStr())){
-                String[]  courseScheduleArr = courseInfo.getCourseScheduleStr().split("_");
-                for (int i = 0; i < courseScheduleArr.length; i++) {
-                    //每节课的上课时间
-                    String[] perCourseSchedule = courseScheduleArr[i].split("~");
-
-                    // 是否在上课中
-                    boolean isCourse = Long.parseLong(perCourseSchedule[0]) <= System.currentTimeMillis() && System.currentTimeMillis() <= Long.parseLong(perCourseSchedule[1]);
-                    if(isCourse){
-                        courseInfo.setState(3);
-                        break;
-                    }
-                }
-            }
-        }
-        return courseInfo;
-    }
     /**
      * 通过id发现课程信息
      *
@@ -232,7 +184,7 @@ public class CourseInfoServiceImpl extends BaseServiceImpl<CourseInfoDao, Course
     @Override
     public CourseInfo findCourseInfoById(Long id,String flag,Long userId) {
         // 获取课程信息
-        CourseInfo courseInfo  = findCourseById(id);
+        CourseInfo courseInfo  = this.dao.get(id);
         CourseInfoVo courseInfoVo = new CourseInfoVo();
 
         // 扫码签到场景
